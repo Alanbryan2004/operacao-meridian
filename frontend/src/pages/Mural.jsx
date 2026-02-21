@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { loadGame } from "../game/store";
+import AppShell from "../components/AppShell";
 
 function Badge({ children, kind = "gray" }) {
     const map = {
