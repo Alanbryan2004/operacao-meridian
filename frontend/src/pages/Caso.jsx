@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { loadGame, saveGame, spendMoney, spendTime, startRunIfNeeded } from "../game/store";
+import AppShell, { BottomTabsCaso } from "../components/AppShell";
 
 function fmtHoras(h) {
     const horas = Math.max(0, Number(h || 0));
@@ -9,14 +10,7 @@ function fmtHoras(h) {
     return `${d}d ${r}h`;
 }
 
-function Card({ title, children }) {
-    return (
-        <div className="bg-white rounded-xl shadow p-3">
-            <div className="text-[13px] font-semibold text-gray-900">{title}</div>
-            <div className="mt-2">{children}</div>
-        </div>
-    );
-}
+
 
 export default function Caso() {
     const nav = useNavigate();
@@ -49,22 +43,27 @@ export default function Caso() {
     function viajar() {
         if (run.status !== "IN_PROGRESS") return;
 
-        // MVP: viagem simples (tempo + custo). Depois entra mapa real e meios de transporte.
         const custo = 200;
         const horas = 12;
 
+        // 1) gasta dinheiro
         let nextState = spendMoney(state, custo, `✈️ Viagem realizada: -$${custo}`, caseId);
         nextState = saveGame(nextState);
 
+        // 2) gasta tempo (uma vez só)
         const nextRun = spendTime(
             nextState.runs[caseId],
             horas,
-            `⏳ Tempo consumido por viagem: -${horas}h (restante: ${fmtHoras(nextState.runs[caseId].tempoRestanteHoras - horas)})`
+            `✈️ Você viajou e gastou ${horas}h.`
         );
 
-        // Ajuste: spendTime já calcula com base no run anterior, então aplicamos corretamente:
-        const corrected = spendTime(nextState.runs[caseId], horas, `✈️ Você viajou e gastou ${horas}h.`);
-        setState(saveGame({ ...nextState, runs: { ...nextState.runs, [caseId]: corrected } }));
+        // 3) salva estado final
+        const finalState = saveGame({
+            ...nextState,
+            runs: { ...nextState.runs, [caseId]: nextRun },
+        });
+
+        setState(finalState);
     }
 
     function interrogar() {
@@ -143,84 +142,129 @@ export default function Caso() {
     }
 
     return (
-        <div className="min-h-screen p-3 pb-6">
-            <div className="flex items-center justify-between">
-                <button
-                    onClick={() => nav("/mural")}
-                    className="px-3 py-2 rounded-lg bg-white shadow text-[13px]"
-                >
-                    ← Mural
-                </button>
-                <div className="text-right">
-                    <div className="text-[12px] text-gray-500">Dinheiro</div>
-                    <div className="text-[14px] font-semibold">${state.player.dinheiro}</div>
+        <AppShell
+            title="Operação Meridian"
+            subtitle={`Caso ${caseObj.id} · ${caseObj.dificuldade}`}
+            rightTop={
+                <div>
+                    <div className="text-[11px] opacity-80">Tempo</div>
+                    <div className="text-[15px] font-semibold">{fmtHoras(run.tempoRestanteHoras)}</div>
+                    <div className="mt-1">
+                        <div className="text-[11px] opacity-80">Dinheiro</div>
+                        <div className="text-[14px] font-semibold">${state.player.dinheiro}</div>
+                    </div>
                 </div>
-            </div>
-
-            <div className="mt-3 bg-white rounded-xl shadow p-3">
+            }
+            bottomTabs={<BottomTabsCaso caseId={caseId} />}
+        >
+            <div className="bg-white rounded-2xl border shadow-sm p-3">
                 <div className="text-[12px] text-gray-500">Caso</div>
                 <div className="text-[15px] font-semibold text-gray-900">{caseObj.titulo}</div>
                 <div className="text-[12px] text-gray-600 mt-1">
-                    Início: {caseObj.localInicial.cidade} - {caseObj.localInicial.pais}
+                    Início: {caseObj.localInicial.cidade} · {caseObj.localInicial.pais}
                 </div>
+
                 <div className="mt-2 flex gap-2 flex-wrap">
                     <span className="text-[11px] px-2 py-1 rounded-full bg-gray-100 text-gray-700">
                         Status: {run.status}
                     </span>
-                    <span className="text-[11px] px-2 py-1 rounded-full bg-blue-100 text-blue-700">
-                        Tempo restante: {fmtHoras(run.tempoRestanteHoras)}
-                    </span>
+                    {run.mandadoEmitido ? (
+                        <span className="text-[11px] px-2 py-1 rounded-full bg-blue-100 text-blue-700">
+                            Mandado: OK
+                        </span>
+                    ) : (
+                        <span className="text-[11px] px-2 py-1 rounded-full bg-gray-100 text-gray-700">
+                            Mandado: Pendente
+                        </span>
+                    )}
                 </div>
             </div>
 
-            <div className="mt-3 grid gap-2">
-                <Card title="Ações">
-                    <div className="grid grid-cols-2 gap-2">
-                        <button onClick={viajar} className="rounded-lg bg-black text-white py-2 text-[13px] disabled:opacity-50" disabled={run.status !== "IN_PROGRESS"}>
-                            Viajar
-                        </button>
-                        <button onClick={interrogar} className="rounded-lg border py-2 text-[13px] disabled:opacity-50" disabled={run.status !== "IN_PROGRESS"}>
-                            Interrogar
-                        </button>
-                        <button onClick={analisar} className="rounded-lg border py-2 text-[13px] disabled:opacity-50" disabled={run.status !== "IN_PROGRESS"}>
-                            Analisar
-                        </button>
-                        <button onClick={emitirMandado} className="rounded-lg border py-2 text-[13px] disabled:opacity-50" disabled={run.status !== "IN_PROGRESS"}>
-                            Emitir Mandado
-                        </button>
-                        <button onClick={capturar} className="col-span-2 rounded-lg bg-green-600 text-white py-2 text-[13px] disabled:opacity-50" disabled={run.status !== "IN_PROGRESS"}>
-                            Capturar
-                        </button>
-                    </div>
+            {/* Ações */}
+            <div className="mt-3 bg-white rounded-2xl border shadow-sm p-3">
+                <div className="text-[13px] font-semibold text-gray-900">Ações</div>
+                <div className="text-[12px] text-gray-600 mt-1">
+                    Cada ação consome tempo interno e pode gastar dinheiro.
+                </div>
 
-                    <div className="mt-2 text-[12px] text-gray-600">
-                        Dica MVP: para capturar, colete pelo menos 2 pistas e emita mandado.
-                    </div>
-                </Card>
+                <div className="mt-3 grid grid-cols-2 gap-2">
+                    <button
+                        onClick={viajar}
+                        disabled={run.status !== "IN_PROGRESS"}
+                        className="rounded-xl bg-black text-white py-2 text-[13px] disabled:opacity-50"
+                    >
+                        Viajar
+                    </button>
 
-                <Card title="Diário de Pistas">
-                    {run.pistasDescobertas.length === 0 ? (
-                        <div className="text-[12px] text-gray-500">Nenhuma pista ainda.</div>
-                    ) : (
-                        <ul className="list-disc pl-5 text-[12px] text-gray-700 space-y-1">
-                            {run.pistasDescobertas.map((p, i) => (
-                                <li key={i}>{p.conteudo}</li>
-                            ))}
-                        </ul>
-                    )}
-                </Card>
+                    <button
+                        onClick={interrogar}
+                        disabled={run.status !== "IN_PROGRESS"}
+                        className="rounded-xl border py-2 text-[13px] text-gray-800 disabled:opacity-50"
+                    >
+                        Interrogar
+                    </button>
 
-                <Card title="Jornal A.T.L.A.S.">
-                    <div className="max-h-[240px] overflow-auto text-[12px] text-gray-700 space-y-2">
-                        {run.jornal.slice().reverse().map((j, i) => (
+                    <button
+                        onClick={analisar}
+                        disabled={run.status !== "IN_PROGRESS"}
+                        className="rounded-xl border py-2 text-[13px] text-gray-800 disabled:opacity-50"
+                    >
+                        Analisar
+                    </button>
+
+                    <button
+                        onClick={emitirMandado}
+                        disabled={run.status !== "IN_PROGRESS"}
+                        className="rounded-xl border py-2 text-[13px] text-gray-800 disabled:opacity-50"
+                    >
+                        Emitir Mandado
+                    </button>
+
+                    <button
+                        onClick={capturar}
+                        disabled={run.status !== "IN_PROGRESS"}
+                        className="col-span-2 rounded-xl bg-green-600 text-white py-2 text-[13px] disabled:opacity-50"
+                    >
+                        Capturar
+                    </button>
+                </div>
+
+                <div className="mt-2 text-[12px] text-gray-600">
+                    Dica MVP: colete pelo menos 2 pistas e emita mandado.
+                </div>
+            </div>
+
+            {/* Diário */}
+            <div className="mt-3 bg-white rounded-2xl border shadow-sm p-3">
+                <div className="text-[13px] font-semibold text-gray-900">Diário de Pistas</div>
+                {run.pistasDescobertas.length === 0 ? (
+                    <div className="text-[12px] text-gray-500 mt-2">Nenhuma pista ainda.</div>
+                ) : (
+                    <ul className="mt-2 list-disc pl-5 text-[12px] text-gray-700 space-y-1">
+                        {run.pistasDescobertas.map((p, i) => (
+                            <li key={i}>{p.conteudo}</li>
+                        ))}
+                    </ul>
+                )}
+            </div>
+
+            {/* Jornal */}
+            <div id="jornal" className="mt-3 bg-white rounded-2xl border shadow-sm p-3">
+                <div className="text-[13px] font-semibold text-gray-900">Jornal A.T.L.A.S.</div>
+                <div className="mt-2 max-h-[260px] overflow-auto text-[12px] text-gray-700 space-y-2">
+                    {run.jornal
+                        .slice()
+                        .reverse()
+                        .map((j, i) => (
                             <div key={i} className="border-b pb-2 last:border-b-0">
-                                <div className="text-[11px] text-gray-500">{new Date(j.t).toLocaleString("pt-BR")}</div>
+                                <div className="text-[11px] text-gray-500">
+                                    {new Date(j.t).toLocaleString("pt-BR")}
+                                </div>
                                 <div>{j.msg}</div>
                             </div>
                         ))}
-                    </div>
-                </Card>
+                </div>
             </div>
-        </div>
+        </AppShell>
     );
 }
