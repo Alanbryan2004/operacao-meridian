@@ -46,18 +46,6 @@ export default function AudioManager() {
                 loop
                 preload="auto"
             />
-
-            {/* Botão flutuante */}
-            <button
-                onClick={() => {
-                    const next = !enabled;
-                    setEnabled(next);
-                    localStorage.setItem("meridian_music", next ? "1" : "0");
-                }}
-                className="fixed top-3 right-3 z-[9999] bg-white/90 backdrop-blur border rounded-xl px-3 py-2 text-[12px] shadow-sm active:scale-95 transition-transform"
-            >
-                {enabled ? "🔊 Música: ON" : "🔇 Música: OFF"}
-            </button>
         </>
     );
 }
