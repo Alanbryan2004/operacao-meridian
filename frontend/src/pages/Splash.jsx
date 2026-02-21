@@ -1,33 +1,33 @@
-import { useEffect } from "react";
+// src/pages/Splash.jsx
 import { useNavigate } from "react-router-dom";
-
 
 export default function Splash() {
     const nav = useNavigate();
 
-    useEffect(() => {
-        const t = setTimeout(() => {
-            nav("/login");
-        }, 2500); // 2.5 segundos de exibição
-
-        return () => clearTimeout(t);
-    }, [nav]);
-
     return (
-        <div className="min-h-screen bg-black flex flex-col items-center justify-center text-white px-6 text-center">
+        <div className="h-screen w-screen bg-black flex flex-col items-center justify-center overflow-hidden text-white px-6 text-center">
             <img
                 src="/logo-meridian.png"
                 alt="Operação Meridian"
-                className="w-[40%] max-w-[260px] object-contain"
+                style={{
+                    maxHeight: "45vh",
+                    maxWidth: "90vw",
+                    height: "auto",
+                    width: "auto",
+                    display: "block",
+                }}
             />
 
             <div className="mt-6 text-[13px] opacity-70 tracking-wide">
                 A.T.L.A.S. Strategic Intelligence Division
             </div>
 
-            <div className="mt-4 text-[11px] opacity-40">
-                Carregando sistema global...
-            </div>
+            <button
+                onClick={() => nav("/login")}
+                className="mt-10 px-6 py-2 border border-white/70 rounded-xl text-[13px] tracking-widest animate-pulse hover:bg-white hover:text-black transition"
+            >
+                ▸ INICIAR
+            </button>
         </div>
     );
 }
