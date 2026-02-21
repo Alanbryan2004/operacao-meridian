@@ -18,7 +18,7 @@ export default function Splash() {
             <img
                 src="/logo-meridian.png"
                 alt="Operação Meridian"
-                className="w-[240px] max-w-full drop-shadow-2xl"
+                className="w-[40%] max-w-[260px] object-contain"
             />
 
             <div className="mt-6 text-[13px] opacity-70 tracking-wide">
