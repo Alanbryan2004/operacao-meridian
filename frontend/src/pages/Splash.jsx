@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import logo from "../assets/logo-meridian.png"; // vamos colocar a imagem aqui
+
 
 export default function Splash() {
     const nav = useNavigate();
@@ -16,9 +16,9 @@ export default function Splash() {
     return (
         <div className="min-h-screen bg-black flex flex-col items-center justify-center text-white px-6 text-center">
             <img
-                src={logo}
+                src="/logo-meridian.png"
                 alt="Operação Meridian"
-                className="w-[320px] max-w-full drop-shadow-2xl"
+                className="w-[240px] max-w-full drop-shadow-2xl"
             />
 
             <div className="mt-6 text-[13px] opacity-70 tracking-wide">
