@@ -104,10 +104,12 @@ export default function Caso() {
     const { caseId } = useParams();
     const [state, setState] = useState(null);
 
-    // MODOS CARD 2: "RESUMO" | "ACTIONS" | "LOCATIONS" | "DIALOGUE" | "JOURNAL" | "PROFILE" | "TRAVEL_MAP" | "TRAVEL_MODES"
+    // MODOS CARD 2: "RESUMO" | "ACTIONS" | "LOCATIONS" | "DIALOGUE" | "JOURNAL" | "PROFILE" | "TRAVEL_MAP" | "TRAVEL_MODES" | "ARRIVAL"
     const [viewMode, setViewMode] = useState("RESUMO");
     const [selectedLocal, setSelectedLocal] = useState(null);
     const [selectedDest, setSelectedDest] = useState(null);
+    const [showSuspectVideo, setShowSuspectVideo] = useState(false);
+    const [darkenScreen, setDarkenScreen] = useState(false);
 
     useEffect(() => {
         const s = loadGame();
@@ -169,7 +171,15 @@ export default function Caso() {
         });
         setState(finalState);
         setViewMode("ARRIVAL");
-        // selectedDest continua setado para usarmos no card de Arrival
+
+        // Se for o país correto (Portugal no caso 1), mostra o vídeo do suspeito
+        if (selectedDest.id === "PT") {
+            setDarkenScreen(true);
+            setTimeout(() => {
+                setShowSuspectVideo(true);
+                setDarkenScreen(false);
+            }, 800); // 800ms de suspense
+        }
     }
 
     function abrirLocais() {
@@ -268,6 +278,19 @@ export default function Caso() {
                 position: "relative",
             }}
         >
+            {/* Overlay de Escurecimento */}
+            <div
+                style={{
+                    position: "fixed",
+                    inset: 0,
+                    background: "#000",
+                    zIndex: 9999,
+                    opacity: darkenScreen ? 1 : 0,
+                    pointerEvents: "none",
+                    transition: "opacity 0.6s ease"
+                }}
+            />
+
             <style>{`
         .om-wrap { max-width: 560px; margin: 0 auto; padding: 14px; padding-bottom: 96px; }
         .om-top { position: sticky; top: 0; z-index: 25; padding: 12px 0; background: linear-gradient(to bottom, #000, transparent); backdrop-filter: blur(8px); }
@@ -324,11 +347,21 @@ export default function Caso() {
                                 <img src={selectedLocal.imgPersonagem} className="om-scene-char" alt="Personagem" />
                             </div>
                         ) : viewMode === "ARRIVAL" && selectedDest ? (
-                            <img
-                                src={selectedDest.img || "/reliquiaDesaparecida.png"}
-                                style={{ width: "100%", height: "280px", objectFit: "cover" }}
-                                alt={selectedDest.pais}
-                            />
+                            showSuspectVideo ? (
+                                <video
+                                    src="/Videos/suspeito.mp4"
+                                    autoPlay
+                                    muted={false}
+                                    onEnded={() => setShowSuspectVideo(false)}
+                                    style={{ width: "100%", height: "280px", objectFit: "cover" }}
+                                />
+                            ) : (
+                                <img
+                                    src={selectedDest.img || "/reliquiaDesaparecida.png"}
+                                    style={{ width: "100%", height: "280px", objectFit: "cover" }}
+                                    alt={selectedDest.pais}
+                                />
+                            )
                         ) : (viewMode === "TRAVEL_MAP" || viewMode === "TRAVEL_MODES") ? (
                             <div className="om-map-container">
                                 {/* Local atual (Brasil) */}
