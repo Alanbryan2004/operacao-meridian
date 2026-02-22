@@ -20,13 +20,24 @@ function Panel({ children, style = {} }) {
 
 export default function Analisar({ onBack }) {
     const [filters, setFilters] = useState({
-        sexo: "",
-        corCabelo: "",
-        esporte: "",
-        comidaFavorita: "",
-        aparencia: "",
-        origem: ""
+        sexo: [],
+        corCabelo: [],
+        esporte: [],
+        comidaFavorita: [],
+        aparencia: [],
+        origem: []
     });
+
+    const toggleFilter = (key, val) => {
+        setFilters(prev => {
+            const current = prev[key];
+            if (current.includes(val)) {
+                return { ...prev, [key]: current.filter(v => v !== val) };
+            } else {
+                return { ...prev, [key]: [...current, val] };
+            }
+        });
+    };
 
     const [selectedSuspect, setSelectedSuspect] = useState(null);
     const [isDossierExpanded, setIsDossierExpanded] = useState(false);
@@ -58,22 +69,23 @@ export default function Analisar({ onBack }) {
 
     const filteredSuspects = useMemo(() => {
         const list = suspectsSeed.filter(s => {
-            return Object.entries(filters).every(([key, value]) => {
-                if (!value) return true;
+            return Object.entries(filters).every(([key, selectedValues]) => {
+                if (selectedValues.length === 0) return true;
                 const suspectVal = s[key];
+
                 if (Array.isArray(suspectVal)) {
-                    return suspectVal.some(v => v.toLowerCase().includes(value.toLowerCase()));
+                    // Se o suspeito tem múltiplos valores (ex: aparência), 
+                    // checa se QUALQUER um dos valores do suspeito está nos selecionados
+                    return suspectVal.some(v => selectedValues.includes(v));
                 }
-                return String(suspectVal).toLowerCase().includes(value.toLowerCase());
+
+                // Se o suspeito tem valor único, checa se está na lista selecionada
+                return selectedValues.includes(suspectVal);
             });
         });
         setCurrentPage(1); // Reset page on filter change
         return list;
     }, [filters]);
-
-    const handleFilterChange = (key, val) => {
-        setFilters(prev => ({ ...prev, [key]: val }));
-    };
 
     const paginatedSuspects = useMemo(() => {
         const start = (currentPage - 1) * itemsPerPage;
@@ -119,33 +131,48 @@ export default function Analisar({ onBack }) {
                 .om-badge-mini { padding: 2px 6px; border-radius: 4px; background: rgba(255,255,255,0.1); font-size: 9px; }
             `}</style>
 
-            <Panel style={{ marginBottom: "15px" }}>
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "12px" }}>
+            <Panel style={{ marginBottom: "15px", maxHeight: "280px", overflowY: "auto" }}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "12px", sticky: "top" }}>
                     <div style={{ fontSize: 11, fontWeight: 800, color: "#80bdff" }}>FILTRAR PERFIL</div>
                     <div style={{ fontSize: "10px", opacity: 0.7, fontWeight: 700, letterSpacing: 0.5 }}>
                         {filteredSuspects.length} SUSPEITOS
                     </div>
                     <button
-                        onClick={() => setFilters({ sexo: "", corCabelo: "", esporte: "", comidaFavorita: "", aparencia: "", origem: "" })}
+                        onClick={() => setFilters({ sexo: [], corCabelo: [], esporte: [], comidaFavorita: [], aparencia: [], origem: [] })}
                         style={{ background: "transparent", border: "none", color: "rgba(255,255,255,0.5)", fontSize: "11px", cursor: "pointer" }}
                     >
                         LIMPAR
                     </button>
                 </div>
 
-                <div className="om-filter-grid">
+                <div style={{ display: "grid", gap: 15 }}>
                     {Object.keys(filters).map(key => (
-                        <div key={key} className="om-filter-item">
-                            <select
-                                className="om-select"
-                                value={filters[key]}
-                                onChange={(e) => handleFilterChange(key, e.target.value)}
-                            >
-                                <option value="">{key.toUpperCase()}: TODOS</option>
-                                {options[key].map(opt => (
-                                    <option key={opt} value={opt}>{opt}</option>
-                                ))}
-                            </select>
+                        <div key={key}>
+                            <div style={{ fontSize: 9, fontWeight: 900, color: "#80bdff", marginBottom: 6, textTransform: "uppercase", opacity: 0.6 }}>{key}</div>
+                            <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+                                {options[key].map(opt => {
+                                    const isSelected = filters[key].includes(opt);
+                                    return (
+                                        <button
+                                            key={opt}
+                                            onClick={() => toggleFilter(key, opt)}
+                                            style={{
+                                                padding: "4px 10px",
+                                                borderRadius: "6px",
+                                                fontSize: "10px",
+                                                border: "1px solid",
+                                                borderColor: isSelected ? "#ffd700" : "rgba(255,255,255,0.1)",
+                                                background: isSelected ? "rgba(255,215,0,0.2)" : "rgba(255,255,255,0.05)",
+                                                color: isSelected ? "#ffd700" : "rgba(255,255,255,0.7)",
+                                                cursor: "pointer",
+                                                transition: "all 0.2s"
+                                            }}
+                                        >
+                                            {opt}
+                                        </button>
+                                    );
+                                })}
+                            </div>
                         </div>
                     ))}
                 </div>

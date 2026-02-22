@@ -156,6 +156,36 @@ const DESTINATION_OPTIONS = [
         flag: "🇺🇸",
         img: "/Paises/NovaYork.png",
         desc: "Nova York continua sendo o centro do mundo. De Madrid, a viagem atravessa o Atlântico rumo à metrópole que nunca dorme.\n\nA Estátua da Liberdade e a Times Square aguardam aqueles que buscam a última pista ou o esconderijo final do suspeito."
+    },
+    {
+        id: "US_3",
+        pais: "EUA",
+        cidade: "Nova York",
+        origem: "Moscou",
+        coords: { x: 120, y: 80 },
+        flag: "🇺🇸",
+        img: "/Paises/NovaYork.png",
+        desc: "Moscou para Nova York: uma longa jornada do Leste para o Oeste. Você cruza continentes e o oceano em busca da peça final do quebra-cabeça.\n\nA metrópole americana é o lugar onde o suspeito acredita que pode se perder na multidão, mas sua busca termina aqui."
+    },
+    {
+        id: "FR_2",
+        pais: "França",
+        cidade: "Paris",
+        origem: "Moscou",
+        coords: { x: 300, y: 100 },
+        flag: "🇫🇷",
+        img: "/Paises/Paris.png",
+        desc: "Paris, a cidade luz, é um destino recorrente para aqueles que tentam despistar autoridades. De Moscou, a rota volta para a Europa Central.\n\nA Torre Eiffel e o Louvre são cenários de beleza, mas não deixe a estética francesa distraí-lo do seu objetivo principal."
+    },
+    {
+        id: "LY",
+        pais: "Líbia",
+        cidade: "Trípoli",
+        origem: "Moscou",
+        coords: { x: 360, y: 220 },
+        flag: "🇱🇾",
+        img: "/Paises/Tripoli.png",
+        desc: "Trípoli, a capital da Líbia, é uma cidade portuária no Mediterrâneo com uma mistura fascinante de história árabe e arquitetura colonial.\n\nDas ruelas da medina aos monumentos históricos, a cidade oferece esconderijos perfeitos para quem conhece bem a região."
     }
 ];
 
@@ -175,6 +205,7 @@ export default function Caso() {
     const [selectedLocal, setSelectedLocal] = useState(null);
     const [selectedDest, setSelectedDest] = useState(null);
     const [showSuspectVideo, setShowSuspectVideo] = useState(false);
+    const [activeVideo, setActiveVideo] = useState(null);
     const [darkenScreen, setDarkenScreen] = useState(false);
 
     useEffect(() => {
@@ -239,13 +270,21 @@ export default function Caso() {
         setState(finalState);
         setViewMode("ARRIVAL");
 
-        // Se for o país correto (Portugal no caso 1), mostra o vídeo do suspeito
-        if (selectedDest.id === "PT") {
+        // Se for o país correto, mostra o vídeo do suspeito
+        let videoPath = null;
+        if (selectedDest.id === "PT") videoPath = "/Videos/suspeito.mp4";
+        if (selectedDest.cidade === "Nova York") videoPath = "/Videos/suspeito2.mp4";
+
+        if (videoPath) {
+            setActiveVideo(videoPath);
             setDarkenScreen(true);
             setTimeout(() => {
                 setShowSuspectVideo(true);
                 setDarkenScreen(false);
             }, 800); // 800ms de suspense
+        } else {
+            setShowSuspectVideo(false);
+            setActiveVideo(null);
         }
     }
 
@@ -600,9 +639,26 @@ export default function Caso() {
                                 <div>
                                     <div style={{ fontSize: 13, fontWeight: 800, marginBottom: 12, color: "#80bdff" }}>VOCÊ CHEGOU EM {selectedDest.cidade.toUpperCase()}</div>
 
-                                    {showSuspectVideo ? (
-                                        <div style={{ fontSize: 15, fontWeight: 700, fontStyle: "italic", opacity: 0.9, marginTop: 20, textAlign: "center", color: "#ffd700" }}>
-                                            "Parece que o Suspeito passou por aqui..."
+                                    {showSuspectVideo && activeVideo ? (
+                                        <div style={{ marginTop: 20, textAlign: "center" }}>
+                                            <div style={{ fontSize: 13, fontWeight: 700, fontStyle: "italic", opacity: 0.9, marginBottom: 12, color: "#ffd700" }}>
+                                                "Sombra detectada: O Suspeito passou por aqui!"
+                                            </div>
+                                            <video
+                                                src={activeVideo}
+                                                autoPlay
+                                                muted
+                                                loop
+                                                playsInline
+                                                style={{ width: "100%", borderRadius: 12, border: "2px solid #ffd700", boxShadow: "0 0 20px rgba(255,215,0,0.3)" }}
+                                            />
+                                            <button
+                                                onClick={() => { setViewMode("RESUMO"); setSelectedDest(null); setShowSuspectVideo(false); setActiveVideo(null); }}
+                                                className="om-btn om-btn-primary"
+                                                style={{ marginTop: 20 }}
+                                            >
+                                                CONTINUAR INVESTIGAÇÃO
+                                            </button>
                                         </div>
                                     ) : (
                                         <>
