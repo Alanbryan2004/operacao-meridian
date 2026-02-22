@@ -330,9 +330,15 @@ export default function Caso() {
                                 <div style={{ fontSize: 10, opacity: 0.6, letterSpacing: 2 }}>MISSÃO ATIVA</div>
                                 <div className="om-title">{caseObj.titulo}</div>
                             </div>
-                            <div style={{ textAlign: "right" }}>
-                                <div style={{ fontSize: 14, fontWeight: 900 }}>{fmtHoras(run.tempoRestanteHoras)}</div>
-                                <div style={{ fontSize: 10, opacity: 0.6 }}>RESTANTES</div>
+                            <div style={{ display: "flex", gap: 20, textAlign: "right" }}>
+                                <div>
+                                    <div style={{ fontSize: 14, fontWeight: 900, color: "#ffd700" }}>${state.player.dinheiro}</div>
+                                    <div style={{ fontSize: 10, opacity: 0.6 }}>SALDO</div>
+                                </div>
+                                <div>
+                                    <div style={{ fontSize: 14, fontWeight: 900 }}>{fmtHoras(run.tempoRestanteHoras)}</div>
+                                    <div style={{ fontSize: 10, opacity: 0.6 }}>RESTANTES</div>
+                                </div>
                             </div>
                         </div>
                     </Panel>

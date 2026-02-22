@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 export default function Splash() {
@@ -15,13 +15,30 @@ export default function Splash() {
         window.dispatchEvent(new CustomEvent("meridian-play-audio", { detail: true }));
     }
 
-    function handleStartProtocol() {
+    async function handleStartProtocol() {
         triggerAudio();
         setMode("VIDEO");
+
+        // Tenta travar em paisagem se estiver no celular (precisa de interação do usuário, que é este clique)
+        try {
+            if (window.screen?.orientation?.lock) {
+                await window.screen.orientation.lock("landscape");
+            }
+        } catch (err) {
+            console.log("Rotação automática não suportada ou bloqueada:", err);
+        }
     }
 
-    function handleSkipOrEndVideo() {
+    async function handleSkipOrEndVideo() {
         setMode("FINAL");
+        // Tenta destravar a orientação
+        try {
+            if (window.screen?.orientation?.unlock) {
+                window.screen.orientation.unlock();
+            }
+        } catch (err) {
+            console.log("Erro ao destravar orientação:", err);
+        }
     }
 
     function handleGoToLogin(e) {
@@ -35,14 +52,24 @@ export default function Splash() {
             <div
                 style={{
                     height: "100dvh", width: "100vw", background: "#000",
-                    display: "flex", alignItems: "center", justifyContent: "center",
-                    cursor: "pointer"
+                    display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
+                    cursor: "pointer", gap: "30px"
                 }}
                 onClick={handleStartProtocol}
             >
+                <img
+                    src="/logo-meridian.png"
+                    alt="Operação Meridian"
+                    style={{
+                        maxHeight: "40dvh",
+                        maxWidth: "85vw",
+                        opacity: 0.6,
+                        filter: "brightness(0.8)"
+                    }}
+                />
                 <div style={{
                     color: "#fff", fontSize: "12px", letterSpacing: "4px",
-                    animation: "pulse 2s infinite", opacity: 0.7
+                    animation: "pulse 2s infinite", opacity: 0.7, textAlign: "center", padding: "20px"
                 }}>
                     ▸ INICIAR PROTOCOLO MERIDIAN
                 </div>
@@ -55,20 +82,26 @@ export default function Splash() {
 
     if (mode === "VIDEO") {
         return (
-            <div style={{ height: "100dvh", width: "100vw", background: "#000", position: "relative" }}>
+            <div style={{ height: "100dvh", width: "100vw", background: "#000", position: "relative", display: "flex", alignItems: "center", justifyContent: "center" }}>
                 <video
                     src="/Videos/introducao.mp4"
                     autoPlay
                     onEnded={handleSkipOrEndVideo}
-                    style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                    style={{
+                        width: "100%",
+                        height: "100%",
+                        objectFit: "contain", // Garante que caiba na tela sem cortar
+                        maxWidth: "100%",
+                        maxHeight: "100%"
+                    }}
                 />
                 <button
                     onClick={handleSkipOrEndVideo}
                     style={{
                         position: "absolute", bottom: "30px", right: "30px",
                         background: "rgba(0,0,0,0.5)", color: "#fff", border: "1px solid rgba(255,255,255,0.3)",
-                        padding: "8px 16px", borderRadius: "8px", fontSize: "10px", cursor: "pointer",
-                        letterSpacing: "1px"
+                        padding: "10px 20px", borderRadius: "10px", fontSize: "11px", cursor: "pointer",
+                        letterSpacing: "1px", zIndex: 10
                     }}
                 >
                     PULAR INTRO ▸
