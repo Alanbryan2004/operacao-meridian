@@ -189,7 +189,7 @@ export default function Caso() {
     }
 
     function interrogarNoLocal(locObj) {
-        const horas = 4;
+        const horas = 1;
         const jaTem = run.pistasDescobertas.some(p => p.idInterrogatorio === locObj.id);
 
         let msgPista;

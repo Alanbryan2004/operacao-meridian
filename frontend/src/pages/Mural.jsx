@@ -181,9 +181,25 @@ export default function Mural() {
 
                 {/* Lista de casos */}
                 <div className="om-grid">
-                    {cases.map((c) => (
-                        <CaseCard key={c.id} c={c} onOpen={() => nav(`/caso/${c.id}`)} />
-                    ))}
+                    {cases.map((c) => {
+                        const run = state.runs[c.id];
+                        const isOtherActive = Object.values(state.runs).some(r => r.caseId !== c.id && r.status === "IN_PROGRESS");
+                        const isActive = run?.status === "IN_PROGRESS";
+
+                        return (
+                            <div key={c.id} style={{ opacity: isOtherActive ? 0.5 : 1, pointerEvents: isOtherActive ? "none" : "auto" }}>
+                                <CaseCard
+                                    c={c}
+                                    onOpen={() => nav(`/missao-intro/${c.id}`)}
+                                />
+                                {isOtherActive && (
+                                    <div style={{ fontSize: 10, color: "#ff9090", textAlign: "center", marginTop: 4, fontWeight: 700 }}>
+                                        FINALIZE A MISSÃO ATIVA PRIMEIRO
+                                    </div>
+                                )}
+                            </div>
+                        );
+                    })}
                 </div>
             </div>
         </div>

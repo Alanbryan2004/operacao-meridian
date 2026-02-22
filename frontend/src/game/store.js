@@ -63,6 +63,10 @@ export function startRunIfNeeded(state, caseObj) {
     const existing = state.runs?.[caseObj.id];
     if (existing && existing.status === "IN_PROGRESS") return state;
 
+    // Bloqueia se já houver QUALQUER missão em progresso
+    const hasActiveMission = Object.values(state.runs || {}).some(r => r.status === "IN_PROGRESS");
+    if (hasActiveMission) return state;
+
     const run = {
         caseId: caseObj.id,
         status: "IN_PROGRESS",
@@ -74,6 +78,7 @@ export function startRunIfNeeded(state, caseObj) {
             { t: nowIso(), msg: `Caso iniciado: ${caseObj.titulo} (${caseObj.dificuldade})` },
             { t: nowIso(), msg: `Local inicial: ${caseObj.localInicial.cidade} - ${caseObj.localInicial.pais}` },
             { t: nowIso(), msg: `Tempo total: ${caseObj.tempoTotalHoras}h` },
+            { t: nowIso(), msg: `Bônus de despesas recebido: R$ 2.000,00` },
         ],
         mandadoEmitido: false,
         suspeitoCapturado: false,
@@ -81,6 +86,10 @@ export function startRunIfNeeded(state, caseObj) {
 
     const next = {
         ...state,
+        player: {
+            ...state.player,
+            dinheiro: state.player.dinheiro + 2000 // Adiantamento de R$ 2000
+        },
         runs: {
             ...state.runs,
             [caseObj.id]: run,

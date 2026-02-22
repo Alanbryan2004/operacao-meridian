@@ -3,6 +3,7 @@ import Login from "./pages/Login";
 import Mural from "./pages/Mural";
 import Caso from "./pages/Caso";
 import Splash from "./pages/Splash";
+import MissaoIntro from "./pages/MissaoIntro";
 import AudioManager from "./components/AudioManager";
 
 export default function App() {
@@ -14,6 +15,7 @@ export default function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/mural" element={<Mural />} />
         <Route path="/caso/:caseId" element={<Caso />} />
+        <Route path="/missao-intro/:caseId" element={<MissaoIntro />} />
       </Routes>
     </div>
   );
