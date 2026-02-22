@@ -434,9 +434,7 @@ export default function Caso() {
                                     <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
                                         <button className="om-btn" onClick={() => setViewMode("TRAVEL_MAP")} disabled={!canAct}>VIAJAR</button>
                                         <button className="om-btn" onClick={abrirLocais} disabled={!canAct}>INVESTIGAR</button>
-                                        <button className="om-btn" onClick={analisar} disabled={!canAct}>ANALISAR</button>
-                                        <button className="om-btn" onClick={emitirMandado} disabled={!canAct}>MANDADO</button>
-                                        <button className="om-btn om-btn-primary" style={{ gridColumn: "1/-1" }} onClick={capturar} disabled={!canAct}>CAPTURAR SUSPEITO</button>
+                                        <button className="om-btn" onClick={analisar} disabled={!canAct} style={{ gridColumn: "1 / -1" }}>ANALISAR</button>
                                     </div>
                                     <button onClick={() => setViewMode("RESUMO")} className="om-btn" style={{ marginTop: 10, background: "transparent", border: "none", color: "#80bdff" }}>
                                         Fechar
