@@ -65,10 +65,12 @@ function Panel({ children }) {
 }
 
 const DESTINATION_OPTIONS = [
+    // De Campinas
     {
         id: "PT",
         pais: "Portugal",
         cidade: "Lisboa",
+        origem: "Campinas",
         coords: { x: 450, y: 100 },
         flag: "🇵🇹",
         img: "/Paises/Portugal.png",
@@ -78,6 +80,7 @@ const DESTINATION_OPTIONS = [
         id: "AR",
         pais: "Argentina",
         cidade: "Buenos Aires",
+        origem: "Campinas",
         coords: { x: 180, y: 220 },
         flag: "🇦🇷",
         img: "/Paises/BuenosAires.png",
@@ -87,11 +90,73 @@ const DESTINATION_OPTIONS = [
         id: "US",
         pais: "EUA",
         cidade: "Nova York",
+        origem: "Campinas",
         coords: { x: 120, y: 80 },
         flag: "🇺🇸",
         img: "/Paises/NovaYork.png",
         desc: "Nova York é uma das cidades mais icônicas do mundo, conhecida por seus arranha-céus imponentes e pela energia que nunca desacelera.\n\nLar da Estátua da Liberdade, da Times Square e do Central Park, é um centro global de cultura, negócios e entretenimento.\n\nDiversa e vibrante, mistura idiomas, sabores e estilos de vida em cada esquina, fazendo jus ao apelido de “a cidade que nunca dorme”."
     },
+    // De Lisboa
+    {
+        id: "ES",
+        pais: "Espanha",
+        cidade: "Madrid",
+        origem: "Lisboa",
+        coords: { x: 430, y: 110 },
+        flag: "🇪🇸",
+        img: "/Paises/Madrid.png",
+        desc: "Madrid, a capital da Espanha, é famosa por seus museus de classe mundial, como o Prado, e por sua vida noturna vibrante.\n\nUma cidade que respira arte, história e arquitetura monumental, de onde o Flamenco ecoa e a gastronomia de tapas conquista a todos.\n\nÉ um centro cosmopolita que mantém suas tradições vivas em cada praça e ruela histórica."
+    },
+    {
+        id: "FR",
+        pais: "França",
+        cidade: "Paris",
+        origem: "Lisboa",
+        coords: { x: 460, y: 90 },
+        flag: "🇫🇷",
+        img: "/Paises/Paris.png",
+        desc: "Paris, a Cidade Luz, é reconhecida mundialmente por sua arte, gastronomia e cultura. Com a imponente Torre Eiffel e o Museu do Louvre, ela exala sofisticação em cada boulevard.\n\nCaminhar por suas margens do Rio Sena é mergulhar em séculos de história, moda e o inconfundível estilo de vida parisiense."
+    },
+    {
+        id: "EG",
+        pais: "Egito",
+        cidade: "Cairo",
+        origem: "Lisboa",
+        coords: { x: 500, y: 150 },
+        flag: "🇪🇬",
+        img: "/Paises/Cairo.png",
+        desc: "O Cairo, capital do Egito, é uma metrópole onde a história milenar se encontra com a modernidade caótica. Lar das Grandes Pirâmides de Gizé e da Esfinge, o destino é um portal para os mistérios dos faraós.\n\nSeus mercados tradicionais e a riqueza do Nilo criam uma experiência cultural única e profunda no coração do mundo árabe."
+    },
+    {
+        id: "RU",
+        pais: "Rússia",
+        cidade: "Moscou",
+        origem: "Madrid",
+        coords: { x: 550, y: 80 },
+        flag: "🇷🇺",
+        img: "/Paises/Moscou.png",
+        desc: "Moscou é o coração político e cultural da Rússia, famosa por sua icônica Praça Vermelha e pelas cúpulas coloridas da Catedral de São Basílio.\n\nCom uma história que remete aos tempos dos Czares e do império soviético, a cidade mistura o luxo clássico com a arquitetura brutalista.\n\nÉ um centro de poder onde o inverno rígido contrasta com o calor da hospitalidade e da arte russa."
+    },
+    {
+        id: "BT",
+        pais: "Butão",
+        cidade: "Thimphu",
+        origem: "Madrid",
+        coords: { x: 380, y: 160 },
+        flag: "🇧🇹",
+        img: "/Paises/Thimphu.png",
+        desc: "Thimphu, a capital do Reino do Butão, situa-se nos altos vales do Himalaia e é conhecida por não possuir semáforos.\n\nÉ um lugar onde a modernidade avança sem apagar as tradições budistas e o respeito profundo pela natureza.\n\nOs dzongs (fortalezas), os templos e a busca pela Felicidade Interna Bruta fazem desta cidade um destino espiritual único no mundo."
+    },
+    {
+        id: "US_2",
+        pais: "EUA",
+        cidade: "Nova York",
+        origem: "Madrid",
+        coords: { x: 120, y: 80 },
+        flag: "🇺🇸",
+        img: "/Paises/NovaYork.png",
+        desc: "Nova York continua sendo o centro do mundo. De Madrid, a viagem atravessa o Atlântico rumo à metrópole que nunca dorme.\n\nA Estátua da Liberdade e a Times Square aguardam aqueles que buscam a última pista ou o esconderijo final do suspeito."
+    }
 ];
 
 const TRANSPORT_MODES = [
@@ -146,7 +211,8 @@ export default function Caso() {
     }
 
     function confirmarViagem(transport) {
-        if (!selectedDest) return;
+        const destino = transport.customDest || selectedDest;
+        if (!destino) return;
         const custo = transport.custoBase;
         const horas = transport.horasBase;
 
@@ -159,12 +225,12 @@ export default function Caso() {
             return;
         }
 
-        let nextState = spendMoney(state, custo, `✈️ Viagem para ${selectedDest.pais} (${transport.nome}): -$${custo}`, caseId);
+        let nextState = spendMoney(state, custo, `✈️ Viagem para ${destino.pais} (${transport.nome}): -$${custo}`, caseId);
         nextState = saveGame(nextState);
-        const nextRun = spendTime(nextState.runs[caseId], horas, `✈️ Você chegou em ${selectedDest.cidade} após ${horas}h de viagem.`);
+        const nextRun = spendTime(nextState.runs[caseId], horas, `✈️ Você chegou em ${destino.cidade} após ${horas}h de viagem.`);
 
         // Atualiza localização no run
-        nextRun.localAtual = { pais: selectedDest.pais, cidade: selectedDest.cidade };
+        nextRun.localAtual = { pais: destino.flag ? destino.pais : destino.pais, cidade: destino.cidade };
 
         const finalState = saveGame({
             ...nextState,
@@ -213,6 +279,25 @@ export default function Caso() {
         setSelectedLocal(locObj);
         setViewMode("DIALOGUE");
         updateRun(nextRun);
+    }
+
+    function handleVoltar() {
+        let volta = null;
+        if (run.localAtual.cidade === "Lisboa") volta = { cidade: "Campinas", pais: "Brasil" };
+        if (run.localAtual.cidade === "Madrid") volta = { cidade: "Lisboa", pais: "Portugal" };
+        if (run.localAtual.cidade === "Moscou" || run.localAtual.cidade === "Thimphu" || (run.localAtual.cidade === "Nova York" && run.localAtual.pais === "EUA")) {
+            volta = { cidade: "Madrid", pais: "Espanha" };
+        }
+
+        if (volta) {
+            confirmarViagem({
+                id: "VOLTA",
+                nome: "Voo de Retorno",
+                custoBase: 500,
+                horasBase: 12,
+                customDest: volta
+            });
+        }
     }
 
     function analisar() {
@@ -380,21 +465,23 @@ export default function Caso() {
                                     <div style={{ position: "absolute", left: 195, top: 205, fontSize: 9, color: "#80bdff" }}>CAMPINAS/BR</div>
 
                                     {/* Destinos sugeridos */}
-                                    {DESTINATION_OPTIONS.map(d => (
-                                        <React.Fragment key={d.id}>
-                                            <div
-                                                className="om-map-dest"
-                                                style={{ left: d.coords.x, top: d.coords.y, filter: selectedDest && selectedDest.id !== d.id ? "grayscale(1) opacity(0.3)" : "none" }}
-                                            >
-                                                {selectedDest && selectedDest.id === d.id ? "⭕" : "📍"}
-                                            </div>
-                                            {(!selectedDest || selectedDest.id === d.id) && (
-                                                <div style={{ position: "absolute", left: d.coords.x - 20, top: d.coords.y + 25, fontSize: 9, color: "#fff", textAlign: "center", width: 60 }}>
-                                                    {d.cidade.toUpperCase()}
+                                    {DESTINATION_OPTIONS
+                                        .filter(d => d.origem === run.localAtual.cidade)
+                                        .map(d => (
+                                            <React.Fragment key={d.id}>
+                                                <div
+                                                    className="om-map-dest"
+                                                    style={{ left: d.coords.x, top: d.coords.y, filter: selectedDest && selectedDest.id !== d.id ? "grayscale(1) opacity(0.3)" : "none" }}
+                                                >
+                                                    {selectedDest && selectedDest.id === d.id ? "⭕" : "📍"}
                                                 </div>
-                                            )}
-                                        </React.Fragment>
-                                    ))}
+                                                {(!selectedDest || selectedDest.id === d.id) && (
+                                                    <div style={{ position: "absolute", left: d.coords.x - 20, top: d.coords.y + 25, fontSize: 9, color: "#fff", textAlign: "center", width: 60 }}>
+                                                        {d.cidade.toUpperCase()}
+                                                    </div>
+                                                )}
+                                            </React.Fragment>
+                                        ))}
 
                                     {/* Overlay de Viagem Concluida ou Em Progresso visual */}
                                     <div style={{ position: "absolute", bottom: 15, left: 15, right: 15, background: "rgba(0,0,0,0.6)", padding: "5px 10px", borderRadius: 8, fontSize: 11, border: "1px solid rgba(255,255,255,0.1)" }}>
@@ -447,16 +534,27 @@ export default function Caso() {
                                     <div style={{ fontSize: 13, fontWeight: 800, marginBottom: 12, color: "#80bdff" }}>ESCOLHER DESTINO</div>
                                     <div className="om-muted" style={{ marginBottom: 15 }}>Seu próximo destino para seguir a trilha:</div>
                                     <div style={{ display: "grid", gap: 10 }}>
-                                        {DESTINATION_OPTIONS.map(d => (
+                                        {DESTINATION_OPTIONS
+                                            .filter(d => d.origem === run.localAtual.cidade)
+                                            .map(d => (
+                                                <button
+                                                    key={d.id}
+                                                    className="om-btn"
+                                                    style={{ textAlign: "left", paddingLeft: 15 }}
+                                                    onClick={() => { setSelectedDest(d); setViewMode("TRAVEL_MODES"); }}
+                                                >
+                                                    {d.flag} {d.cidade}, <span style={{ opacity: 0.6 }}>{d.pais}</span>
+                                                </button>
+                                            ))}
+                                        {run.localAtual.cidade !== "Campinas" && (
                                             <button
-                                                key={d.id}
                                                 className="om-btn"
-                                                style={{ textAlign: "left", paddingLeft: 15 }}
-                                                onClick={() => { setSelectedDest(d); setViewMode("TRAVEL_MODES"); }}
+                                                onClick={handleVoltar}
+                                                style={{ marginTop: 10, border: "1px solid rgba(128,189,255,0.3)", background: "rgba(128,189,255,0.1)", color: "#80bdff" }}
                                             >
-                                                {d.flag} {d.cidade}, <span style={{ opacity: 0.6 }}>{d.pais}</span>
+                                                ↩️ VOLTAR PARA CIDADE ANTERIOR
                                             </button>
-                                        ))}
+                                        )}
                                     </div>
                                     <button onClick={() => setViewMode("ACTIONS")} className="om-btn" style={{ marginTop: 15, background: "transparent", border: "none", color: "#80bdff" }}>
                                         Cancelar
@@ -526,18 +624,43 @@ export default function Caso() {
                             {viewMode === "LOCATIONS" && (
                                 <div>
                                     <div style={{ fontSize: 13, fontWeight: 800, marginBottom: 12, color: "#80bdff" }}>PONTOS DE INVESTIGAÇÃO</div>
-                                    <div className="om-muted" style={{ marginBottom: 15 }}>Escolha onde procurar pistas:</div>
+                                    <div className="om-muted" style={{ marginBottom: 15 }}>Selecione um local em {run.localAtual.cidade}:</div>
                                     <div style={{ display: "grid", gap: 10 }}>
-                                        {caseObj.interrogatorios?.map(loc => (
-                                            <button
-                                                key={loc.id}
-                                                className="om-btn"
-                                                style={{ textAlign: "left", paddingLeft: 15 }}
-                                                onClick={() => interrogarNoLocal(loc)}
-                                            >
-                                                🕵️‍♂️ Ir para <span style={{ fontWeight: 800 }}>{loc.local}</span>
-                                            </button>
-                                        ))}
+                                        {(caseObj.interrogatorios?.filter(loc => loc.cidade === run.localAtual.cidade).length > 0) ? (
+                                            caseObj.interrogatorios
+                                                ?.filter(loc => loc.cidade === run.localAtual.cidade)
+                                                .map(loc => (
+                                                    <button
+                                                        key={loc.id}
+                                                        className="om-btn"
+                                                        style={{ textAlign: "left", paddingLeft: 15 }}
+                                                        onClick={() => interrogarNoLocal(loc)}
+                                                    >
+                                                        🕵️‍♂️ Ir para <span style={{ fontWeight: 800 }}>{loc.local}</span>
+                                                    </button>
+                                                ))
+                                        ) : (
+                                            // Fallback NPCs para quando está no país errado
+                                            <>
+                                                {[
+                                                    { id: "F1", local: "Táxi", personagem: "Taxista", imgLocal: "/Restaurante.png", imgPersonagem: "/Taxista.png" },
+                                                    { id: "F2", local: "Banco", personagem: "Banqueiro", imgLocal: "/Floricultura.png", imgPersonagem: "/Banqueiro.png" },
+                                                    { id: "F3", local: "Casa de Shows", personagem: "Dançarina", imgLocal: "/Hospital.png", imgPersonagem: "/Dancarina.png" }
+                                                ].map(loc => (
+                                                    <button
+                                                        key={loc.id}
+                                                        className="om-btn"
+                                                        style={{ textAlign: "left", paddingLeft: 15 }}
+                                                        onClick={() => interrogarNoLocal({
+                                                            ...loc,
+                                                            pista: "Desculpe. Não Soube de Nenhum Suspeito por aqui."
+                                                        })}
+                                                    >
+                                                        🕵️‍♂️ Ir para <span style={{ fontWeight: 800 }}>{loc.local}</span>
+                                                    </button>
+                                                ))}
+                                            </>
+                                        )}
                                     </div>
                                     <button onClick={() => setViewMode("ACTIONS")} className="om-btn" style={{ marginTop: 15, background: "transparent", border: "none", color: "#80bdff" }}>
                                         Cancelar
