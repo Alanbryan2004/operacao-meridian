@@ -29,6 +29,7 @@ export default function Analisar({ onBack }) {
     });
 
     const [selectedSuspect, setSelectedSuspect] = useState(null);
+    const [isDossierExpanded, setIsDossierExpanded] = useState(false);
     const [selectedId, setSelectedId] = useState(null); // Para seleção de mandado
     const [warrantId, setWarrantId] = useState(null); // Para marcar "Busca de Prisão"
     const [currentPage, setCurrentPage] = useState(1);
@@ -105,7 +106,12 @@ export default function Analisar({ onBack }) {
                 .om-pag-info { font-size: 12px; font-weight: 800; color: #80bdff; }
 
                 .om-modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.9); backdrop-filter: blur(5px); z-index: 2000; display: flex; align-items: flex-end; justifyContent: center; }
-                .om-modal-content { width: 100%; max-height: 95vh; overflow-y: auto; background: #071a26; border: 1px solid rgba(128,189,255,0.3); border-radius: 20px 20px 0 0; position: relative; padding: 0; }
+                .om-modal-content { width: 100%; height: 95vh; overflow: hidden; background: #000; border: 1px solid rgba(128,189,255,0.3); border-radius: 20px 20px 0 0; position: relative; padding: 0; }
+                
+                .om-dossier-panel { position: absolute; left: 0; right: 0; bottom: 0; background: #071a26; transition: height 0.4s cubic-bezier(0.4, 0, 0.2, 1); display: flex; flexDirection: column; border-top: 1px solid rgba(128,189,255,0.3); }
+                .om-dossier-header { padding: 12px 15px; background: rgba(0,0,0,0.3); display: flex; justify-content: space-between; align-items: center; cursor: pointer; border-bottom: 1px solid rgba(255,255,255,0.05); }
+                .om-dossier-content { flex: 1; overflow-y: auto; padding-bottom: 20px; }
+
                 .om-detail-row { padding: 8px 12px; border-bottom: 1px solid rgba(255,255,255,0.05); }
                 .om-detail-label { font-size: 8px; color: #80bdff; font-weight: 800; text-transform: uppercase; margin-bottom: 2px; letter-spacing: 1px; }
                 .om-detail-value { font-size: 11px; opacity: 0.95; line-height: 1.2; }
@@ -211,77 +217,94 @@ export default function Analisar({ onBack }) {
                 </button>
             </div>
 
-            {/* Modal de Dossiê */}
             {selectedSuspect && (
-                <div className="om-modal-overlay" onClick={() => setSelectedSuspect(null)}>
+                <div className="om-modal-overlay" onClick={() => { setSelectedSuspect(null); setIsDossierExpanded(false); }}>
                     <div className="om-modal-content" onClick={e => e.stopPropagation()}>
-                        <div style={{ position: "relative", height: "160px", width: "100%" }}>
+                        {/* Foto de Fundo (Sempre visível) */}
+                        <div style={{ height: "100%", width: "100%", position: "relative" }}>
                             <img
                                 src={`/Suspeitos/${selectedSuspect.id}.png`}
                                 style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "top" }}
                                 alt={selectedSuspect.codinome}
                             />
-                            <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, padding: "10px 15px", background: "linear-gradient(transparent, #071a26)" }}>
-                                <div style={{ fontSize: 18, fontWeight: 900, textTransform: "uppercase" }}>{selectedSuspect.codinome}</div>
-                                <div style={{ fontSize: 9, color: "#ffd700", fontWeight: 800, letterSpacing: 1 }}>DOSSIÊ A.T.L.A.S.</div>
-                            </div>
                             <button
-                                onClick={() => setSelectedSuspect(null)}
-                                style={{ position: "absolute", top: 10, right: 10, background: "rgba(0,0,0,0.5)", border: "none", color: "#fff", width: 32, height: 32, borderRadius: 16, fontSize: 20, display: "flex", alignItems: "center", justifyContent: "center" }}
+                                onClick={() => { setSelectedSuspect(null); setIsDossierExpanded(false); }}
+                                style={{ position: "absolute", top: 10, right: 10, background: "rgba(0,0,0,0.5)", border: "none", color: "#fff", width: 32, height: 32, borderRadius: 16, fontSize: 20, display: "flex", alignItems: "center", justifyContent: "center", zIndex: 10 }}
                             >
                                 ×
                             </button>
                         </div>
 
-                        <div className="om-detail-row">
-                            <div className="om-detail-label">Informações Básicas</div>
-                            <div className="om-detail-value"><b>Nome Real:</b> {selectedSuspect.nomeReal}</div>
-                            <div className="om-detail-value"><b>Origem:</b> {selectedSuspect.origem}</div>
-                            <div className="om-detail-value"><b>Idade:</b> {selectedSuspect.idadeAparente} anos</div>
-                            <div className="om-detail-value"><b>Raridade:</b> {selectedSuspect.raridade}</div>
-                        </div>
+                        {/* Painel Deslizante */}
+                        <div
+                            className="om-dossier-panel"
+                            style={{ height: isDossierExpanded ? "85%" : "80px" }}
+                        >
+                            <div className="om-dossier-header" onClick={() => setIsDossierExpanded(!isDossierExpanded)}>
+                                <div>
+                                    <div style={{ fontSize: 13, fontWeight: 900, textTransform: "uppercase" }}>{selectedSuspect.codinome}</div>
+                                    <div style={{ fontSize: 8, color: "#ffd700", fontWeight: 800 }}>{isDossierExpanded ? "FECHAR DETALHES" : "VER DOSSIÊ COMPLETO"}</div>
+                                </div>
+                                <div style={{ fontSize: 16 }}>{isDossierExpanded ? "▼" : "▲"}</div>
+                            </div>
 
-                        <div className="om-detail-row">
-                            <div className="om-detail-label">Perfil Físico e Habilidades</div>
-                            <div className="om-detail-value"><b>Sexo:</b> {selectedSuspect.sexo}</div>
-                            <div className="om-detail-value"><b>Cabelo:</b> {selectedSuspect.corCabelo}</div>
-                            <div className="om-detail-value"><b>Esporte:</b> {selectedSuspect.esporte}</div>
-                            <div className="om-detail-value"><b>Comida Favorita:</b> {selectedSuspect.comidaFavorita}</div>
-                            <div style={{ marginTop: 8 }}>
-                                <div className="om-detail-label" style={{ color: "rgba(255,255,255,0.5)" }}>Aparência</div>
-                                <div className="om-badge-list">
-                                    {selectedSuspect.aparencia.map((a, i) => <span key={i} className="om-badge-mini">{a}</span>)}
+                            <div className="om-dossier-content">
+                                <div className="om-detail-row">
+                                    <div className="om-detail-label">INFORMAÇÕES BÁSICAS</div>
+                                    <div className="om-detail-value">
+                                        <b>Nome Real:</b> {selectedSuspect.nomeReal}<br />
+                                        <b>Origem:</b> {selectedSuspect.origem}<br />
+                                        <b>Idade:</b> {selectedSuspect.idadeAparente} anos<br />
+                                        <b>Raridade:</b> {selectedSuspect.raridade || "Normal"}
+                                    </div>
+                                </div>
+
+                                <div className="om-detail-row">
+                                    <div className="om-detail-label">PERFIL FÍSICO E HABILIDADES</div>
+                                    <div className="om-detail-value">
+                                        <b>Sexo:</b> {selectedSuspect.sexo}<br />
+                                        <b>Cabelo:</b> {selectedSuspect.corCabelo}<br />
+                                        <b>Esporte:</b> {selectedSuspect.esporte}<br />
+                                        <b>Comida Favorita:</b> {selectedSuspect.comidaFavorita}
+                                    </div>
+                                    <div className="om-badge-list">
+                                        {selectedSuspect.aparencia.map(a => <span key={a} className="om-badge-mini">{a}</span>)}
+                                    </div>
+                                </div>
+
+                                <div className="om-detail-row">
+                                    <div className="om-detail-label">ASSINATURA DO CRIME</div>
+                                    <div className="om-detail-value">
+                                        {selectedSuspect.assinatura.map(ass => <div key={ass}>• {ass}</div>)}
+                                    </div>
+                                </div>
+
+                                <div className="om-detail-row">
+                                    <div className="om-detail-label">IDIOMAS</div>
+                                    <div className="om-badge-list">
+                                        {selectedSuspect.idiomas.map(i => (
+                                            <span key={i.idioma} className="om-badge-mini">{i.idioma} ({i.nivel})</span>
+                                        ))}
+                                    </div>
+                                </div>
+
+                                <div className="om-detail-row">
+                                    <div className="om-detail-label">OBSERVAÇÕES DA A.T.L.A.S.</div>
+                                    <div className="om-detail-value" style={{ fontStyle: "italic" }}>
+                                        "{selectedSuspect.relacaoMeridian}"
+                                    </div>
+                                </div>
+
+                                <div style={{ padding: "15px" }}>
+                                    <button
+                                        className="om-btn"
+                                        style={{ width: "100%", background: "rgba(255,255,255,0.05)" }}
+                                        onClick={() => setIsDossierExpanded(false)}
+                                    >
+                                        RECOLHER PERFIL
+                                    </button>
                                 </div>
                             </div>
-                        </div>
-
-                        <div className="om-detail-row">
-                            <div className="om-detail-label">Assinatura do Crime</div>
-                            <ul style={{ margin: "5px 0", paddingLeft: "18px", fontSize: "13px", opacity: 0.8, color: "#ffd700" }}>
-                                {selectedSuspect.assinatura.map((a, i) => <li key={i}>{a}</li>)}
-                            </ul>
-                        </div>
-
-                        <div className="om-detail-row">
-                            <div className="om-detail-label">Idiomas</div>
-                            <div className="om-badge-list">
-                                {selectedSuspect.idiomas.map((idm, i) => (
-                                    <span key={i} className="om-badge-mini">
-                                        {idm.idioma} ({idm.nivel})
-                                    </span>
-                                ))}
-                            </div>
-                        </div>
-
-                        <div className="om-detail-row" style={{ background: "rgba(128,189,255,0.05)", borderBottom: "none" }}>
-                            <div className="om-detail-label">Observações da A.T.L.A.S.</div>
-                            <div className="om-detail-value" style={{ fontStyle: "italic", fontSize: 13 }}>
-                                "{selectedSuspect.relacaoMeridian}"
-                            </div>
-                        </div>
-
-                        <div style={{ padding: 20 }}>
-                            <button className="om-btn om-btn-primary" onClick={() => setSelectedSuspect(null)}>FECHAR DOSSIÊ</button>
                         </div>
                     </div>
                 </div>
