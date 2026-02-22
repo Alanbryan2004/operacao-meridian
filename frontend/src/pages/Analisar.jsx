@@ -105,12 +105,12 @@ export default function Analisar({ onBack }) {
                 .om-pag-info { font-size: 12px; font-weight: 800; color: #80bdff; }
 
                 .om-modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.9); backdrop-filter: blur(5px); z-index: 2000; display: flex; align-items: flex-end; justifyContent: center; }
-                .om-modal-content { width: 100%; max-height: 92vh; overflow-y: auto; background: #071a26; border: 1px solid rgba(128,189,255,0.3); border-radius: 24px 24px 0 0; position: relative; padding: 0; }
-                .om-detail-row { padding: 12px 15px; border-bottom: 1px solid rgba(255,255,255,0.05); }
-                .om-detail-label { font-size: 9px; color: #80bdff; font-weight: 800; text-transform: uppercase; margin-bottom: 4px; letter-spacing: 1px; }
-                .om-detail-value { font-size: 13px; opacity: 0.95; line-height: 1.4; }
-                .om-badge-list { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 5px; }
-                .om-badge-mini { padding: 4px 8px; border-radius: 6px; background: rgba(255,255,255,0.1); font-size: 10px; }
+                .om-modal-content { width: 100%; max-height: 95vh; overflow-y: auto; background: #071a26; border: 1px solid rgba(128,189,255,0.3); border-radius: 20px 20px 0 0; position: relative; padding: 0; }
+                .om-detail-row { padding: 8px 12px; border-bottom: 1px solid rgba(255,255,255,0.05); }
+                .om-detail-label { font-size: 8px; color: #80bdff; font-weight: 800; text-transform: uppercase; margin-bottom: 2px; letter-spacing: 1px; }
+                .om-detail-value { font-size: 11px; opacity: 0.95; line-height: 1.2; }
+                .om-badge-list { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 3px; }
+                .om-badge-mini { padding: 2px 6px; border-radius: 4px; background: rgba(255,255,255,0.1); font-size: 9px; }
             `}</style>
 
             <Panel style={{ marginBottom: "15px" }}>
@@ -215,21 +215,21 @@ export default function Analisar({ onBack }) {
             {selectedSuspect && (
                 <div className="om-modal-overlay" onClick={() => setSelectedSuspect(null)}>
                     <div className="om-modal-content" onClick={e => e.stopPropagation()}>
-                        <div style={{ position: "relative", height: "240px", background: "#000" }}>
+                        <div style={{ position: "relative", height: "160px", width: "100%" }}>
                             <img
                                 src={`/Suspeitos/${selectedSuspect.id}.png`}
-                                style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                                style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "top" }}
                                 alt={selectedSuspect.codinome}
                             />
-                            <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, padding: "20px", background: "linear-gradient(transparent, #071a26)" }}>
-                                <div style={{ fontSize: 24, fontWeight: 900, textTransform: "uppercase" }}>{selectedSuspect.codinome}</div>
-                                <div style={{ fontSize: 11, color: "#ffd700", fontWeight: 700, letterSpacing: 1 }}>DOSSIÊ A.T.L.A.S.</div>
+                            <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, padding: "10px 15px", background: "linear-gradient(transparent, #071a26)" }}>
+                                <div style={{ fontSize: 18, fontWeight: 900, textTransform: "uppercase" }}>{selectedSuspect.codinome}</div>
+                                <div style={{ fontSize: 9, color: "#ffd700", fontWeight: 800, letterSpacing: 1 }}>DOSSIÊ A.T.L.A.S.</div>
                             </div>
                             <button
                                 onClick={() => setSelectedSuspect(null)}
-                                style={{ position: "absolute", top: 15, right: 15, width: 32, height: 32, borderRadius: 16, background: "rgba(0,0,0,0.5)", border: "1px solid rgba(255,255,255,0.3)", color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer" }}
+                                style={{ position: "absolute", top: 10, right: 10, background: "rgba(0,0,0,0.5)", border: "none", color: "#fff", width: 32, height: 32, borderRadius: 16, fontSize: 20, display: "flex", alignItems: "center", justifyContent: "center" }}
                             >
-                                ✕
+                                ×
                             </button>
                         </div>
 
