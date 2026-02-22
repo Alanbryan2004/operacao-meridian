@@ -9,18 +9,34 @@ function nowIso() {
 export function loadGame() {
     try {
         const raw = localStorage.getItem(KEY);
+        let state;
         if (!raw) {
-            const init = {
+            state = {
                 player: { ...initialPlayer },
                 cases: [...casesSeed],
                 runs: {}, // caseId -> run
                 createdAt: nowIso(),
                 updatedAt: nowIso(),
             };
-            localStorage.setItem(KEY, JSON.stringify(init));
-            return init;
+            localStorage.setItem(KEY, JSON.stringify(state));
+        } else {
+            state = JSON.parse(raw);
         }
-        return JSON.parse(raw);
+
+        // Migração/Merge: Garante que os casos no state tenham os campos novos do seed.js
+        // (como resumo e interrogatorios) que podem faltar em saves antigos.
+        state.cases = casesSeed.map((seed) => {
+            const existing = state.cases.find((c) => c.id === seed.id);
+            return {
+                ...seed, ...existing,
+                // Prioriza campos estáticos (conteúdo) do seed para garantir atualização
+                resumo: seed.resumo || existing?.resumo,
+                interrogatorios: seed.interrogatorios || existing?.interrogatorios,
+                imgItem: seed.imgItem || existing?.imgItem
+            };
+        });
+
+        return state;
     } catch {
         const init = {
             player: { ...initialPlayer },
