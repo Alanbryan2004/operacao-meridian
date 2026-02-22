@@ -29,6 +29,8 @@ export default function Analisar({ onBack }) {
     });
 
     const [selectedSuspect, setSelectedSuspect] = useState(null);
+    const [selectedId, setSelectedId] = useState(null); // Para seleção de mandado
+    const [warrantId, setWarrantId] = useState(null); // Para marcar "Busca de Prisão"
     const [currentPage, setCurrentPage] = useState(1);
     const itemsPerPage = 4;
 
@@ -85,11 +87,17 @@ export default function Analisar({ onBack }) {
                 .om-filter-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 20px; }
                 .om-filter-item { display: flex; flexDirection: column; gap: 4px; }
                 .om-select { background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.2); color: #fff; padding: 8px 6px; border-radius: 10px; font-size: 10px; outline: none; appearance: none; width: 100%; text-overflow: ellipsis; }
-                .om-suspect-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
-                .om-suspect-card { position: relative; border-radius: 14px; overflow: hidden; border: 1px solid rgba(255,255,255,0.15); cursor: pointer; transition: transform 0.2s; background: #000; height: 160px; }
+                .om-suspect-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 20px; }
+                .om-suspect-card { position: relative; border-radius: 12px; overflow: hidden; border: 1px solid rgba(255,255,255,0.15); cursor: pointer; transition: transform 0.2s; background: #000; height: 130px; }
+                .om-suspect-card.selected { border: 2px solid #ffd700; box-shadow: 0 0 15px rgba(255,215,0,0.3); }
                 .om-suspect-card:active { transform: scale(0.96); }
                 .om-suspect-img { width: 100%; height: 100%; object-fit: cover; opacity: 0.8; }
-                .om-suspect-name { position: absolute; bottom: 0; left: 0; right: 0; padding: 8px; background: linear-gradient(transparent, rgba(0,0,0,0.9)); font-size: 10px; font-weight: 800; text-align: center; color: #80bdff; text-transform: uppercase; }
+                .om-suspect-name { position: absolute; bottom: 0; left: 0; right: 0; padding: 6px; background: linear-gradient(transparent, rgba(0,0,0,0.95)); font-size: 9px; font-weight: 800; text-align: center; color: #80bdff; text-transform: uppercase; }
+                
+                .om-selection-badge { position: absolute; top: 6px; right: 6px; width: 14px; height: 14px; border-radius: 7px; background: rgba(0,0,0,0.6); border: 1px solid rgba(255,255,255,0.4); display: flex; align-items: center; justifyContent: center; font-size: 8px; }
+                .om-selection-badge.active { background: #ffd700; color: #000; border-color: #ffd700; }
+                
+                .om-warrant-badge { position: absolute; top: 6px; left: 6px; background: #ff3b3b; color: #fff; font-size: 7px; font-weight: 900; padding: 2px 4px; border-radius: 4px; text-transform: uppercase; box-shadow: 0 0 5px rgba(255,0,0,0.5); }
                 
                 .om-pagination { display: flex; align-items: center; justify-content: center; gap: 15px; margin-bottom: 20px; }
                 .om-pag-btn { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: #fff; padding: 8px 15px; border-radius: 8px; font-size: 12px; font-weight: 700; cursor: pointer; }
@@ -106,8 +114,11 @@ export default function Analisar({ onBack }) {
             `}</style>
 
             <Panel style={{ marginBottom: "15px" }}>
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "15px" }}>
-                    <div style={{ fontSize: 13, fontWeight: 800, color: "#80bdff" }}>FILTRAR PERFIL</div>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "12px" }}>
+                    <div style={{ fontSize: 11, fontWeight: 800, color: "#80bdff" }}>FILTRAR PERFIL</div>
+                    <div style={{ fontSize: "10px", opacity: 0.7, fontWeight: 700, letterSpacing: 0.5 }}>
+                        {filteredSuspects.length} SUSPEITOS
+                    </div>
                     <button
                         onClick={() => setFilters({ sexo: "", corCabelo: "", esporte: "", comidaFavorita: "", aparencia: "", origem: "" })}
                         style={{ background: "transparent", border: "none", color: "rgba(255,255,255,0.5)", fontSize: "11px", cursor: "pointer" }}
@@ -132,17 +143,28 @@ export default function Analisar({ onBack }) {
                         </div>
                     ))}
                 </div>
-
-                <div style={{ fontSize: "10px", opacity: 0.5, textAlign: "center", marginBottom: "5px" }}>
-                    {filteredSuspects.length} SUSPEITOS ENCONTRADOS
-                </div>
             </Panel>
 
             <div className="om-suspect-grid">
                 {paginatedSuspects.map(s => (
-                    <div key={s.id} className="om-suspect-card" onClick={() => setSelectedSuspect(s)}>
+                    <div
+                        key={s.id}
+                        className={`om-suspect-card ${selectedId === s.id ? "selected" : ""}`}
+                        onClick={() => setSelectedId(s.id)}
+                        onDoubleClick={() => setSelectedSuspect(s)}
+                    >
                         <img src={`/Suspeitos/${s.id}.png`} className="om-suspect-img" alt={s.codinome} />
                         <div className="om-suspect-name">{s.codinome}</div>
+                        <div className={`om-selection-badge ${selectedId === s.id ? "active" : ""}`}>
+                            {selectedId === s.id ? "✓" : ""}
+                        </div>
+                        {warrantId === s.id && <div className="om-warrant-badge">Busca de Prisão</div>}
+                        <button
+                            onClick={(e) => { e.stopPropagation(); setSelectedSuspect(s); }}
+                            style={{ position: "absolute", bottom: 25, right: 5, background: "rgba(0,0,0,0.5)", border: "none", borderRadius: 4, width: 24, height: 24, padding: 0, color: "#fff", fontSize: 10, cursor: "pointer" }}
+                        >
+                            ℹ️
+                        </button>
                     </div>
                 ))}
             </div>
@@ -167,13 +189,27 @@ export default function Analisar({ onBack }) {
                 </div>
             )}
 
-            <button
-                className="om-btn"
-                style={{ marginTop: "20px", background: "transparent", borderColor: "rgba(255,255,255,0.3)" }}
-                onClick={onBack}
-            >
-                VOLTAR PARA CENTRAL
-            </button>
+            <div style={{ display: "flex", gap: "10px", marginTop: "10px" }}>
+                <button
+                    className="om-btn"
+                    style={{ flex: 1, background: "transparent", borderColor: "rgba(255,255,255,0.3)" }}
+                    onClick={onBack}
+                >
+                    VOLTAR
+                </button>
+                <button
+                    className="om-btn om-btn-primary"
+                    style={{ flex: 1.5, background: selectedId ? "#ff3b3b" : "rgba(255,255,255,0.1)", borderColor: selectedId ? "#ff3b3b" : "rgba(255,255,255,0.1)" }}
+                    disabled={!selectedId}
+                    onClick={() => {
+                        if (window.confirm("Deseja emitir Mandado de Prisão para este suspeito?")) {
+                            setWarrantId(selectedId);
+                        }
+                    }}
+                >
+                    MANDADO
+                </button>
+            </div>
 
             {/* Modal de Dossiê */}
             {selectedSuspect && (

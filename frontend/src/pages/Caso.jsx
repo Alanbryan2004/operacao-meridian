@@ -323,28 +323,30 @@ export default function Caso() {
         .om-map-line { position: absolute; height: 2px; background: rgba(128,189,255,0.3); transform-origin: left center; z-index: 1; pointer-events: none; }
       `}</style>
 
-            <div className="om-wrap">
+            <div style={{ padding: "15px 15px 80px 15px" }}>
                 {/* Header Stats */}
-                <div className="om-top">
-                    <Panel>
-                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                            <div>
-                                <div style={{ fontSize: 10, opacity: 0.6, letterSpacing: 2 }}>MISSÃO ATIVA</div>
-                                <div className="om-title">{caseObj.titulo}</div>
-                            </div>
-                            <div style={{ display: "flex", gap: 20, textAlign: "right" }}>
+                {viewMode !== "ANALYZE" && (
+                    <div className="om-top">
+                        <Panel>
+                            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                                 <div>
-                                    <div style={{ fontSize: 14, fontWeight: 900, color: "#ffd700" }}>${state.player.dinheiro}</div>
-                                    <div style={{ fontSize: 10, opacity: 0.6 }}>SALDO</div>
+                                    <div style={{ fontSize: 10, opacity: 0.6, letterSpacing: 2 }}>MISSÃO ATIVA</div>
+                                    <div className="om-title">{caseObj.titulo}</div>
                                 </div>
-                                <div>
-                                    <div style={{ fontSize: 14, fontWeight: 900 }}>{fmtHoras(run.tempoRestanteHoras)}</div>
-                                    <div style={{ fontSize: 10, opacity: 0.6 }}>RESTANTES</div>
+                                <div style={{ textAlign: "right", display: "flex", gap: "15px" }}>
+                                    <div>
+                                        <div style={{ fontSize: 14, fontWeight: 900 }}>${state.player.dinheiro}</div>
+                                        <div style={{ fontSize: 10, opacity: 0.6 }}>SALDO</div>
+                                    </div>
+                                    <div>
+                                        <div style={{ fontSize: 14, fontWeight: 900 }}>{fmtHoras(run.tempoRestanteHoras)}</div>
+                                        <div style={{ fontSize: 10, opacity: 0.6 }}>RESTANTES</div>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    </Panel>
-                </div>
+                        </Panel>
+                    </div>
+                )}
 
                 {/* CARD 1: Imagem do que foi roubado OU Cena de Interrogatório OU Mapa */}
                 {viewMode !== "ANALYZE" && (
