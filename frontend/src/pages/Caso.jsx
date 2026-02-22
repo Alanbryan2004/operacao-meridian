@@ -490,16 +490,25 @@ export default function Caso() {
                         {viewMode === "ARRIVAL" && selectedDest && (
                             <div>
                                 <div style={{ fontSize: 13, fontWeight: 800, marginBottom: 12, color: "#80bdff" }}>VOCÊ CHEGOU EM {selectedDest.cidade.toUpperCase()}</div>
-                                <div style={{ fontSize: 14, opacity: 0.9, whiteSpace: "pre-line", lineHeight: 1.6 }}>
-                                    {selectedDest.desc}
-                                </div>
-                                <button
-                                    onClick={() => { setViewMode("RESUMO"); setSelectedDest(null); }}
-                                    className="om-btn om-btn-primary"
-                                    style={{ marginTop: 20 }}
-                                >
-                                    ENTENDIDO
-                                </button>
+
+                                {showSuspectVideo ? (
+                                    <div style={{ fontSize: 15, fontWeight: 700, fontStyle: "italic", opacity: 0.9, marginTop: 20, textAlign: "center", color: "#ffd700" }}>
+                                        "Parece que o Suspeito passou por aqui..."
+                                    </div>
+                                ) : (
+                                    <>
+                                        <div style={{ fontSize: 14, opacity: 0.9, whiteSpace: "pre-line", lineHeight: 1.6 }}>
+                                            {selectedDest.desc}
+                                        </div>
+                                        <button
+                                            onClick={() => { setViewMode("RESUMO"); setSelectedDest(null); }}
+                                            className="om-btn om-btn-primary"
+                                            style={{ marginTop: 20 }}
+                                        >
+                                            ENTENDIDO
+                                        </button>
+                                    </>
+                                )}
                             </div>
                         )}
 

@@ -1,9 +1,10 @@
-// src/pages/Splash.jsx
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 export default function Splash() {
     const nav = useNavigate();
+    // MODOS: "ENTRY" (Botão inicial) | "VIDEO" (Intro) | "FINAL" (Logo + Iniciar)
+    const [mode, setMode] = useState("ENTRY");
 
     useEffect(() => {
         // Tenta tocar assim que a tela abre (muitos browsers podem bloquear)
@@ -14,15 +15,71 @@ export default function Splash() {
         window.dispatchEvent(new CustomEvent("meridian-play-audio", { detail: true }));
     }
 
-    function handleStart(e) {
-        e.stopPropagation(); // evita disparar o triggerAudio do pai
+    function handleStartProtocol() {
+        triggerAudio();
+        setMode("VIDEO");
+    }
+
+    function handleSkipOrEndVideo() {
+        setMode("FINAL");
+    }
+
+    function handleGoToLogin(e) {
+        e.stopPropagation();
         triggerAudio();
         nav("/login");
     }
 
+    if (mode === "ENTRY") {
+        return (
+            <div
+                style={{
+                    height: "100dvh", width: "100vw", background: "#000",
+                    display: "flex", alignItems: "center", justifyContent: "center",
+                    cursor: "pointer"
+                }}
+                onClick={handleStartProtocol}
+            >
+                <div style={{
+                    color: "#fff", fontSize: "12px", letterSpacing: "4px",
+                    animation: "pulse 2s infinite", opacity: 0.7
+                }}>
+                    ▸ INICIAR PROTOCOLO MERIDIAN
+                </div>
+                <style>{`
+                    @keyframes pulse { 0%,100% { opacity: 0.3; } 50% { opacity: 1; } }
+                `}</style>
+            </div>
+        );
+    }
+
+    if (mode === "VIDEO") {
+        return (
+            <div style={{ height: "100dvh", width: "100vw", background: "#000", position: "relative" }}>
+                <video
+                    src="/Videos/introducao.mp4"
+                    autoPlay
+                    onEnded={handleSkipOrEndVideo}
+                    style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                />
+                <button
+                    onClick={handleSkipOrEndVideo}
+                    style={{
+                        position: "absolute", bottom: "30px", right: "30px",
+                        background: "rgba(0,0,0,0.5)", color: "#fff", border: "1px solid rgba(255,255,255,0.3)",
+                        padding: "8px 16px", borderRadius: "8px", fontSize: "10px", cursor: "pointer",
+                        letterSpacing: "1px"
+                    }}
+                >
+                    PULAR INTRO ▸
+                </button>
+            </div>
+        );
+    }
+
     return (
         <div
-            onClick={triggerAudio} // Qualquer clique na tela agora ativa o áudio
+            onClick={triggerAudio}
             style={{
                 height: "100dvh",
                 width: "100vw",
@@ -36,7 +93,6 @@ export default function Splash() {
                 overflow: "hidden",
             }}
         >
-            {/* Animação local do botão */}
             <style>{`
         @keyframes meridianBlink {
           0%,100% { opacity: .25; }
@@ -60,7 +116,6 @@ export default function Splash() {
                     gap: "18px",
                 }}
             >
-                {/* Logo */}
                 <img
                     src="/logo-meridian.png"
                     alt="Operação Meridian"
@@ -73,14 +128,12 @@ export default function Splash() {
                     }}
                 />
 
-                {/* Texto da agência */}
                 <div style={{ fontSize: "13px", opacity: 0.8, letterSpacing: "0.6px" }}>
                     Divisão de Inteligência Estratégica da A.T.L.A.S.
                 </div>
 
-                {/* Botão Iniciar */}
                 <button
-                    onClick={handleStart}
+                    onClick={handleGoToLogin}
                     className="meridian-blink"
                     style={{
                         marginTop: "10px",
