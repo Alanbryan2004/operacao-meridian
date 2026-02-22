@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import {
     loadGame,
@@ -63,18 +63,51 @@ function Panel({ children }) {
     );
 }
 
+const DESTINATION_OPTIONS = [
+    {
+        id: "PT",
+        pais: "Portugal",
+        cidade: "Lisboa",
+        coords: { x: 450, y: 100 },
+        flag: "🇵🇹",
+        img: "/Paises/Portugal.png",
+        desc: "Portugal é um país europeu banhado pelo Atlântico, conhecido por sua rica história marítima e pelas grandes navegações.\n\nSua cultura mistura tradição e modernidade, com fado, azulejos, castelos medievais e uma gastronomia marcante como o bacalhau e os pastéis de nata.\n\nCom cidades históricas como Lisboa e Porto, o país encanta pelo charme, pela arquitetura e pelo espírito acolhedor de seu povo."
+    },
+    {
+        id: "AR",
+        pais: "Argentina",
+        cidade: "Buenos Aires",
+        coords: { x: 180, y: 220 },
+        flag: "🇦🇷",
+        img: "/Paises/BuenosAires.png",
+        desc: "Buenos Aires é a vibrante capital da Argentina, conhecida por sua arquitetura elegante e avenidas amplas como a 9 de Julio.\n\nBerço do tango, mistura paixão, música e tradição em bairros icônicos como La Boca e San Telmo.\n\nCom cafés históricos, parrillas e vida cultural intensa, a cidade pulsa charme europeu com alma latina."
+    },
+    {
+        id: "US",
+        pais: "EUA",
+        cidade: "Nova York",
+        coords: { x: 120, y: 80 },
+        flag: "🇺🇸",
+        img: "/Paises/NovaYork.png",
+        desc: "Nova York é uma das cidades mais icônicas do mundo, conhecida por seus arranha-céus imponentes e pela energia que nunca desacelera.\n\nLar da Estátua da Liberdade, da Times Square e do Central Park, é um centro global de cultura, negócios e entretenimento.\n\nDiversa e vibrante, mistura idiomas, sabores e estilos de vida em cada esquina, fazendo jus ao apelido de “a cidade que nunca dorme”."
+    },
+];
+
+const TRANSPORT_MODES = [
+    { id: "AVIAO", nome: "Avião", icon: "✈️", custoBase: 800, horasBase: 12, desc: "Rápido e caro" },
+    { id: "METRO", nome: "Trem/Metrô", icon: "🚆", custoBase: 300, horasBase: 36, desc: "Econômico e moderado" },
+    { id: "BARCO", nome: "Navio/Barco", icon: "🚢", custoBase: 150, horasBase: 72, desc: "Lento e barato" },
+];
+
 export default function Caso() {
     const nav = useNavigate();
     const { caseId } = useParams();
     const [state, setState] = useState(null);
 
-    // MODO: "RESUMO" | "LOCATIONS" | "SCENE" | "PROFILE"
+    // MODOS CARD 2: "RESUMO" | "ACTIONS" | "LOCATIONS" | "DIALOGUE" | "JOURNAL" | "PROFILE" | "TRAVEL_MAP" | "TRAVEL_MODES"
     const [viewMode, setViewMode] = useState("RESUMO");
     const [selectedLocal, setSelectedLocal] = useState(null);
-
-    // Toggles para Card 3
-    const [showActions, setShowActions] = useState(false);
-    const [showJournal, setShowJournal] = useState(false);
+    const [selectedDest, setSelectedDest] = useState(null);
 
     useEffect(() => {
         const s = loadGame();
@@ -109,18 +142,34 @@ export default function Caso() {
         setState(saved);
     }
 
-    function viajar() {
-        if (run.status !== "IN_PROGRESS") return;
-        const custo = 200;
-        const horas = 12;
-        let nextState = spendMoney(state, custo, `✈️ Viagem realizada: -$${custo}`, caseId);
+    function confirmarViagem(transport) {
+        if (!selectedDest) return;
+        const custo = transport.custoBase;
+        const horas = transport.horasBase;
+
+        if (state.player.dinheiro < custo) {
+            updateRun({
+                ...run,
+                jornal: [...run.jornal, { t: new Date().toISOString(), msg: `🚫 Dinheiro insuficiente para viajar de ${transport.nome}.` }],
+            });
+            setViewMode("ACTIONS");
+            return;
+        }
+
+        let nextState = spendMoney(state, custo, `✈️ Viagem para ${selectedDest.pais} (${transport.nome}): -$${custo}`, caseId);
         nextState = saveGame(nextState);
-        const nextRun = spendTime(nextState.runs[caseId], horas, `✈️ Você viajou e gastou ${horas}h.`);
+        const nextRun = spendTime(nextState.runs[caseId], horas, `✈️ Você chegou em ${selectedDest.cidade} após ${horas}h de viagem.`);
+
+        // Atualiza localização no run
+        nextRun.localAtual = { pais: selectedDest.pais, cidade: selectedDest.cidade };
+
         const finalState = saveGame({
             ...nextState,
             runs: { ...nextState.runs, [caseId]: nextRun },
         });
         setState(finalState);
+        setViewMode("ARRIVAL");
+        // selectedDest continua setado para usarmos no card de Arrival
     }
 
     function abrirLocais() {
@@ -151,7 +200,7 @@ export default function Caso() {
         if (novaPista) nextRun.pistasDescobertas = [...run.pistasDescobertas, novaPista];
 
         setSelectedLocal(locObj);
-        setViewMode("SCENE");
+        setViewMode("DIALOGUE");
         updateRun(nextRun);
     }
 
@@ -224,20 +273,29 @@ export default function Caso() {
         .om-top { position: sticky; top: 0; z-index: 25; padding: 12px 0; background: linear-gradient(to bottom, #000, transparent); backdrop-filter: blur(8px); }
         .om-title { font-size: 16px; font-weight: 800; }
         .om-card { margin-top: 10px; }
-        .om-img-card { width: 100%; border-radius: 20px; border: 1px solid rgba(255,255,255,0.2); overflow: hidden; background: #000; }
-        .om-actions-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 12px; }
-        .om-btn { width: 100%; padding: 12px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.16); background: rgba(255,255,255,0.06); color: #fff; cursor: pointer; font-size: 13px; }
+        .om-img-card { width: 100%; border-radius: 20px; border: 1px solid rgba(255,255,255,0.2); overflow: hidden; background: #000; position: relative; }
+        .om-btn { width: 100%; padding: 12px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.16); background: rgba(255,255,255,0.06); color: #fff; cursor: pointer; font-size: 13px; text-transform: uppercase; font-weight: 700; }
         .om-btn:active { transform: scale(0.98); }
+        .om-btn:disabled { opacity: 0.5; cursor: not-allowed; }
         .om-btn-primary { background: rgba(120,200,255,0.2); border-color: rgba(120,200,255,0.4); }
         .om-tabs { position: fixed; bottom: 0; left: 0; right: 0; z-index: 100; padding: 15px; background: linear-gradient(to top, rgba(0,0,0,0.9), transparent); display: flex; justify-content: center; }
         .om-tabs-inner { width: 100%; max-width: 500px; display: flex; gap: 10px; padding: 8px; border-radius: 20px; background: rgba(255,255,255,0.05); backdrop-filter: blur(15px); border: 1px solid rgba(255,255,255,0.1); }
-        .om-tab { flex: 1; padding: 12px; border-radius: 14px; border: none; background: transparent; color: rgba(255,255,255,0.7); cursor: pointer; text-align: center; font-size: 12px; font-weight: 700; }
+        .om-tab { flex: 1; padding: 12px; border-radius: 14px; border: none; background: transparent; color: rgba(255,255,255,0.7); cursor: pointer; text-align: center; font-size: 11px; font-weight: 800; letter-spacing: 0.5px; }
         .om-tab-active { background: rgba(255,255,255,0.1); color: #fff; }
 
-        .om-scene-box { position: relative; width: 100%; height: 300px; border-radius: 18px; overflow: hidden; }
-        .om-scene-bg { width: 100%; height: 100%; object-fit: cover; opacity: 0.5; }
+        .om-scene-box { position: relative; width: 100%; height: 280px; overflow: hidden; background: #000; }
+        .om-scene-bg { width: 100%; height: 100%; object-fit: cover; opacity: 0.6; }
         .om-scene-char { position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); height: 85%; filter: drop-shadow(0 0 20px rgba(255,255,255,0.2)); }
-        .om-dialog { margin-top: 10px; padding: 15px; background: rgba(0,0,0,0.4); border-radius: 18px; border: 1px solid rgba(255,255,255,0.1); font-size: 14px; line-height: 1.5; }
+        .om-dialog { margin-top: 10px; padding: 5px; font-size: 15px; line-height: 1.6; color: #fff; }
+        .om-journal-list { maxHeight: 250px; overflow-y: auto; padding-right: 5px; }
+        .om-journal-item { padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.08); }
+
+        /* Mapa Animado */
+        .om-map-container { position: relative; width: 100%; height: 280px; background: #0a192f; border-radius: 18px; overflow: hidden; padding: 20px; }
+        .om-map-origin { position: absolute; left: 210px; top: 180px; font-size: 20px; z-index: 5; }
+        .om-map-dest { position: absolute; font-size: 20px; z-index: 5; animation: pulse 2s infinite; }
+        @keyframes pulse { 0% { opacity: 0.6; } 50% { opacity: 1; } 100% { opacity: 0.6; } }
+        .om-map-line { position: absolute; height: 2px; background: rgba(128,189,255,0.3); transform-origin: left center; z-index: 1; pointer-events: none; }
       `}</style>
 
             <div className="om-wrap">
@@ -257,36 +315,165 @@ export default function Caso() {
                     </Panel>
                 </div>
 
-                {/* CARD 1: Imagem do que foi roubado */}
+                {/* CARD 1: Imagem do que foi roubado OU Cena de Interrogatório OU Mapa */}
                 <div className="om-card">
                     <div className="om-img-card">
-                        <img
-                            src={caseObj.imgItem || "/reliquiaDesaparecida.png"}
-                            style={{ width: "100%", height: "200px", object_fit: "contain", padding: "20px" }}
-                            alt="Item Roubado"
-                        />
+                        {viewMode === "DIALOGUE" && selectedLocal ? (
+                            <div className="om-scene-box">
+                                <img src={selectedLocal.imgLocal} className="om-scene-bg" alt="Local" />
+                                <img src={selectedLocal.imgPersonagem} className="om-scene-char" alt="Personagem" />
+                            </div>
+                        ) : viewMode === "ARRIVAL" && selectedDest ? (
+                            <img
+                                src={selectedDest.img || "/reliquiaDesaparecida.png"}
+                                style={{ width: "100%", height: "280px", objectFit: "cover" }}
+                                alt={selectedDest.pais}
+                            />
+                        ) : (viewMode === "TRAVEL_MAP" || viewMode === "TRAVEL_MODES") ? (
+                            <div className="om-map-container">
+                                {/* Local atual (Brasil) */}
+                                <div className="om-map-origin">📍</div>
+                                <div style={{ position: "absolute", left: 195, top: 205, fontSize: 9, color: "#80bdff" }}>CAMPINAS/BR</div>
+
+                                {/* Destinos sugeridos */}
+                                {DESTINATION_OPTIONS.map(d => (
+                                    <React.Fragment key={d.id}>
+                                        <div
+                                            className="om-map-dest"
+                                            style={{ left: d.coords.x, top: d.coords.y, filter: selectedDest && selectedDest.id !== d.id ? "grayscale(1) opacity(0.3)" : "none" }}
+                                        >
+                                            {selectedDest && selectedDest.id === d.id ? "⭕" : "📍"}
+                                        </div>
+                                        {(!selectedDest || selectedDest.id === d.id) && (
+                                            <div style={{ position: "absolute", left: d.coords.x - 20, top: d.coords.y + 25, fontSize: 9, color: "#fff", textAlign: "center", width: 60 }}>
+                                                {d.cidade.toUpperCase()}
+                                            </div>
+                                        )}
+                                    </React.Fragment>
+                                ))}
+
+                                {/* Overlay de Viagem Concluida ou Em Progresso visual */}
+                                <div style={{ position: "absolute", bottom: 15, left: 15, right: 15, background: "rgba(0,0,0,0.6)", padding: "5px 10px", borderRadius: 8, fontSize: 11, border: "1px solid rgba(255,255,255,0.1)" }}>
+                                    🌍 Local Atual: <span style={{ color: "#80bdff", fontWeight: 700 }}>{run.localAtual.cidade}</span>
+                                </div>
+                            </div>
+                        ) : (
+                            <img
+                                src={caseObj.imgItem || "/reliquiaDesaparecida.png"}
+                                style={{ width: "100%", height: "240px", objectFit: "contain", padding: "20px" }}
+                                alt="Item Roubado"
+                            />
+                        )}
                     </div>
                 </div>
 
-                {/* CARD 2: Dinâmico (Resumo, Investigar, Cena, Perfil) */}
+                {/* CARD 2: Dinâmico */}
                 <div className="om-card">
                     <Panel>
                         {viewMode === "RESUMO" && (
                             <div>
-                                <div style={{ fontSize: 13, fontWeight: 800, marginBottom: 8, color: "#80bdff" }}>RELATÓRIO DO CASO</div>
+                                <div style={{ fontSize: 13, fontWeight: 800, marginBottom: 12, color: "#80bdff" }}>RELATÓRIO DO CASO</div>
                                 <div style={{ fontSize: 14, opacity: 0.9, whiteSpace: "pre-line", lineHeight: 1.6 }}>
                                     {caseObj.resumo}
                                 </div>
                                 <div style={{ marginTop: 15, fontSize: 12, opacity: 0.6 }}>
-                                    Local de Origem: {caseObj.localInicial.cidade} · {caseObj.localInicial.pais}
+                                    Local Atual: {run.localAtual.cidade} · {run.localAtual.pais}
                                 </div>
+                            </div>
+                        )}
+
+                        {viewMode === "ACTIONS" && (
+                            <div>
+                                <div style={{ fontSize: 13, fontWeight: 800, marginBottom: 12, color: "#80bdff" }}>CENTRAL DE OPERAÇÕES</div>
+                                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+                                    <button className="om-btn" onClick={() => setViewMode("TRAVEL_MAP")} disabled={!canAct}>VIAJAR</button>
+                                    <button className="om-btn" onClick={abrirLocais} disabled={!canAct}>INVESTIGAR</button>
+                                    <button className="om-btn" onClick={analisar} disabled={!canAct}>ANALISAR</button>
+                                    <button className="om-btn" onClick={emitirMandado} disabled={!canAct}>MANDADO</button>
+                                    <button className="om-btn om-btn-primary" style={{ gridColumn: "1/-1" }} onClick={capturar} disabled={!canAct}>CAPTURAR SUSPEITO</button>
+                                </div>
+                                <button onClick={() => setViewMode("RESUMO")} className="om-btn" style={{ marginTop: 10, background: "transparent", border: "none", color: "#80bdff" }}>
+                                    Fechar
+                                </button>
+                            </div>
+                        )}
+
+                        {viewMode === "TRAVEL_MAP" && (
+                            <div>
+                                <div style={{ fontSize: 13, fontWeight: 800, marginBottom: 12, color: "#80bdff" }}>ESCOLHER DESTINO</div>
+                                <div className="om-muted" style={{ marginBottom: 15 }}>Seu próximo destino para seguir a trilha:</div>
+                                <div style={{ display: "grid", gap: 10 }}>
+                                    {DESTINATION_OPTIONS.map(d => (
+                                        <button
+                                            key={d.id}
+                                            className="om-btn"
+                                            style={{ textAlign: "left", paddingLeft: 15 }}
+                                            onClick={() => { setSelectedDest(d); setViewMode("TRAVEL_MODES"); }}
+                                        >
+                                            {d.flag} {d.cidade}, <span style={{ opacity: 0.6 }}>{d.pais}</span>
+                                        </button>
+                                    ))}
+                                </div>
+                                <button onClick={() => setViewMode("ACTIONS")} className="om-btn" style={{ marginTop: 15, background: "transparent", border: "none", color: "#80bdff" }}>
+                                    Cancelar
+                                </button>
+                            </div>
+                        )}
+
+                        {viewMode === "TRAVEL_MODES" && selectedDest && (
+                            <div>
+                                <div style={{ fontSize: 13, fontWeight: 800, marginBottom: 4, color: "#80bdff" }}>VIAJAR PARA {selectedDest.cidade.toUpperCase()}</div>
+                                <div className="om-muted" style={{ marginBottom: 15 }}>Selecione o meio de transporte:</div>
+                                <div style={{ display: "grid", gap: 10 }}>
+                                    {TRANSPORT_MODES.map(t => (
+                                        <button
+                                            key={t.id}
+                                            className="om-btn"
+                                            style={{ textAlign: "left", padding: "10px 15px", height: "auto" }}
+                                            onClick={() => confirmarViagem(t)}
+                                        >
+                                            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                                                <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                                                    <span style={{ fontSize: 18 }}>{t.icon}</span>
+                                                    <div>
+                                                        <div style={{ fontSize: 13, fontWeight: 700 }}>{t.nome}</div>
+                                                        <div style={{ fontSize: 10, opacity: 0.6 }}>{t.desc}</div>
+                                                    </div>
+                                                </div>
+                                                <div style={{ textAlign: "right" }}>
+                                                    <div style={{ fontSize: 12, color: "#ffd700", fontWeight: 700 }}>${t.custoBase}</div>
+                                                    <div style={{ fontSize: 10, opacity: 0.6 }}>{t.horasBase}h</div>
+                                                </div>
+                                            </div>
+                                        </button>
+                                    ))}
+                                </div>
+                                <button onClick={() => { setViewMode("TRAVEL_MAP"); setSelectedDest(null); }} className="om-btn" style={{ marginTop: 15, background: "transparent", border: "none", color: "#80bdff" }}>
+                                    Mudar Destino
+                                </button>
+                            </div>
+                        )}
+
+                        {viewMode === "ARRIVAL" && selectedDest && (
+                            <div>
+                                <div style={{ fontSize: 13, fontWeight: 800, marginBottom: 12, color: "#80bdff" }}>VOCÊ CHEGOU EM {selectedDest.cidade.toUpperCase()}</div>
+                                <div style={{ fontSize: 14, opacity: 0.9, whiteSpace: "pre-line", lineHeight: 1.6 }}>
+                                    {selectedDest.desc}
+                                </div>
+                                <button
+                                    onClick={() => { setViewMode("RESUMO"); setSelectedDest(null); }}
+                                    className="om-btn om-btn-primary"
+                                    style={{ marginTop: 20 }}
+                                >
+                                    ENTENDIDO
+                                </button>
                             </div>
                         )}
 
                         {viewMode === "LOCATIONS" && (
                             <div>
-                                <div style={{ fontSize: 13, fontWeight: 800, marginBottom: 12 }}>PRÓXIMOS PASSOS</div>
-                                <div className="om-muted" style={{ marginBottom: 15 }}>Selecione um local para investigar:</div>
+                                <div style={{ fontSize: 13, fontWeight: 800, marginBottom: 12, color: "#80bdff" }}>PONTOS DE INVESTIGAÇÃO</div>
+                                <div className="om-muted" style={{ marginBottom: 15 }}>Escolha onde procurar pistas:</div>
                                 <div style={{ display: "grid", gap: 10 }}>
                                     {caseObj.interrogatorios?.map(loc => (
                                         <button
@@ -295,106 +482,73 @@ export default function Caso() {
                                             style={{ textAlign: "left", paddingLeft: 15 }}
                                             onClick={() => interrogarNoLocal(loc)}
                                         >
-                                            🕵️‍♂️ Ir para <span style={{ fontWeight: 700 }}>{loc.local}</span>
+                                            🕵️‍♂️ Ir para <span style={{ fontWeight: 800 }}>{loc.local}</span>
                                         </button>
                                     ))}
                                 </div>
-                                <button
-                                    onClick={() => setViewMode("RESUMO")}
-                                    className="om-btn"
-                                    style={{ marginTop: 10, background: "transparent", border: "none", color: "#80bdff" }}
-                                >
-                                    Voltar ao Relatório
+                                <button onClick={() => setViewMode("ACTIONS")} className="om-btn" style={{ marginTop: 15, background: "transparent", border: "none", color: "#80bdff" }}>
+                                    Cancelar
                                 </button>
                             </div>
                         )}
 
-                        {viewMode === "SCENE" && selectedLocal && (
+                        {viewMode === "DIALOGUE" && selectedLocal && (
                             <div>
-                                <div className="om-scene-box">
-                                    <img src={selectedLocal.imgLocal} className="om-scene-bg" alt="Local" />
-                                    <img src={selectedLocal.imgPersonagem} className="om-scene-char" alt="Personagem" />
+                                <div style={{ fontSize: 11, color: "#80bdff", fontWeight: 800, marginBottom: 10, letterSpacing: 1 }}>
+                                    {selectedLocal.personagem.toUpperCase()} DIZ:
                                 </div>
                                 <div className="om-dialog">
-                                    <div style={{ fontSize: 10, color: "#80bdff", fontWeight: 800, marginBottom: 4 }}>
-                                        {selectedLocal.personagem.toUpperCase()} DIZ:
-                                    </div>
                                     "{selectedLocal.pista.split('\n')[0]}"
                                     {selectedLocal.pista.includes('\n') && (
-                                        <div style={{ marginTop: 8, opacity: 0.8, fontSize: 13 }}>
+                                        <div style={{ marginTop: 10, opacity: 0.85, fontSize: 13 }}>
                                             {selectedLocal.pista.split('\n').slice(1).join('\n')}
                                         </div>
                                     )}
                                 </div>
-                                <button
-                                    className="om-btn om-btn-primary"
-                                    style={{ marginTop: 15 }}
-                                    onClick={() => setViewMode("RESUMO")}
-                                >
+                                <button className="om-btn om-btn-primary" style={{ marginTop: 20 }} onClick={() => setViewMode("RESUMO")}>
                                     ENTENDIDO
                                 </button>
                             </div>
                         )}
 
+                        {viewMode === "JOURNAL" && (
+                            <div>
+                                <div style={{ fontSize: 13, fontWeight: 800, marginBottom: 12, color: "#80bdff" }}>JORNAL A.T.L.A.S.</div>
+                                <div className="om-journal-list">
+                                    {run.jornal.slice().reverse().map((j, i) => (
+                                        <div key={i} className="om-journal-item">
+                                            <div style={{ opacity: 0.5, fontSize: 10 }}>{new Date(j.t).toLocaleString("pt-BR")}</div>
+                                            <div style={{ marginTop: 4, fontSize: 13 }}>{j.msg}</div>
+                                        </div>
+                                    ))}
+                                    {run.jornal.length === 0 && <div className="om-muted">Nenhum registro encontrado.</div>}
+                                </div>
+                            </div>
+                        )}
+
                         {viewMode === "PROFILE" && (
                             <div>
-                                <div style={{ fontSize: 13, fontWeight: 800, marginBottom: 15 }}>PERFIL DO AGENTE</div>
+                                <div style={{ fontSize: 13, fontWeight: 800, marginBottom: 15, color: "#80bdff" }}>PERFIL DO AGENTE</div>
                                 <div style={{ display: "flex", alignItems: "center", gap: 15, marginBottom: 20 }}>
-                                    <div style={{ width: 60, height: 60, borderRadius: 30, background: "rgba(255,255,255,0.1)", display: "flex", alignItems: "center", justify_content: "center", fontSize: 24, border: "1px solid rgba(255,255,255,0.2)" }}>
+                                    <div style={{ width: 64, height: 64, borderRadius: 32, background: "rgba(255,255,255,0.05)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 28, border: "1px solid rgba(255,255,255,0.15)" }}>
                                         👤
                                     </div>
                                     <div>
                                         <div style={{ fontSize: 18, fontWeight: 800 }}>{state.player.nome}</div>
-                                        <Badge tone="blue">{state.player.nivelTitulo || "Agente Nível 1"}</Badge>
+                                        <Badge tone="blue">{state.player.nivelTitulo || "Recruta"}</Badge>
+                                        <div style={{ fontSize: 10, opacity: 0.6, marginTop: 4 }}>Saldo: ${state.player.dinheiro} | XP: {state.player.xp}</div>
                                     </div>
                                 </div>
                                 <div style={{ borderTop: "1px solid rgba(255,255,255,0.1)", paddingTop: 15 }}>
-                                    <div style={{ fontSize: 12, fontWeight: 700, marginBottom: 10 }}>CASOS EM ANDAMENTO</div>
-                                    <div style={{ padding: 12, borderRadius: 12, background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                                    <div style={{ fontSize: 12, fontWeight: 700, marginBottom: 10 }}>MISSÕES EM CURSO</div>
+                                    <div style={{ padding: 12, borderRadius: 12, background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.1)", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                                         <div style={{ fontSize: 13 }}>{caseObj.titulo}</div>
-                                        <Badge tone="green">Ativo</Badge>
+                                        <Badge tone="green">Ativa</Badge>
                                     </div>
                                 </div>
                             </div>
                         )}
                     </Panel>
-                </div>
-
-                {/* CARD 3: Toggleable (Actions ou Journal) */}
-                <div style={{ marginTop: 10 }}>
-                    {showActions && (
-                        <Panel>
-                            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>
-                                <div style={{ fontSize: 13, fontWeight: 800 }}>CENTRAL DE AÇÕES</div>
-                                <button onClick={() => setShowActions(false)} style={{ background: "none", border: "none", color: "#666" }}>✕</button>
-                            </div>
-                            <div className="om-actions-grid">
-                                <button className="om-btn" onClick={viajar} disabled={!canAct}>VIAJAR</button>
-                                <button className="om-btn" onClick={abrirLocais} disabled={!canAct}>INVESTIGAR</button>
-                                <button className="om-btn" onClick={analisar} disabled={!canAct}>ANALISAR</button>
-                                <button className="om-btn" onClick={emitirMandado} disabled={!canAct}>MANDADO</button>
-                                <button className="om-btn om-btn-primary" style={{ gridColumn: "1/-1" }} onClick={capturar} disabled={!canAct}>EFETUAR CAPTURA</button>
-                            </div>
-                        </Panel>
-                    )}
-
-                    {showJournal && (
-                        <Panel>
-                            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>
-                                <div style={{ fontSize: 13, fontWeight: 800 }}>JORNAL A.T.L.A.S.</div>
-                                <button onClick={() => setShowJournal(false)} style={{ background: "none", border: "none", color: "#666" }}>✕</button>
-                            </div>
-                            <div style={{ maxHeight: 200, overflow: "auto", fontSize: 12 }}>
-                                {run.jornal.slice().reverse().map((j, i) => (
-                                    <div key={i} style={{ padding: "8px 0", borderBottom: i < run.jornal.length - 1 ? "1px solid rgba(255,255,255,0.05)" : "none" }}>
-                                        <div style={{ opacity: 0.5, fontSize: 10 }}>{new Date(j.t).toLocaleTimeString()}</div>
-                                        <div style={{ marginTop: 2 }}>{j.msg}</div>
-                                    </div>
-                                ))}
-                                {run.jornal.length === 0 && <div className="om-muted">Sem registros hoje.</div>}
-                            </div>
-                        </Panel>
-                    )}
                 </div>
             </div>
 
@@ -402,20 +556,20 @@ export default function Caso() {
             <div className="om-tabs">
                 <div className="om-tabs-inner">
                     <button
-                        className={`om-tab ${showActions ? "om-tab-active" : ""}`}
-                        onClick={() => { setShowActions(!showActions); setShowJournal(false); }}
+                        className={`om-tab ${viewMode === "ACTIONS" || viewMode === "LOCATIONS" || viewMode.startsWith("TRAVEL") ? "om-tab-active" : ""}`}
+                        onClick={() => setViewMode(viewMode === "ACTIONS" ? "RESUMO" : "ACTIONS")}
                     >
                         AÇÃO
                     </button>
                     <button
-                        className={`om-tab ${showJournal ? "om-tab-active" : ""}`}
-                        onClick={() => { setShowJournal(!showJournal); setShowActions(false); }}
+                        className={`om-tab ${viewMode === "JOURNAL" ? "om-tab-active" : ""}`}
+                        onClick={() => setViewMode(viewMode === "JOURNAL" ? "RESUMO" : "JOURNAL")}
                     >
                         JORNAL
                     </button>
                     <button
                         className={`om-tab ${viewMode === "PROFILE" ? "om-tab-active" : ""}`}
-                        onClick={() => { setViewMode(viewMode === "PROFILE" ? "RESUMO" : "PROFILE"); setShowActions(false); setShowJournal(false); }}
+                        onClick={() => setViewMode(viewMode === "PROFILE" ? "RESUMO" : "PROFILE")}
                     >
                         CASOS
                     </button>
