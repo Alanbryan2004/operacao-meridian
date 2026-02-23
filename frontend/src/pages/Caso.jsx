@@ -236,10 +236,14 @@ export default function Caso() {
 
     const currentCityImg = useMemo(() => {
         if (!run) return "/reliquiaDesaparecida.png";
+        // Se ganhou, mostra o suspeito preso
+        if (run.status === "WON" && run.warrantId) {
+            return `/Suspeitos/Presos/${run.warrantId}.png`;
+        }
         if (run.localAtual.cidade === "Campinas") return "/reliquiaDesaparecida.png";
         const dest = DESTINATION_OPTIONS.find(d => d.cidade === run.localAtual.cidade);
         return dest?.img || "/reliquiaDesaparecida.png";
-    }, [run?.localAtual?.cidade]);
+    }, [run?.localAtual?.cidade, run?.status, run?.warrantId]);
 
     if (!state || !caseObj || !run) return null;
 
@@ -546,9 +550,21 @@ export default function Caso() {
                                 <video
                                     src={activeVideo}
                                     autoPlay
-                                    muted
-                                    loop={run.status === "IN_PROGRESS"}
-                                    onEnded={() => setVideoEnded(true)}
+                                    loop={false}
+                                    onEnded={() => {
+                                        setVideoEnded(true);
+                                        // Após o vídeo, limpamos o overlay para todos os casos
+                                        setTimeout(() => {
+                                            setShowSuspectVideo(false);
+                                            setActiveVideo(null);
+                                            if (run.status === "IN_PROGRESS") {
+                                                // Se for apenas chegada, vai pro resumo automaticamente após o suspense
+                                                setViewMode("RESUMO");
+                                                setSelectedDest(null);
+                                                setVideoEnded(false);
+                                            }
+                                        }, 800);
+                                    }}
                                     playsInline
                                     style={{ width: "100%", height: "280px", objectFit: "cover" }}
                                 />
@@ -690,52 +706,71 @@ export default function Caso() {
                                 </div>
                             )}
 
-                            {viewMode === "ARRIVAL" && selectedDest && (
+                            {viewMode === "ARRIVAL" && (
                                 <div>
-                                    <div style={{ fontSize: 13, fontWeight: 800, marginBottom: 12, color: "#80bdff" }}>VOCÊ CHEGOU EM {selectedDest.cidade.toUpperCase()}</div>
+                                    <div style={{ fontSize: 13, fontWeight: 800, marginBottom: 12, color: "#80bdff" }}>
+                                        {run.status === "WON" ? "MISSÃO CONCLUÍDA" : run.status === "LOST" ? "MISSÃO FRACASSADA" : `VOCÊ CHEGOU EM ${selectedDest?.cidade.toUpperCase() || ""}`}
+                                    </div>
 
-                                    {(showSuspectVideo || viewMode === "ARRIVAL") && activeVideo ? (
+                                    {run.status !== "IN_PROGRESS" ? (
                                         <div style={{ marginTop: 20, textAlign: "center" }}>
-                                            {(run.status === "IN_PROGRESS" || videoEnded) && (
+                                            {videoEnded && (
                                                 <>
-                                                    <div style={{ fontSize: 13, fontWeight: 700, fontStyle: "italic", opacity: 0.9, marginBottom: 12, color: run.status === "WON" ? "#ffd700" : run.status === "LOST" ? "#ff4d4d" : "#ffd700" }}>
+                                                    <div style={{ fontSize: 13, fontWeight: 700, fontStyle: "italic", opacity: 0.9, marginBottom: 12, color: run.status === "WON" ? "#ffd700" : "#ff4d4d" }}>
                                                         {run.status === "WON"
-                                                            ? "🎯 PARABÉNS! O suspeito foi detido com sucesso."
-                                                            : run.status === "LOST"
-                                                                ? "⚠️ OPERAÇÃO FRACASSADA! O suspeito escapou."
-                                                                : '"Sombra detectada: O Suspeito passou por aqui!"'}
+                                                            ? `🎯 O Suspeito foi localizado e Preso e graças ao ${state.player.nome} a Relíquia foi Recuperada com Sucesso. Fim da Missão.`
+                                                            : "⚠️ OPERAÇÃO FRACASSADA! O suspeito escapou."}
                                                     </div>
 
-                                                    {run.status !== "IN_PROGRESS" && (
-                                                        <div style={{ fontSize: 14, opacity: 0.8, marginBottom: 20 }}>
-                                                            {run.status === "WON"
-                                                                ? "Você seguiu as pistas corretamente e emitiu o mandado para o suspeito certo. Nova York está segura novamente."
-                                                                : "O mandado estava incorreto ou você não tinha autorização para prendê-lo. O suspeito percebeu a movimentação e desapareceu na multidão."}
-                                                        </div>
-                                                    )}
+                                                    <div style={{ fontSize: 14, opacity: 0.8, marginBottom: 20 }}>
+                                                        {run.status === "WON"
+                                                            ? `Recompensas: +$${caseObj.recompensa} e +${caseObj.xp} XP`
+                                                            : "O mandado estava incorreto ou você não tinha autorização para prendê-lo. O suspeito desapareceu na multidão."}
+                                                    </div>
 
                                                     <button
-                                                        onClick={() => run.status === "IN_PROGRESS" ? (setViewMode("RESUMO"), setSelectedDest(null), setShowSuspectVideo(false), setActiveVideo(null)) : nav("/mural")}
+                                                        onClick={() => nav("/mural")}
                                                         className="om-btn om-btn-primary"
                                                         style={{ marginTop: 20 }}
                                                     >
-                                                        {run.status === "IN_PROGRESS" ? "CONTINUAR INVESTIGAÇÃO" : "FINALIZAR MISSÃO"}
+                                                        FINALIZAR MISSÃO
                                                     </button>
                                                 </>
                                             )}
                                         </div>
                                     ) : (
                                         <>
-                                            <div style={{ fontSize: 14, opacity: 0.9, whiteSpace: "pre-line", lineHeight: 1.6 }}>
-                                                {selectedDest.desc}
-                                            </div>
-                                            <button
-                                                onClick={() => { setViewMode("RESUMO"); setSelectedDest(null); }}
-                                                className="om-btn om-btn-primary"
-                                                style={{ marginTop: 20 }}
-                                            >
-                                                ENTENDIDO
-                                            </button>
+                                            {(showSuspectVideo || viewMode === "ARRIVAL") && activeVideo ? (
+                                                <div style={{ marginTop: 20, textAlign: "center" }}>
+                                                    {videoEnded && (
+                                                        <>
+                                                            <div style={{ fontSize: 13, fontWeight: 700, fontStyle: "italic", opacity: 0.9, marginBottom: 12, color: "#ffd700" }}>
+                                                                "Sombra detectada: O Suspeito passou por aqui!"
+                                                            </div>
+                                                            <button
+                                                                onClick={() => { setViewMode("RESUMO"); setSelectedDest(null); setShowSuspectVideo(false); setActiveVideo(null); setVideoEnded(false); }}
+                                                                className="om-btn om-btn-primary"
+                                                                style={{ marginTop: 20 }}
+                                                            >
+                                                                ENTENDIDO
+                                                            </button>
+                                                        </>
+                                                    )}
+                                                </div>
+                                            ) : (
+                                                <>
+                                                    <div style={{ fontSize: 14, opacity: 0.9, whiteSpace: "pre-line", lineHeight: 1.6 }}>
+                                                        {selectedDest?.desc}
+                                                    </div>
+                                                    <button
+                                                        onClick={() => { setViewMode("RESUMO"); setSelectedDest(null); }}
+                                                        className="om-btn om-btn-primary"
+                                                        style={{ marginTop: 20 }}
+                                                    >
+                                                        ENTENDIDO
+                                                    </button>
+                                                </>
+                                            )}
                                         </>
                                     )}
                                 </div>
