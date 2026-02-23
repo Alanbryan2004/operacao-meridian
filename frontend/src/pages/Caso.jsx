@@ -207,6 +207,7 @@ export default function Caso() {
     const [showSuspectVideo, setShowSuspectVideo] = useState(false);
     const [activeVideo, setActiveVideo] = useState(null);
     const [darkenScreen, setDarkenScreen] = useState(false);
+    const [videoEnded, setVideoEnded] = useState(false);
 
     useEffect(() => {
         const s = loadGame();
@@ -232,6 +233,13 @@ export default function Caso() {
         () => (state?.runs ? state.runs[caseId] : null),
         [state, caseId]
     );
+
+    const currentCityImg = useMemo(() => {
+        if (!run) return "/reliquiaDesaparecida.png";
+        if (run.localAtual.cidade === "Campinas") return "/reliquiaDesaparecida.png";
+        const dest = DESTINATION_OPTIONS.find(d => d.cidade === run.localAtual.cidade);
+        return dest?.img || "/reliquiaDesaparecida.png";
+    }, [run?.localAtual?.cidade]);
 
     if (!state || !caseObj || !run) return null;
 
@@ -272,9 +280,10 @@ export default function Caso() {
 
         // Se for o país correto, mostra o vídeo do suspeito
         let videoPath = null;
-        if (selectedDest.id === "PT") videoPath = "/Videos/suspeito.mp4";
-        if (selectedDest.cidade === "Nova York") videoPath = "/Videos/suspeito2.mp4";
+        if (destino.id === "PT") videoPath = "/Videos/suspeito.mp4";
+        if (destino.cidade === "Nova York") videoPath = "/Videos/suspeito2.mp4";
 
+        setVideoEnded(false);
         if (videoPath) {
             setActiveVideo(videoPath);
             setDarkenScreen(true);
@@ -294,9 +303,61 @@ export default function Caso() {
     }
 
     function interrogarNoLocal(locObj) {
+        if (!canAct) return;
+
+        // Incrementa contador da cidade
+        const currentCount = (run.investigationCountByCity?.[locObj.cidade] || 0) + 1;
+        const nextRunCount = {
+            ...run,
+            investigationCountByCity: {
+                ...(run.investigationCountByCity || {}),
+                [locObj.cidade]: currentCount
+            }
+        };
+
+        // Lógica de Captura Final em Nova York
+        if (locObj.cidade === "Nova York") {
+            // Se for o Garçom OU se for a SEGUNDA investigação na cidade
+            if (locObj.personagem === "Garçom" || currentCount >= 2) {
+                const hasCorrectWarrant = run.warrantId === "008"; // Hassan Al-Rashid
+                const isSuccess = run.mandadoEmitido && hasCorrectWarrant;
+
+                setDarkenScreen(true);
+                setVideoEnded(false);
+                setTimeout(() => {
+                    setShowSuspectVideo(true);
+                    setActiveVideo(isSuccess ? "/Videos/suspeitopreso.mp4" : "/Videos/suspeitonaopreso.mp4");
+                    setDarkenScreen(false);
+                    setViewMode("ARRIVAL");
+                }, 800);
+
+                if (isSuccess) {
+                    const nextRun = {
+                        ...nextRunCount,
+                        status: "WON",
+                        suspeitoCapturado: true,
+                        jornal: [...run.jornal, { t: nowIso(), msg: "🎯 MISSÃO CUMPRIDA! O suspeito foi preso em Nova York." }],
+                    };
+                    const nextState = {
+                        ...state,
+                        player: { ...state.player, dinheiro: state.player.dinheiro + caseObj.recompensa, xp: state.player.xp + caseObj.xp },
+                        runs: { ...state.runs, [caseId]: nextRun },
+                    };
+                    setState(saveGame(nextState));
+                } else {
+                    const nextRun = {
+                        ...nextRunCount,
+                        status: "LOST",
+                        jornal: [...run.jornal, { t: nowIso(), msg: "❌ MISSÃO FRACASSADA! O suspeito escapou em Nova York." }],
+                    };
+                    updateRun(nextRun);
+                }
+                return;
+            }
+        }
+
         const horas = 1;
         const jaTem = run.pistasDescobertas.some(p => p.idInterrogatorio === locObj.id);
-
         let msgPista;
         let novaPista = null;
 
@@ -312,12 +373,12 @@ export default function Caso() {
             };
         }
 
-        const nextRun = spendTime(run, horas, `🗣️ ${msgPista} (-${horas}h)`);
+        const nextRun = spendTime(nextRunCount, horas, `🗣️ ${msgPista} (-${horas}h)`);
         if (novaPista) nextRun.pistasDescobertas = [...run.pistasDescobertas, novaPista];
 
+        updateRun(nextRun);
         setSelectedLocal(locObj);
         setViewMode("DIALOGUE");
-        updateRun(nextRun);
     }
 
     function handleVoltar() {
@@ -481,22 +542,16 @@ export default function Caso() {
                                     <img src={selectedLocal.imgLocal} className="om-scene-bg" alt="Local" />
                                     <img src={selectedLocal.imgPersonagem} className="om-scene-char" alt="Personagem" />
                                 </div>
-                            ) : viewMode === "ARRIVAL" && selectedDest ? (
-                                showSuspectVideo ? (
-                                    <video
-                                        src="/Videos/suspeito.mp4"
-                                        autoPlay
-                                        muted={false}
-                                        onEnded={() => setShowSuspectVideo(false)}
-                                        style={{ width: "100%", height: "280px", objectFit: "cover" }}
-                                    />
-                                ) : (
-                                    <img
-                                        src={selectedDest.img || "/reliquiaDesaparecida.png"}
-                                        style={{ width: "100%", height: "280px", objectFit: "cover" }}
-                                        alt={selectedDest.pais}
-                                    />
-                                )
+                            ) : activeVideo && (showSuspectVideo || viewMode === "ARRIVAL") ? (
+                                <video
+                                    src={activeVideo}
+                                    autoPlay
+                                    muted
+                                    loop={run.status === "IN_PROGRESS"}
+                                    onEnded={() => setVideoEnded(true)}
+                                    playsInline
+                                    style={{ width: "100%", height: "280px", objectFit: "cover" }}
+                                />
                             ) : (viewMode === "TRAVEL_MAP" || viewMode === "TRAVEL_MODES") ? (
                                 <div className="om-map-container">
                                     {/* Local atual (Brasil) */}
@@ -529,9 +584,9 @@ export default function Caso() {
                                 </div>
                             ) : (
                                 <img
-                                    src={caseObj.imgItem || "/reliquiaDesaparecida.png"}
-                                    style={{ width: "100%", height: "240px", objectFit: "contain", padding: "20px" }}
-                                    alt="Item Roubado"
+                                    src={currentCityImg}
+                                    style={{ width: "100%", height: "280px", objectFit: "cover" }}
+                                    alt="Cena"
                                 />
                             )}
                         </div>
@@ -639,26 +694,35 @@ export default function Caso() {
                                 <div>
                                     <div style={{ fontSize: 13, fontWeight: 800, marginBottom: 12, color: "#80bdff" }}>VOCÊ CHEGOU EM {selectedDest.cidade.toUpperCase()}</div>
 
-                                    {showSuspectVideo && activeVideo ? (
+                                    {(showSuspectVideo || viewMode === "ARRIVAL") && activeVideo ? (
                                         <div style={{ marginTop: 20, textAlign: "center" }}>
-                                            <div style={{ fontSize: 13, fontWeight: 700, fontStyle: "italic", opacity: 0.9, marginBottom: 12, color: "#ffd700" }}>
-                                                "Sombra detectada: O Suspeito passou por aqui!"
-                                            </div>
-                                            <video
-                                                src={activeVideo}
-                                                autoPlay
-                                                muted
-                                                loop
-                                                playsInline
-                                                style={{ width: "100%", borderRadius: 12, border: "2px solid #ffd700", boxShadow: "0 0 20px rgba(255,215,0,0.3)" }}
-                                            />
-                                            <button
-                                                onClick={() => { setViewMode("RESUMO"); setSelectedDest(null); setShowSuspectVideo(false); setActiveVideo(null); }}
-                                                className="om-btn om-btn-primary"
-                                                style={{ marginTop: 20 }}
-                                            >
-                                                CONTINUAR INVESTIGAÇÃO
-                                            </button>
+                                            {(run.status === "IN_PROGRESS" || videoEnded) && (
+                                                <>
+                                                    <div style={{ fontSize: 13, fontWeight: 700, fontStyle: "italic", opacity: 0.9, marginBottom: 12, color: run.status === "WON" ? "#ffd700" : run.status === "LOST" ? "#ff4d4d" : "#ffd700" }}>
+                                                        {run.status === "WON"
+                                                            ? "🎯 PARABÉNS! O suspeito foi detido com sucesso."
+                                                            : run.status === "LOST"
+                                                                ? "⚠️ OPERAÇÃO FRACASSADA! O suspeito escapou."
+                                                                : '"Sombra detectada: O Suspeito passou por aqui!"'}
+                                                    </div>
+
+                                                    {run.status !== "IN_PROGRESS" && (
+                                                        <div style={{ fontSize: 14, opacity: 0.8, marginBottom: 20 }}>
+                                                            {run.status === "WON"
+                                                                ? "Você seguiu as pistas corretamente e emitiu o mandado para o suspeito certo. Nova York está segura novamente."
+                                                                : "O mandado estava incorreto ou você não tinha autorização para prendê-lo. O suspeito percebeu a movimentação e desapareceu na multidão."}
+                                                        </div>
+                                                    )}
+
+                                                    <button
+                                                        onClick={() => run.status === "IN_PROGRESS" ? (setViewMode("RESUMO"), setSelectedDest(null), setShowSuspectVideo(false), setActiveVideo(null)) : nav("/mural")}
+                                                        className="om-btn om-btn-primary"
+                                                        style={{ marginTop: 20 }}
+                                                    >
+                                                        {run.status === "IN_PROGRESS" ? "CONTINUAR INVESTIGAÇÃO" : "FINALIZAR MISSÃO"}
+                                                    </button>
+                                                </>
+                                            )}
                                         </div>
                                     ) : (
                                         <>
@@ -785,7 +849,25 @@ export default function Caso() {
                 )}
 
                 {viewMode === "ANALYZE" && (
-                    <Analisar onBack={() => setViewMode("ACTIONS")} />
+                    <Analisar
+                        onBack={() => setViewMode("ACTIONS")}
+                        filters={run.filtrosAnalise || {
+                            sexo: [],
+                            corCabelo: [],
+                            esporte: [],
+                            comidaFavorita: [],
+                            aparencia: [],
+                            origem: []
+                        }}
+                        setFilters={(nextFilters) => {
+                            const nextVal = typeof nextFilters === 'function' ? nextFilters(run.filtrosAnalise) : nextFilters;
+                            updateRun({ ...run, filtrosAnalise: nextVal });
+                        }}
+                        warrantId={run.warrantId}
+                        setWarrantId={(id) => {
+                            updateRun({ ...run, warrantId: id, mandadoEmitido: true });
+                        }}
+                    />
                 )}
             </div>
 

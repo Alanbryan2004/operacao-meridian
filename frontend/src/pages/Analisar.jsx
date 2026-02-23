@@ -18,16 +18,7 @@ function Panel({ children, style = {} }) {
     );
 }
 
-export default function Analisar({ onBack }) {
-    const [filters, setFilters] = useState({
-        sexo: [],
-        corCabelo: [],
-        esporte: [],
-        comidaFavorita: [],
-        aparencia: [],
-        origem: []
-    });
-
+export default function Analisar({ onBack, filters, setFilters, warrantId, setWarrantId }) {
     const toggleFilter = (key, val) => {
         setFilters(prev => {
             const current = prev[key];
@@ -41,8 +32,7 @@ export default function Analisar({ onBack }) {
 
     const [selectedSuspect, setSelectedSuspect] = useState(null);
     const [isDossierExpanded, setIsDossierExpanded] = useState(false);
-    const [selectedId, setSelectedId] = useState(null); // Para seleção de mandado
-    const [warrantId, setWarrantId] = useState(null); // Para marcar "Busca de Prisão"
+    const [selectedId, setSelectedId] = useState(null); // Para seleção local (checkbox)
     const [currentPage, setCurrentPage] = useState(1);
     const itemsPerPage = 4;
 

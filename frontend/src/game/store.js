@@ -81,7 +81,17 @@ export function startRunIfNeeded(state, caseObj) {
             { t: nowIso(), msg: `Bônus de despesas recebido: R$ 2.000,00` },
         ],
         mandadoEmitido: false,
+        warrantId: null,
         suspeitoCapturado: false,
+        filtrosAnalise: {
+            sexo: [],
+            corCabelo: [],
+            esporte: [],
+            comidaFavorita: [],
+            aparencia: [],
+            origem: []
+        },
+        investigationCountByCity: {},
     };
 
     const next = {
