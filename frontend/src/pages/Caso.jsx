@@ -548,22 +548,28 @@ export default function Caso() {
                                 </div>
                             ) : activeVideo && (showSuspectVideo || viewMode === "ARRIVAL") ? (
                                 <video
+                                    key={activeVideo}
                                     src={activeVideo}
                                     autoPlay
                                     loop={false}
                                     onEnded={() => {
                                         setVideoEnded(true);
-                                        // Após o vídeo, limpamos o overlay para todos os casos
+                                        // Atraso curto para permitir que o estado WON/LOST seja lido corretamente do closure atualizado
                                         setTimeout(() => {
+                                            if (run.status === "WON" || run.status === "LOST") {
+                                                nav(`/caso-solucionado/${caseId}`);
+                                                return;
+                                            }
+
                                             setShowSuspectVideo(false);
                                             setActiveVideo(null);
+
                                             if (run.status === "IN_PROGRESS") {
-                                                // Se for apenas chegada, vai pro resumo automaticamente após o suspense
                                                 setViewMode("RESUMO");
                                                 setSelectedDest(null);
                                                 setVideoEnded(false);
                                             }
-                                        }, 800);
+                                        }, 300);
                                     }}
                                     playsInline
                                     style={{ width: "100%", height: "280px", objectFit: "cover" }}
