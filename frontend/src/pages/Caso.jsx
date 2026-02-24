@@ -8,6 +8,7 @@ import {
     startRunIfNeeded,
 } from "../game/store";
 import Analisar from "./Analisar";
+import DialogBox from "../components/DialogBox";
 
 function fmtHoras(h) {
     const horas = Math.max(0, Number(h || 0));
@@ -242,14 +243,10 @@ export default function Caso() {
 
     const currentCityImg = useMemo(() => {
         if (!run) return "/reliquiaDesaparecida.png";
-        // Se ganhou, mostra o suspeito preso
-        if (run.status === "WON" && run.warrantId) {
-            return `/Suspeitos/Presos/${run.warrantId}.png`;
-        }
         if (run.localAtual.cidade === "Campinas") return "/reliquiaDesaparecida.png";
         const dest = DESTINATION_OPTIONS.find(d => d.cidade === run.localAtual.cidade);
         return dest?.img || "/reliquiaDesaparecida.png";
-    }, [run?.localAtual?.cidade, run?.status, run?.warrantId]);
+    }, [run?.localAtual?.cidade]);
 
     if (!state || !caseObj || !run) return null;
 
@@ -572,7 +569,7 @@ export default function Caso() {
                                         setTimeout(() => {
                                             setShowSuspectVideo(false);
                                             setActiveVideo(null);
-                                            setViewMode("RESUMO");
+                                            setViewMode("ACTIONS");
                                             setSelectedDest(null);
                                             setVideoEnded(false);
                                         }, 300);
@@ -621,22 +618,27 @@ export default function Caso() {
                     </div>
                 )}
 
-                {/* CARD 2: Dinâmico */}
-                {viewMode !== "ANALYZE" && (
+                {/* DialogBox views — render directly, the balloon IS the card */}
+                {viewMode === "RESUMO" && (
+                    <DialogBox
+                        title="RELATÓRIO DO CASO"
+                        text={caseObj.resumo + "\n\n📍 Local Atual: " + run.localAtual.cidade + " · " + run.localAtual.pais}
+                        onComplete={() => setViewMode("ACTIONS")}
+                    />
+                )}
+
+                {viewMode === "DIALOGUE" && selectedLocal && (
+                    <DialogBox
+                        title={`${selectedLocal.personagem.toUpperCase()} DIZ:`}
+                        text={selectedLocal.pista}
+                        onComplete={() => setViewMode("ACTIONS")}
+                    />
+                )}
+
+                {/* CARD 2: Menus/Interativos — ficam dentro do Panel */}
+                {viewMode !== "ANALYZE" && viewMode !== "RESUMO" && viewMode !== "DIALOGUE" && (
                     <div className="om-card">
                         <Panel>
-                            {viewMode === "RESUMO" && (
-                                <div>
-                                    <div style={{ fontSize: 13, fontWeight: 800, marginBottom: 12, color: "#80bdff" }}>RELATÓRIO DO CASO</div>
-                                    <div style={{ fontSize: 14, opacity: 0.9, whiteSpace: "pre-line", lineHeight: 1.6 }}>
-                                        {caseObj.resumo}
-                                    </div>
-                                    <div style={{ marginTop: 15, fontSize: 12, opacity: 0.6 }}>
-                                        Local Atual: {run.localAtual.cidade} · {run.localAtual.pais}
-                                    </div>
-                                </div>
-                            )}
-
                             {viewMode === "ACTIONS" && (
                                 <div>
                                     <div style={{ fontSize: 13, fontWeight: 800, marginBottom: 12, color: "#80bdff" }}>CENTRAL DE OPERAÇÕES</div>
@@ -645,9 +647,7 @@ export default function Caso() {
                                         <button className="om-btn" onClick={abrirLocais} disabled={!canAct}>INVESTIGAR</button>
                                         <button className="om-btn" onClick={analisar} disabled={!canAct} style={{ gridColumn: "1 / -1" }}>ANALISAR</button>
                                     </div>
-                                    <button onClick={() => setViewMode("RESUMO")} className="om-btn" style={{ marginTop: 10, background: "transparent", border: "none", color: "#80bdff" }}>
-                                        Fechar
-                                    </button>
+
                                 </div>
                             )}
 
@@ -737,7 +737,7 @@ export default function Caso() {
                                                                 "Sombra detectada: O Suspeito passou por aqui!"
                                                             </div>
                                                             <button
-                                                                onClick={() => { setViewMode("RESUMO"); setSelectedDest(null); setShowSuspectVideo(false); setActiveVideo(null); setVideoEnded(false); }}
+                                                                onClick={() => { setViewMode("ACTIONS"); setSelectedDest(null); setShowSuspectVideo(false); setActiveVideo(null); setVideoEnded(false); }}
                                                                 className="om-btn om-btn-primary"
                                                                 style={{ marginTop: 20 }}
                                                             >
@@ -747,18 +747,10 @@ export default function Caso() {
                                                     )}
                                                 </div>
                                             ) : (
-                                                <>
-                                                    <div style={{ fontSize: 14, opacity: 0.9, whiteSpace: "pre-line", lineHeight: 1.6 }}>
-                                                        {selectedDest?.desc}
-                                                    </div>
-                                                    <button
-                                                        onClick={() => { setViewMode("RESUMO"); setSelectedDest(null); }}
-                                                        className="om-btn om-btn-primary"
-                                                        style={{ marginTop: 20 }}
-                                                    >
-                                                        ENTENDIDO
-                                                    </button>
-                                                </>
+                                                <DialogBox
+                                                    text={selectedDest?.desc || ""}
+                                                    onComplete={() => { setViewMode("ACTIONS"); setSelectedDest(null); }}
+                                                />
                                             )}
                                         </>
                                     )}
@@ -812,24 +804,6 @@ export default function Caso() {
                                 </div>
                             )}
 
-                            {viewMode === "DIALOGUE" && selectedLocal && (
-                                <div>
-                                    <div style={{ fontSize: 11, color: "#80bdff", fontWeight: 800, marginBottom: 10, letterSpacing: 1 }}>
-                                        {selectedLocal.personagem.toUpperCase()} DIZ:
-                                    </div>
-                                    <div className="om-dialog">
-                                        "{selectedLocal.pista.split('\n')[0]}"
-                                        {selectedLocal.pista.includes('\n') && (
-                                            <div style={{ marginTop: 10, opacity: 0.85, fontSize: 13 }}>
-                                                {selectedLocal.pista.split('\n').slice(1).join('\n')}
-                                            </div>
-                                        )}
-                                    </div>
-                                    <button className="om-btn om-btn-primary" style={{ marginTop: 20 }} onClick={() => setViewMode("RESUMO")}>
-                                        ENTENDIDO
-                                    </button>
-                                </div>
-                            )}
 
                             {viewMode === "JOURNAL" && (
                                 <div>
@@ -900,19 +874,19 @@ export default function Caso() {
                 <div className="om-tabs-inner">
                     <button
                         className={`om-tab ${viewMode === "ACTIONS" || viewMode === "LOCATIONS" || viewMode.startsWith("TRAVEL") ? "om-tab-active" : ""}`}
-                        onClick={() => setViewMode(viewMode === "ACTIONS" ? "RESUMO" : "ACTIONS")}
+                        onClick={() => setViewMode("ACTIONS")}
                     >
                         AÇÃO
                     </button>
                     <button
                         className={`om-tab ${viewMode === "JOURNAL" ? "om-tab-active" : ""}`}
-                        onClick={() => setViewMode(viewMode === "JOURNAL" ? "RESUMO" : "JOURNAL")}
+                        onClick={() => setViewMode(viewMode === "JOURNAL" ? "ACTIONS" : "JOURNAL")}
                     >
                         JORNAL
                     </button>
                     <button
                         className={`om-tab ${viewMode === "PROFILE" ? "om-tab-active" : ""}`}
-                        onClick={() => setViewMode(viewMode === "PROFILE" ? "RESUMO" : "PROFILE")}
+                        onClick={() => setViewMode(viewMode === "PROFILE" ? "ACTIONS" : "PROFILE")}
                     >
                         CASOS
                     </button>

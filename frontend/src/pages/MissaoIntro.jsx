@@ -58,11 +58,12 @@ export default function MissaoIntro() {
             style={{
                 height: "100dvh", width: "100vw", background: "#000",
                 display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
-                textAlign: "center", padding: "40px", color: "#fff"
+                textAlign: "center", padding: "20px", color: "#fff",
+                boxSizing: "border-box", overflowX: "hidden"
             }}
             onClick={() => nav(`/caso/${caseId}`)}
         >
-            <div style={{ maxWidth: "500px" }}>
+            <div style={{ maxWidth: "420px", width: "100%", padding: "0 8px", boxSizing: "border-box" }}>
                 <div style={{ color: "#80bdff", fontSize: "14px", letterSpacing: "4px", marginBottom: "30px", opacity: 0.8 }}>
                     ❯ COMUNICAÇÃO OFICIAL A.T.L.A.S.
                 </div>

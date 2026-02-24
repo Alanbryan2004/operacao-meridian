@@ -1,6 +1,7 @@
 import React, { useMemo } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { loadGame } from "../game/store";
+import DialogBox from "../components/DialogBox";
 
 export default function CasoSolucionado() {
     const { caseId } = useParams();
@@ -19,6 +20,10 @@ export default function CasoSolucionado() {
         ? `/Suspeitos/Presos/${run.warrantId}.png`
         : `/Suspeitos/Presos/missaoFracassada.png`;
 
+    const reportText = isWon
+        ? `O suspeito foi capturado com êxito.\nA relíquia foi integralmente recuperada e devolvida à custódia internacional.\n\nO brilhante trabalho do(a) Agente ${player.nivelTitulo} "${player.nome}" foi decisivo para o sucesso desta missão.\nSua análise precisa, leitura estratégica das pistas e execução impecável elevaram o padrão operacional da Agência.\n\nA.T.L.A.S. reconhece oficialmente sua conduta exemplar.\nContinue assim, Agente. O mundo precisa de mentes afiadas como a sua.\n\nEsperamos trabalhar novamente com você em futuras operações de alto risco.\n🌍 Justiça restaurada. Ordem mantida.\n\n🏆 RECOMPENSA: +R$${caseObj.recompensa} | +${caseObj.xp} XP`
+        : `O suspeito escapou da captura.\nA relíquia permanece desaparecida.\n\nA Agência reconhece que o(a) Agente ${player.nivelTitulo} "${player.nome}" demonstrou potencial estratégico acima da média.\nPorém, falhas na execução final permitiram que o alvo deixasse o país antes da emissão adequada do mandado.\n\nA.T.L.A.S. espera mais de alguém que já demonstrou ser brilhante.\nFracassos não definem um agente. Eles moldam os próximos acertos.\n\nReavalie as pistas. Ajuste a estratégia. O próximo movimento será decisivo.\n🌍 O jogo continua.`;
+
     return (
         <div style={{
             minHeight: "100dvh",
@@ -30,7 +35,8 @@ export default function CasoSolucionado() {
             flexDirection: "column",
             alignItems: "center",
             justifyContent: "flex-start",
-            overflowY: "auto"
+            overflowY: "auto",
+            boxSizing: "border-box"
         }}>
             <div style={{
                 display: "flex",
@@ -56,77 +62,25 @@ export default function CasoSolucionado() {
                     />
                 </div>
 
-                {/* Card 2: Comunicado A.T.L.A.S. */}
+                {/* Card 2: Comunicado A.T.L.A.S. via DialogBox */}
                 <div style={{
-                    borderRadius: 18,
-                    border: "1px solid rgba(255,255,255,0.12)",
-                    background: "rgba(255,255,255,0.06)",
-                    backdropFilter: "blur(12px)",
-                    padding: "24px",
-                    display: "flex",
-                    flexDirection: "column"
+                    fontSize: 13,
+                    fontWeight: 800,
+                    color: isWon ? "#ffd700" : "#ff4d4d",
+                    letterSpacing: "2px",
+                    textAlign: "center",
+                    marginBottom: -8
                 }}>
-                    <div style={{
-                        fontSize: 13,
-                        fontWeight: 800,
-                        color: isWon ? "#ffd700" : "#ff4d4d",
-                        letterSpacing: "2px",
-                        marginBottom: 12
-                    }}>
-                        {isWon ? "🏆 MISSÃO CONCLUÍDA COM SUCESSO" : "🚨 MISSÃO FRACASSADA"}
-                    </div>
-
-                    <div style={{ fontSize: 12, opacity: 0.6, marginBottom: 20 }}>
-                        📜 Comunicado Oficial — Agência A.T.L.A.S.
-                    </div>
-
-                    <div style={{ fontSize: 16, fontWeight: 700, marginBottom: 16 }}>
-                        {isWon ? "Relatório Final de Operação" : "Relatório de Encerramento"}
-                    </div>
-
-                    <div style={{ fontSize: 14, lineHeight: 1.7, opacity: 0.9 }}>
-                        {isWon ? (
-                            <>
-                                <p>O suspeito foi capturado com êxito.</p>
-                                <p>A relíquia foi integralmente recuperada e devolvida à custódia internacional.</p>
-                                <br />
-                                <p>O brilhante trabalho do(a) Agente {player.nivelTitulo} "{player.nome}" foi decisivo para o sucesso desta missão.</p>
-                                <p>Sua análise precisa, leitura estratégica das pistas e execução impecável elevaram o padrão operacional da Agência.</p>
-                                <br />
-                                <p>A.T.L.A.S. reconhece oficialmente sua conduta exemplar.</p>
-                                <p>Continue assim, Agente. O mundo precisa de mentes afiadas como a sua.</p>
-                                <br />
-                                <p>Esperamos trabalhar novamente com você em futuras operações de alto risco.</p>
-                                <p>🌍 Justiça restaurada. Ordem mantida.</p>
-                                <div style={{ marginTop: 16, padding: "12px", borderRadius: 12, background: "rgba(255,215,0,0.08)", border: "1px solid rgba(255,215,0,0.2)", color: "#ffd700", fontWeight: 700, textAlign: "center" }}>
-                                    RECOMPENSA: +R${caseObj.recompensa} | +{caseObj.xp} XP
-                                </div>
-                            </>
-                        ) : (
-                            <>
-                                <p>O suspeito escapou da captura.</p>
-                                <p>A relíquia permanece desaparecida.</p>
-                                <br />
-                                <p>A Agência reconhece que o(a) Agente {player.nivelTitulo} "{player.nome}" demonstrou potencial estratégico acima da média.</p>
-                                <p>Porém, falhas na execução final permitiram que o alvo deixasse o país antes da emissão adequada do mandado.</p>
-                                <br />
-                                <p>A.T.L.A.S. espera mais de alguém que já demonstrou ser brilhante.</p>
-                                <p>Fracassos não definem um agente. Eles moldam os próximos acertos.</p>
-                                <br />
-                                <p>Reavalie as pistas. Ajuste a estratégia. O próximo movimento será decisivo.</p>
-                                <p>🌍 O jogo continua.</p>
-                            </>
-                        )}
-                    </div>
-
-                    <button
-                        onClick={() => nav("/mural")}
-                        className="om-btn om-btn-primary"
-                        style={{ marginTop: 24, width: "100%", padding: "14px", fontSize: 14, fontWeight: 700, letterSpacing: "1px" }}
-                    >
-                        ENCERRAR
-                    </button>
+                    {isWon ? "🏆 MISSÃO CONCLUÍDA COM SUCESSO" : "🚨 MISSÃO FRACASSADA"}
                 </div>
+
+                <DialogBox
+                    title="📜 Comunicado Oficial — Agência A.T.L.A.S."
+                    text={reportText}
+                    onComplete={() => nav("/mural")}
+                    buttonLabel="ENCERRAR"
+                    maxChars={200}
+                />
             </div>
         </div>
     );
