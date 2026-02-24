@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import {
     loadGame,
@@ -234,6 +234,12 @@ export default function Caso() {
         [state, caseId]
     );
 
+    // Ref para manter o status mais recente do run, acessível dentro de closures (ex: onEnded do vídeo)
+    const runStatusRef = useRef(run?.status);
+    useEffect(() => {
+        runStatusRef.current = run?.status;
+    }, [run?.status]);
+
     const currentCityImg = useMemo(() => {
         if (!run) return "/reliquiaDesaparecida.png";
         // Se ganhou, mostra o suspeito preso
@@ -340,7 +346,7 @@ export default function Caso() {
                         ...nextRunCount,
                         status: "WON",
                         suspeitoCapturado: true,
-                        jornal: [...run.jornal, { t: nowIso(), msg: "🎯 MISSÃO CUMPRIDA! O suspeito foi preso em Nova York." }],
+                        jornal: [...run.jornal, { t: new Date().toISOString(), msg: "🎯 MISSÃO CUMPRIDA! O suspeito foi preso em Nova York." }],
                     };
                     const nextState = {
                         ...state,
@@ -352,7 +358,7 @@ export default function Caso() {
                     const nextRun = {
                         ...nextRunCount,
                         status: "LOST",
-                        jornal: [...run.jornal, { t: nowIso(), msg: "❌ MISSÃO FRACASSADA! O suspeito escapou em Nova York." }],
+                        jornal: [...run.jornal, { t: new Date().toISOString(), msg: "❌ MISSÃO FRACASSADA! O suspeito escapou em Nova York." }],
                     };
                     updateRun(nextRun);
                 }
@@ -553,22 +559,22 @@ export default function Caso() {
                                     autoPlay
                                     loop={false}
                                     onEnded={() => {
-                                        setVideoEnded(true);
-                                        // Atraso curto para permitir que o estado WON/LOST seja lido corretamente do closure atualizado
-                                        setTimeout(() => {
-                                            if (run.status === "WON" || run.status === "LOST") {
-                                                nav(`/caso-solucionado/${caseId}`);
-                                                return;
-                                            }
+                                        // Usa ref para ler o status mais recente (evita stale closure)
+                                        const currentStatus = runStatusRef.current;
 
+                                        if (currentStatus === "WON" || currentStatus === "LOST") {
+                                            // Navega imediatamente para a tela de conclusão
+                                            nav(`/caso-solucionado/${caseId}`);
+                                            return;
+                                        }
+
+                                        setVideoEnded(true);
+                                        setTimeout(() => {
                                             setShowSuspectVideo(false);
                                             setActiveVideo(null);
-
-                                            if (run.status === "IN_PROGRESS") {
-                                                setViewMode("RESUMO");
-                                                setSelectedDest(null);
-                                                setVideoEnded(false);
-                                            }
+                                            setViewMode("RESUMO");
+                                            setSelectedDest(null);
+                                            setVideoEnded(false);
                                         }, 300);
                                     }}
                                     playsInline
@@ -719,31 +725,8 @@ export default function Caso() {
                                     </div>
 
                                     {run.status !== "IN_PROGRESS" ? (
-                                        <div style={{ marginTop: 20, textAlign: "center" }}>
-                                            {videoEnded && (
-                                                <>
-                                                    <div style={{ fontSize: 13, fontWeight: 700, fontStyle: "italic", opacity: 0.9, marginBottom: 12, color: run.status === "WON" ? "#ffd700" : "#ff4d4d" }}>
-                                                        {run.status === "WON"
-                                                            ? `🎯 O Suspeito foi localizado e Preso e graças ao ${state.player.nome} a Relíquia foi Recuperada com Sucesso. Fim da Missão.`
-                                                            : "⚠️ OPERAÇÃO FRACASSADA! O suspeito escapou."}
-                                                    </div>
-
-                                                    <div style={{ fontSize: 14, opacity: 0.8, marginBottom: 20 }}>
-                                                        {run.status === "WON"
-                                                            ? `Recompensas: +$${caseObj.recompensa} e +${caseObj.xp} XP`
-                                                            : "O mandado estava incorreto ou você não tinha autorização para prendê-lo. O suspeito desapareceu na multidão."}
-                                                    </div>
-
-                                                    <button
-                                                        onClick={() => nav("/mural")}
-                                                        className="om-btn om-btn-primary"
-                                                        style={{ marginTop: 20 }}
-                                                    >
-                                                        FINALIZAR MISSÃO
-                                                    </button>
-                                                </>
-                                            )}
-                                        </div>
+                                        // Seção vazia: a navegação para CasoSolucionado acontece direto no onEnded do vídeo
+                                        <div />
                                     ) : (
                                         <>
                                             {(showSuspectVideo || viewMode === "ARRIVAL") && activeVideo ? (
