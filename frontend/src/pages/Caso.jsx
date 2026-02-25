@@ -852,9 +852,10 @@ export default function Caso() {
                         filters={run.filtrosAnalise || {
                             sexo: [],
                             corCabelo: [],
+                            corOlhos: [],
                             esporte: [],
                             comidaFavorita: [],
-                            aparencia: [],
+                            caracteristica: [],
                             origem: []
                         }}
                         setFilters={(nextFilters) => {

@@ -86,9 +86,10 @@ export function startRunIfNeeded(state, caseObj) {
         filtrosAnalise: {
             sexo: [],
             corCabelo: [],
+            corOlhos: [],
             esporte: [],
             comidaFavorita: [],
-            aparencia: [],
+            caracteristica: [],
             origem: []
         },
         investigationCountByCity: {},
@@ -154,11 +155,12 @@ export const suspectsSeed = [
         codinome: "Vanta Quill",
         nomeReal: "Desconhecido",
         sexo: "Não Binário/Incerto",
-        corCabelo: "Cinza Platinado",
+        corCabelo: "Platinado",
+        corOlhos: "Castanho",
         esporte: "Xadrez",
-        comidaFavorita: "Chá Earl Grey e Scones",
+        comidaFavorita: "Francesa",
         idadeAparente: "35–45",
-        origem: "Incerta (documentos apontam 3 países)",
+        origem: "Europa",
         especialidade: ["Falsificação avançada", "Identidades fabricadas", "Rastreio reverso"],
         periculosidade: "Alta",
         raridade: "Raro",
@@ -167,10 +169,9 @@ export const suspectsSeed = [
             "Notas novas e sequenciais quando paga algo",
             "Evita copos de vidro"
         ],
-        aparencia: [
-            "Alto(a), postura rígida",
-            "Luvas finas",
-            "Cicatriz pequena na sobrancelha esquerda"
+        caracteristica: [
+            "Elegante",
+            "Discreto"
         ],
         idiomas: [
             { idioma: "Inglês", nivel: "Fluente" },
@@ -195,11 +196,12 @@ export const suspectsSeed = [
         codinome: "Echo Lark",
         nomeReal: "Laila Kwon",
         sexo: "Feminino",
-        corCabelo: "Preto (Curto)",
+        corCabelo: "Preto",
+        corOlhos: "Preto",
         esporte: "Tênis",
-        comidaFavorita: "Sushi de Salmão",
+        comidaFavorita: "Asiática",
         idadeAparente: 29,
-        origem: "Coreia do Sul (cresceu em vários países)",
+        origem: "Ásia",
         especialidade: ["Engenharia social", "Imitação de voz", "Golpes por ligação"],
         periculosidade: "Média",
         raridade: "Incomum",
@@ -207,7 +209,7 @@ export const suspectsSeed = [
             "Áudio curto deixado em algum dispositivo com tique repetido (3 vezes)",
             "Sempre usa fones"
         ],
-        aparencia: ["Baixa, rápida", "Tatuagem mínima atrás da orelha direita"],
+        caracteristica: ["Atlético", "Discreto"],
         idiomas: [
             { idioma: "Coreano", nivel: "Nativo" },
             { idioma: "Inglês", nivel: "Fluente" },
@@ -229,11 +231,12 @@ export const suspectsSeed = [
         codinome: "Brass Mantis",
         nomeReal: "Matteo Sforza",
         sexo: "Masculino",
-        corCabelo: "Castanho Grisalho",
+        corCabelo: "Castanho",
+        corOlhos: "Castanho",
         esporte: "Remo",
-        comidaFavorita: "Pasta alla Carbonara",
+        comidaFavorita: "Italiana",
         idadeAparente: 41,
-        origem: "Itália",
+        origem: "Europa",
         especialidade: ["Logística clandestina", "Rotas portuárias", "Contêineres"],
         periculosidade: "Alta",
         raridade: "Raro",
@@ -241,10 +244,9 @@ export const suspectsSeed = [
             "Moeda antiga como troco/sinal",
             "Fala como gente de porto"
         ],
-        aparencia: [
-            "Barba curta bem desenhada",
-            "Jaqueta de couro",
-            "Mãos com marcas de corda"
+        caracteristica: [
+            "Robusto",
+            "Casual"
         ],
         idiomas: [
             { idioma: "Italiano", nivel: "Nativo" },
@@ -266,11 +268,12 @@ export const suspectsSeed = [
         codinome: "Saffron Wisp",
         nomeReal: "Amaya Desai",
         sexo: "Feminino",
-        corCabelo: "Castanho Escuro",
+        corCabelo: "Castanho",
+        corOlhos: "Preto",
         esporte: "Yoga",
-        comidaFavorita: "Chicken Tikka Masala",
+        comidaFavorita: "Apimentada",
         idadeAparente: 33,
-        origem: "Índia (passagens no Oriente Médio)",
+        origem: "Ásia",
         especialidade: ["Contrabando de micro-itens", "Troca em trânsito", "Joias"],
         periculosidade: "Média",
         raridade: "Incomum",
@@ -278,7 +281,7 @@ export const suspectsSeed = [
             "Perfume marcante de especiarias",
             "Fios dourados (tecido) sem querer"
         ],
-        aparencia: ["Elegante, discreta", "Lenços e acessórios finos"],
+        caracteristica: ["Elegante", "Discreto"],
         idiomas: [
             { idioma: "Hindi", nivel: "Nativo" },
             { idioma: "Inglês", nivel: "Fluente" },
@@ -300,11 +303,12 @@ export const suspectsSeed = [
         codinome: "Blue Rook",
         nomeReal: "Dimitri Volkov",
         sexo: "Masculino",
-        corCabelo: "Loiro (Raspado)",
+        corCabelo: "Loiro",
+        corOlhos: "Azul",
         esporte: "Xadrez",
-        comidaFavorita: "Caviar Beluga e Vodca",
+        comidaFavorita: "Francesa",
         idadeAparente: 38,
-        origem: "Rússia",
+        origem: "Europa",
         especialidade: ["Negociação", "Compra de silêncio", "Pressão psicológica"],
         periculosidade: "Alta",
         raridade: "Raro",
@@ -312,7 +316,7 @@ export const suspectsSeed = [
             "Frases como 'movimento inevitável'",
             "Peças de xadrez baratas deixadas como souvenir"
         ],
-        aparencia: ["Terno escuro", "Anel pesado na mão direita"],
+        caracteristica: ["Elegante", "Robusto"],
         idiomas: [
             { idioma: "Russo", nivel: "Nativo" },
             { idioma: "Inglês", nivel: "Bom" },
@@ -333,11 +337,12 @@ export const suspectsSeed = [
         codinome: "Kite Needle",
         nomeReal: "Mei Lin Zhao",
         sexo: "Feminino",
-        corCabelo: "Preto Liso",
+        corCabelo: "Preto",
+        corOlhos: "Preto",
         esporte: "Ginástica Olímpica",
-        comidaFavorita: "Dim Sum",
+        comidaFavorita: "Asiática",
         idadeAparente: 27,
-        origem: "China (cresceu em Singapura)",
+        origem: "Ásia",
         especialidade: ["Infiltração física", "Troca de crachás", "Furto rápido"],
         periculosidade: "Média",
         raridade: "Comum",
@@ -345,7 +350,7 @@ export const suspectsSeed = [
             "Kit de costura (carretel de linha)",
             "Sabe improvisar uniforme/crachá"
         ],
-        aparencia: ["Atlética", "Movimentos silenciosos", "Tênis leves"],
+        caracteristica: ["Atlético", "Discreto"],
         idiomas: [
             { idioma: "Mandarim", nivel: "Nativo" },
             { idioma: "Inglês", nivel: "Bom" },
@@ -366,16 +371,17 @@ export const suspectsSeed = [
         codinome: "Nacre Fox",
         nomeReal: "Claire Beaumont",
         sexo: "Feminino",
-        corCabelo: "Loiro Platinado",
+        corCabelo: "Platinado",
+        corOlhos: "Verde",
         esporte: "Esgrima",
-        comidaFavorita: "Escargot",
+        comidaFavorita: "Francesa",
         idadeAparente: 36,
-        origem: "França",
+        origem: "Europa",
         especialidade: ["Arte e antiguidades", "Falsos leilões", "Curadoria fraudulenta"],
         periculosidade: "Média",
         raridade: "Incomum",
         assinatura: ["Etiqueta manuscrita 'catalogada' com número errado"],
-        aparencia: ["Sofisticada", "Cabelo curto", "Unhas impecáveis"],
+        caracteristica: ["Elegante", "Discreto"],
         idiomas: [
             { idioma: "Francês", nivel: "Nativo" },
             { idioma: "Inglês", nivel: "Fluente" },
@@ -396,16 +402,17 @@ export const suspectsSeed = [
         codinome: "Sand Helix",
         nomeReal: "Hassan Al-Rashid",
         sexo: "Masculino",
-        corCabelo: "Preto (com Entradas)",
+        corCabelo: "Preto",
+        corOlhos: "Castanho",
         esporte: "Polo",
-        comidaFavorita: "Falafel e Húmus",
+        comidaFavorita: "Árabe",
         idadeAparente: 44,
-        origem: "Egito",
+        origem: "Oriente Médio",
         especialidade: ["Antiguidades", "Rotas discretas", "Troca de custódia"],
         periculosidade: "Alta",
         raridade: "Raro",
         assinatura: ["Areia fina em bolsos/rodapés", "Evita câmeras"],
-        aparencia: ["Alto", "Voz grave", "Cicatriz no queixo"],
+        caracteristica: ["Robusto", "Elegante"],
         idiomas: [
             { idioma: "Árabe", nivel: "Nativo" },
             { idioma: "Inglês", nivel: "Bom" },
@@ -427,16 +434,17 @@ export const suspectsSeed = [
         codinome: "Velvet Circuit",
         nomeReal: "Sofia Mendez",
         sexo: "Feminino",
-        corCabelo: "Vermelho Tingido",
+        corCabelo: "Ruivo",
+        corOlhos: "Verde",
         esporte: "Skate",
-        comidaFavorita: "Tacos al Pastor",
+        comidaFavorita: "Apimentada",
         idadeAparente: 31,
-        origem: "México",
+        origem: "América Latina",
         especialidade: ["Travas eletrônicas", "Gadgets", "Drones civis"],
         periculosidade: "Média",
         raridade: "Incomum",
         assinatura: ["Peça barata de eletrônico (parafuso/cabo curto) esquecida"],
-        aparencia: ["Casual", "Mochila", "Marcas de solda nos dedos"],
+        caracteristica: ["Casual", "Atlético"],
         idiomas: [
             { idioma: "Espanhol", nivel: "Nativo" },
             { idioma: "Inglês", nivel: "Bom" },
@@ -457,16 +465,17 @@ export const suspectsSeed = [
         codinome: "Ivory Marrow",
         nomeReal: "“Dr. R.” (pseudônimo recorrente)",
         sexo: "Masculino",
-        corCabelo: "Branco",
+        corCabelo: "Platinado",
+        corOlhos: "Azul",
         esporte: "Golfe",
-        comidaFavorita: "Bife Wellington",
+        comidaFavorita: "Grelhados",
         idadeAparente: "50+",
-        origem: "Desconhecida",
+        origem: "Europa",
         especialidade: ["Patentes", "Dados científicos", "Laboratórios"],
         periculosidade: "Alta",
         raridade: "Elite",
         assinatura: ["Anotações com letra impecável", "Termos acadêmicos em frases curtas"],
-        aparencia: ["Óculos", "Postura de professor(a)"],
+        caracteristica: ["Elegante", "Discreto"],
         idiomas: [
             { idioma: "Inglês", nivel: "Fluente" },
             { idioma: "Alemão", nivel: "Bom" },
@@ -481,4 +490,306 @@ export const suspectsSeed = [
         falsosPositivos: ["Pesquisador(a) / consultor(a) / auditor(a)"],
         relacaoMeridian: "Crimes elite com foco em ciência e tecnologia."
     },
+
+    {
+        id: "011",
+        codinome: "Sombra Digital",
+        nomeReal: "Rafael Ionescu",
+        sexo: "Masculino",
+        corCabelo: "Preto",
+        corOlhos: "Verde",
+        esporte: "Tênis",
+        comidaFavorita: "Asiática",
+        idadeAparente: 34,
+        origem: "Europa",
+        especialidade: ["Lavagem digital", "Criptomoedas", "Identidades descartáveis"],
+        periculosidade: "Média",
+        raridade: "Incomum",
+        assinatura: ["Relógio sempre 7 minutos adiantado"],
+        caracteristica: ["Discreto", "Casual"],
+        idiomas: [
+            { idioma: "Romeno", nivel: "Nativo" },
+            { idioma: "Inglês", nivel: "Fluente" },
+            { idioma: "Português", nivel: "Bom" }
+        ],
+        habitos: ["Corrige o horário das pessoas"],
+        pistasTipicas: [
+            "Ele comentou que meu relógio estava atrasado.",
+            "Falou de moeda digital do nada.",
+            "Vestia preto dos pés à cabeça."
+        ],
+        falsosPositivos: ["Consultor financeiro tech"],
+        relacaoMeridian: "Move dinheiro sem deixar rastro."
+    },
+
+    {
+        id: "012",
+        codinome: "Peão de Prata",
+        nomeReal: "Helena Duarte",
+        sexo: "Feminino",
+        corCabelo: "Platinado",
+        corOlhos: "Azul",
+        esporte: "Xadrez",
+        comidaFavorita: "Francesa",
+        idadeAparente: 37,
+        origem: "Europa",
+        especialidade: ["Intermediação", "Negociação estratégica"],
+        periculosidade: "Alta",
+        raridade: "Raro",
+        assinatura: ["Peça pequena de xadrez metálica"],
+        caracteristica: ["Elegante", "Discreto"],
+        idiomas: [
+            { idioma: "Português", nivel: "Nativo" },
+            { idioma: "Inglês", nivel: "Fluente" }
+        ],
+        habitos: ["Sorri antes de dar notícia ruim"],
+        pistasTipicas: [
+            "Falou em movimento estratégico.",
+            "Tinha uma peça de xadrez na mesa.",
+            "Nunca alterou o tom de voz."
+        ],
+        falsosPositivos: ["Diplomata"],
+        relacaoMeridian: "Negocia quando a missão exige calma."
+    },
+
+    {
+        id: "013",
+        codinome: "Maresia",
+        nomeReal: "Thiago Morel",
+        sexo: "Masculino",
+        corCabelo: "Castanho",
+        corOlhos: "Castanho",
+        esporte: "Remo",
+        comidaFavorita: "Italiana",
+        idadeAparente: 43,
+        origem: "América Latina",
+        especialidade: ["Rotas portuárias", "Carga fracionada"],
+        periculosidade: "Alta",
+        raridade: "Incomum",
+        assinatura: ["Cheiro leve de óleo náutico"],
+        caracteristica: ["Robusto", "Casual"],
+        idiomas: [
+            { idioma: "Português", nivel: "Nativo" },
+            { idioma: "Italiano", nivel: "Intermediário" }
+        ],
+        habitos: ["Pergunta da maré mesmo longe do mar"],
+        pistasTipicas: [
+            "Falou de maré numa cidade sem praia.",
+            "Conhecia código de contêiner.",
+            "Deixou uma moeda antiga no balcão."
+        ],
+        falsosPositivos: ["Transportador"],
+        relacaoMeridian: "Resolve o que precisa cruzar fronteira."
+    },
+
+    {
+        id: "014",
+        codinome: "Byte Vermelho",
+        nomeReal: "Valeria Cruz",
+        sexo: "Feminino",
+        corCabelo: "Ruivo",
+        corOlhos: "Castanho",
+        esporte: "Skate",
+        comidaFavorita: "Apimentada",
+        idadeAparente: 28,
+        origem: "América Latina",
+        especialidade: ["Clonagem de cartão", "Portas eletrônicas"],
+        periculosidade: "Média",
+        raridade: "Comum",
+        assinatura: ["Adesivo pequeno perto da fechadura"],
+        caracteristica: ["Casual", "Atlético"],
+        idiomas: [
+            { idioma: "Espanhol", nivel: "Nativo" },
+            { idioma: "Português", nivel: "Bom" }
+        ],
+        habitos: ["Bate duas vezes antes de sair"],
+        pistasTipicas: [
+            "A porta abriu sem barulho.",
+            "Tinha um adesivo minúsculo perto da entrada.",
+            "Saiu de skate."
+        ],
+        falsosPositivos: ["Técnica de TI"],
+        relacaoMeridian: "Especialista em acesso rápido."
+    },
+
+    {
+        id: "015",
+        codinome: "Doutor Marfim",
+        nomeReal: "Henrik Stahl",
+        sexo: "Masculino",
+        corCabelo: "Platinado",
+        corOlhos: "Azul",
+        esporte: "Golfe",
+        comidaFavorita: "Grelhados",
+        idadeAparente: 58,
+        origem: "Europa",
+        especialidade: ["Dados científicos", "Arquivos clínicos"],
+        periculosidade: "Alta",
+        raridade: "Elite",
+        assinatura: ["Anotações minúsculas e impecáveis"],
+        caracteristica: ["Elegante", "Discreto"],
+        idiomas: [
+            { idioma: "Alemão", nivel: "Nativo" },
+            { idioma: "Inglês", nivel: "Fluente" },
+            { idioma: "Português", nivel: "Técnico" }
+        ],
+        habitos: ["Corrige termos científicos"],
+        pistasTipicas: [
+            "Falava como professor.",
+            "Perguntou da umidade do cofre.",
+            "Tinha um caderno perfeito."
+        ],
+        falsosPositivos: ["Consultor médico"],
+        relacaoMeridian: "Atua quando ciência vira alvo."
+    },
+
+    {
+        id: "016",
+        codinome: "Fio Sombrio",
+        nomeReal: "Nadia Rahman",
+        sexo: "Feminino",
+        corCabelo: "Preto",
+        corOlhos: "Preto",
+        esporte: "Yoga",
+        comidaFavorita: "Apimentada",
+        idadeAparente: 32,
+        origem: "Ásia",
+        especialidade: ["Microcontrabando", "Tecidos técnicos"],
+        periculosidade: "Média",
+        raridade: "Incomum",
+        assinatura: ["Fios escuros quase invisíveis"],
+        caracteristica: ["Elegante", "Discreto"],
+        idiomas: [
+            { idioma: "Inglês", nivel: "Fluente" },
+            { idioma: "Português", nivel: "Bom" }
+        ],
+        habitos: ["Evita objetos metálicos"],
+        pistasTipicas: [
+            "Havia fios finíssimos no chão.",
+            "Pediu embalagem sem metal.",
+            "Perfume quente e suave."
+        ],
+        falsosPositivos: ["Importadora têxtil"],
+        relacaoMeridian: "Confunde com Saffron Wisp."
+    },
+
+    {
+        id: "017",
+        codinome: "Eco de Ferro",
+        nomeReal: "Lucas Andrade",
+        sexo: "Masculino",
+        corCabelo: "Preto",
+        corOlhos: "Castanho",
+        esporte: "Polo",
+        comidaFavorita: "Árabe",
+        idadeAparente: 42,
+        origem: "América Latina",
+        especialidade: ["Antiguidades", "Intermediação discreta"],
+        periculosidade: "Alta",
+        raridade: "Raro",
+        assinatura: ["Areia fina no sapato"],
+        caracteristica: ["Robusto", "Elegante"],
+        idiomas: [
+            { idioma: "Português", nivel: "Nativo" }
+        ],
+        habitos: ["Fala de camadas históricas"],
+        pistasTipicas: [
+            "Tinha areia onde não devia.",
+            "Falou de escavação antiga.",
+            "Usava luvas leves."
+        ],
+        falsosPositivos: ["Professor de história"],
+        relacaoMeridian: "Alternativa ao Sand Helix."
+    },
+
+    {
+        id: "018",
+        codinome: "Vidro Frio",
+        nomeReal: "Elisa Novak",
+        sexo: "Feminino",
+        corCabelo: "Platinado",
+        corOlhos: "Verde",
+        esporte: "Xadrez",
+        comidaFavorita: "Francesa",
+        idadeAparente: 44,
+        origem: "Europa",
+        especialidade: ["Falsificação documental"],
+        periculosidade: "Alta",
+        raridade: "Raro",
+        assinatura: ["Papéis perfeitos demais"],
+        caracteristica: ["Elegante", "Discreto"],
+        idiomas: [
+            { idioma: "Inglês", nivel: "Fluente" },
+            { idioma: "Português", nivel: "Formal demais" }
+        ],
+        habitos: ["Evita tocar vidro"],
+        pistasTipicas: [
+            "Falava português como manual.",
+            "Notas novas e sequenciais.",
+            "Nunca tocou no copo."
+        ],
+        falsosPositivos: ["Auditora"],
+        relacaoMeridian: "Espelho de Vanta Quill."
+    },
+
+    {
+        id: "019",
+        codinome: "Etiqueta Dourada",
+        nomeReal: "Carolina Weiss",
+        sexo: "Feminino",
+        corCabelo: "Castanho",
+        corOlhos: "Azul",
+        esporte: "Esgrima",
+        comidaFavorita: "Francesa",
+        idadeAparente: 35,
+        origem: "Europa",
+        especialidade: ["Leilões privados", "Obras raras"],
+        periculosidade: "Média",
+        raridade: "Incomum",
+        assinatura: ["Etiqueta numerada incorretamente"],
+        caracteristica: ["Elegante", "Discreto"],
+        idiomas: [
+            { idioma: "Alemão", nivel: "Nativo" },
+            { idioma: "Português", nivel: "Bom" }
+        ],
+        habitos: ["Pergunta da proveniência três vezes"],
+        pistasTipicas: [
+            "Perguntou da origem repetidamente.",
+            "Etiqueta com número estranho.",
+            "Falava como curadora."
+        ],
+        falsosPositivos: ["Galerista"],
+        relacaoMeridian: "Possível elo com Nacre Fox."
+    },
+
+    {
+        id: "020",
+        codinome: "Agulha Silenciosa",
+        nomeReal: "Yuri Tanaka",
+        sexo: "Masculino",
+        corCabelo: "Preto",
+        corOlhos: "Preto",
+        esporte: "Ginástica Olímpica",
+        comidaFavorita: "Asiática",
+        idadeAparente: 26,
+        origem: "Ásia",
+        especialidade: ["Troca de crachá", "Infiltração rápida"],
+        periculosidade: "Média",
+        raridade: "Comum",
+        assinatura: ["Linha fina encontrada depois"],
+        caracteristica: ["Atlético", "Discreto"],
+        idiomas: [
+            { idioma: "Japonês", nivel: "Nativo" },
+            { idioma: "Português", nivel: "Básico" }
+        ],
+        habitos: ["Age como funcionário antigo"],
+        pistasTipicas: [
+            "Parecia já trabalhar ali.",
+            "Crachá estranho.",
+            "Linha presa no uniforme."
+        ],
+        falsosPositivos: ["Estagiário"],
+        relacaoMeridian: "Lembra muito Kite Needle."
+    }
+
 ];

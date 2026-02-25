@@ -50,9 +50,10 @@ export default function Analisar({ onBack, filters, setFilters, warrantId, setWa
         return {
             sexo: getUniques("sexo"),
             corCabelo: getUniques("corCabelo"),
+            corOlhos: getUniques("corOlhos"),
             esporte: getUniques("esporte"),
             comidaFavorita: getUniques("comidaFavorita"),
-            aparencia: getUniques("aparencia"),
+            caracteristica: getUniques("caracteristica"),
             origem: getUniques("origem")
         };
     }, []);
@@ -128,7 +129,7 @@ export default function Analisar({ onBack, filters, setFilters, warrantId, setWa
                         {filteredSuspects.length} SUSPEITOS
                     </div>
                     <button
-                        onClick={() => setFilters({ sexo: [], corCabelo: [], esporte: [], comidaFavorita: [], aparencia: [], origem: [] })}
+                        onClick={() => setFilters({ sexo: [], corCabelo: [], corOlhos: [], esporte: [], comidaFavorita: [], caracteristica: [], origem: [] })}
                         style={{ background: "transparent", border: "none", color: "rgba(255,255,255,0.5)", fontSize: "11px", cursor: "pointer" }}
                     >
                         LIMPAR
@@ -136,11 +137,13 @@ export default function Analisar({ onBack, filters, setFilters, warrantId, setWa
                 </div>
 
                 <div style={{ display: "grid", gap: 15 }}>
-                    {Object.keys(filters).map(key => (
+                    {Object.keys(filters).filter(key => options[key]).map(key => (
                         <div key={key}>
-                            <div style={{ fontSize: 9, fontWeight: 900, color: "#80bdff", marginBottom: 6, textTransform: "uppercase", opacity: 0.6 }}>{key}</div>
+                            <div style={{ fontSize: 9, fontWeight: 900, color: "#80bdff", marginBottom: 6, textTransform: "uppercase", opacity: 0.6 }}>
+                                {{ sexo: "Sexo", corCabelo: "Cor do Cabelo", corOlhos: "Cor dos Olhos", esporte: "Esporte", comidaFavorita: "Comida Favorita", caracteristica: "Característica", origem: "Origem" }[key] || key}
+                            </div>
                             <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
-                                {options[key].map(opt => {
+                                {(options[key] || []).map(opt => {
                                     const isSelected = filters[key].includes(opt);
                                     return (
                                         <button
@@ -281,11 +284,12 @@ export default function Analisar({ onBack, filters, setFilters, warrantId, setWa
                                     <div className="om-detail-value">
                                         <b>Sexo:</b> {selectedSuspect.sexo}<br />
                                         <b>Cabelo:</b> {selectedSuspect.corCabelo}<br />
+                                        <b>Olhos:</b> {selectedSuspect.corOlhos}<br />
                                         <b>Esporte:</b> {selectedSuspect.esporte}<br />
                                         <b>Comida Favorita:</b> {selectedSuspect.comidaFavorita}
                                     </div>
                                     <div className="om-badge-list">
-                                        {selectedSuspect.aparencia.map(a => <span key={a} className="om-badge-mini">{a}</span>)}
+                                        {selectedSuspect.caracteristica.map(a => <span key={a} className="om-badge-mini">{a}</span>)}
                                     </div>
                                 </div>
 
