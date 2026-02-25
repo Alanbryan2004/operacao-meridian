@@ -65,6 +65,13 @@ function Panel({ children }) {
     );
 }
 
+const ORIGIN_COORDS = {
+    "Campinas": { x: 160, y: 120 },
+    "Lisboa": { x: 120, y: 90 },
+    "Madrid": { x: 150, y: 100 },
+    "Moscou": { x: 200, y: 80 },
+};
+
 const DESTINATION_OPTIONS = [
     // De Campinas
     {
@@ -72,7 +79,7 @@ const DESTINATION_OPTIONS = [
         pais: "Portugal",
         cidade: "Lisboa",
         origem: "Campinas",
-        coords: { x: 450, y: 100 },
+        coords: { x: 300, y: 50 },
         flag: "🇵🇹",
         img: "/Paises/Portugal.png",
         desc: "Portugal é um país europeu banhado pelo Atlântico, conhecido por sua rica história marítima e pelas grandes navegações.\n\nSua cultura mistura tradição e modernidade, com fado, azulejos, castelos medievais e uma gastronomia marcante como o bacalhau e os pastéis de nata.\n\nCom cidades históricas como Lisboa e Porto, o país encanta pelo charme, pela arquitetura e pelo espírito acolhedor de seu povo."
@@ -82,7 +89,7 @@ const DESTINATION_OPTIONS = [
         pais: "Argentina",
         cidade: "Buenos Aires",
         origem: "Campinas",
-        coords: { x: 180, y: 220 },
+        coords: { x: 180, y: 155 },
         flag: "🇦🇷",
         img: "/Paises/BuenosAires.png",
         desc: "Buenos Aires é a vibrante capital da Argentina, conhecida por sua arquitetura elegante e avenidas amplas como a 9 de Julio.\n\nBerço do tango, mistura paixão, música e tradição em bairros icônicos como La Boca e San Telmo.\n\nCom cafés históricos, parrillas e vida cultural intensa, a cidade pulsa charme europeu com alma latina."
@@ -92,7 +99,7 @@ const DESTINATION_OPTIONS = [
         pais: "EUA",
         cidade: "Nova York",
         origem: "Campinas",
-        coords: { x: 120, y: 80 },
+        coords: { x: 120, y: 55 },
         flag: "🇺🇸",
         img: "/Paises/NovaYork.png",
         desc: "Nova York é uma das cidades mais icônicas do mundo, conhecida por seus arranha-céus imponentes e pela energia que nunca desacelera.\n\nLar da Estátua da Liberdade, da Times Square e do Central Park, é um centro global de cultura, negócios e entretenimento.\n\nDiversa e vibrante, mistura idiomas, sabores e estilos de vida em cada esquina, fazendo jus ao apelido de “a cidade que nunca dorme”."
@@ -103,7 +110,7 @@ const DESTINATION_OPTIONS = [
         pais: "Espanha",
         cidade: "Madrid",
         origem: "Lisboa",
-        coords: { x: 430, y: 110 },
+        coords: { x: 280, y: 50 },
         flag: "🇪🇸",
         img: "/Paises/Madrid.png",
         desc: "Madrid, a capital da Espanha, é famosa por seus museus de classe mundial, como o Prado, e por sua vida noturna vibrante.\n\nUma cidade que respira arte, história e arquitetura monumental, de onde o Flamenco ecoa e a gastronomia de tapas conquista a todos.\n\nÉ um centro cosmopolita que mantém suas tradições vivas em cada praça e ruela histórica."
@@ -113,7 +120,7 @@ const DESTINATION_OPTIONS = [
         pais: "França",
         cidade: "Paris",
         origem: "Lisboa",
-        coords: { x: 460, y: 90 },
+        coords: { x: 200, y: 35 },
         flag: "🇫🇷",
         img: "/Paises/Paris.png",
         desc: "Paris, a Cidade Luz, é reconhecida mundialmente por sua arte, gastronomia e cultura. Com a imponente Torre Eiffel e o Museu do Louvre, ela exala sofisticação em cada boulevard.\n\nCaminhar por suas margens do Rio Sena é mergulhar em séculos de história, moda e o inconfundível estilo de vida parisiense."
@@ -123,7 +130,7 @@ const DESTINATION_OPTIONS = [
         pais: "Egito",
         cidade: "Cairo",
         origem: "Lisboa",
-        coords: { x: 500, y: 150 },
+        coords: { x: 300, y: 110 },
         flag: "🇪🇬",
         img: "/Paises/Cairo.png",
         desc: "O Cairo, capital do Egito, é uma metrópole onde a história milenar se encontra com a modernidade caótica. Lar das Grandes Pirâmides de Gizé e da Esfinge, o destino é um portal para os mistérios dos faraós.\n\nSeus mercados tradicionais e a riqueza do Nilo criam uma experiência cultural única e profunda no coração do mundo árabe."
@@ -133,7 +140,7 @@ const DESTINATION_OPTIONS = [
         pais: "Rússia",
         cidade: "Moscou",
         origem: "Madrid",
-        coords: { x: 550, y: 80 },
+        coords: { x: 280, y: 40 },
         flag: "🇷🇺",
         img: "/Paises/Moscou.png",
         desc: "Moscou é o coração político e cultural da Rússia, famosa por sua icônica Praça Vermelha e pelas cúpulas coloridas da Catedral de São Basílio.\n\nCom uma história que remete aos tempos dos Czares e do império soviético, a cidade mistura o luxo clássico com a arquitetura brutalista.\n\nÉ um centro de poder onde o inverno rígido contrasta com o calor da hospitalidade e da arte russa."
@@ -143,7 +150,7 @@ const DESTINATION_OPTIONS = [
         pais: "Butão",
         cidade: "Thimphu",
         origem: "Madrid",
-        coords: { x: 380, y: 160 },
+        coords: { x: 300, y: 120 },
         flag: "🇧🇹",
         img: "/Paises/Thimphu.png",
         desc: "Thimphu, a capital do Reino do Butão, situa-se nos altos vales do Himalaia e é conhecida por não possuir semáforos.\n\nÉ um lugar onde a modernidade avança sem apagar as tradições budistas e o respeito profundo pela natureza.\n\nOs dzongs (fortalezas), os templos e a busca pela Felicidade Interna Bruta fazem desta cidade um destino espiritual único no mundo."
@@ -153,7 +160,7 @@ const DESTINATION_OPTIONS = [
         pais: "EUA",
         cidade: "Nova York",
         origem: "Madrid",
-        coords: { x: 120, y: 80 },
+        coords: { x: 120, y: 55 },
         flag: "🇺🇸",
         img: "/Paises/NovaYork.png",
         desc: "Nova York continua sendo o centro do mundo. De Madrid, a viagem atravessa o Atlântico rumo à metrópole que nunca dorme.\n\nA Estátua da Liberdade e a Times Square aguardam aqueles que buscam a última pista ou o esconderijo final do suspeito."
@@ -163,7 +170,7 @@ const DESTINATION_OPTIONS = [
         pais: "EUA",
         cidade: "Nova York",
         origem: "Moscou",
-        coords: { x: 120, y: 80 },
+        coords: { x: 120, y: 55 },
         flag: "🇺🇸",
         img: "/Paises/NovaYork.png",
         desc: "Moscou para Nova York: uma longa jornada do Leste para o Oeste. Você cruza continentes e o oceano em busca da peça final do quebra-cabeça.\n\nA metrópole americana é o lugar onde o suspeito acredita que pode se perder na multidão, mas sua busca termina aqui."
@@ -507,11 +514,18 @@ export default function Caso() {
         .om-journal-list { maxHeight: 250px; overflow-y: auto; padding-right: 5px; }
         .om-journal-item { padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.08); }
 
-        /* Mapa Animado */
-        .om-map-container { position: relative; width: 100%; height: 280px; background: #0a192f; border-radius: 18px; overflow: hidden; padding: 20px; }
-        .om-map-origin { position: absolute; left: 210px; top: 180px; font-size: 20px; z-index: 5; }
-        .om-map-dest { position: absolute; font-size: 20px; z-index: 5; animation: pulse 2s infinite; }
-        @keyframes pulse { 0% { opacity: 0.6; } 50% { opacity: 1; } 100% { opacity: 0.6; } }
+        /* Mapa Tático */
+        .om-map-container { position: relative; width: 100%; height: 200px; background: radial-gradient(ellipse at center, #0d2137 0%, #060e1a 100%); border-radius: 14px; overflow: hidden; border: 1px solid rgba(128,189,255,0.15); }
+        .om-map-container::before { content: ''; position: absolute; inset: 0; background-image: linear-gradient(rgba(128,189,255,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(128,189,255,0.04) 1px, transparent 1px); background-size: 30px 30px; pointer-events: none; }
+        .om-map-container::after { content: ''; position: absolute; inset: 0; background: radial-gradient(circle at 50% 50%, transparent 40%, rgba(0,0,0,0.5) 100%); pointer-events: none; }
+        .om-map-origin { position: absolute; width: 8px; height: 8px; background: #80bdff; border-radius: 50%; z-index: 5; box-shadow: 0 0 8px #80bdff, 0 0 16px rgba(128,189,255,0.4); }
+        .om-map-origin::after { content: ''; position: absolute; inset: -4px; border: 1px solid rgba(128,189,255,0.3); border-radius: 50%; animation: ping 2s cubic-bezier(0,0,0.2,1) infinite; }
+        @keyframes ping { 0% { transform: scale(1); opacity: 0.6; } 100% { transform: scale(3); opacity: 0; } }
+        .om-map-dest { position: absolute; width: 10px; height: 10px; background: #ff4d6a; border-radius: 50%; z-index: 5; box-shadow: 0 0 8px #ff4d6a; cursor: pointer; animation: destPulse 2s infinite; }
+        @keyframes destPulse { 0%, 100% { box-shadow: 0 0 8px #ff4d6a; } 50% { box-shadow: 0 0 16px #ff4d6a, 0 0 24px rgba(255,77,106,0.3); } }
+        .om-map-dest.selected { background: #ffd700; box-shadow: 0 0 12px #ffd700; animation: none; }
+        .om-map-label { position: absolute; font-size: 8px; font-weight: 800; letter-spacing: 1px; z-index: 6; text-shadow: 0 0 8px rgba(0,0,0,0.8); }
+        .om-map-loc-badge { position: absolute; bottom: 0; left: 0; right: 0; padding: 6px 12px; background: linear-gradient(transparent, rgba(6,14,26,0.95)); font-size: 10px; z-index: 10; display: flex; align-items: center; gap: 6px; }
         .om-map-line { position: absolute; height: 2px; background: rgba(128,189,255,0.3); transform-origin: left center; z-index: 1; pointer-events: none; }
       `}</style>
 
@@ -579,32 +593,36 @@ export default function Caso() {
                                 />
                             ) : (viewMode === "TRAVEL_MAP" || viewMode === "TRAVEL_MODES") ? (
                                 <div className="om-map-container">
-                                    {/* Local atual (Brasil) */}
-                                    <div className="om-map-origin">📍</div>
-                                    <div style={{ position: "absolute", left: 195, top: 205, fontSize: 9, color: "#80bdff" }}>CAMPINAS/BR</div>
+                                    {/* Origem — ponto azul dinâmico */}
+                                    {(() => {
+                                        const oc = ORIGIN_COORDS[run.localAtual.cidade] || { x: 160, y: 120 }; return (<>
+                                            <div className="om-map-origin" style={{ left: oc.x, top: oc.y }} />
+                                            <div className="om-map-label" style={{ left: oc.x - 30, top: oc.y + 14, color: "#80bdff" }}>{run.localAtual.cidade.toUpperCase()}</div>
+                                        </>);
+                                    })()}
 
-                                    {/* Destinos sugeridos */}
+                                    {/* Destinos */}
                                     {DESTINATION_OPTIONS
                                         .filter(d => d.origem === run.localAtual.cidade)
                                         .map(d => (
                                             <React.Fragment key={d.id}>
                                                 <div
-                                                    className="om-map-dest"
-                                                    style={{ left: d.coords.x, top: d.coords.y, filter: selectedDest && selectedDest.id !== d.id ? "grayscale(1) opacity(0.3)" : "none" }}
-                                                >
-                                                    {selectedDest && selectedDest.id === d.id ? "⭕" : "📍"}
-                                                </div>
+                                                    className={`om-map-dest ${selectedDest && selectedDest.id === d.id ? "selected" : ""}`}
+                                                    style={{ left: d.coords.x, top: d.coords.y, filter: selectedDest && selectedDest.id !== d.id ? "grayscale(1) opacity(0.25)" : "none" }}
+                                                />
                                                 {(!selectedDest || selectedDest.id === d.id) && (
-                                                    <div style={{ position: "absolute", left: d.coords.x - 20, top: d.coords.y + 25, fontSize: 9, color: "#fff", textAlign: "center", width: 60 }}>
+                                                    <div className="om-map-label" style={{ left: d.coords.x - 15, top: d.coords.y + 14, color: selectedDest?.id === d.id ? "#ffd700" : "#fff" }}>
                                                         {d.cidade.toUpperCase()}
                                                     </div>
                                                 )}
                                             </React.Fragment>
                                         ))}
 
-                                    {/* Overlay de Viagem Concluida ou Em Progresso visual */}
-                                    <div style={{ position: "absolute", bottom: 15, left: 15, right: 15, background: "rgba(0,0,0,0.6)", padding: "5px 10px", borderRadius: 8, fontSize: 11, border: "1px solid rgba(255,255,255,0.1)" }}>
-                                        🌍 Local Atual: <span style={{ color: "#80bdff", fontWeight: 700 }}>{run.localAtual.cidade}</span>
+                                    {/* Location badge */}
+                                    <div className="om-map-loc-badge">
+                                        <span style={{ width: 6, height: 6, borderRadius: 3, background: "#4ade80", display: "inline-block", boxShadow: "0 0 6px #4ade80" }} />
+                                        <span style={{ color: "rgba(255,255,255,0.5)", fontWeight: 700 }}>LOCAL:</span>
+                                        <span style={{ color: "#80bdff", fontWeight: 800 }}>{run.localAtual.cidade}</span>
                                     </div>
                                 </div>
                             ) : (
