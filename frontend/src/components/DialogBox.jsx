@@ -122,52 +122,70 @@ export default function DialogBox({
                     </div>
                 )}
 
-                <div style={{
-                    fontSize: 13,
-                    lineHeight: 1.65,
-                    color: "#e8e0d0",
-                    fontFamily: "'Inter', sans-serif",
-                    whiteSpace: "pre-line",
-                    textShadow: "0 1px 3px rgba(0,0,0,0.8)",
-                    minHeight: 50
-                }}>
-                    {displayedText}
-                    {isTyping && <span style={{ opacity: 0.6, animation: "dbPulse 0.5s infinite" }}>▍</span>}
+                <div style={{ position: "relative", minHeight: 50 }}>
+                    {/* Hidden full text to reserve the final height */}
+                    <div aria-hidden="true" style={{
+                        fontSize: 13,
+                        lineHeight: 1.65,
+                        fontFamily: "'Inter', sans-serif",
+                        whiteSpace: "pre-line",
+                        visibility: "hidden",
+                        pointerEvents: "none"
+                    }}>
+                        {pages.current[pageIndex] || ""}
+                    </div>
+                    {/* Visible typed text overlaid on top */}
+                    <div style={{
+                        position: "absolute",
+                        top: 0,
+                        left: 0,
+                        right: 0,
+                        fontSize: 13,
+                        lineHeight: 1.65,
+                        color: "#e8e0d0",
+                        fontFamily: "'Inter', sans-serif",
+                        whiteSpace: "pre-line",
+                        textShadow: "0 1px 3px rgba(0,0,0,0.8)"
+                    }}>
+                        {displayedText}
+                        {isTyping && <span style={{ opacity: 0.6, animation: "dbPulse 0.5s infinite" }}>▍</span>}
+                    </div>
                 </div>
 
-                {!isTyping && (
-                    <div style={{
-                        display: "flex",
-                        justifyContent: "space-between",
-                        alignItems: "center",
-                        marginTop: 12
-                    }}>
-                        {totalPages > 1 && (
-                            <span style={{ fontSize: 9, color: "#a89870", letterSpacing: 1, textShadow: "0 1px 2px rgba(0,0,0,0.6)" }}>
-                                {pageIndex + 1}/{totalPages}
-                            </span>
-                        )}
-                        <button
-                            onClick={(e) => { e.stopPropagation(); handleNext(); }}
-                            style={{
-                                marginLeft: "auto",
-                                background: "linear-gradient(180deg, #c9a84c 0%, #8b6914 100%)",
-                                border: "1px solid #8b6914",
-                                color: "#fff",
-                                padding: "6px 16px",
-                                borderRadius: 5,
-                                fontSize: 11,
-                                fontWeight: 800,
-                                letterSpacing: 1,
-                                cursor: "pointer",
-                                textShadow: "0 1px 2px rgba(0,0,0,0.5)",
-                                boxShadow: "0 2px 6px rgba(0,0,0,0.4)"
-                            }}
-                        >
-                            {isLastPage ? buttonLabel : "CONTINUAR ▶"}
-                        </button>
-                    </div>
-                )}
+                <div style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    marginTop: 12,
+                    visibility: isTyping ? "hidden" : "visible",
+                    opacity: isTyping ? 0 : 1,
+                    transition: "opacity 0.2s ease"
+                }}>
+                    {totalPages > 1 && (
+                        <span style={{ fontSize: 9, color: "#a89870", letterSpacing: 1, textShadow: "0 1px 2px rgba(0,0,0,0.6)" }}>
+                            {pageIndex + 1}/{totalPages}
+                        </span>
+                    )}
+                    <button
+                        onClick={(e) => { e.stopPropagation(); handleNext(); }}
+                        style={{
+                            marginLeft: "auto",
+                            background: "linear-gradient(180deg, #c9a84c 0%, #8b6914 100%)",
+                            border: "1px solid #8b6914",
+                            color: "#fff",
+                            padding: "6px 16px",
+                            borderRadius: 5,
+                            fontSize: 11,
+                            fontWeight: 800,
+                            letterSpacing: 1,
+                            cursor: "pointer",
+                            textShadow: "0 1px 2px rgba(0,0,0,0.5)",
+                            boxShadow: "0 2px 6px rgba(0,0,0,0.4)"
+                        }}
+                    >
+                        {isLastPage ? buttonLabel : "CONTINUAR ▶"}
+                    </button>
+                </div>
             </div>
 
             <style>{`

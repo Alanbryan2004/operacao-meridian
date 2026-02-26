@@ -661,9 +661,9 @@ export default function Caso() {
                                 <div>
                                     <div style={{ fontSize: 13, fontWeight: 800, marginBottom: 12, color: "#80bdff" }}>CENTRAL DE OPERAÇÕES</div>
                                     <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
-                                        <button className="om-btn" onClick={() => setViewMode("TRAVEL_MAP")} disabled={!canAct}>VIAJAR</button>
-                                        <button className="om-btn" onClick={abrirLocais} disabled={!canAct}>INVESTIGAR</button>
-                                        <button className="om-btn" onClick={analisar} disabled={!canAct} style={{ gridColumn: "1 / -1" }}>ANALISAR</button>
+                                        <button className="om-btn" onClick={() => setViewMode("TRAVEL_MAP")} disabled={!canAct}>✈️ VIAJAR</button>
+                                        <button className="om-btn" onClick={abrirLocais} disabled={!canAct}>🔍 INVESTIGAR</button>
+                                        <button className="om-btn" onClick={analisar} disabled={!canAct} style={{ gridColumn: "1 / -1" }}>🧪 ANALISAR</button>
                                     </div>
 
                                 </div>
@@ -795,9 +795,9 @@ export default function Caso() {
                                             // Fallback NPCs para quando está no país errado
                                             <>
                                                 {[
-                                                    { id: "F1", local: "Táxi", personagem: "Taxista", imgLocal: "/Restaurante.png", imgPersonagem: "/Taxista.png" },
-                                                    { id: "F2", local: "Banco", personagem: "Banqueiro", imgLocal: "/Floricultura.png", imgPersonagem: "/Banqueiro.png" },
-                                                    { id: "F3", local: "Casa de Shows", personagem: "Dançarina", imgLocal: "/Hospital.png", imgPersonagem: "/Dancarina.png" }
+                                                    { id: "F1", local: "Táxi", personagem: "Taxista", imgLocal: "/NPC/Taxi.png", imgPersonagem: "/NPC/Taxista.png" },
+                                                    { id: "F2", local: "Banco", personagem: "Banqueiro", imgLocal: "/NPC/Banco.png", imgPersonagem: "/NPC/Banqueiro.png" },
+                                                    { id: "F3", local: "Casa de Shows", personagem: "Dançarina", imgLocal: "/NPC/Hospital.png", imgPersonagem: "/NPC/Dancarina.png" }
                                                 ].map(loc => (
                                                     <button
                                                         key={loc.id}
