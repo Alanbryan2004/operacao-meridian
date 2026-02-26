@@ -748,20 +748,18 @@ export default function Caso() {
                                     ) : (
                                         <>
                                             {(showSuspectVideo || viewMode === "ARRIVAL") && activeVideo ? (
-                                                <div style={{ marginTop: 20, textAlign: "center" }}>
+                                                <div style={{ marginTop: 12, textAlign: "center" }}>
+                                                    <div style={{ fontSize: 13, fontWeight: 700, fontStyle: "italic", opacity: 0.9, marginBottom: 12, color: "#ffd700" }}>
+                                                        "Sombra detectada: O Suspeito passou por aqui!"
+                                                    </div>
                                                     {videoEnded && (
-                                                        <>
-                                                            <div style={{ fontSize: 13, fontWeight: 700, fontStyle: "italic", opacity: 0.9, marginBottom: 12, color: "#ffd700" }}>
-                                                                "Sombra detectada: O Suspeito passou por aqui!"
-                                                            </div>
-                                                            <button
-                                                                onClick={() => { setViewMode("ACTIONS"); setSelectedDest(null); setShowSuspectVideo(false); setActiveVideo(null); setVideoEnded(false); }}
-                                                                className="om-btn om-btn-primary"
-                                                                style={{ marginTop: 20 }}
-                                                            >
-                                                                ENTENDIDO
-                                                            </button>
-                                                        </>
+                                                        <button
+                                                            onClick={() => { setViewMode("ACTIONS"); setSelectedDest(null); setShowSuspectVideo(false); setActiveVideo(null); setVideoEnded(false); }}
+                                                            className="om-btn om-btn-primary"
+                                                            style={{ marginTop: 10 }}
+                                                        >
+                                                            ENTENDIDO
+                                                        </button>
                                                     )}
                                                 </div>
                                             ) : (
