@@ -1,6 +1,7 @@
 import React, { useMemo } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useGame } from "../game/GameProvider";
+import { getCargoByXp, getProximoCargo } from "../game/Cargos";
 import DialogBox from "../components/DialogBox";
 
 export default function CasoSolucionado() {
@@ -23,6 +24,27 @@ export default function CasoSolucionado() {
     const reportText = isWon
         ? `O suspeito foi capturado com êxito.\nA relíquia foi integralmente recuperada e devolvida à custódia internacional.\n\nO brilhante trabalho do(a) Agente ${player.nivelTitulo} "${player.nome}" foi decisivo para o sucesso desta missão.\nSua análise precisa, leitura estratégica das pistas e execução impecável elevaram o padrão operacional da Agência.\n\nA.T.L.A.S. reconhece oficialmente sua conduta exemplar.\nContinue assim, Agente. O mundo precisa de mentes afiadas como a sua.\n\nEsperamos trabalhar novamente com você em futuras operações de alto risco.\n🌍 Justiça restaurada. Ordem mantida.\n\n🏆 RECOMPENSA: +R$${caseObj.recompensa} | +${caseObj.xp} XP`
         : `O suspeito escapou da captura.\nA relíquia permanece desaparecida.\n\nA Agência reconhece que o(a) Agente ${player.nivelTitulo} "${player.nome}" demonstrou potencial estratégico acima da média.\nPorém, falhas na execução final permitiram que o alvo deixasse o país antes da emissão adequada do mandado.\n\nA.T.L.A.S. espera mais de alguém que já demonstrou ser brilhante.\nFracassos não definem um agente. Eles moldam os próximos acertos.\n\nReavalie as pistas. Ajuste a estratégia. O próximo movimento será decisivo.\n🌍 O jogo continua.`;
+
+    function handleEncerrar() {
+        if (isWon) {
+            // Verifica se o jogador tem XP para promoção
+            const cargoAtual = getCargoByXp(player.xp);
+            const proximoCargo = getProximoCargo(player.xp);
+
+            // Se há próximo cargo E o nível atual do jogador é menor que o cargo que o XP permite
+            if (proximoCargo && (player.nivel || 1) < cargoAtual.nivel) {
+                // Tem promoção pendente → já qualificou mas ainda não subiu
+                nav("/promocao");
+                return;
+            }
+
+            if (proximoCargo && cargoAtual.nivel >= (player.nivel || 1)) {
+                nav("/promocao");
+                return;
+            }
+        }
+        nav("/mural");
+    }
 
     return (
         <div style={{
@@ -77,7 +99,7 @@ export default function CasoSolucionado() {
                 <DialogBox
                     title="📜 Comunicado Oficial — Agência A.T.L.A.S."
                     text={reportText}
-                    onComplete={() => nav("/mural")}
+                    onComplete={handleEncerrar}
                     buttonLabel="ENCERRAR"
                     maxChars={200}
                 />

@@ -891,7 +891,7 @@ export default function Caso() {
                                                 </div>
                                                 <div>
                                                     <div style={{ fontSize: 18, fontWeight: 800 }}>{state.player.nome}</div>
-                                                    <Badge tone="blue">{state.player.nivelTitulo || "Recruta"}</Badge>
+                                                    <Badge tone="blue">{state.player.classeEmoji || "🟢"} {state.player.nivelTitulo || "Novato"}</Badge>
                                                     <div style={{ fontSize: 10, opacity: 0.6, marginTop: 4 }}>Saldo: ${state.player.dinheiro} | XP: {state.player.xp}</div>
                                                 </div>
                                             </div>

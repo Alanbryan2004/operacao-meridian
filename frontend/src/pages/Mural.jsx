@@ -164,7 +164,7 @@ export default function Mural() {
                         </div>
 
                         <div style={{ marginTop: 10, display: "flex", gap: 8, flexWrap: "wrap" }}>
-                            <Badge tone="blue">Nível {player.nivel}</Badge>
+                            <Badge tone="blue">{player.classeEmoji || "🟢"} {player.nivelTitulo || "Novato"}</Badge>
                             <Badge tone="green">XP {player.xp}</Badge>
                             <Badge tone="purple">Temporadas: em breve</Badge>
                         </div>

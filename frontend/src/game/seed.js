@@ -194,7 +194,9 @@ export const casesSeed = [
 export const initialPlayer = {
     nome: "Recruta",
     nivel: 1,
-    nivelTitulo: "Novato I",
+    nivelTitulo: "Novato",
+    classeEmoji: "🟢",
+    classe: "Iniciante",
     xp: 0,
     dinheiro: 1000,
     especializacao: null,

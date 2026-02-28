@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useGame } from "../game/GameProvider";
+import { supabase } from "../lib/supabase";
 import SuspectGallery from "../components/SuspectGallery";
 
 function Badge({ children, tone = "gray" }) {
@@ -97,7 +98,7 @@ export default function Perfil() {
                                 <div>
                                     <div style={{ fontSize: 20, fontWeight: 800 }}>{player.nome}</div>
                                     <div style={{ marginTop: 4 }}>
-                                        <Badge tone="blue">{player.nivelTitulo || "Recruta"}</Badge>
+                                        <Badge tone="blue">{player.classeEmoji || "🟢"} {player.nivelTitulo || "Novato"}</Badge>
                                     </div>
                                 </div>
                             </div>
@@ -149,6 +150,27 @@ export default function Perfil() {
                                 );
                             })}
                         </div>
+
+                        {/* Logout */}
+                        <button
+                            onClick={async () => {
+                                await supabase.auth.signOut();
+                                localStorage.removeItem("operacao_meridian__mvp_state_v1");
+                                nav("/login");
+                            }}
+                            style={{
+                                width: "100%", padding: "14px",
+                                borderRadius: 14,
+                                border: "1px solid rgba(255,70,70,0.25)",
+                                background: "rgba(255,70,70,0.08)",
+                                color: "#ff6b6b",
+                                cursor: "pointer",
+                                fontSize: 13, fontWeight: 700,
+                                letterSpacing: 1,
+                            }}
+                        >
+                            🚪 SAIR DA CONTA
+                        </button>
                     </>
                 )}
 
