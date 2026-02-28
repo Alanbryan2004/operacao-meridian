@@ -507,7 +507,7 @@ export default function Caso() {
         .om-tab { flex: 1; padding: 12px; border-radius: 14px; border: none; background: transparent; color: rgba(255,255,255,0.7); cursor: pointer; text-align: center; font-size: 11px; font-weight: 800; letter-spacing: 0.5px; }
         .om-tab-active { background: rgba(255,255,255,0.1); color: #fff; }
 
-        .om-scene-box { position: relative; width: 100%; height: 280px; overflow: hidden; background: #000; }
+        .om-scene-box { position: relative; width: 100%; height: 220px; overflow: hidden; background: #000; }
         .om-scene-bg { width: 100%; height: 100%; object-fit: cover; opacity: 0.6; }
         .om-scene-char { position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); height: 85%; filter: drop-shadow(0 0 20px rgba(255,255,255,0.2)); }
         .om-dialog { margin-top: 10px; padding: 5px; font-size: 15px; line-height: 1.6; color: #fff; }
@@ -589,7 +589,7 @@ export default function Caso() {
                                         }, 300);
                                     }}
                                     playsInline
-                                    style={{ width: "100%", height: "280px", objectFit: "cover" }}
+                                    style={{ width: "100%", height: "220px", objectFit: "cover" }}
                                 />
                             ) : (viewMode === "TRAVEL_MAP" || viewMode === "TRAVEL_MODES") ? (
                                 <div className="om-map-container">
@@ -628,7 +628,7 @@ export default function Caso() {
                             ) : (
                                 <img
                                     src={currentCityImg}
-                                    style={{ width: "100%", height: "280px", objectFit: "cover" }}
+                                    style={{ width: "100%", height: "220px", objectFit: "cover" }}
                                     alt="Cena"
                                 />
                             )}
@@ -774,9 +774,17 @@ export default function Caso() {
                             )}
 
                             {viewMode === "LOCATIONS" && (
-                                <div>
-                                    <div style={{ fontSize: 13, fontWeight: 800, marginBottom: 12, color: "#80bdff" }}>PONTOS DE INVESTIGAÇÃO</div>
-                                    <div className="om-muted" style={{ marginBottom: 15 }}>Selecione um local em {run.localAtual.cidade}:</div>
+                                <fieldset style={{
+                                    border: "none",
+                                    padding: "0",
+                                    margin: 0
+                                }}>
+                                    <legend style={{
+                                        fontSize: 13,
+                                        fontWeight: 800,
+                                        color: "#80bdff",
+                                        padding: "0 8px"
+                                    }}>PONTOS DE INVESTIGAÇÃO</legend>
                                     <div style={{ display: "grid", gap: 10 }}>
                                         {(caseObj.interrogatorios?.filter(loc => loc.cidade === run.localAtual.cidade).length > 0) ? (
                                             caseObj.interrogatorios
@@ -817,7 +825,7 @@ export default function Caso() {
                                     <button onClick={() => setViewMode("ACTIONS")} className="om-btn" style={{ marginTop: 15, background: "transparent", border: "none", color: "#80bdff" }}>
                                         Cancelar
                                     </button>
-                                </div>
+                                </fieldset>
                             )}
 
 
