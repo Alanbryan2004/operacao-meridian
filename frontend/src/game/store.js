@@ -14,7 +14,8 @@ export function loadGame() {
             state = {
                 player: { ...initialPlayer },
                 cases: [...casesSeed],
-                runs: {}, // caseId -> run
+                runs: {},
+                capturedSuspects: {},
                 createdAt: nowIso(),
                 updatedAt: nowIso(),
             };
@@ -33,6 +34,10 @@ export function loadGame() {
                 imgItem: seed.imgItem || existing?.imgItem
             };
         });
+        // Migração: capturedSuspects
+        if (!state.capturedSuspects) {
+            state.capturedSuspects = {};
+        }
 
         return state;
     } catch {
@@ -40,6 +45,7 @@ export function loadGame() {
             player: { ...initialPlayer },
             cases: [...casesSeed],
             runs: {},
+            capturedSuspects: {},
             createdAt: nowIso(),
             updatedAt: nowIso(),
         };
@@ -145,6 +151,17 @@ export function spendMoney(state, valor, msg, caseId) {
         ...state,
         player: { ...state.player, dinheiro },
         runs: { ...state.runs, [caseId]: nextRun },
+    };
+}
+
+export function registerCapture(state, suspectId) {
+    const prev = state.capturedSuspects || {};
+    return {
+        ...state,
+        capturedSuspects: {
+            ...prev,
+            [suspectId]: (prev[suspectId] || 0) + 1,
+        },
     };
 }
 
@@ -680,7 +697,7 @@ export const suspectsSeed = [
         sexo: "Masculino",
         corCabelo: "Preto",
         corOlhos: "Castanho",
-        esporte: "Polo",
+        esporte: "Tênis",
         comidaFavorita: "Árabe",
         idadeAparente: 42,
         origem: "América Latina",

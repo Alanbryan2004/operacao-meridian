@@ -6,8 +6,10 @@ import {
     spendMoney,
     spendTime,
     startRunIfNeeded,
+    registerCapture,
 } from "../game/store";
 import Analisar from "./Analisar";
+import SuspectGallery from "../components/SuspectGallery";
 import DialogBox from "../components/DialogBox";
 
 function fmtHoras(h) {
@@ -216,6 +218,7 @@ export default function Caso() {
     const [activeVideo, setActiveVideo] = useState(null);
     const [darkenScreen, setDarkenScreen] = useState(false);
     const [videoEnded, setVideoEnded] = useState(false);
+    const [profileTab, setProfileTab] = useState("PERFIL");
 
     useEffect(() => {
         const s = loadGame();
@@ -352,11 +355,11 @@ export default function Caso() {
                         suspeitoCapturado: true,
                         jornal: [...run.jornal, { t: new Date().toISOString(), msg: "🎯 MISSÃO CUMPRIDA! O suspeito foi preso em Nova York." }],
                     };
-                    const nextState = {
+                    const nextState = registerCapture({
                         ...state,
                         player: { ...state.player, dinheiro: state.player.dinheiro + caseObj.recompensa, xp: state.player.xp + caseObj.xp },
                         runs: { ...state.runs, [caseId]: nextRun },
-                    };
+                    }, run.warrantId);
                     setState(saveGame(nextState));
                 } else {
                     const nextRun = {
@@ -456,11 +459,11 @@ export default function Caso() {
             suspeitoCapturado: true,
             jornal: [...run.jornal, { t: new Date().toISOString(), msg: "✅ Capturado!" }],
         };
-        const nextState = {
+        const nextState = registerCapture({
             ...state,
             player: { ...state.player, dinheiro: state.player.dinheiro + caseObj.recompensa, xp: state.player.xp + caseObj.xp },
             runs: { ...state.runs, [caseId]: nextRun },
-        };
+        }, run.warrantId);
         setState(saveGame(nextState));
     }
 
@@ -531,7 +534,7 @@ export default function Caso() {
 
             <div style={{ padding: "15px 15px 80px 15px" }}>
                 {/* Header Stats */}
-                {viewMode !== "ANALYZE" && (
+                {viewMode !== "ANALYZE" && !(viewMode === "PROFILE" && profileTab === "GALERIA") && (
                     <div className="om-top">
                         <Panel>
                             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
@@ -555,7 +558,7 @@ export default function Caso() {
                 )}
 
                 {/* CARD 1: Imagem do que foi roubado OU Cena de Interrogatório OU Mapa */}
-                {viewMode !== "ANALYZE" && (
+                {viewMode !== "ANALYZE" && !(viewMode === "PROFILE" && profileTab === "GALERIA") && (
                     <div className="om-card">
                         <div className="om-img-card">
                             {viewMode === "DIALOGUE" && selectedLocal ? (
@@ -846,24 +849,57 @@ export default function Caso() {
 
                             {viewMode === "PROFILE" && (
                                 <div>
-                                    <div style={{ fontSize: 13, fontWeight: 800, marginBottom: 15, color: "#80bdff" }}>PERFIL DO AGENTE</div>
-                                    <div style={{ display: "flex", alignItems: "center", gap: 15, marginBottom: 20 }}>
-                                        <div style={{ width: 64, height: 64, borderRadius: 32, background: "rgba(255,255,255,0.05)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 28, border: "1px solid rgba(255,255,255,0.15)" }}>
-                                            👤
-                                        </div>
-                                        <div>
-                                            <div style={{ fontSize: 18, fontWeight: 800 }}>{state.player.nome}</div>
-                                            <Badge tone="blue">{state.player.nivelTitulo || "Recruta"}</Badge>
-                                            <div style={{ fontSize: 10, opacity: 0.6, marginTop: 4 }}>Saldo: ${state.player.dinheiro} | XP: {state.player.xp}</div>
-                                        </div>
+                                    {/* Sub-tabs: Perfil / Galeria */}
+                                    <div style={{ display: "flex", gap: 8, marginBottom: 15 }}>
+                                        {["PERFIL", "GALERIA"].map(t => (
+                                            <button
+                                                key={t}
+                                                onClick={() => setProfileTab(t)}
+                                                style={{
+                                                    flex: 1,
+                                                    padding: "8px 0",
+                                                    borderRadius: 10,
+                                                    fontSize: 11,
+                                                    fontWeight: 800,
+                                                    letterSpacing: 0.5,
+                                                    border: "1px solid",
+                                                    borderColor: profileTab === t ? "#80bdff" : "rgba(255,255,255,0.12)",
+                                                    background: profileTab === t ? "rgba(128,189,255,0.15)" : "transparent",
+                                                    color: profileTab === t ? "#80bdff" : "rgba(255,255,255,0.5)",
+                                                    cursor: "pointer",
+                                                }}
+                                            >
+                                                {t === "PERFIL" ? "👤 PERFIL" : "🔍 GALERIA"}
+                                            </button>
+                                        ))}
                                     </div>
-                                    <div style={{ borderTop: "1px solid rgba(255,255,255,0.1)", paddingTop: 15 }}>
-                                        <div style={{ fontSize: 12, fontWeight: 700, marginBottom: 10 }}>MISSÕES EM CURSO</div>
-                                        <div style={{ padding: 12, borderRadius: 12, background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.1)", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                                            <div style={{ fontSize: 13 }}>{caseObj.titulo}</div>
-                                            <Badge tone="green">Ativa</Badge>
-                                        </div>
-                                    </div>
+
+                                    {profileTab === "PERFIL" && (
+                                        <>
+                                            <div style={{ fontSize: 13, fontWeight: 800, marginBottom: 15, color: "#80bdff" }}>PERFIL DO AGENTE</div>
+                                            <div style={{ display: "flex", alignItems: "center", gap: 15, marginBottom: 20 }}>
+                                                <div style={{ width: 64, height: 64, borderRadius: 32, background: "rgba(255,255,255,0.05)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 28, border: "1px solid rgba(255,255,255,0.15)" }}>
+                                                    👤
+                                                </div>
+                                                <div>
+                                                    <div style={{ fontSize: 18, fontWeight: 800 }}>{state.player.nome}</div>
+                                                    <Badge tone="blue">{state.player.nivelTitulo || "Recruta"}</Badge>
+                                                    <div style={{ fontSize: 10, opacity: 0.6, marginTop: 4 }}>Saldo: ${state.player.dinheiro} | XP: {state.player.xp}</div>
+                                                </div>
+                                            </div>
+                                            <div style={{ borderTop: "1px solid rgba(255,255,255,0.1)", paddingTop: 15 }}>
+                                                <div style={{ fontSize: 12, fontWeight: 700, marginBottom: 10 }}>MISSÕES EM CURSO</div>
+                                                <div style={{ padding: 12, borderRadius: 12, background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.1)", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                                                    <div style={{ fontSize: 13 }}>{caseObj.titulo}</div>
+                                                    <Badge tone="green">Ativa</Badge>
+                                                </div>
+                                            </div>
+                                        </>
+                                    )}
+
+                                    {profileTab === "GALERIA" && (
+                                        <SuspectGallery capturedSuspects={state.capturedSuspects || {}} />
+                                    )}
                                 </div>
                             )}
                         </Panel>
