@@ -292,7 +292,7 @@ export default function Caso() {
             ...nextState,
             runs: { ...nextState.runs, [caseId]: nextRun },
         });
-        setState(finalState);
+        replaceState(finalState);
         setViewMode("ARRIVAL");
 
         // Se for o país correto, mostra o vídeo do suspeito
