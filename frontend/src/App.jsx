@@ -5,6 +5,7 @@ import Caso from "./pages/Caso";
 import CasoSolucionado from "./pages/CasoSolucionado";
 import Splash from "./pages/Splash";
 import MissaoIntro from "./pages/MissaoIntro";
+import Perfil from "./pages/Perfil";
 import AudioManager from "./components/AudioManager";
 import { GameProvider } from "./game/GameProvider";
 import { loadGame } from "./game/store";
@@ -37,6 +38,7 @@ export default function App() {
           <Route path="/caso/:caseId" element={<Caso />} />
           <Route path="/missao-intro/:caseId" element={<MissaoIntro />} />
           <Route path="/caso-solucionado/:caseId" element={<CasoSolucionado />} />
+          <Route path="/perfil" element={<Perfil />} />
         </Routes>
       </div>
     </GameProvider>

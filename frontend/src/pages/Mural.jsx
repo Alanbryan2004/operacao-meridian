@@ -35,12 +35,14 @@ function Badge({ children, tone = "gray" }) {
     );
 }
 
-function CaseCard({ c, onOpen }) {
+function CaseCard({ c, onOpen, status }) {
     const diffTone =
         c.dificuldade === "FACIL" ? "green" :
             c.dificuldade === "MEDIO" ? "blue" :
                 c.dificuldade === "DIFICIL" ? "amber" :
                     "purple";
+
+    const isActive = status === "IN_PROGRESS";
 
     return (
         <button
@@ -49,11 +51,11 @@ function CaseCard({ c, onOpen }) {
                 width: "100%",
                 textAlign: "left",
                 borderRadius: 18,
-                border: "1px solid rgba(255,255,255,.14)",
-                background: "rgba(255,255,255,0.06)",
+                border: isActive ? "1px solid rgba(128,189,255,0.4)" : "1px solid rgba(255,255,255,.14)",
+                background: isActive ? "rgba(128,189,255,0.08)" : "rgba(255,255,255,0.06)",
                 backdropFilter: "blur(10px)",
                 WebkitBackdropFilter: "blur(10px)",
-                boxShadow: "0 16px 38px rgba(0,0,0,.45)",
+                boxShadow: isActive ? "0 0 20px rgba(128,189,255,0.15), 0 16px 38px rgba(0,0,0,.45)" : "0 16px 38px rgba(0,0,0,.45)",
                 padding: 14,
                 cursor: "pointer",
             }}
@@ -72,10 +74,13 @@ function CaseCard({ c, onOpen }) {
                 <Badge tone={diffTone}>{c.dificuldade}</Badge>
             </div>
 
-            <div style={{ marginTop: 10, display: "flex", gap: 8, flexWrap: "wrap" }}>
+            <div style={{ marginTop: 10, display: "flex", gap: 8, flexWrap: "wrap", alignItems: "center" }}>
                 <Badge tone="gray">💰 ${c.recompensa}</Badge>
                 <Badge tone="blue">🧠 XP {c.xp}</Badge>
                 <Badge tone="purple">⏳ {c.tempoTotalHoras}h</Badge>
+                {status === "IN_PROGRESS" && <Badge tone="blue">🔵 EM ANDAMENTO</Badge>}
+                {status === "WON" && <Badge tone="green">✅ COMPLETA</Badge>}
+                {status === "LOST" && <Badge tone="red">❌ FRACASSADA</Badge>}
             </div>
         </button>
     );
@@ -165,7 +170,7 @@ export default function Mural() {
                         </div>
 
                         <div className="om-actions">
-                            <button className="om-miniBtn" onClick={() => nav("/login")}>
+                            <button className="om-miniBtn" onClick={() => nav("/perfil")}>
                                 PERFIL
                             </button>
                             <button
@@ -189,7 +194,8 @@ export default function Mural() {
                             <div key={c.id} style={{ opacity: isOtherActive ? 0.5 : 1, pointerEvents: isOtherActive ? "none" : "auto" }}>
                                 <CaseCard
                                     c={c}
-                                    onOpen={() => nav(`/missao-intro/${c.id}`)}
+                                    status={run?.status}
+                                    onOpen={() => nav(isActive ? `/caso/${c.id}` : `/missao-intro/${c.id}`)}
                                 />
                                 {isOtherActive && (
                                     <div style={{ fontSize: 10, color: "#ff9090", textAlign: "center", marginTop: 4, fontWeight: 700 }}>

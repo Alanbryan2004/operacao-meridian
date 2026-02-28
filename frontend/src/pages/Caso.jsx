@@ -537,12 +537,13 @@ export default function Caso() {
                 {viewMode !== "ANALYZE" && !(viewMode === "PROFILE" && profileTab === "GALERIA") && (
                     <div className="om-top">
                         <Panel>
+                            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 4 }}>
+                                <div style={{ fontSize: 10, opacity: 0.6, letterSpacing: 2 }}>MISSÃO ATIVA</div>
+                                <div style={{ fontSize: 10, opacity: 0.6 }}>📍 {run.localAtual.cidade} · {run.localAtual.pais}</div>
+                            </div>
                             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                                <div>
-                                    <div style={{ fontSize: 10, opacity: 0.6, letterSpacing: 2 }}>MISSÃO ATIVA</div>
-                                    <div className="om-title">{caseObj.titulo}</div>
-                                </div>
-                                <div style={{ textAlign: "right", display: "flex", gap: "15px" }}>
+                                <div className="om-title">{caseObj.titulo}</div>
+                                <div style={{ textAlign: "right", display: "flex", gap: "15px", flexShrink: 0 }}>
                                     <div>
                                         <div style={{ fontSize: 14, fontWeight: 900 }}>${state.player.dinheiro}</div>
                                         <div style={{ fontSize: 10, opacity: 0.6 }}>SALDO</div>
@@ -640,13 +641,18 @@ export default function Caso() {
                 )}
 
                 {/* DialogBox views — render directly, the balloon IS the card */}
-                {viewMode === "RESUMO" && (
-                    <DialogBox
-                        title="RELATÓRIO DO CASO"
-                        text={caseObj.resumo + "\n\n📍 Local Atual: " + run.localAtual.cidade + " · " + run.localAtual.pais}
-                        onComplete={() => setViewMode("ACTIONS")}
-                    />
-                )}
+                {viewMode === "RESUMO" && (() => {
+                    const dias = Math.floor(run.tempoRestanteHoras / 24);
+                    const horas = run.tempoRestanteHoras % 24;
+                    const tempoStr = dias > 0 ? `${dias} dia${dias > 1 ? "s" : ""} e ${horas}h` : `${horas}h`;
+                    return (
+                        <DialogBox
+                            title="MISSÃO ATIVA"
+                            text={`Você ainda tem ${tempoStr} restantes para localizar e prender o Suspeito antes que o tempo se esgote.\n\n📍 Local Atual: ${run.localAtual.cidade} · ${run.localAtual.pais}`}
+                            onComplete={() => setViewMode("ACTIONS")}
+                        />
+                    );
+                })()}
 
                 {viewMode === "DIALOGUE" && selectedLocal && (
                     <DialogBox
@@ -878,8 +884,10 @@ export default function Caso() {
                                         <>
                                             <div style={{ fontSize: 13, fontWeight: 800, marginBottom: 15, color: "#80bdff" }}>PERFIL DO AGENTE</div>
                                             <div style={{ display: "flex", alignItems: "center", gap: 15, marginBottom: 20 }}>
-                                                <div style={{ width: 64, height: 64, borderRadius: 32, background: "rgba(255,255,255,0.05)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 28, border: "1px solid rgba(255,255,255,0.15)" }}>
-                                                    👤
+                                                <div style={{ width: 64, height: 64, borderRadius: 32, background: "rgba(255,255,255,0.05)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 28, border: "1px solid rgba(255,255,255,0.15)", overflow: "hidden" }}>
+                                                    {state.player.avatarUrl ? (
+                                                        <img src={state.player.avatarUrl} alt="Avatar" style={{ width: "100%", height: "100%", objectFit: "cover" }} referrerPolicy="no-referrer" />
+                                                    ) : "👤"}
                                                 </div>
                                                 <div>
                                                     <div style={{ fontSize: 18, fontWeight: 800 }}>{state.player.nome}</div>
