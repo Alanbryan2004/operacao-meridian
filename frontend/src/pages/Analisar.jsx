@@ -122,7 +122,7 @@ export default function Analisar({ onBack, filters, setFilters, warrantId, setWa
                 .om-badge-mini { padding: 2px 6px; border-radius: 4px; background: rgba(255,255,255,0.1); font-size: 9px; }
             `}</style>
 
-            <Panel style={{ marginBottom: "15px", maxHeight: "280px", overflowY: "auto" }}>
+            <Panel style={{ marginBottom: "15px", maxHeight: "220px", overflowY: "auto" }}>
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "12px", sticky: "top" }}>
                     <div style={{ fontSize: 11, fontWeight: 800, color: "#80bdff" }}>FILTRAR PERFIL</div>
                     <div style={{ fontSize: "10px", opacity: 0.7, fontWeight: 700, letterSpacing: 0.5 }}>
