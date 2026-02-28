@@ -673,7 +673,7 @@ export default function Caso() {
                                 <div>
                                     <div style={{ fontSize: 13, fontWeight: 800, marginBottom: 12, color: "#80bdff" }}>ESCOLHER DESTINO</div>
                                     <div className="om-muted" style={{ marginBottom: 15 }}>Seu próximo destino para seguir a trilha:</div>
-                                    <div style={{ display: "grid", gap: 10 }}>
+                                    <div style={{ display: "grid", gap: 10, maxHeight: 200, overflowY: "auto", paddingRight: 4 }}>
                                         {DESTINATION_OPTIONS
                                             .filter(d => d.origem === run.localAtual.cidade)
                                             .map(d => (
