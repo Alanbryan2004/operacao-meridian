@@ -8,6 +8,7 @@ import {
     registerCapture,
 } from "../game/store";
 import { useGame } from "../game/GameProvider";
+import { getCidadeImagem, getCidadeDescricao } from "../game/Cidades";
 import Analisar from "./Analisar";
 import SuspectGallery from "../components/SuspectGallery";
 import DialogBox from "../components/DialogBox";
@@ -83,8 +84,6 @@ const DESTINATION_OPTIONS = [
         origem: "Campinas",
         coords: { x: 300, y: 50 },
         flag: "🇵🇹",
-        img: "/Paises/Portugal.png",
-        desc: "Portugal é um país europeu banhado pelo Atlântico, conhecido por sua rica história marítima e pelas grandes navegações.\n\nSua cultura mistura tradição e modernidade, com fado, azulejos, castelos medievais e uma gastronomia marcante como o bacalhau e os pastéis de nata.\n\nCom cidades históricas como Lisboa e Porto, o país encanta pelo charme, pela arquitetura e pelo espírito acolhedor de seu povo."
     },
     {
         id: "AR",
@@ -93,8 +92,6 @@ const DESTINATION_OPTIONS = [
         origem: "Campinas",
         coords: { x: 180, y: 155 },
         flag: "🇦🇷",
-        img: "/Paises/BuenosAires.png",
-        desc: "Buenos Aires é a vibrante capital da Argentina, conhecida por sua arquitetura elegante e avenidas amplas como a 9 de Julio.\n\nBerço do tango, mistura paixão, música e tradição em bairros icônicos como La Boca e San Telmo.\n\nCom cafés históricos, parrillas e vida cultural intensa, a cidade pulsa charme europeu com alma latina."
     },
     {
         id: "US",
@@ -103,8 +100,6 @@ const DESTINATION_OPTIONS = [
         origem: "Campinas",
         coords: { x: 120, y: 55 },
         flag: "🇺🇸",
-        img: "/Paises/NovaYork.png",
-        desc: "Nova York é uma das cidades mais icônicas do mundo, conhecida por seus arranha-céus imponentes e pela energia que nunca desacelera.\n\nLar da Estátua da Liberdade, da Times Square e do Central Park, é um centro global de cultura, negócios e entretenimento.\n\nDiversa e vibrante, mistura idiomas, sabores e estilos de vida em cada esquina, fazendo jus ao apelido de “a cidade que nunca dorme”."
     },
     // De Lisboa
     {
@@ -114,8 +109,6 @@ const DESTINATION_OPTIONS = [
         origem: "Lisboa",
         coords: { x: 280, y: 50 },
         flag: "🇪🇸",
-        img: "/Paises/Madrid.png",
-        desc: "Madrid, a capital da Espanha, é famosa por seus museus de classe mundial, como o Prado, e por sua vida noturna vibrante.\n\nUma cidade que respira arte, história e arquitetura monumental, de onde o Flamenco ecoa e a gastronomia de tapas conquista a todos.\n\nÉ um centro cosmopolita que mantém suas tradições vivas em cada praça e ruela histórica."
     },
     {
         id: "FR",
@@ -124,8 +117,6 @@ const DESTINATION_OPTIONS = [
         origem: "Lisboa",
         coords: { x: 200, y: 35 },
         flag: "🇫🇷",
-        img: "/Paises/Paris.png",
-        desc: "Paris, a Cidade Luz, é reconhecida mundialmente por sua arte, gastronomia e cultura. Com a imponente Torre Eiffel e o Museu do Louvre, ela exala sofisticação em cada boulevard.\n\nCaminhar por suas margens do Rio Sena é mergulhar em séculos de história, moda e o inconfundível estilo de vida parisiense."
     },
     {
         id: "EG",
@@ -134,8 +125,6 @@ const DESTINATION_OPTIONS = [
         origem: "Lisboa",
         coords: { x: 300, y: 110 },
         flag: "🇪🇬",
-        img: "/Paises/Cairo.png",
-        desc: "O Cairo, capital do Egito, é uma metrópole onde a história milenar se encontra com a modernidade caótica. Lar das Grandes Pirâmides de Gizé e da Esfinge, o destino é um portal para os mistérios dos faraós.\n\nSeus mercados tradicionais e a riqueza do Nilo criam uma experiência cultural única e profunda no coração do mundo árabe."
     },
     {
         id: "RU",
@@ -144,8 +133,6 @@ const DESTINATION_OPTIONS = [
         origem: "Madrid",
         coords: { x: 280, y: 40 },
         flag: "🇷🇺",
-        img: "/Paises/Moscou.png",
-        desc: "Moscou é o coração político e cultural da Rússia, famosa por sua icônica Praça Vermelha e pelas cúpulas coloridas da Catedral de São Basílio.\n\nCom uma história que remete aos tempos dos Czares e do império soviético, a cidade mistura o luxo clássico com a arquitetura brutalista.\n\nÉ um centro de poder onde o inverno rígido contrasta com o calor da hospitalidade e da arte russa."
     },
     {
         id: "BT",
@@ -154,8 +141,6 @@ const DESTINATION_OPTIONS = [
         origem: "Madrid",
         coords: { x: 300, y: 120 },
         flag: "🇧🇹",
-        img: "/Paises/Thimphu.png",
-        desc: "Thimphu, a capital do Reino do Butão, situa-se nos altos vales do Himalaia e é conhecida por não possuir semáforos.\n\nÉ um lugar onde a modernidade avança sem apagar as tradições budistas e o respeito profundo pela natureza.\n\nOs dzongs (fortalezas), os templos e a busca pela Felicidade Interna Bruta fazem desta cidade um destino espiritual único no mundo."
     },
     {
         id: "US_2",
@@ -164,8 +149,6 @@ const DESTINATION_OPTIONS = [
         origem: "Madrid",
         coords: { x: 120, y: 55 },
         flag: "🇺🇸",
-        img: "/Paises/NovaYork.png",
-        desc: "Nova York continua sendo o centro do mundo. De Madrid, a viagem atravessa o Atlântico rumo à metrópole que nunca dorme.\n\nA Estátua da Liberdade e a Times Square aguardam aqueles que buscam a última pista ou o esconderijo final do suspeito."
     },
     {
         id: "US_3",
@@ -174,8 +157,6 @@ const DESTINATION_OPTIONS = [
         origem: "Moscou",
         coords: { x: 120, y: 55 },
         flag: "🇺🇸",
-        img: "/Paises/NovaYork.png",
-        desc: "Moscou para Nova York: uma longa jornada do Leste para o Oeste. Você cruza continentes e o oceano em busca da peça final do quebra-cabeça.\n\nA metrópole americana é o lugar onde o suspeito acredita que pode se perder na multidão, mas sua busca termina aqui."
     },
     {
         id: "FR_2",
@@ -184,8 +165,6 @@ const DESTINATION_OPTIONS = [
         origem: "Moscou",
         coords: { x: 300, y: 100 },
         flag: "🇫🇷",
-        img: "/Paises/Paris.png",
-        desc: "Paris, a cidade luz, é um destino recorrente para aqueles que tentam despistar autoridades. De Moscou, a rota volta para a Europa Central.\n\nA Torre Eiffel e o Louvre são cenários de beleza, mas não deixe a estética francesa distraí-lo do seu objetivo principal."
     },
     {
         id: "LY",
@@ -194,8 +173,6 @@ const DESTINATION_OPTIONS = [
         origem: "Moscou",
         coords: { x: 360, y: 220 },
         flag: "🇱🇾",
-        img: "/Paises/Tripoli.png",
-        desc: "Trípoli, a capital da Líbia, é uma cidade portuária no Mediterrâneo com uma mistura fascinante de história árabe e arquitetura colonial.\n\nDas ruelas da medina aos monumentos históricos, a cidade oferece esconderijos perfeitos para quem conhece bem a região."
     }
 ];
 
@@ -253,10 +230,10 @@ export default function Caso() {
     }, [run?.status]);
 
     const currentCityImg = useMemo(() => {
-        if (!run) return "/reliquiaDesaparecida.png";
-        if (run.localAtual.cidade === "Campinas") return "/reliquiaDesaparecida.png";
-        const dest = DESTINATION_OPTIONS.find(d => d.cidade === run.localAtual.cidade);
-        return dest?.img || "/reliquiaDesaparecida.png";
+        if (!run) return caseObj?.imgItem || "/reliquiaDesaparecida.png";
+        const img = getCidadeImagem(run.localAtual.cidade);
+        // Se a cidade não foi encontrada no catálogo, usa a imagem do caso
+        return img !== "/Paises/default.png" ? img : (caseObj?.imgItem || "/reliquiaDesaparecida.png");
     }, [run?.localAtual?.cidade]);
 
     if (!state || !caseObj || !run) return null;
@@ -773,7 +750,7 @@ export default function Caso() {
                                                 </div>
                                             ) : (
                                                 <DialogBox
-                                                    text={selectedDest?.desc || ""}
+                                                    text={getCidadeDescricao(selectedDest?.cidade) || selectedDest?.desc || ""}
                                                     onComplete={() => { setViewMode("ACTIONS"); setSelectedDest(null); }}
                                                 />
                                             )}

@@ -155,8 +155,9 @@ export default function Perfil() {
                         <button
                             onClick={async () => {
                                 await supabase.auth.signOut();
-                                localStorage.removeItem("operacao_meridian__mvp_state_v1");
-                                nav("/login");
+                                localStorage.clear();
+                                sessionStorage.clear();
+                                window.location.href = "/login";
                             }}
                             style={{
                                 width: "100%", padding: "14px",
