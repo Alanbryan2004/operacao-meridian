@@ -1,12 +1,12 @@
 import React, { useMemo } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { loadGame } from "../game/store";
+import { useGame } from "../game/GameProvider";
 import DialogBox from "../components/DialogBox";
 
 export default function CasoSolucionado() {
     const { caseId } = useParams();
     const nav = useNavigate();
-    const state = loadGame();
+    const { state } = useGame();
 
     const caseObj = useMemo(() => state?.cases?.find(c => String(c.id) === String(caseId)), [state, caseId]);
     const run = useMemo(() => state?.runs?.[caseId], [state, caseId]);

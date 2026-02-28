@@ -1,13 +1,13 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import {
-    loadGame,
     saveGame,
     spendMoney,
     spendTime,
     startRunIfNeeded,
     registerCapture,
 } from "../game/store";
+import { useGame } from "../game/GameProvider";
 import Analisar from "./Analisar";
 import SuspectGallery from "../components/SuspectGallery";
 import DialogBox from "../components/DialogBox";
@@ -208,7 +208,7 @@ const TRANSPORT_MODES = [
 export default function Caso() {
     const nav = useNavigate();
     const { caseId } = useParams();
-    const [state, setState] = useState(null);
+    const { state, replaceState } = useGame();
 
     // MODOS CARD 2: "RESUMO" | "ACTIONS" | "LOCATIONS" | "DIALOGUE" | "JOURNAL" | "PROFILE" | "TRAVEL_MAP" | "TRAVEL_MODES" | "ARRIVAL"
     const [viewMode, setViewMode] = useState("RESUMO");
@@ -221,20 +221,21 @@ export default function Caso() {
     const [profileTab, setProfileTab] = useState("PERFIL");
 
     useEffect(() => {
-        const s = loadGame();
-        const caseObj = s.cases.find((x) => x.id === caseId);
+        if (!state) return;
+        const caseObj = state.cases.find((x) => x.id === caseId);
         if (!caseObj) {
             nav("/mural");
             return;
         }
 
-        const next = startRunIfNeeded(s, caseObj);
-        const saved = saveGame(next);
-        setState(saved);
+        const next = startRunIfNeeded(state, caseObj);
+        if (next !== state) {
+            replaceState(saveGame(next));
+        }
 
         // tenta tocar áudio (se já liberou no splash/login)
         window.dispatchEvent(new CustomEvent("meridian-play-audio", { detail: true }));
-    }, [caseId, nav]);
+    }, [caseId]);
 
     const caseObj = useMemo(
         () => state?.cases?.find((x) => x.id === caseId),
@@ -262,8 +263,7 @@ export default function Caso() {
 
     function updateRun(nextRun) {
         const nextState = { ...state, runs: { ...state.runs, [caseId]: nextRun } };
-        const saved = saveGame(nextState);
-        setState(saved);
+        replaceState(saveGame(nextState));
     }
 
     function confirmarViagem(transport) {
@@ -360,7 +360,7 @@ export default function Caso() {
                         player: { ...state.player, dinheiro: state.player.dinheiro + caseObj.recompensa, xp: state.player.xp + caseObj.xp },
                         runs: { ...state.runs, [caseId]: nextRun },
                     }, run.warrantId);
-                    setState(saveGame(nextState));
+                    replaceState(saveGame(nextState));
                 } else {
                     const nextRun = {
                         ...nextRunCount,
@@ -464,7 +464,7 @@ export default function Caso() {
             player: { ...state.player, dinheiro: state.player.dinheiro + caseObj.recompensa, xp: state.player.xp + caseObj.xp },
             runs: { ...state.runs, [caseId]: nextRun },
         }, run.warrantId);
-        setState(saveGame(nextState));
+        replaceState(saveGame(nextState));
     }
 
     const diffTone = caseObj.dificuldade === "FACIL" ? "green" : caseObj.dificuldade === "MEDIO" ? "blue" : "amber";

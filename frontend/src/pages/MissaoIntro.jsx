@@ -1,18 +1,15 @@
 import React, { useEffect, useState, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { loadGame } from "../game/store";
+import { useGame } from "../game/GameProvider";
 
 export default function MissaoIntro() {
     const { caseId } = useParams();
     const nav = useNavigate();
     const [phase, setPhase] = useState("VIDEO"); // VIDEO or BRIEFING
-    const [state, setState] = useState(null);
+    const { state } = useGame();
     const videoRef = useRef(null);
 
     useEffect(() => {
-        const s = loadGame();
-        setState(s);
-
         // Se não for o caso da relíquia, pula direto pro briefing (ou se o vídeo falhar)
         if (caseId !== "C001") {
             setPhase("BRIEFING");

@@ -2,10 +2,9 @@ import React, { createContext, useContext, useEffect, useMemo, useReducer, useSt
 import { ensureProfile, loadGameState, saveGameState } from "../services/gameSaveService";
 import { useSupabaseAutoSave } from "../hooks/useSupabaseAutoSave";
 import { supabase } from "../lib/supabase";
+import { loadGame } from "../game/store";
 
-// Action especial para substituir state inteiro
 const REPLACE_STATE = "REPLACE_STATE";
-
 const GameContext = createContext(null);
 
 export function useGame() {
@@ -14,27 +13,36 @@ export function useGame() {
     return ctx;
 }
 
-/**
- * Você precisa passar:
- * - initialState: seu seed do jogo
- * - reducer: seu reducer (ou use um simples e vai evoluindo)
- */
 export function GameProvider({ initialState, reducer, children }) {
     const [sessionReady, setSessionReady] = useState(false);
+    const [hydrated, setHydrated] = useState(false);
+    const [canSave, setCanSave] = useState(false);
 
     const wrappedReducer = (state, action) => {
         if (action?.type === REPLACE_STATE) return action.payload;
         return reducer(state, action);
     };
 
-    const [state, dispatch] = useReducer(wrappedReducer, initialState);
+    // 🔥 Inicializa já puxando do localStorage (se existir)
+    const [state, dispatch] = useReducer(
+        wrappedReducer,
+        initialState,
+        (init) => {
+            try {
+                const local = loadGame(); // seu store já devolve seed caso não tenha nada
+                return local || init;
+            } catch {
+                return init;
+            }
+        }
+    );
 
-    // 1) Garante que a sessão Supabase está carregada
+    // 1) Garante que auth está carregada
     useEffect(() => {
         let mounted = true;
 
         (async () => {
-            const { data } = await supabase.auth.getSession();
+            await supabase.auth.getSession();
             if (mounted) setSessionReady(true);
         })();
 
@@ -48,48 +56,55 @@ export function GameProvider({ initialState, reducer, children }) {
         };
     }, []);
 
-    // 2) Ao ficar pronto e logado, tenta carregar save remoto e substituir state
+    // 2) Hidrata remoto (se logado). Se não tiver remoto, cria.
     useEffect(() => {
         if (!sessionReady) return;
 
         (async () => {
             const { data: { user } } = await supabase.auth.getUser();
-            if (!user) return; // não logado ainda
 
-            // nickname: adapte se você tiver nome do jogador em algum lugar
+            // não logado => já estamos ok com local
+            if (!user) {
+                setCanSave(false);
+                setHydrated(true);
+                return;
+            }
+
+            setCanSave(true);
+
+            // garante profile
             await ensureProfile(user.email || "");
 
+            // tenta remoto
             const remote = await loadGameState(0);
 
             if (remote) {
                 dispatch({ type: REPLACE_STATE, payload: remote });
             } else {
-                // Primeira vez: cria save com o state atual (seed)
+                // primeira vez logado: cria remoto com o state atual (que já veio do local)
                 await saveGameState(state, 0);
             }
-        })().catch((e) => console.error("Erro ao iniciar save do jogo:", e));
 
+            setHydrated(true);
+        })().catch((e) => {
+            console.error("Erro ao hidratar save do jogo:", e);
+            setHydrated(true);
+        });
+
+        // IMPORTANTÍSSIMO: não coloca state nas deps aqui pra não entrar em loop
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [sessionReady]);
 
-    // 3) Auto-save sempre que o state mudar (somente se estiver logado)
-    const [canSave, setCanSave] = useState(false);
-    useEffect(() => {
-        if (!sessionReady) return;
-
-        (async () => {
-            const { data: { user } } = await supabase.auth.getUser();
-            setCanSave(!!user);
-        })();
-    }, [sessionReady]);
-
-    useSupabaseAutoSave(state, canSave, 0);
+    // 3) Auto-save: sempre local. Remoto só se canSave e hydrated
+    useSupabaseAutoSave(state, canSave, 0, hydrated);
 
     const value = useMemo(() => ({
         state,
         dispatch,
         replaceState: (next) => dispatch({ type: REPLACE_STATE, payload: next }),
-    }), [state]);
+        hydrated,
+        canSave,
+    }), [state, hydrated, canSave]);
 
     return <GameContext.Provider value={value}>{children}</GameContext.Provider>;
 }

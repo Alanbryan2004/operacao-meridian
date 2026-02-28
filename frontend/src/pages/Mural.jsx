@@ -1,7 +1,7 @@
 // src/pages/Mural.jsx
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { loadGame } from "../game/store";
+import { useGame } from "../game/GameProvider";
 
 function Badge({ children, tone = "gray" }) {
     const map = {
@@ -83,10 +83,9 @@ function CaseCard({ c, onOpen }) {
 
 export default function Mural() {
     const nav = useNavigate();
-    const [state, setState] = useState(null);
+    const { state } = useGame();
 
     useEffect(() => {
-        setState(loadGame());
         // tenta tocar (se já liberou no splash/login)
         window.dispatchEvent(new CustomEvent("meridian-play-audio", { detail: true }));
     }, []);
