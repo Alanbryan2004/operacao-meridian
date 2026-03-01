@@ -80,8 +80,6 @@ function CaseCard({ c, onOpen, status }) {
                 <Badge tone="blue">🧠 XP {c.xp}</Badge>
                 <Badge tone="purple">⏳ {c.tempoTotalHoras}h</Badge>
                 {status === "IN_PROGRESS" && <Badge tone="blue">🔵 EM ANDAMENTO</Badge>}
-                {!c.replayable && status === "WON" && <Badge tone="green">✅ COMPLETA</Badge>}
-                {!c.replayable && status === "LOST" && <Badge tone="red">❌ FRACASSADA</Badge>}
             </div>
         </button>
     );

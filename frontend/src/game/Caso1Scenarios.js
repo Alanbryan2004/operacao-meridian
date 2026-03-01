@@ -120,7 +120,7 @@ export const CASO_1_SCENARIOS = [
             "Moscou": ["Londres", "Nova York", "Toronto"]
         },
         interrogatorios: [
-            { id: "S4_1", cidade: "Campinas", local: "Floricultura", personagem: "Florista", imgLocal: "/NPC/Floricultura.png", imgPersonagem: "/NPC/Florista.png", pista: "A pessoa perguntou sobre voos para uma cidade europeia antiga perto do oceano. Era alguém de aparência andrógina… não era possível definir se era homem ou mulher." },
+            { id: "S4_1", cidade: "Campinas", local: "Floricultura", personagem: "Florista", imgLocal: "/NPC/Floricultura.png", imgPersonagem: "/NPC/Florista.png", pista: "A pessoa perguntou sobre voos para uma cidade europeia antiga perto do oceano. Comentou que jogava muito xadrez e viajaria para uma cidade moderna na América do Norte." },
             { id: "S4_2", cidade: "Campinas", local: "Restaurante", personagem: "Garçom", imgLocal: "/NPC/Restaurante.png", imgPersonagem: "/NPC/Garcon.png", pista: "A pessoa olhava fotos de uma cidade com ruas históricas e arquitetura antiga." },
             { id: "S4_3", cidade: "Campinas", local: "Hospital", personagem: "Médica", imgLocal: "/NPC/Hospital.png", imgPersonagem: "/NPC/Medica.png", pista: "Perguntou sobre um voo para uma cidade europeia muito antiga." },
 
@@ -132,8 +132,8 @@ export const CASO_1_SCENARIOS = [
             { id: "S4_8", cidade: "Paris", local: "Táxi", personagem: "Taxista", imgLocal: "/NPC/Taxi.png", imgPersonagem: "/NPC/Taxista.png", pista: "Comentou sobre viajar para uma cidade com inverno rigoroso." },
             { id: "S4_9", cidade: "Paris", local: "Restaurante", personagem: "Garçom", imgLocal: "/NPC/Restaurante.png", imgPersonagem: "/NPC/Garcon.png", pista: "Falou sobre uma cidade onde neva muito." },
 
-            { id: "S4_10", cidade: "Moscou", local: "Táxi", personagem: "Taxista", imgLocal: "/NPC/Taxi.png", imgPersonagem: "/NPC/Taxista.png", pista: "Levei a pessoa ao aeroporto. Comentou que jogava muito xadrez e viajaria para uma cidade moderna na América do Norte." },
-            { id: "S4_11", cidade: "Moscou", local: "Banco", personagem: "Banqueiro", imgLocal: "/NPC/Banco.png", imgPersonagem: "/NPC/Banqueiro.png", pista: "Falou sobre viajar para uma cidade canadense." },
+            { id: "S4_10", cidade: "Moscou", local: "Táxi", personagem: "Taxista", imgLocal: "/NPC/Taxi.png", imgPersonagem: "/NPC/Taxista.png", pista: "Levei a pessoa ao aeroporto. Comentou que jogava muito xadrez e viajaria para uma cidade moderna na América do Norte. " },
+            { id: "S4_11", cidade: "Moscou", local: "Banco", personagem: "Banqueiro", imgLocal: "/NPC/Banco.png", imgPersonagem: "/NPC/Banqueiro.png", pista: "Falou sobre viajar para uma cidade canadense. Era alguém de aparência andrógina… não era possível definir se era homem ou mulher." },
             { id: "S4_12", cidade: "Moscou", local: "Morador de Rua", personagem: "Morador de Rua", imgLocal: "/NPC/Restaurante.png", imgPersonagem: "/NPC/moradorderua.png", pista: "Mencionou um destino no Canadá." },
 
             { id: "S4_13", cidade: "Toronto", local: "Banco", personagem: "Banqueiro", imgLocal: "/NPC/Banco.png", imgPersonagem: "/NPC/Banqueiro.png", pista: "Sim… a pessoa está aqui em Toronto. Tinha cabelo platinado e olhos castanhos. Antes de sair, comentou que queria comer comida francesa." },
