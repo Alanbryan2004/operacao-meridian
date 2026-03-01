@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useGame } from "../game/GameProvider";
+import { getCaseConfig } from "../game/CasosScenarios";
 
 export default function MissaoIntro() {
     const { caseId } = useParams();
@@ -9,12 +10,14 @@ export default function MissaoIntro() {
     const { state } = useGame();
     const videoRef = useRef(null);
 
+    const caseConfig = getCaseConfig(caseId);
+
     useEffect(() => {
-        // Se não for o caso da relíquia, pula direto pro briefing (ou se o vídeo falhar)
-        if (caseId !== "C001") {
+        // Se o caso não tem vídeo de intro definido, pula pro briefing
+        if (!caseConfig.hasIntroVideo) {
             setPhase("BRIEFING");
         }
-    }, [caseId]);
+    }, [caseId, caseConfig]);
 
     const handleVideoEnd = () => {
         setPhase("BRIEFING");
@@ -34,7 +37,7 @@ export default function MissaoIntro() {
             <div style={{ height: "100dvh", width: "100vw", background: "#000", display: "flex", alignItems: "center", justifyContent: "center" }}>
                 <video
                     ref={videoRef}
-                    src="/Videos/reliquiadesaparecida.mp4"
+                    src={caseConfig.introVideo}
                     autoPlay
                     style={{ maxWidth: "100%", maxHeight: "100%" }}
                     onEnded={handleVideoEnd}
