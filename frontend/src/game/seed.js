@@ -11,6 +11,7 @@ export const casesSeed = [
         localInicial: { pais: "Brasil", cidade: "Campinas" },
         resumo: "A joia roubada era a lendária Lágrima de Aeternum, uma relíquia antiga cravejada de ouro e um núcleo de cristal incandescente, conhecida por seu brilho quase sobrenatural.\n\nEla desapareceu do Museu do Centro Histórico, arrancada de um pedestal protegido por vidro reforçado durante a noite.\n\nAvaliada em cerca de R$ 25 milhões, seu valor real vai além do dinheiro, envolvendo séculos de história e segredos ainda não revelados. 🔎💎",
         imgItem: "/reliquiaDesaparecida.png",
+        replayable: true,
         interrogatorios: [
             {
                 id: "L001",

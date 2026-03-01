@@ -27,24 +27,19 @@ export default function CasoSolucionado() {
 
     function handleEncerrar() {
         if (isWon) {
-            // Verifica se o jogador tem XP para promoção
-            const cargoAtual = getCargoByXp(player.xp);
-            const proximoCargo = getProximoCargo(player.xp);
+            // O cargo que o XP atual permitiria ter
+            const cargoPermitido = getCargoByXp(player.xp);
+            const nivelAtual = player.nivel || 1;
 
-            // Se há próximo cargo E o nível atual do jogador é menor que o cargo que o XP permite
-            if (proximoCargo && (player.nivel || 1) < cargoAtual.nivel) {
-                // Tem promoção pendente → já qualificou mas ainda não subiu
-                nav("/promocao");
-                return;
-            }
-
-            if (proximoCargo && cargoAtual.nivel >= (player.nivel || 1)) {
+            // Só vai para a tela de promoção se o XP permitir um nível MAIOR que o atual
+            if (cargoPermitido.nivel > nivelAtual) {
                 nav("/promocao");
                 return;
             }
         }
         nav("/mural");
     }
+
 
     return (
         <div style={{

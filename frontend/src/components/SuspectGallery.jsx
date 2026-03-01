@@ -117,7 +117,7 @@ export default function SuspectGallery({ capturedSuspects = {} }) {
                             </div>
                             <div className={`sg-count ${isUnlocked ? "unlocked" : ""}`}>
                                 {isUnlocked
-                                    ? `🔓 ${count} prisão${count > 1 ? "es" : ""}`
+                                    ? `🔓 ${count} ${count > 1 ? "prisões" : "prisão"}`
                                     : "🔒 Não capturado"
                                 }
                             </div>

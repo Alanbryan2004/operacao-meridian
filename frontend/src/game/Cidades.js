@@ -29,8 +29,15 @@ export const CIDADES = [
         cidade: "Campinas",
         pais: "Brasil",
         continente: "América do Sul",
-        imagem: "/Paises/Campinas.png",
+        imagem: "/Paises/default.png",
         descricao: "Cidade do interior de São Paulo, Campinas é um importante polo tecnológico e universitário. Moderna e estratégica, abriga centros de pesquisa e uma das maiores regiões metropolitanas do Brasil.",
+    },
+    {
+        cidade: "Sao Paulo",
+        pais: "Brasil",
+        continente: "América do Sul",
+        imagem: "/Paises/default.png",
+        descricao: "A maior metrópole da América do Sul, centro financeiro e cultural do Brasil. Famosa por seu ritmo frenético, diversidade gastronômica e grandes monumentos.",
     },
     {
         cidade: "Lisboa",

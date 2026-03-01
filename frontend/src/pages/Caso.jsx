@@ -9,9 +9,11 @@ import {
 } from "../game/store";
 import { useGame } from "../game/GameProvider";
 import { getCidadeImagem, getCidadeDescricao } from "../game/Cidades";
+import { CASOS_SCENARIOS } from "../game/CasosScenarios";
 import Analisar from "./Analisar";
 import SuspectGallery from "../components/SuspectGallery";
 import DialogBox from "../components/DialogBox";
+import ModalMsg from "../components/ModalMsg";
 
 function fmtHoras(h) {
     const horas = Math.max(0, Number(h || 0));
@@ -197,6 +199,15 @@ export default function Caso() {
     const [videoEnded, setVideoEnded] = useState(false);
     const [profileTab, setProfileTab] = useState("PERFIL");
 
+    // Modal de mensagem padronizado
+    const [modalConfig, setModalConfig] = useState({
+        show: false,
+        message: "",
+        type: "SUCCESS",
+        onConfirm: null,
+        isConfirm: false
+    });
+
     useEffect(() => {
         if (!state) return;
         const caseObj = state.cases.find((x) => x.id === caseId);
@@ -231,10 +242,24 @@ export default function Caso() {
 
     const currentCityImg = useMemo(() => {
         if (!run) return caseObj?.imgItem || "/reliquiaDesaparecida.png";
+
+        // Se estamos em Campinas (início) ou se a imagem da cidade é default, prioriza a imagem da relíquia/caso
         const img = getCidadeImagem(run.localAtual.cidade);
-        // Se a cidade não foi encontrada no catálogo, usa a imagem do caso
-        return img !== "/Paises/default.png" ? img : (caseObj?.imgItem || "/reliquiaDesaparecida.png");
+        if (run.localAtual.cidade === "Campinas" || img === "/Paises/default.png") {
+            return caseObj?.imgItem || "/reliquiaDesaparecida.png";
+        }
+        return img;
     }, [run?.localAtual?.cidade]);
+
+    const activeScenario = useMemo(() => {
+        if (!run?.scenarioId || !CASOS_SCENARIOS[caseId]) return null;
+        return CASOS_SCENARIOS[caseId].find(s => s.id === run.scenarioId);
+    }, [run?.scenarioId, caseId]);
+
+    const localInterrogatorios = useMemo(() => {
+        const source = activeScenario?.interrogatorios || run?.interrogatorios || caseObj?.interrogatorios || [];
+        return source.filter(loc => loc.cidade === run?.localAtual?.cidade);
+    }, [run?.localAtual?.cidade, activeScenario, run?.interrogatorios, caseObj?.interrogatorios]);
 
     if (!state || !caseObj || !run) return null;
 
@@ -274,8 +299,12 @@ export default function Caso() {
 
         // Se for o país correto, mostra o vídeo do suspeito
         let videoPath = null;
-        if (destino.id === "PT") videoPath = "/Videos/suspeito.mp4";
-        if (destino.cidade === "Nova York") videoPath = "/Videos/suspeito2.mp4";
+        const isSpotted = activeScenario?.spottedAt?.includes(destino.cidade);
+
+        if (isSpotted) {
+            // Se for a cidade final, usa o vídeo 'preso' (ou suspeito2 se preferir)
+            videoPath = destino.cidade === activeScenario.finalCity ? "/Videos/suspeito2.mp4" : "/Videos/suspeito.mp4";
+        }
 
         setVideoEnded(false);
         if (videoPath) {
@@ -309,11 +338,13 @@ export default function Caso() {
             }
         };
 
-        // Lógica de Captura Final em Nova York
-        if (locObj.cidade === "Nova York") {
+        // Lógica de Captura Final (Dinâmica por Cenário)
+        const isFinalCity = activeScenario ? locObj.cidade === activeScenario.finalCity : locObj.cidade === "Nova York";
+
+        if (isFinalCity) {
             // Se for o Garçom OU se for a SEGUNDA investigação na cidade
-            if (locObj.personagem === "Garçom" || currentCount >= 2) {
-                const hasCorrectWarrant = run.warrantId === "008"; // Hassan Al-Rashid
+            if (locObj.personagem === "Garçom" || locObj.personagem === "Curadora" || locObj.personagem === "Monge" || locObj.personagem === "Segurança" || currentCount >= 2) {
+                const hasCorrectWarrant = run.warrantId === (run.targetSuspectId || "008");
                 const isSuccess = run.mandadoEmitido && hasCorrectWarrant;
 
                 setDarkenScreen(true);
@@ -376,11 +407,19 @@ export default function Caso() {
     }
 
     function handleVoltar() {
+        // Agora o 'Voltar' funciona com base na rota do cenário se disponível
         let volta = null;
-        if (run.localAtual.cidade === "Lisboa") volta = { cidade: "Campinas", pais: "Brasil" };
-        if (run.localAtual.cidade === "Madrid") volta = { cidade: "Lisboa", pais: "Portugal" };
-        if (run.localAtual.cidade === "Moscou" || run.localAtual.cidade === "Thimphu" || (run.localAtual.cidade === "Nova York" && run.localAtual.pais === "EUA")) {
-            volta = { cidade: "Madrid", pais: "Espanha" };
+        if (activeScenario) {
+            const currentIndex = activeScenario.route.indexOf(run.localAtual.cidade);
+            if (currentIndex > 0) {
+                const prevCityName = activeScenario.route[currentIndex - 1];
+                volta = { cidade: prevCityName, pais: "" }; // O sistema de viagem resolve o país pelo nome da cidade
+            }
+        } else {
+            // Fallback para lógica antiga se não houver cenário
+            if (run.localAtual.cidade === "Lisboa") volta = { cidade: "Campinas", pais: "Brasil" };
+            if (run.localAtual.cidade === "Madrid") volta = { cidade: "Lisboa", pais: "Portugal" };
+            if (run.localAtual.cidade === "Moscou") volta = { cidade: "Madrid", pais: "Espanha" };
         }
 
         if (volta) {
@@ -442,6 +481,31 @@ export default function Caso() {
             runs: { ...state.runs, [caseId]: nextRun },
         }, run.warrantId);
         replaceState(saveGame(nextState));
+    }
+
+    function handleAbort() {
+        setModalConfig({
+            show: true,
+            message: "Deseja realmente ABORTAR esta missão? Todo o progresso atual será perdido.",
+            type: "ERROR",
+            isConfirm: true,
+            onConfirm: () => {
+                const nextRun = {
+                    ...run,
+                    status: "ABORTED",
+                    jornal: [...run.jornal, { t: new Date().toISOString(), msg: "🚩 MISSÃO ABORTADA PELO AGENTE." }],
+                };
+
+                const nextState = {
+                    ...state,
+                    runs: { ...state.runs, [caseId]: nextRun }
+                };
+
+                replaceState(saveGame(nextState));
+                setModalConfig({ show: false });
+                nav("/mural");
+            }
+        });
     }
 
     const diffTone = caseObj.dificuldade === "FACIL" ? "green" : caseObj.dificuldade === "MEDIO" ? "blue" : "amber";
@@ -772,19 +836,17 @@ export default function Caso() {
                                         padding: "0 8px"
                                     }}>PONTOS DE INVESTIGAÇÃO</legend>
                                     <div style={{ display: "grid", gap: 10 }}>
-                                        {(caseObj.interrogatorios?.filter(loc => loc.cidade === run.localAtual.cidade).length > 0) ? (
-                                            caseObj.interrogatorios
-                                                ?.filter(loc => loc.cidade === run.localAtual.cidade)
-                                                .map(loc => (
-                                                    <button
-                                                        key={loc.id}
-                                                        className="om-btn"
-                                                        style={{ textAlign: "left", paddingLeft: 15 }}
-                                                        onClick={() => interrogarNoLocal(loc)}
-                                                    >
-                                                        🕵️‍♂️ Ir para <span style={{ fontWeight: 800 }}>{loc.local}</span>
-                                                    </button>
-                                                ))
+                                        {localInterrogatorios.length > 0 ? (
+                                            localInterrogatorios.map(loc => (
+                                                <button
+                                                    key={loc.id}
+                                                    className="om-btn"
+                                                    style={{ textAlign: "left", paddingLeft: 15 }}
+                                                    onClick={() => interrogarNoLocal(loc)}
+                                                >
+                                                    🕵️‍♂️ Ir para <span style={{ fontWeight: 800 }}>{loc.local}</span>
+                                                </button>
+                                            ))
                                         ) : (
                                             // Fallback NPCs para quando está no país errado
                                             <>
@@ -799,7 +861,7 @@ export default function Caso() {
                                                         style={{ textAlign: "left", paddingLeft: 15 }}
                                                         onClick={() => interrogarNoLocal({
                                                             ...loc,
-                                                            pista: "Desculpe. Não Soube de Nenhum Suspeito por aqui."
+                                                            pista: "Desculpe. Não Souberam de Nenhum Suspeito por aqui."
                                                         })}
                                                     >
                                                         🕵️‍♂️ Ir para <span style={{ fontWeight: 800 }}>{loc.local}</span>
@@ -878,6 +940,24 @@ export default function Caso() {
                                                     <div style={{ fontSize: 13 }}>{caseObj.titulo}</div>
                                                     <Badge tone="green">Ativa</Badge>
                                                 </div>
+                                                <button
+                                                    onClick={handleAbort}
+                                                    style={{
+                                                        width: "100%",
+                                                        marginTop: 20,
+                                                        padding: "12px",
+                                                        borderRadius: 12,
+                                                        border: "1px solid rgba(255,70,70,0.3)",
+                                                        background: "rgba(255,70,70,0.1)",
+                                                        color: "#ff8080",
+                                                        fontSize: 11,
+                                                        fontWeight: 800,
+                                                        letterSpacing: 1,
+                                                        cursor: "pointer"
+                                                    }}
+                                                >
+                                                    🚩 ABORTAR MISSÃO
+                                                </button>
                                             </div>
                                         </>
                                     )}
@@ -938,6 +1018,16 @@ export default function Caso() {
                     </button>
                 </div>
             </div>
+
+            {modalConfig.show && (
+                <ModalMsg
+                    message={modalConfig.message}
+                    type={modalConfig.type}
+                    isConfirm={modalConfig.isConfirm}
+                    onConfirm={modalConfig.onConfirm}
+                    onClose={() => setModalConfig({ ...modalConfig, show: false })}
+                />
+            )}
         </div>
     );
 }

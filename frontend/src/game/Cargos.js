@@ -117,3 +117,11 @@ export function getProgressoCargo(xp) {
     const xpNecessario = proximo.xpMin - atual.xpMin;
     return Math.floor((xpNoNivel / xpNecessario) * 100);
 }
+
+/**
+ * Retorna os dados de um cargo pelo nível exato.
+ */
+export function getCargoByNivel(nivel) {
+    return CARGOS.find(c => c.nivel === nivel) || CARGOS[0];
+}
+

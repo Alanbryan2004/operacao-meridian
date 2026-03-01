@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useGame } from "../game/GameProvider";
-import { getCargoByXp, getProximoCargo } from "../game/Cargos";
+import { getCargoByXp, getProximoCargo, getCargoByNivel } from "../game/Cargos";
 import { getPromotionQuestion } from "../game/promotionQuestions";
 import { saveGame } from "../game/store";
 
@@ -24,18 +24,22 @@ export default function PromocaoScreen() {
     const [novoCargo, setNovoCargo] = useState(null);
 
     const player = state?.player;
-    const cargoAtual = player ? getCargoByXp(player.xp) : null;
-    const proximoCargo = player ? getProximoCargo(player.xp) : null;
+    const cargoAtual = player ? getCargoByNivel(player.nivel || 1) : null;
 
     // Sorteia a pergunta ao montar
     useEffect(() => {
-        if (!proximoCargo) {
+        const nivelAlvo = (player?.nivel || 1) + 1;
+        const cargoAlvo = getCargoByNivel(nivelAlvo);
+
+        if (!cargoAlvo || nivelAlvo > 50) {
             nav("/mural");
             return;
         }
-        setQuestion(getPromotionQuestion(proximoCargo.nivel));
-        setNovoCargo(proximoCargo);
+
+        setQuestion(getPromotionQuestion(nivelAlvo));
+        setNovoCargo(cargoAlvo);
     }, []);
+
 
     if (!state || !player || !question || !novoCargo) return null;
 

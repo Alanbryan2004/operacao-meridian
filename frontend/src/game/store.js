@@ -1,4 +1,5 @@
 import { casesSeed, initialPlayer } from "./seed";
+import { CASOS_SCENARIOS } from "./CasosScenarios";
 
 const KEY = "operacao_meridian__mvp_state_v1";
 
@@ -73,9 +74,25 @@ export function startRunIfNeeded(state, caseObj) {
     const hasActiveMission = Object.values(state.runs || {}).some(r => r.status === "IN_PROGRESS");
     if (hasActiveMission) return state;
 
+    // Sorteio de Cenário (SE existir para este caso)
+    let scenario = null;
+    let interrogatoriosOverride = caseObj.interrogatorios;
+    let targetSuspectId = null;
+
+    if (CASOS_SCENARIOS[caseObj.id]) {
+        const scenarios = CASOS_SCENARIOS[caseObj.id];
+        scenario = scenarios[Math.floor(Math.random() * scenarios.length)];
+        interrogatoriosOverride = scenario.interrogatorios;
+        targetSuspectId = scenario.suspectId;
+        console.log(`[ATLAS] Cenário sorteado para ${caseObj.id}: ${scenario.id} (Suspeito: ${targetSuspectId})`);
+    }
+
     const run = {
         caseId: caseObj.id,
+        scenarioId: scenario?.id || null,
+        targetSuspectId: targetSuspectId,
         status: "IN_PROGRESS",
+        interrogatorios: interrogatoriosOverride, // Agora a run tem seus próprios interrogatórios
         tempoRestanteHoras: caseObj.tempoTotalHoras,
         dinheiroNoInicio: state.player.dinheiro,
         localAtual: { ...caseObj.localInicial },

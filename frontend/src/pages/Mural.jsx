@@ -1,7 +1,8 @@
 // src/pages/Mural.jsx
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useGame } from "../game/GameProvider";
+import ModalMsg from "../components/ModalMsg";
 
 function Badge({ children, tone = "gray" }) {
     const map = {
@@ -79,8 +80,8 @@ function CaseCard({ c, onOpen, status }) {
                 <Badge tone="blue">🧠 XP {c.xp}</Badge>
                 <Badge tone="purple">⏳ {c.tempoTotalHoras}h</Badge>
                 {status === "IN_PROGRESS" && <Badge tone="blue">🔵 EM ANDAMENTO</Badge>}
-                {status === "WON" && <Badge tone="green">✅ COMPLETA</Badge>}
-                {status === "LOST" && <Badge tone="red">❌ FRACASSADA</Badge>}
+                {!c.replayable && status === "WON" && <Badge tone="green">✅ COMPLETA</Badge>}
+                {!c.replayable && status === "LOST" && <Badge tone="red">❌ FRACASSADA</Badge>}
             </div>
         </button>
     );
@@ -89,6 +90,7 @@ function CaseCard({ c, onOpen, status }) {
 export default function Mural() {
     const nav = useNavigate();
     const { state } = useGame();
+    const [modal, setModal] = useState({ show: false, message: "" });
 
     useEffect(() => {
         // tenta tocar (se já liberou no splash/login)
@@ -175,7 +177,7 @@ export default function Mural() {
                             </button>
                             <button
                                 className="om-miniBtn"
-                                onClick={() => alert("Ranking/Clãs (em breve)")}
+                                onClick={() => setModal({ show: true, message: "O sistema de Ranking e Clãs da A.T.L.A.S. será liberado em breve!" })}
                             >
                                 CLÃS
                             </button>
@@ -207,6 +209,13 @@ export default function Mural() {
                     })}
                 </div>
             </div>
+
+            {modal.show && (
+                <ModalMsg
+                    message={modal.message}
+                    onClose={() => setModal({ show: false, message: "" })}
+                />
+            )}
         </div>
     );
 }
