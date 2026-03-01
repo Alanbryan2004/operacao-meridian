@@ -11,15 +11,21 @@
  */
 
 import { CASO_1_SCENARIOS } from "./Caso1Scenarios";
+import { CASO_2_SCENARIOS } from "./Caso2Scenarios";
 
 export const CASOS_SCENARIOS = {
-    "C001": CASO_1_SCENARIOS
+    "C001": CASO_1_SCENARIOS,
+    "C002": CASO_2_SCENARIOS
 };
 
 export const CASOS_CONFIG = {
     "C001": {
         hasIntroVideo: true,
         introVideo: "/Videos/reliquiadesaparecida.mp4"
+    },
+    "C002": {
+        hasIntroVideo: true,
+        introVideo: "/Videos/Caso2_LeilaoObradeArte.mp4"
     }
 };
 

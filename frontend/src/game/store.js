@@ -7,6 +7,50 @@ function nowIso() {
     return new Date().toISOString();
 }
 
+/**
+ * Garante que os casos no state utilizem os dados mais recentes do seed.js
+ */
+export function syncCasesWithSeed(state) {
+    if (!state || !state.cases) return state;
+
+    const nextCases = casesSeed.map((seed) => {
+        const existing = state.cases.find((c) => c.id === seed.id);
+        // O seed (dados novos) deve sobrescrever o existing (dados antigos do save)
+        // para campos de definição como titulo, localInicial, recompensa, etc.
+        return {
+            ...existing,
+            ...seed
+        };
+    });
+
+    // 🔥 HOTFIX: Se houver uma run ativa para o Caso 2 em São Paulo, move para Paris
+    // Isso garante que mesmo jogadores com saves antigos "bugados" sejam corrigidos.
+    const nextRuns = { ...(state.runs || {}) };
+    if (nextRuns["C002"]) {
+        const run = nextRuns["C002"];
+        const seed = casesSeed.find(s => s.id === "C002");
+
+        if (run.status === "IN_PROGRESS" && seed && (run.localAtual.cidade === "São Paulo" || run.localAtual.cidade === "Sao Paulo" || run.localAtual.cidade === "Campinas" || run.tempoRestanteHoras > seed.tempoTotalHoras)) {
+            console.log("[ATLAS] Corrigindo inconsistências do Caso 2...");
+            nextRuns["C002"] = {
+                ...run,
+                tempoRestanteHoras: Math.min(run.tempoRestanteHoras, seed.tempoTotalHoras),
+                localAtual: { pais: "França", cidade: "Paris" },
+                jornal: [
+                    ...run.jornal,
+                    { t: nowIso(), msg: "🕵️ Correção de sistema: Parâmetros da missão (local e tempo) sincronizados." }
+                ]
+            };
+        }
+    }
+
+    return {
+        ...state,
+        cases: nextCases,
+        runs: nextRuns
+    };
+}
+
 export function loadGame() {
     try {
         const raw = localStorage.getItem(KEY);
@@ -25,16 +69,9 @@ export function loadGame() {
             state = JSON.parse(raw);
         }
 
-        // Migração/Merge: Garante que os casos no state tenham os campos novos do seed.js
-        state.cases = casesSeed.map((seed) => {
-            const existing = state.cases.find((c) => c.id === seed.id);
-            return {
-                ...seed, ...existing,
-                resumo: seed.resumo || existing?.resumo,
-                interrogatorios: seed.interrogatorios || existing?.interrogatorios,
-                imgItem: seed.imgItem || existing?.imgItem
-            };
-        });
+        // Migração/Merge
+        state = syncCasesWithSeed(state);
+
         // Migração: capturedSuspects
         if (!state.capturedSuspects) {
             state.capturedSuspects = {};

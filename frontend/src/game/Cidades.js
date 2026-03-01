@@ -148,16 +148,106 @@ export const CIDADES = [
         cidade: "Dubai",
         pais: "Emirados Árabes",
         continente: "Ásia",
-        imagem: "/Paises/default.png",
+        imagem: "/Paises/Dubai.png",
         descricao: "Uma das cidades mais luxuosas e modernas do mundo, Dubai é famosa por seus arranha-céus, como o Burj Khalifa, e por ser um centro global de comércio e turismo no deserto.",
     },
     {
         cidade: "Seul",
         pais: "Coreia do Sul",
         continente: "Ásia",
-        imagem: "/Paises/default.png",
+        imagem: "/Paises/Seul.png",
         descricao: "Capital da Coreia do Sul, Seul é uma metrópole vibrante onde a tecnologia de ponta convive com templos antigos e mercados tradicionais.",
     },
+
+    {
+        cidade: "Viena",
+        pais: "Austria",
+        continente: "Europa",
+        imagem: "/Paises/Viena.png",
+        descricao: "Viena, capital da Áustria, é famosa por sua música clássica, palácios imperiais e cafés históricos. Berço de Mozart e Beethoven, combina tradição elegante com cultura vibrante às margens do Danúbio.",
+    },
+    {
+        cidade: "Mumbai",
+        pais: "India",
+        continente: "Asia",
+        imagem: "/Paises/Mumbai.png",
+        descricao: "Mumbai é o centro financeiro da Índia e uma das cidades mais populosas do mundo. Localizada na costa oeste, é famosa por Bollywood, sua vibrante cultura de rua e marcos históricos como o Portal da Índia.",
+    },
+    {
+        cidade: "Vancouver",
+        pais: "Canada",
+        continente: "America do Norte",
+        imagem: "/Paises/Vancouver.png",
+        descricao: "Vancouver é uma cidade costeira no Canadá, cercada por montanhas e pelo mar. Conhecida por sua beleza natural exuberante, é um centro multicultural e um dos principais polos cinematográficos da América do Norte.",
+    },
+
+    {
+        cidade: "Berlim",
+        pais: "Alemanha",
+        continente: "Europa",
+        imagem: "/Paises/Berlim.png",
+        descricao: "Berlim, capital da Alemanha, é famosa por sua história, cultura e o antigo Muro. Hoje é símbolo de liberdade, arte moderna e inovação europeia.",
+    },
+
+    {
+        cidade: "Istambul",
+        pais: "Turquia",
+        continente: "Asia",
+        imagem: "/Paises/Istambul.png",
+        descricao: "Istambul é a maior cidade da Turquia, localizada entre Europa e Ásia. Famosa por sua história, mesquitas e cultura rica, foi capital de grandes impérios.",
+    },
+    {
+        cidade: "Cingapura",
+        pais: "Singapura",
+        continente: "Asia",
+        imagem: "/Paises/Cingapura.png",
+        descricao: "Cingapura é uma cidade-estado moderna da Ásia, famosa por sua limpeza, tecnologia e arranha-céus. É um dos maiores centros financeiros do mundo.",
+    },
+
+    {
+        cidade: "Pequim",
+        pais: "China",
+        continente: "Asia",
+        imagem: "/Paises/Pequim.png",
+        descricao: "Pequim é a capital da China, famosa pela Cidade Proibida e sua rica história imperial. É um centro político e cultural com milhões de habitantes.",
+    },
+    {
+        cidade: "Cidade do México",
+        pais: "Mexico",
+        continente: "America do Norte",
+        imagem: "/Paises/CidadeDoMexico.png",
+        descricao: "Cidade do México é a capital do país, famosa por sua história asteca, cultura rica e grandes avenidas. É uma das maiores metrópoles do mundo.",
+    },
+    {
+        cidade: "Amsterdã",
+        pais: "Holanda",
+        continente: "Europa",
+        imagem: "/Paises/Amsterda.png",
+        descricao: "Amsterdã é a capital da Holanda, famosa por seus canais, arquitetura histórica e cultura liberal. É um importante centro cultural e financeiro da Europa.",
+    },
+    {
+        cidade: "Nova Delhi",
+        pais: "India",
+        continente: "Asia",
+        imagem: "/Paises/NovaDelhi.png",
+        descricao: "Nova Delhi é a capital da Índia, famosa por sua história, cultura e arquitetura. É um importante centro político e cultural do país.",
+    },
+
+    {
+        cidade: "Cidade do Cabo",
+        pais: "Africa do Sul",
+        continente: "Africa",
+        imagem: "/Paises/CidadedoCabo.png",
+        descricao: "Cidade do Cabo é a capital da África do Sul, famosa por sua história, cultura e arquitetura. É um importante centro político e cultural do país.",
+    },
+    {
+        cidade: "Bangcoc",
+        pais: "Tailândia",
+        continente: "Asia",
+        imagem: "/Paises/Bangcoc.png",
+        descricao: "Bangcoc é a capital da Tailândia, famosa por sua história, cultura e arquitetura. É um importante centro político e cultural do país.",
+    },
+
 ];
 
 /**

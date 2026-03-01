@@ -152,43 +152,16 @@ export const casesSeed = [
     },
     {
         id: "C002",
-        titulo: "Obra de arte sumiu após leilão",
-        dificuldade: "MEDIO",
-        recompensa: 12000,
-        xp: 250,
-        tempoTotalHoras: 20 * DIAS_PARA_HORAS, // 20 dias
-        localInicial: { pais: "Brasil", cidade: "São Paulo" },
-        resumo: "Uma pintura inestimável desapareceu de uma galeria privada logo após ser vendida em um leilão de alta classe.",
-        imgItem: "/reliquiaDesaparecida.png", // Usando o mesmo placeholder por enquanto
-        interrogatorios: [
-            {
-                id: "L004",
-                local: "Restaurante",
-                imgLocal: "/NPC/Restaurante.png",
-                personagem: "Cozinheiro",
-                imgPersonagem: "/NPC/Cozinheiro.png",
-                cidade: "São Paulo",
-                pista: "O suspeito mencionou trens como principal transporte.",
-            },
-            {
-                id: "L005",
-                local: "Hospital",
-                imgLocal: "/NPC/Hospital.png",
-                personagem: "Agente de Trânsito",
-                imgPersonagem: "/NPC/AgenteTransito.png",
-                cidade: "São Paulo",
-                pista: "A pista fala de uma capital cultural muito famosa.",
-            },
-            {
-                id: "L006",
-                local: "Banco",
-                imgLocal: "/NPC/Banco.png",
-                personagem: "Banqueiro",
-                imgPersonagem: "/NPC/Banqueiro.png",
-                cidade: "São Paulo",
-                pista: "O idioma ouvido lembra família latina.",
-            },
-        ],
+        titulo: "Obra de Arte sumiu após o Leilão",
+        dificuldade: "MEDIA",
+        recompensa: 7500,
+        xp: 150,
+        tempoTotalHoras: 15 * DIAS_PARA_HORAS, // 15 dias
+        localInicial: { pais: "França", cidade: "Paris" },
+        resumo: "🖼️ Obra de Arte Sumiu após o Leilão\n📍 Local do crime: Paris, França 🇫🇷\n🕒 Horário estimado: 02:17 da manhã\n🏛️ Local: Hôtel des Ventes du Palais\n\nUma peça inestimável desapareceu misteriosamente logo após ser arrematada em um leilão de elite. O rastro leva a várias metrópoles globais. 🕵️‍♂️🎨",
+        imgItem: "/ObradeArteLeilao.jpg",
+        replayable: true,
+        interrogatorios: [],
     },
 ];
 

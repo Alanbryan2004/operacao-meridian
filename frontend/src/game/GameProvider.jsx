@@ -2,7 +2,7 @@ import React, { createContext, useContext, useEffect, useMemo, useReducer, useSt
 import { ensureProfile, loadGameState, saveGameState } from "../services/gameSaveService";
 import { useSupabaseAutoSave } from "../hooks/useSupabaseAutoSave";
 import { supabase } from "../lib/supabase";
-import { loadGame } from "../game/store";
+import { loadGame, syncCasesWithSeed } from "../game/store";
 
 const REPLACE_STATE = "REPLACE_STATE";
 const GameContext = createContext(null);
@@ -79,7 +79,9 @@ export function GameProvider({ initialState, reducer, children }) {
             const remote = await loadGameState(0);
 
             if (remote) {
-                dispatch({ type: REPLACE_STATE, payload: remote });
+                // 🔥 Sincroniza o state remoto com o seed.js para garantir missões atualizadas
+                const synced = syncCasesWithSeed(remote);
+                dispatch({ type: REPLACE_STATE, payload: synced });
             } else {
                 // primeira vez logado: cria remoto com o state atual (que já veio do local)
                 await saveGameState(state, 0);

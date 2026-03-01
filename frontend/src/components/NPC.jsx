@@ -66,7 +66,7 @@ const NPC_LIST = [
     {
         nome: "Morador de Rua",
         img: "/NPC/moradorderua.png",
-        fundoPadrao: "/NPC/Restaurante.png",
+        fundoPadrao: "/NPC/CentrodaCidade.png",
     },
 ];
 

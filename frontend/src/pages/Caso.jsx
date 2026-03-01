@@ -85,7 +85,12 @@ const ORIGIN_COORDS = {
     "Moscou": { x: 280, y: 70 },
     "Dubai": { x: 305, y: 150 },
     "Seul": { x: 335, y: 90 },
-    "Tokio": { x: 360, y: 100 }
+    "Tokio": { x: 360, y: 100 },
+    "Viena": { x: 220, y: 95 },
+    "Mumbai": { x: 315, y: 165 },
+    "Vancouver": { x: 15, y: 55 },
+    "Singapura": { x: 330, y: 155 },
+    "Sydney": { x: 380, y: 190 }
 };
 
 const DESTINATION_OPTIONS = [
@@ -110,6 +115,8 @@ const DESTINATION_OPTIONS = [
     { id: "CA_RU", pais: "Rússia", cidade: "Moscou", origem: "Cairo", coords: { x: 280, y: 70 }, flag: "🇷🇺" },
     { id: "CA_PT", pais: "Portugal", cidade: "Lisboa", origem: "Cairo", coords: { x: 160, y: 100 }, flag: "🇵🇹" },
     { id: "CA_CA", pais: "Canadá", cidade: "Toronto", origem: "Cairo", coords: { x: 40, y: 60 }, flag: "🇨🇦" },
+    { id: "CA_MU", pais: "Índia", cidade: "Mumbai", origem: "Cairo", coords: { x: 315, y: 165 }, flag: "🇮🇳" },
+    { id: "CA_AE", pais: "Emirados Árabes", cidade: "Dubai", origem: "Cairo", coords: { x: 305, y: 150 }, flag: "🇦🇪" },
 
     // De Moscou
     { id: "M_GB", pais: "Reino Unido", cidade: "Londres", origem: "Moscou", coords: { x: 195, y: 65 }, flag: "🇬🇧" },
@@ -126,6 +133,8 @@ const DESTINATION_OPTIONS = [
     { id: "GB_IT", pais: "Itália", cidade: "Roma", origem: "Londres", coords: { x: 215, y: 110 }, flag: "🇮🇹" },
     { id: "GB_FR", pais: "França", cidade: "Paris", origem: "Londres", coords: { x: 200, y: 85 }, flag: "🇫🇷" },
     { id: "GB_RU", pais: "Rússia", cidade: "Moscou", origem: "Londres", coords: { x: 280, y: 70 }, flag: "🇷🇺" },
+    { id: "GB_AT", pais: "Áustria", cidade: "Viena", origem: "Londres", coords: { x: 220, y: 95 }, flag: "🇦🇹" },
+    { id: "GB_PT", pais: "Portugal", cidade: "Lisboa", origem: "Londres", coords: { x: 160, y: 100 }, flag: "🇵🇹" },
 
     // De Paris
     { id: "P_RU", pais: "Rússia", cidade: "Moscou", origem: "Paris", coords: { x: 280, y: 70 }, flag: "🇷🇺" },
@@ -133,12 +142,16 @@ const DESTINATION_OPTIONS = [
     { id: "P_GB", pais: "Reino Unido", cidade: "Londres", origem: "Paris", coords: { x: 195, y: 65 }, flag: "🇬🇧" },
     { id: "P_IT", pais: "Itália", cidade: "Roma", origem: "Paris", coords: { x: 215, y: 110 }, flag: "🇮🇹" },
     { id: "P_PT", pais: "Portugal", cidade: "Lisboa", origem: "Paris", coords: { x: 160, y: 100 }, flag: "🇵🇹" },
+    { id: "P_US", pais: "EUA", cidade: "Nova York", origem: "Paris", coords: { x: 60, y: 75 }, flag: "🇺🇸" },
+    { id: "P_KR", pais: "Coreia do Sul", cidade: "Seul", origem: "Paris", coords: { x: 335, y: 90 }, flag: "🇰🇷" },
+    { id: "P_AT", pais: "Áustria", cidade: "Viena", origem: "Paris", coords: { x: 220, y: 95 }, flag: "🇦🇹" },
 
     // De Toronto
     { id: "T_IT", pais: "Itália", cidade: "Roma", origem: "Toronto", coords: { x: 215, y: 110 }, flag: "🇮🇹" },
     { id: "T_EG", pais: "Egito", cidade: "Cairo", origem: "Toronto", coords: { x: 245, y: 140 }, flag: "🇪🇬" },
     { id: "T_JP", pais: "Japão", cidade: "Tokio", origem: "Toronto", coords: { x: 360, y: 100 }, flag: "🇯🇵" },
     { id: "T_US", pais: "EUA", cidade: "Nova York", origem: "Toronto", coords: { x: 60, y: 75 }, flag: "🇺🇸" },
+    { id: "T_FR", pais: "França", cidade: "Paris", origem: "Toronto", coords: { x: 200, y: 85 }, flag: "🇫🇷" },
 
     // De Roma
     { id: "R_GB", pais: "Reino Unido", cidade: "Londres", origem: "Roma", coords: { x: 195, y: 65 }, flag: "🇬🇧" },
@@ -149,11 +162,54 @@ const DESTINATION_OPTIONS = [
     { id: "TK_RU", pais: "Rússia", cidade: "Moscou", origem: "Tokio", coords: { x: 280, y: 70 }, flag: "🇷🇺" },
     { id: "TK_GB", pais: "Reino Unido", cidade: "Londres", origem: "Tokio", coords: { x: 195, y: 65 }, flag: "🇬🇧" },
     { id: "TK_IT", pais: "Itália", cidade: "Roma", origem: "Tokio", coords: { x: 215, y: 110 }, flag: "🇮🇹" },
+    { id: "TK_VA", pais: "Canadá", cidade: "Vancouver", origem: "Tokio", coords: { x: 15, y: 55 }, flag: "🇨🇦" },
+    { id: "TK_AE", pais: "Emirados Árabes", cidade: "Dubai", origem: "Tokio", coords: { x: 305, y: 150 }, flag: "🇦🇪" },
 
     // De Seul
     { id: "S_GB", pais: "Reino Unido", cidade: "Londres", origem: "Seul", coords: { x: 195, y: 65 }, flag: "🇬🇧" },
     { id: "S_PT", pais: "Portugal", cidade: "Lisboa", origem: "Seul", coords: { x: 160, y: 100 }, flag: "🇵🇹" },
     { id: "S_IT", pais: "Itália", cidade: "Roma", origem: "Seul", coords: { x: 215, y: 110 }, flag: "🇮🇹" },
+    { id: "S_TK", pais: "Japão", cidade: "Tokio", origem: "Seul", coords: { x: 360, y: 100 }, flag: "🇯🇵" },
+
+    // De Viena
+    { id: "AT_PT", pais: "Portugal", cidade: "Lisboa", origem: "Viena", coords: { x: 160, y: 100 }, flag: "🇵🇹" },
+    { id: "AT_RU", pais: "Rússia", cidade: "Moscou", origem: "Viena", coords: { x: 280, y: 70 }, flag: "🇷🇺" },
+    { id: "AT_GB", pais: "Reino Unido", cidade: "Londres", origem: "Viena", coords: { x: 195, y: 65 }, flag: "🇬🇧" },
+
+    // De Mumbai
+    { id: "MU_AT", pais: "Áustria", cidade: "Viena", origem: "Mumbai", coords: { x: 220, y: 95 }, flag: "🇦🇹" },
+    { id: "MU_PT", pais: "Portugal", cidade: "Lisboa", origem: "Mumbai", coords: { x: 160, y: 100 }, flag: "🇵🇹" },
+    { id: "MU_FR", pais: "França", cidade: "Paris", origem: "Mumbai", coords: { x: 200, y: 85 }, flag: "🇫🇷" },
+
+    // De Vancouver
+    { id: "VA_PT", pais: "Portugal", cidade: "Lisboa", origem: "Vancouver", coords: { x: 160, y: 100 }, flag: "🇵🇹" },
+    { id: "VA_AT", pais: "Áustria", cidade: "Viena", origem: "Vancouver", coords: { x: 220, y: 95 }, flag: "🇦🇹" },
+    { id: "VA_FR", pais: "França", cidade: "Paris", origem: "Vancouver", coords: { x: 200, y: 85 }, flag: "🇫🇷" },
+
+    // De Nova York
+    { id: "US_EG", pais: "Egito", cidade: "Cairo", origem: "Nova York", coords: { x: 245, y: 140 }, flag: "🇪🇬" },
+    { id: "US_FR", pais: "França", cidade: "Paris", origem: "Nova York", coords: { x: 200, y: 85 }, flag: "🇫🇷" },
+    { id: "US_PT", pais: "Portugal", cidade: "Lisboa", origem: "Nova York", coords: { x: 160, y: 100 }, flag: "🇵🇹" },
+
+    // De Cairo
+    { id: "CA_IT", pais: "Itália", cidade: "Roma", origem: "Cairo", coords: { x: 215, y: 110 }, flag: "🇮🇹" },
+
+    // De Toronto
+    { id: "T_PT", pais: "Portugal", cidade: "Lisboa", origem: "Toronto", coords: { x: 160, y: 100 }, flag: "🇵🇹" },
+    { id: "T_AT", pais: "Áustria", cidade: "Viena", origem: "Toronto", coords: { x: 220, y: 95 }, flag: "🇦🇹" },
+
+    // De Roma (Scenario 3 - Loopback)
+    { id: "R_FR", pais: "França", cidade: "Paris", origem: "Roma", coords: { x: 200, y: 85 }, flag: "🇫🇷" },
+
+    // De Lisboa (Scenario 3)
+    { id: "L_AT", pais: "Áustria", cidade: "Viena", origem: "Lisboa", coords: { x: 220, y: 95 }, flag: "🇦🇹" },
+    { id: "L_EG", pais: "Egito", cidade: "Cairo", origem: "Lisboa", coords: { x: 245, y: 140 }, flag: "🇪🇬" },
+
+    // De Seul (Scenario 4)
+    { id: "S_SI", pais: "Singapura", cidade: "Singapura", origem: "Seul", coords: { x: 330, y: 155 }, flag: "🇸🇬" },
+
+    // De Tóquio (Scenario 4)
+    { id: "TK_SY", pais: "Austrália", cidade: "Sydney", origem: "Tóquio", coords: { x: 380, y: 190 }, flag: "🇦🇺" },
 ];
 
 const TRANSPORT_MODES = [
@@ -246,10 +302,30 @@ export default function Caso() {
         return findScenario(caseId, run?.scenarioId, run?.targetSuspectId);
     }, [run?.scenarioId, run?.targetSuspectId, caseId]);
 
+    // Centraliza a lógica de progresso da missão (etapa intermediária concluída)
+    const hasMissionProgressed = useMemo(() => {
+        if (!activeScenario?.route || (run?.pistasDescobertas || []).length === 0) return false;
+        const intermediateCities = activeScenario.route.slice(1, -1);
+        if (intermediateCities.length === 0) return true; // Caso de etapa única (não deve existir)
+
+        return run.pistasDescobertas.some(p => {
+            const clueCity = typeof p === "string" ? "" : (p.cidade || "");
+            return intermediateCities.some(city => clueCity.toLowerCase() === city.toLowerCase());
+        });
+    }, [activeScenario, run?.pistasDescobertas]);
+
     const localInterrogatorios = useMemo(() => {
         const source = activeScenario?.interrogatorios || run?.interrogatorios || caseObj?.interrogatorios || [];
-        return source.filter(loc => loc.cidade === run?.localAtual?.cidade);
-    }, [run?.localAtual?.cidade, activeScenario, run?.interrogatorios, caseObj?.interrogatorios]);
+        const matches = source.filter(loc => loc.cidade === run?.localAtual?.cidade);
+
+        // 🔥 FIX: Se a cidade aparece múltiplas vezes na rota (ex: Paris no início e no fim do Caso 2),
+        // filtramos para mostrar apenas o conjunto atual baseado no progresso da missão.
+        if (matches.length > 3 && activeScenario?.route) {
+            return hasMissionProgressed ? matches.slice(-3) : matches.slice(0, 3);
+        }
+
+        return matches;
+    }, [run?.localAtual?.cidade, activeScenario, run?.interrogatorios, caseObj?.interrogatorios, run?.pistasDescobertas]);
 
     // Opções de viagem filtradas pelo cenário
     const travelOptions = useMemo(() => {
@@ -341,7 +417,13 @@ export default function Caso() {
         };
 
         // Lógica de Captura Final (Dinâmica por Cenário)
-        const isFinalCity = activeScenario ? locObj.cidade === activeScenario.finalCity : locObj.cidade === "Nova York";
+        let isFinalCity = activeScenario ? locObj.cidade === activeScenario.finalCity : locObj.cidade === "Nova York";
+
+        // 🔥 REGRA CRÍTICA: Se a cidade final for igual à inicial (loop), 
+        // só permitimos a captura se o jogador já tiver pistas das etapas intermediárias.
+        if (isFinalCity && activeScenario?.route && activeScenario.route[0] === activeScenario.finalCity) {
+            if (!hasMissionProgressed) isFinalCity = false;
+        }
 
         if (isFinalCity) {
             // Se for o Garçom OU se for a SEGUNDA investigação na cidade
@@ -397,7 +479,8 @@ export default function Caso() {
                 idInterrogatorio: locObj.id,
                 conteudo: locObj.pista,
                 fonte: locObj.personagem,
-                local: locObj.local
+                local: locObj.local,
+                cidade: locObj.cidade
             };
         }
 
