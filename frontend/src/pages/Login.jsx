@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { loadGame, saveGame, resetGame } from "../game/store";
 import { supabase } from "../lib/supabase";
 import { ensureProfile, loadGameState, saveGameState } from "../services/gameSaveService";
+import { initialPlayer, casesSeed } from "../game/seed";
 
 export default function Login() {
     const nav = useNavigate();
@@ -61,23 +62,24 @@ export default function Login() {
 
             saveGame(merged);
         } else {
-            // Primeira vez: pega state local atual e manda pro Supabase
-            const s = loadGame();
-            const next = {
-                ...s,
+            // Primeira vez logando com ESTA conta social:
+            // Começa uma ficha LIMPA baseada nos dados do Google/Facebook.
+            // Isso evita herdar "lixo" de sessões anônimas anteriores no mesmo aparelho.
+            const freshState = {
                 player: {
-                    ...s.player,
-                    nome: googleName || s.player?.nome || "Recruta",
+                    ...initialPlayer,
+                    nome: googleName || "Agente",
                     avatarUrl: googleAvatar,
-                    supabaseId: user.id,
+                    supabaseId: user.id
                 },
+                cases: [...casesSeed],
+                runs: {},
+                capturedSuspects: {},
             };
 
-            // salva local
-            saveGame(next);
-
-            // cria save remoto
-            await saveGameState(next, 0);
+            // Salva local e sobe para nuvem como o primeiro save desta conta
+            saveGame(freshState);
+            await saveGameState(freshState, 0);
         }
 
         // 3) Atualiza avatar no profile (opcional)
@@ -107,6 +109,9 @@ export default function Login() {
             provider: "google",
             options: {
                 redirectTo: `${siteUrl}/login`,
+                queryParams: {
+                    prompt: 'select_account'
+                }
             },
         });
 
@@ -145,9 +150,13 @@ export default function Login() {
         nav("/mural");
     }
 
-    function zerar() {
-        resetGame();
-        nav("/login");
+    async function sair() {
+        setLoading(true);
+        await supabase.auth.signOut();
+        resetGame(); // Limpa local tbm
+        setShowNamePrompt(false);
+        setNome("");
+        setLoading(false);
     }
 
     return (
@@ -396,10 +405,10 @@ export default function Login() {
                                     className="om-btn om-btn-secondary"
                                     onClick={() => {
                                         triggerAudio();
-                                        zerar();
+                                        sair();
                                     }}
                                 >
-                                    RESETAR PROGRESSO (MVP)
+                                    SAIR / USAR OUTRA CONTA
                                 </button>
 
                                 <div style={{ fontSize: "11px", opacity: 0.55, textAlign: "center", marginTop: 2 }}>
