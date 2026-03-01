@@ -133,6 +133,34 @@ export function startRunIfNeeded(state, caseObj) {
     return next;
 }
 
+export function abortRun(state, caseId) {
+    const run = state.runs[caseId];
+    if (!run) return state;
+
+    const nextRun = {
+        ...run,
+        status: "ABORTED",
+        jornal: [...run.jornal, { t: nowIso(), msg: "🚩 MISSÃO ABORTADA PELO AGENTE." }],
+    };
+
+    // Penalidade: Remove o adiantamento de 2000. 
+    // Se o saldo for menor que 2000, apenas zera.
+    const penalty = 2000;
+    const nextDinheiro = Math.max(0, state.player.dinheiro - penalty);
+
+    return {
+        ...state,
+        player: {
+            ...state.player,
+            dinheiro: nextDinheiro
+        },
+        runs: {
+            ...state.runs,
+            [caseId]: nextRun
+        }
+    };
+}
+
 export function spendTime(run, horas, msg) {
     const h = Math.max(0, Number(horas || 0));
     const tempo = Math.max(0, run.tempoRestanteHoras - h);

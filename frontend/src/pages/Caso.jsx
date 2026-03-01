@@ -6,6 +6,7 @@ import {
     spendTime,
     startRunIfNeeded,
     registerCapture,
+    abortRun,
 } from "../game/store";
 import { useGame } from "../game/GameProvider";
 import { getCidadeImagem, getCidadeDescricao } from "../game/Cidades";
@@ -488,22 +489,12 @@ export default function Caso() {
     function handleAbort() {
         setModalConfig({
             show: true,
-            message: "Deseja realmente ABORTAR esta missão? Todo o progresso atual será perdido.",
+            message: "Deseja realmente ABORTAR esta missão? Todo o progresso atual será perdido e o bônus de despesas será descontado.",
             type: "ERROR",
             isConfirm: true,
             onConfirm: () => {
-                const nextRun = {
-                    ...run,
-                    status: "ABORTED",
-                    jornal: [...run.jornal, { t: new Date().toISOString(), msg: "🚩 MISSÃO ABORTADA PELO AGENTE." }],
-                };
-
-                const nextState = {
-                    ...state,
-                    runs: { ...state.runs, [caseId]: nextRun }
-                };
-
-                replaceState(saveGame(nextState));
+                const updatedState = abortRun(state, caseId);
+                replaceState(saveGame(updatedState));
                 setModalConfig({ show: false });
                 nav("/mural");
             }
