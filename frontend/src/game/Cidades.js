@@ -144,6 +144,20 @@ export const CIDADES = [
         imagem: "/Paises/Tripoli.png",
         descricao: "Capital da Líbia, Trípoli é uma cidade histórica às margens do Mediterrâneo. Possui mercados tradicionais e arquitetura que reflete séculos de história.",
     },
+    {
+        cidade: "Dubai",
+        pais: "Emirados Árabes",
+        continente: "Ásia",
+        imagem: "/Paises/default.png",
+        descricao: "Uma das cidades mais luxuosas e modernas do mundo, Dubai é famosa por seus arranha-céus, como o Burj Khalifa, e por ser um centro global de comércio e turismo no deserto.",
+    },
+    {
+        cidade: "Seul",
+        pais: "Coreia do Sul",
+        continente: "Ásia",
+        imagem: "/Paises/default.png",
+        descricao: "Capital da Coreia do Sul, Seul é uma metrópole vibrante onde a tecnologia de ponta convive com templos antigos e mercados tradicionais.",
+    },
 ];
 
 /**

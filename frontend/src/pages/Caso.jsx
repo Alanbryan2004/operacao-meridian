@@ -71,111 +71,83 @@ function Panel({ children }) {
 }
 
 const ORIGIN_COORDS = {
-    "Campinas": { x: 160, y: 120 },
-    "Lisboa": { x: 120, y: 90 },
-    "Madrid": { x: 150, y: 100 },
-    "Moscou": { x: 200, y: 80 },
+    "Campinas": { x: 120, y: 160 },
+    "Buenos Aires": { x: 110, y: 180 },
+    "Nova York": { x: 70, y: 75 },
+    "Toronto": { x: 50, y: 60 },
+    "Lisboa": { x: 180, y: 100 },
+    "Madrid": { x: 200, y: 105 },
+    "Paris": { x: 220, y: 85 },
+    "Londres": { x: 215, y: 65 },
+    "Roma": { x: 240, y: 110 },
+    "Cairo": { x: 280, y: 140 },
+    "Moscou": { x: 320, y: 70 },
+    "Dubai": { x: 340, y: 150 },
+    "Seul": { x: 420, y: 90 },
+    "Tokio": { x: 440, y: 100 }
 };
 
 const DESTINATION_OPTIONS = [
     // De Campinas
-    {
-        id: "PT",
-        pais: "Portugal",
-        cidade: "Lisboa",
-        origem: "Campinas",
-        coords: { x: 300, y: 50 },
-        flag: "🇵🇹",
-    },
-    {
-        id: "AR",
-        pais: "Argentina",
-        cidade: "Buenos Aires",
-        origem: "Campinas",
-        coords: { x: 180, y: 155 },
-        flag: "🇦🇷",
-    },
-    {
-        id: "US",
-        pais: "EUA",
-        cidade: "Nova York",
-        origem: "Campinas",
-        coords: { x: 120, y: 55 },
-        flag: "🇺🇸",
-    },
+    { id: "C_PT", pais: "Portugal", cidade: "Lisboa", origem: "Campinas", coords: { x: 180, y: 100 }, flag: "🇵🇹" },
+    { id: "C_EG", pais: "Egito", cidade: "Cairo", origem: "Campinas", coords: { x: 280, y: 140 }, flag: "🇪🇬" },
+    { id: "C_FR", pais: "França", cidade: "Paris", origem: "Campinas", coords: { x: 220, y: 85 }, flag: "🇫🇷" },
+    { id: "C_JP", pais: "Japão", cidade: "Tokio", origem: "Campinas", coords: { x: 440, y: 100 }, flag: "🇯🇵" },
+    { id: "C_KR", pais: "Coreia do Sul", cidade: "Seul", origem: "Campinas", coords: { x: 420, y: 90 }, flag: "🇰🇷" },
+    { id: "C_AR", pais: "Argentina", cidade: "Buenos Aires", origem: "Campinas", coords: { x: 110, y: 180 }, flag: "🇦🇷" },
+    { id: "C_US", pais: "EUA", cidade: "Nova York", origem: "Campinas", coords: { x: 70, y: 75 }, flag: "🇺🇸" },
+    { id: "C_IT", pais: "Itália", cidade: "Roma", origem: "Campinas", coords: { x: 240, y: 110 }, flag: "🇮🇹" },
+
     // De Lisboa
-    {
-        id: "ES",
-        pais: "Espanha",
-        cidade: "Madrid",
-        origem: "Lisboa",
-        coords: { x: 280, y: 50 },
-        flag: "🇪🇸",
-    },
-    {
-        id: "FR",
-        pais: "França",
-        cidade: "Paris",
-        origem: "Lisboa",
-        coords: { x: 200, y: 35 },
-        flag: "🇫🇷",
-    },
-    {
-        id: "EG",
-        pais: "Egito",
-        cidade: "Cairo",
-        origem: "Lisboa",
-        coords: { x: 300, y: 110 },
-        flag: "🇪🇬",
-    },
-    {
-        id: "RU",
-        pais: "Rússia",
-        cidade: "Moscou",
-        origem: "Madrid",
-        coords: { x: 280, y: 40 },
-        flag: "🇷🇺",
-    },
-    {
-        id: "BT",
-        pais: "Butão",
-        cidade: "Thimphu",
-        origem: "Madrid",
-        coords: { x: 300, y: 120 },
-        flag: "🇧🇹",
-    },
-    {
-        id: "US_2",
-        pais: "EUA",
-        cidade: "Nova York",
-        origem: "Madrid",
-        coords: { x: 120, y: 55 },
-        flag: "🇺🇸",
-    },
-    {
-        id: "US_3",
-        pais: "EUA",
-        cidade: "Nova York",
-        origem: "Moscou",
-        coords: { x: 120, y: 55 },
-        flag: "🇺🇸",
-    },
-    {
-        id: "FR_2",
-        pais: "França",
-        cidade: "Paris",
-        origem: "Moscou",
-        coords: { x: 300, y: 100 },
-        flag: "🇫🇷",
-    },
-    {
-        id: "LY",
-        pais: "Líbia",
-        cidade: "Trípoli",
-        origem: "Moscou",
-        coords: { x: 360, y: 220 },
-        flag: "🇱🇾",
-    }
+    { id: "L_FR", pais: "França", cidade: "Paris", origem: "Lisboa", coords: { x: 220, y: 85 }, flag: "🇫🇷" },
+    { id: "L_GB", pais: "Reino Unido", cidade: "Londres", origem: "Lisboa", coords: { x: 215, y: 65 }, flag: "🇬🇧" },
+    { id: "L_CA", pais: "Canadá", cidade: "Toronto", origem: "Lisboa", coords: { x: 50, y: 60 }, flag: "🇨🇦" },
+    { id: "L_ES", pais: "Espanha", cidade: "Madrid", origem: "Lisboa", coords: { x: 200, y: 105 }, flag: "🇪🇸" },
+
+    // De Cairo
+    { id: "CA_RU", pais: "Rússia", cidade: "Moscou", origem: "Cairo", coords: { x: 320, y: 70 }, flag: "🇷🇺" },
+    { id: "CA_PT", pais: "Portugal", cidade: "Lisboa", origem: "Cairo", coords: { x: 180, y: 100 }, flag: "🇵🇹" },
+    { id: "CA_CA", pais: "Canadá", cidade: "Toronto", origem: "Cairo", coords: { x: 50, y: 60 }, flag: "🇨🇦" },
+
+    // De Moscou
+    { id: "M_GB", pais: "Reino Unido", cidade: "Londres", origem: "Moscou", coords: { x: 215, y: 65 }, flag: "🇬🇧" },
+    { id: "M_CA", pais: "Canadá", cidade: "Toronto", origem: "Moscou", coords: { x: 50, y: 60 }, flag: "🇨🇦" },
+    { id: "M_FR", pais: "França", cidade: "Paris", origem: "Moscou", coords: { x: 220, y: 85 }, flag: "🇫🇷" },
+    { id: "M_IT", pais: "Itália", cidade: "Roma", origem: "Moscou", coords: { x: 240, y: 110 }, flag: "🇮🇹" },
+    { id: "M_US", pais: "EUA", cidade: "Nova York", origem: "Moscou", coords: { x: 70, y: 75 }, flag: "🇺🇸" },
+
+    // De Londres
+    { id: "GB_AE", pais: "Emirados Árabes", cidade: "Dubai", origem: "Londres", coords: { x: 340, y: 150 }, flag: "🇦🇪" },
+    { id: "GB_CA", pais: "Canadá", cidade: "Toronto", origem: "Londres", coords: { x: 50, y: 60 }, flag: "🇨🇦" },
+    { id: "GB_EG", pais: "Egito", cidade: "Cairo", origem: "Londres", coords: { x: 280, y: 140 }, flag: "🇪🇬" },
+    { id: "GB_IT", pais: "Itália", cidade: "Roma", origem: "Londres", coords: { x: 240, y: 110 }, flag: "🇮🇹" },
+
+    // De Paris
+    { id: "P_RU", pais: "Rússia", cidade: "Moscou", origem: "Paris", coords: { x: 320, y: 70 }, flag: "🇷🇺" },
+    { id: "P_CA", pais: "Canadá", cidade: "Toronto", origem: "Paris", coords: { x: 50, y: 60 }, flag: "🇨🇦" },
+    { id: "P_GB", pais: "Reino Unido", cidade: "Londres", origem: "Paris", coords: { x: 215, y: 65 }, flag: "🇬🇧" },
+    { id: "P_IT", pais: "Itália", cidade: "Roma", origem: "Paris", coords: { x: 240, y: 110 }, flag: "🇮🇹" },
+
+    // De Toronto
+    { id: "T_IT", pais: "Itália", cidade: "Roma", origem: "Toronto", coords: { x: 240, y: 110 }, flag: "🇮🇹" },
+    { id: "T_EG", pais: "Egito", cidade: "Cairo", origem: "Toronto", coords: { x: 280, y: 140 }, flag: "🇪🇬" },
+    { id: "T_JP", pais: "Japão", cidade: "Tokio", origem: "Toronto", coords: { x: 440, y: 100 }, flag: "🇯🇵" },
+    { id: "T_US", pais: "EUA", cidade: "Nova York", origem: "Toronto", coords: { x: 70, y: 75 }, flag: "🇺🇸" },
+
+    // De Roma
+    { id: "R_GB", pais: "Reino Unido", cidade: "Londres", origem: "Roma", coords: { x: 215, y: 65 }, flag: "🇬🇧" },
+    { id: "R_PT", pais: "Portugal", cidade: "Lisboa", origem: "Roma", coords: { x: 180, y: 100 }, flag: "🇵🇹" },
+    { id: "R_RU", pais: "Rússia", cidade: "Moscou", origem: "Roma", coords: { x: 320, y: 70 }, flag: "🇷🇺" },
+
+    // De Tokio
+    { id: "TK_RU", pais: "Rússia", cidade: "Moscou", origem: "Tokio", coords: { x: 320, y: 70 }, flag: "🇷🇺" },
+    { id: "TK_GB", pais: "Reino Unido", cidade: "Londres", origem: "Tokio", coords: { x: 215, y: 65 }, flag: "🇬🇧" },
+    { id: "TK_IT", pais: "Itália", cidade: "Roma", origem: "Tokio", coords: { x: 240, y: 110 }, flag: "🇮🇹" },
+
+    // De Seul
+    { id: "S_GB", pais: "Reino Unido", cidade: "Londres", origem: "Seul", coords: { x: 215, y: 65 }, flag: "🇬🇧" },
+    { id: "S_PT", pais: "Portugal", cidade: "Lisboa", origem: "Seul", coords: { x: 180, y: 100 }, flag: "🇵🇹" },
+    { id: "S_IT", pais: "Itália", cidade: "Roma", origem: "Seul", coords: { x: 240, y: 110 }, flag: "🇮🇹" },
 ];
 
 const TRANSPORT_MODES = [
@@ -344,8 +316,9 @@ export default function Caso() {
         if (isFinalCity) {
             // Se for o Garçom OU se for a SEGUNDA investigação na cidade
             if (locObj.personagem === "Garçom" || locObj.personagem === "Curadora" || locObj.personagem === "Monge" || locObj.personagem === "Segurança" || currentCount >= 2) {
-                const hasCorrectWarrant = run.warrantId === (run.targetSuspectId || "008");
-                const isSuccess = run.mandadoEmitido && hasCorrectWarrant;
+                const targetId = String(run.targetSuspectId || "008");
+                const warrantIdSelected = String(run.warrantId || "");
+                const isSuccess = run.mandadoEmitido && warrantIdSelected === targetId;
 
                 setDarkenScreen(true);
                 setVideoEnded(false);
@@ -361,7 +334,7 @@ export default function Caso() {
                         ...nextRunCount,
                         status: "WON",
                         suspeitoCapturado: true,
-                        jornal: [...run.jornal, { t: new Date().toISOString(), msg: "🎯 MISSÃO CUMPRIDA! O suspeito foi preso em Nova York." }],
+                        jornal: [...run.jornal, { t: new Date().toISOString(), msg: `🎯 MISSÃO CUMPRIDA! O suspeito foi preso em ${locObj.cidade}.` }],
                     };
                     const nextState = registerCapture({
                         ...state,
@@ -373,7 +346,7 @@ export default function Caso() {
                     const nextRun = {
                         ...nextRunCount,
                         status: "LOST",
-                        jornal: [...run.jornal, { t: new Date().toISOString(), msg: "❌ MISSÃO FRACASSADA! O suspeito escapou em Nova York." }],
+                        jornal: [...run.jornal, { t: new Date().toISOString(), msg: `❌ MISSÃO FRACASSADA! O suspeito escapou em ${locObj.cidade}.` }],
                     };
                     updateRun(nextRun);
                 }
