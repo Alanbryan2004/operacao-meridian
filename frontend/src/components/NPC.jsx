@@ -68,6 +68,21 @@ const NPC_LIST = [
         img: "/NPC/moradorderua.png",
         fundoPadrao: "/NPC/CentrodaCidade.png",
     },
+    {
+        nome: "Bibliotecária",
+        img: "/NPC/Bibliotecaria.png",
+        fundoPadrao: "/NPC/Biblioteca.png",
+    },
+    {
+        nome: "Professor",
+        img: "/NPC/Professor.png",
+        fundoPadrao: "/NPC/Faculdade.png",
+    },
+    {
+        nome: "Antiquário",
+        img: "/NPC/Antiquario.png",
+        fundoPadrao: "/NPC/Antiguidade.png",
+    },
 ];
 
 /**
