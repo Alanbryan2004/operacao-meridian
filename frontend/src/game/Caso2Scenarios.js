@@ -23,7 +23,7 @@ export const CASO_2_SCENARIOS = [
             // ETAPA 2 - Moscou
             { id: "S1_4", cidade: "Moscou", local: "Táxi", personagem: "Taxista", imgLocal: "/NPC/Taxi.png", imgPersonagem: "/NPC/Taxista.png", pista: "Levei ele ao aeroporto. Ele tinha cabelo loiro e disse que viajaria para uma cidade histórica na Europa." },
             { id: "S1_5", cidade: "Moscou", local: "Banqueiro", personagem: "Banqueiro", imgLocal: "/NPC/Banco.png", imgPersonagem: "/NPC/Banqueiro.png", pista: "Ele perguntou sobre voos para uma capital europeia muito importante." },
-            { id: "S1_6", cidade: "Moscou", local: "Morador de Rua", personagem: "Morador de Rua", imgLocal: "/NPC/Restaurante.png", imgPersonagem: "/NPC/moradorderua.png", pista: "Ele mencionou uma cidade conhecida por sua tradição e história." },
+            { id: "S1_6", cidade: "Moscou", local: "Morador de Rua", personagem: "Morador de Rua", imgLocal: "/NPC/CentrodaCidade.png", imgPersonagem: "/NPC/moradorderua.png", pista: "Ele mencionou uma cidade conhecida por sua tradição e história." },
 
             // ETAPA 3 - Londres
             { id: "S1_7", cidade: "Londres", local: "Banco", personagem: "Banqueiro", imgLocal: "/NPC/Banco.png", imgPersonagem: "/NPC/Banqueiro.png", pista: "Ele esteve aqui hoje. Tinha olhos azuis e disse que viajaria para uma cidade moderna na América do Norte." },
@@ -33,7 +33,7 @@ export const CASO_2_SCENARIOS = [
             // ETAPA 4 - Toronto
             { id: "S1_10", cidade: "Toronto", local: "Táxi", personagem: "Taxista", imgLocal: "/NPC/Taxi.png", imgPersonagem: "/NPC/Taxista.png", pista: "Levei ele ao aeroporto. Ele comentou que gostava muito de jogar xadrez e que retornaria para uma cidade europeia famosa por sua arte." },
             { id: "S1_11", cidade: "Toronto", local: "Banqueiro", personagem: "Banqueiro", imgLocal: "/NPC/Banco.png", imgPersonagem: "/NPC/Banqueiro.png", pista: "Ele perguntou sobre voos para uma capital cultural da Europa." },
-            { id: "S1_12", cidade: "Toronto", local: "Morador de Rua", personagem: "Morador de Rua", imgLocal: "/NPC/Restaurante.png", imgPersonagem: "/NPC/moradorderua.png", pista: "Ele mencionou uma cidade conhecida por seus museus e galerias." },
+            { id: "S1_12", cidade: "Toronto", local: "Morador de Rua", personagem: "Morador de Rua", imgLocal: "/NPC/CentrodaCidade.png", imgPersonagem: "/NPC/moradorderua.png", pista: "Ele mencionou uma cidade conhecida por seus museus e galerias." },
 
             // ETAPA FINAL - Paris
             { id: "S1_13", cidade: "Paris", local: "Banco", personagem: "Banqueiro", imgLocal: "/NPC/Banco.png", imgPersonagem: "/NPC/Banqueiro.png", pista: "Sim… ele está aqui em Paris. Era um homem de cabelo loiro e olhos azuis. Antes de sair, comentou que queria comer comida francesa." },
@@ -63,7 +63,7 @@ export const CASO_2_SCENARIOS = [
             // ETAPA 2 - Nova York
             { id: "S2_4", cidade: "Nova York", local: "Táxi", personagem: "Taxista", imgLocal: "/NPC/Taxi.png", imgPersonagem: "/NPC/Taxista.png", pista: "Levei ela ao aeroporto. Ela tinha cabelo castanho e disse que viajaria para um país com desertos e monumentos antigos." },
             { id: "S2_5", cidade: "Nova York", local: "Banqueiro", personagem: "Banqueiro", imgLocal: "/NPC/Banco.png", imgPersonagem: "/NPC/Banqueiro.png", pista: "Ela perguntou sobre voos para uma cidade histórica no norte da África." },
-            { id: "S2_6", cidade: "Nova York", local: "Morador de Rua", personagem: "Morador de Rua", imgLocal: "/NPC/Restaurante.png", imgPersonagem: "/NPC/moradorderua.png", pista: "Ela mencionou um país famoso por suas pirâmides." },
+            { id: "S2_6", cidade: "Nova York", local: "Morador de Rua", personagem: "Morador de Rua", imgLocal: "/NPC/CentrodaCidade.png", imgPersonagem: "/NPC/moradorderua.png", pista: "Ela mencionou um país famoso por suas pirâmides." },
 
             // ETAPA 3 - Cairo
             { id: "S2_7", cidade: "Cairo", local: "Banco", personagem: "Banqueiro", imgLocal: "/NPC/Banco.png", imgPersonagem: "/NPC/Banqueiro.png", pista: "Ela esteve aqui hoje. Tinha olhos pretos e disse que viajaria para uma cidade grande e movimentada na Ásia." },
@@ -73,7 +73,7 @@ export const CASO_2_SCENARIOS = [
             // ETAPA 4 - Mumbai
             { id: "S2_10", cidade: "Mumbai", local: "Táxi", personagem: "Taxista", imgLocal: "/NPC/Taxi.png", imgPersonagem: "/NPC/Taxista.png", pista: "Levei ela ao aeroporto. Ela comentou que praticava yoga e que viajaria para uma cidade europeia muito famosa." },
             { id: "S2_11", cidade: "Mumbai", local: "Banqueiro", personagem: "Banqueiro", imgLocal: "/NPC/Banco.png", imgPersonagem: "/NPC/Banqueiro.png", pista: "Ela perguntou sobre voos para uma capital cultural da Europa." },
-            { id: "S2_12", cidade: "Mumbai", local: "Morador de Rua", personagem: "Morador de Rua", imgLocal: "/NPC/Restaurante.png", imgPersonagem: "/NPC/moradorderua.png", pista: "Ela mencionou uma cidade conhecida por seus museus." },
+            { id: "S2_12", cidade: "Mumbai", local: "Morador de Rua", personagem: "Morador de Rua", imgLocal: "/NPC/CentrodaCidade.png", imgPersonagem: "/NPC/moradorderua.png", pista: "Ela mencionou uma cidade conhecida por seus museus." },
 
             // ETAPA FINAL - Paris
             { id: "S2_13", cidade: "Paris", local: "Banco", personagem: "Banqueiro", imgLocal: "/NPC/Banco.png", imgPersonagem: "/NPC/Banqueiro.png", pista: "Sim… ela está aqui em Paris. Era uma mulher de cabelo castanho e olhos pretos. Antes de sair, comentou que queria comer algo bem apimentado." },
@@ -103,7 +103,7 @@ export const CASO_2_SCENARIOS = [
             // ETAPA 2 - Roma
             { id: "S3_4", cidade: "Roma", local: "Táxi", personagem: "Taxista", imgLocal: "/NPC/Taxi.png", imgPersonagem: "/NPC/Taxista.png", pista: "Levei ele ao aeroporto. Ele tinha cabelo castanho e disse que viajaria para uma cidade europeia próxima ao oceano." },
             { id: "S3_5", cidade: "Roma", local: "Banqueiro", personagem: "Banqueiro", imgLocal: "/NPC/Banco.png", imgPersonagem: "/NPC/Banqueiro.png", pista: "Ele perguntou sobre voos para uma capital antiga no oeste da Europa." },
-            { id: "S3_6", cidade: "Roma", local: "Morador de Rua", personagem: "Morador de Rua", imgLocal: "/NPC/Restaurante.png", imgPersonagem: "/NPC/moradorderua.png", pista: "Ele mencionou uma cidade famosa por sua história e localização costeira." },
+            { id: "S3_6", cidade: "Roma", local: "Morador de Rua", personagem: "Morador de Rua", imgLocal: "/NPC/CentrodaCidade.png", imgPersonagem: "/NPC/moradorderua.png", pista: "Ele mencionou uma cidade famosa por sua história and localização costeira." },
 
             // ETAPA 3 - Lisboa
             { id: "S3_7", cidade: "Lisboa", local: "Banco", personagem: "Banqueiro", imgLocal: "/NPC/Banco.png", imgPersonagem: "/NPC/Banqueiro.png", pista: "Ele esteve aqui hoje. Tinha olhos castanhos e disse que viajaria para uma cidade moderna na América do Norte." },
@@ -113,7 +113,7 @@ export const CASO_2_SCENARIOS = [
             // ETAPA 4 - Toronto
             { id: "S3_10", cidade: "Toronto", local: "Táxi", personagem: "Taxista", imgLocal: "/NPC/Taxi.png", imgPersonagem: "/NPC/Taxista.png", pista: "Ele comentou que praticava remo e que viajaria para uma cidade europeia famosa por sua cultura." },
             { id: "S3_11", cidade: "Toronto", local: "Banqueiro", personagem: "Banqueiro", imgLocal: "/NPC/Banco.png", imgPersonagem: "/NPC/Banqueiro.png", pista: "Ele perguntou sobre voos para uma capital cultural da Europa." },
-            { id: "S3_12", cidade: "Toronto", local: "Morador de Rua", personagem: "Morador de Rua", imgLocal: "/NPC/Restaurante.png", imgPersonagem: "/NPC/moradorderua.png", pista: "Ele mencionou uma cidade conhecida mundialmente por sua arte." },
+            { id: "S3_12", cidade: "Toronto", local: "Morador de Rua", personagem: "Morador de Rua", imgLocal: "/NPC/CentrodaCidade.png", imgPersonagem: "/NPC/moradorderua.png", pista: "Ele mencionou uma cidade conhecida mundialmente por sua arte." },
 
             // ETAPA FINAL - Paris
             { id: "S3_13", cidade: "Paris", local: "Banco", personagem: "Banqueiro", imgLocal: "/NPC/Banco.png", imgPersonagem: "/NPC/Banqueiro.png", pista: "Sim… ele está aqui em Paris. Era um homem de cabelo castanho e olhos castanhos. Antes de sair, comentou que queria comer comida italiana." },
@@ -143,7 +143,7 @@ export const CASO_2_SCENARIOS = [
             // ETAPA 2 - Seul
             { id: "S4_4", cidade: "Seul", local: "Táxi", personagem: "Taxista", imgLocal: "/NPC/Taxi.png", imgPersonagem: "/NPC/Taxista.png", pista: "Levei ela ao aeroporto. Ela tinha cabelo preto e disse que viajaria para outra cidade importante na Ásia." },
             { id: "S4_5", cidade: "Seul", local: "Banqueiro", personagem: "Banqueiro", imgLocal: "/NPC/Banco.png", imgPersonagem: "/NPC/Banqueiro.png", pista: "Ela perguntou sobre voos para uma capital tecnológica próxima." },
-            { id: "S4_6", cidade: "Seul", local: "Morador de Rua", personagem: "Morador de Rua", imgLocal: "/NPC/Restaurante.png", imgPersonagem: "/NPC/moradorderua.png", pista: "Ela mencionou uma cidade asiática muito moderna." },
+            { id: "S4_6", cidade: "Seul", local: "Morador de Rua", personagem: "Morador de Rua", imgLocal: "/NPC/CentrodaCidade.png", imgPersonagem: "/NPC/moradorderua.png", pista: "Ela mencionou uma cidade asiática muito moderna." },
 
             // ETAPA 3 - Tóquio
             { id: "S4_7", cidade: "Tóquio", local: "Banco", personagem: "Banqueiro", imgLocal: "/NPC/Banco.png", imgPersonagem: "/NPC/Banqueiro.png", pista: "Ela esteve aqui hoje. Tinha olhos pretos e disse que viajaria para uma cidade costeira na América do Norte." },
@@ -153,7 +153,7 @@ export const CASO_2_SCENARIOS = [
             // ETAPA 4 - Vancouver
             { id: "S4_10", cidade: "Vancouver", local: "Táxi", personagem: "Taxista", imgLocal: "/NPC/Taxi.png", imgPersonagem: "/NPC/Taxista.png", pista: "Levei ela ao aeroporto. Ela comentou que praticava ginástica olímpica e que viajaria para uma capital europeia famosa." },
             { id: "S4_11", cidade: "Vancouver", local: "Banqueiro", personagem: "Banqueiro", imgLocal: "/NPC/Banco.png", imgPersonagem: "/NPC/Banqueiro.png", pista: "Ela perguntou sobre voos para uma cidade europeia muito conhecida." },
-            { id: "S4_12", cidade: "Vancouver", local: "Morador de Rua", personagem: "Morador de Rua", imgLocal: "/NPC/Restaurante.png", imgPersonagem: "/NPC/moradorderua.png", pista: "Ela mencionou uma cidade famosa por sua arte e história." },
+            { id: "S4_12", cidade: "Vancouver", local: "Morador de Rua", personagem: "Morador de Rua", imgLocal: "/NPC/CentrodaCidade.png", imgPersonagem: "/NPC/moradorderua.png", pista: "Ela mencionou uma cidade famosa por sua arte e história." },
 
             // ETAPA FINAL - Paris
             { id: "S4_13", cidade: "Paris", local: "Banco", personagem: "Banqueiro", imgLocal: "/NPC/Banco.png", imgPersonagem: "/NPC/Banqueiro.png", pista: "Sim… ela está aqui em Paris. Ela era uma mulher de cabelo preto e olhos pretos. Antes de sair, comentou que queria comer comida asiática." },
@@ -183,7 +183,7 @@ export const CASO_2_SCENARIOS = [
             // ETAPA 2 - Viena
             { id: "S5_4", cidade: "Viena", local: "Táxi", personagem: "Taxista", imgLocal: "/NPC/Taxi.png", imgPersonagem: "/NPC/Taxista.png", pista: "Levei ela ao aeroporto. Ela tinha cabelo platinado e disse que viajaria para uma capital importante na Europa." },
             { id: "S5_5", cidade: "Viena", local: "Banqueiro", personagem: "Banqueiro", imgLocal: "/NPC/Banco.png", imgPersonagem: "/NPC/Banqueiro.png", pista: "Ela perguntou sobre voos para uma cidade histórica muito conhecida." },
-            { id: "S5_6", cidade: "Viena", local: "Morador de Rua", personagem: "Morador de Rua", imgLocal: "/NPC/Restaurante.png", imgPersonagem: "/NPC/moradorderua.png", pista: "Ela mencionou uma cidade famosa por sua tradição." },
+            { id: "S5_6", cidade: "Viena", local: "Morador de Rua", personagem: "Morador de Rua", imgLocal: "/NPC/CentrodaCidade.png", imgPersonagem: "/NPC/moradorderua.png", pista: "Ela mencionou uma cidade famosa por sua tradição." },
 
             // ETAPA 3 - Londres
             { id: "S5_7", cidade: "Londres", local: "Banco", personagem: "Banqueiro", imgLocal: "/NPC/Banco.png", imgPersonagem: "/NPC/Banqueiro.png", pista: "Ela esteve aqui hoje. Tinha olhos verdes e disse que viajaria para uma cidade histórica próxima ao oceano." },
@@ -193,7 +193,7 @@ export const CASO_2_SCENARIOS = [
             // ETAPA 4 - Lisboa
             { id: "S5_10", cidade: "Lisboa", local: "Táxi", personagem: "Taxista", imgLocal: "/NPC/Taxi.png", imgPersonagem: "/NPC/Taxista.png", pista: "Levei ela ao aeroporto. Ela comentou que praticava esgrima e que viajaria para uma capital europeia muito famosa." },
             { id: "S5_11", cidade: "Lisboa", local: "Banqueiro", personagem: "Banqueiro", imgLocal: "/NPC/Banco.png", imgPersonagem: "/NPC/Banqueiro.png", pista: "Ela perguntou sobre voos para uma cidade cultural da Europa." },
-            { id: "S5_12", cidade: "Lisboa", local: "Morador de Rua", personagem: "Morador de Rua", imgLocal: "/NPC/Restaurante.png", imgPersonagem: "/NPC/moradorderua.png", pista: "Ela mencionou uma cidade conhecida mundialmente." },
+            { id: "S5_12", cidade: "Lisboa", local: "Morador de Rua", personagem: "Morador de Rua", imgLocal: "/NPC/CentrodaCidade.png", imgPersonagem: "/NPC/moradorderua.png", pista: "Ela mencionou uma cidade conhecida mundialmente." },
 
             // ETAPA FINAL - Paris
             { id: "S5_13", cidade: "Paris", local: "Banco", personagem: "Banqueiro", imgLocal: "/NPC/Banco.png", imgPersonagem: "/NPC/Banqueiro.png", pista: "Sim… ela está aqui em Paris. Era uma mulher de cabelo platinado e olhos verdes. Antes de sair, comentou que queria comer comida francesa." },

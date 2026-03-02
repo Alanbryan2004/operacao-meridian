@@ -29,7 +29,7 @@ export const CASO_1_SCENARIOS = [
 
             { id: "S1_10", cidade: "Londres", local: "Táxi", personagem: "Taxista", imgLocal: "/NPC/Taxi.png", imgPersonagem: "/NPC/Taxista.png", pista: "Levei ele ao aeroporto. Ele comentou que gostava muito de polo e que viajaria para uma cidade luxuosa no deserto." },
             { id: "S1_11", cidade: "Londres", local: "Banco", personagem: "Banqueiro", imgLocal: "/NPC/Banco.png", imgPersonagem: "/NPC/Banqueiro.png", pista: "Ele falou sobre viajar para uma cidade moderna no Oriente Médio." },
-            { id: "S1_12", cidade: "Londres", local: "Morador de Rua", personagem: "Morador de Rua", imgLocal: "/NPC/Restaurante.png", imgPersonagem: "/NPC/moradorderua.png", pista: "Ele mencionou uma cidade rica e moderna no deserto." },
+            { id: "S1_12", cidade: "Londres", local: "Morador de Rua", personagem: "Morador de Rua", imgLocal: "/NPC/CentrodaCidade.png", imgPersonagem: "/NPC/moradorderua.png", pista: "Ele mencionou uma cidade rica e moderna no deserto." },
 
             { id: "S1_13", cidade: "Dubai", local: "Banco", personagem: "Banqueiro", imgLocal: "/NPC/Banco.png", imgPersonagem: "/NPC/Banqueiro.png", pista: "Sim… ele está aqui em Dubai. Era um homem de cabelo preto e olhos castanhos. Antes de sair, comentou que queria comer comida árabe." },
             { id: "S1_14", cidade: "Dubai", local: "Restaurante", personagem: "Garçom", imgLocal: "/NPC/Restaurante.png", imgPersonagem: "/NPC/Garcon.png", pista: "Ele esteve aqui recentemente." },
@@ -64,7 +64,7 @@ export const CASO_1_SCENARIOS = [
 
             { id: "S2_10", cidade: "Roma", local: "Táxi", personagem: "Taxista", imgLocal: "/NPC/Taxi.png", imgPersonagem: "/NPC/Taxista.png", pista: "Levei ele ao aeroporto. Ele comentou que gostava muito de jogar golfe. Disse que viajaria para uma cidade tradicional." },
             { id: "S2_11", cidade: "Roma", local: "Dançarina", personagem: "Dançarina", imgLocal: "/NPC/Hospital.png", imgPersonagem: "/NPC/Dancarina.png", pista: "Ele falou sobre viajar para uma cidade histórica na Europa." },
-            { id: "S2_12", cidade: "Roma", local: "Morador de Rua", personagem: "Morador de Rua", imgLocal: "/NPC/Restaurante.png", imgPersonagem: "/NPC/moradorderua.png", pista: "Ele mencionou uma cidade muito conhecida e importante." },
+            { id: "S2_12", cidade: "Roma", local: "Morador de Rua", personagem: "Morador de Rua", imgLocal: "/NPC/CentrodaCidade.png", imgPersonagem: "/NPC/moradorderua.png", pista: "Ele mencionou uma cidade muito conhecida e importante." },
 
             { id: "S2_13", cidade: "Londres", local: "Banco", personagem: "Banqueiro", imgLocal: "/NPC/Banco.png", imgPersonagem: "/NPC/Banqueiro.png", pista: "Sim… ele está aqui em Londres. Era um homem de cabelo platinado e olhos azuis. Antes de sair, comentou que queria comer grelhados." },
             { id: "S2_14", cidade: "Londres", local: "Restaurante", personagem: "Garçom", imgLocal: "/NPC/Restaurante.png", imgPersonagem: "/NPC/Garcon.png", pista: "Ele esteve aqui há pouco." },
@@ -99,7 +99,7 @@ export const CASO_1_SCENARIOS = [
 
             { id: "S3_10", cidade: "Toronto", local: "Táxi", personagem: "Taxista", imgLocal: "/NPC/Taxi.png", imgPersonagem: "/NPC/Taxista.png", pista: "Levei ele ao aeroporto. Ele comentou que treinava ginástica olímpica e que viajaria para um país com desertos e monumentos antigos." },
             { id: "S3_11", cidade: "Toronto", local: "Banco", personagem: "Banqueiro", imgLocal: "/NPC/Banco.png", imgPersonagem: "/NPC/Banqueiro.png", pista: "Ele falou sobre viajar para um país histórico." },
-            { id: "S3_12", cidade: "Toronto", local: "Morador de Rua", personagem: "Morador de Rua", imgLocal: "/NPC/Restaurante.png", imgPersonagem: "/NPC/moradorderua.png", pista: "Ele mencionou um lugar com pirâmides." },
+            { id: "S3_12", cidade: "Toronto", local: "Morador de Rua", personagem: "Morador de Rua", imgLocal: "/NPC/CentrodaCidade.png", imgPersonagem: "/NPC/moradorderua.png", pista: "Ele mencionou um lugar com pirâmides." },
 
             { id: "S3_13", cidade: "Cairo", local: "Banco", personagem: "Banqueiro", imgLocal: "/NPC/Banco.png", imgPersonagem: "/NPC/Banqueiro.png", pista: "Sim… ele está aqui no Cairo. Era um homem de cabelo preto e olhos pretos. Antes de sair, comentou que queria comer comida asiática." },
             { id: "S3_14", cidade: "Cairo", local: "Restaurante", personagem: "Garçom", imgLocal: "/NPC/Restaurante.png", imgPersonagem: "/NPC/Garcon.png", pista: "Ele esteve aqui recentemente." },
@@ -134,7 +134,7 @@ export const CASO_1_SCENARIOS = [
 
             { id: "S4_10", cidade: "Moscou", local: "Táxi", personagem: "Taxista", imgLocal: "/NPC/Taxi.png", imgPersonagem: "/NPC/Taxista.png", pista: "Levei a pessoa ao aeroporto. Comentou que jogava muito xadrez e viajaria para uma cidade moderna na América do Norte. " },
             { id: "S4_11", cidade: "Moscou", local: "Banco", personagem: "Banqueiro", imgLocal: "/NPC/Banco.png", imgPersonagem: "/NPC/Banqueiro.png", pista: "Falou sobre viajar para uma cidade canadense. Era alguém de aparência andrógina… não era possível definir se era homem ou mulher." },
-            { id: "S4_12", cidade: "Moscou", local: "Morador de Rua", personagem: "Morador de Rua", imgLocal: "/NPC/Restaurante.png", imgPersonagem: "/NPC/moradorderua.png", pista: "Mencionou um destino no Canadá." },
+            { id: "S4_12", cidade: "Moscou", local: "Morador de Rua", personagem: "Morador de Rua", imgLocal: "/NPC/CentrodaCidade.png", imgPersonagem: "/NPC/moradorderua.png", pista: "Mencionou um destino no Canadá." },
 
             { id: "S4_13", cidade: "Toronto", local: "Banco", personagem: "Banqueiro", imgLocal: "/NPC/Banco.png", imgPersonagem: "/NPC/Banqueiro.png", pista: "Sim… a pessoa está aqui em Toronto. Tinha cabelo platinado e olhos castanhos. Antes de sair, comentou que queria comer comida francesa." },
             { id: "S4_14", cidade: "Toronto", local: "Restaurante", personagem: "Garçom", imgLocal: "/NPC/Restaurante.png", imgPersonagem: "/NPC/Garcon.png", pista: "A pessoa esteve aqui recentemente." },
@@ -169,7 +169,7 @@ export const CASO_1_SCENARIOS = [
 
             { id: "S5_10", cidade: "Toronto", local: "Táxi", personagem: "Taxista", imgLocal: "/NPC/Taxi.png", imgPersonagem: "/NPC/Taxista.png", pista: "Levei ela ao aeroporto. Ela comentou que praticava tênis e que viajaria para uma cidade moderna na Ásia." },
             { id: "S5_11", cidade: "Toronto", local: "Banco", personagem: "Banqueiro", imgLocal: "/NPC/Banco.png", imgPersonagem: "/NPC/Banqueiro.png", pista: "Ela falou sobre viajar para uma cidade tecnológica." },
-            { id: "S5_12", cidade: "Toronto", local: "Morador de Rua", personagem: "Morador de Rua", imgLocal: "/NPC/Restaurante.png", imgPersonagem: "/NPC/moradorderua.png", pista: "Ela mencionou uma grande cidade asiática." },
+            { id: "S5_12", cidade: "Toronto", local: "Morador de Rua", personagem: "Morador de Rua", imgLocal: "/NPC/CentrodaCidade.png", imgPersonagem: "/NPC/moradorderua.png", pista: "Ela mencionou uma grande cidade asiática." },
 
             { id: "S5_13", cidade: "Tokio", local: "Banco", personagem: "Banqueiro", imgLocal: "/NPC/Banco.png", imgPersonagem: "/NPC/Banqueiro.png", pista: "Sim… ela está aqui em Tóquio. Era uma mulher de cabelo preto e olhos pretos. Antes de sair, comentou que queria comer comida asiática." },
             { id: "S5_14", cidade: "Tokio", local: "Restaurante", personagem: "Garçom", imgLocal: "/NPC/Restaurante.png", imgPersonagem: "/NPC/Garcon.png", pista: "Ela esteve aqui recentemente." },

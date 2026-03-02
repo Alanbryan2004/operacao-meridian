@@ -85,7 +85,7 @@ const ORIGIN_COORDS = {
     "Moscou": { x: 280, y: 70 },
     "Dubai": { x: 305, y: 150 },
     "Seul": { x: 335, y: 90 },
-    "Tokio": { x: 360, y: 100 },
+    "Tóquio": { x: 360, y: 100 },
     "Viena": { x: 220, y: 95 },
     "Mumbai": { x: 315, y: 165 },
     "Vancouver": { x: 15, y: 55 },
@@ -98,7 +98,7 @@ const DESTINATION_OPTIONS = [
     { id: "C_PT", pais: "Portugal", cidade: "Lisboa", origem: "Campinas", coords: { x: 160, y: 100 }, flag: "🇵🇹" },
     { id: "C_EG", pais: "Egito", cidade: "Cairo", origem: "Campinas", coords: { x: 245, y: 140 }, flag: "🇪🇬" },
     { id: "C_FR", pais: "França", cidade: "Paris", origem: "Campinas", coords: { x: 200, y: 85 }, flag: "🇫🇷" },
-    { id: "C_JP", pais: "Japão", cidade: "Tokio", origem: "Campinas", coords: { x: 360, y: 100 }, flag: "🇯🇵" },
+    { id: "C_JP", pais: "Japão", cidade: "Tóquio", origem: "Campinas", coords: { x: 360, y: 100 }, flag: "🇯🇵" },
     { id: "C_KR", pais: "Coreia do Sul", cidade: "Seul", origem: "Campinas", coords: { x: 335, y: 90 }, flag: "🇰🇷" },
     { id: "C_AR", pais: "Argentina", cidade: "Buenos Aires", origem: "Campinas", coords: { x: 80, y: 180 }, flag: "🇦🇷" },
     { id: "C_US", pais: "EUA", cidade: "Nova York", origem: "Campinas", coords: { x: 60, y: 75 }, flag: "🇺🇸" },
@@ -149,7 +149,7 @@ const DESTINATION_OPTIONS = [
     // De Toronto
     { id: "T_IT", pais: "Itália", cidade: "Roma", origem: "Toronto", coords: { x: 215, y: 110 }, flag: "🇮🇹" },
     { id: "T_EG", pais: "Egito", cidade: "Cairo", origem: "Toronto", coords: { x: 245, y: 140 }, flag: "🇪🇬" },
-    { id: "T_JP", pais: "Japão", cidade: "Tokio", origem: "Toronto", coords: { x: 360, y: 100 }, flag: "🇯🇵" },
+    { id: "T_JP", pais: "Japão", cidade: "Tóquio", origem: "Toronto", coords: { x: 360, y: 100 }, flag: "🇯🇵" },
     { id: "T_US", pais: "EUA", cidade: "Nova York", origem: "Toronto", coords: { x: 60, y: 75 }, flag: "🇺🇸" },
     { id: "T_FR", pais: "França", cidade: "Paris", origem: "Toronto", coords: { x: 200, y: 85 }, flag: "🇫🇷" },
 
@@ -158,18 +158,18 @@ const DESTINATION_OPTIONS = [
     { id: "R_PT", pais: "Portugal", cidade: "Lisboa", origem: "Roma", coords: { x: 160, y: 100 }, flag: "🇵🇹" },
     { id: "R_RU", pais: "Rússia", cidade: "Moscou", origem: "Roma", coords: { x: 280, y: 70 }, flag: "🇷🇺" },
 
-    // De Tokio
-    { id: "TK_RU", pais: "Rússia", cidade: "Moscou", origem: "Tokio", coords: { x: 280, y: 70 }, flag: "🇷🇺" },
-    { id: "TK_GB", pais: "Reino Unido", cidade: "Londres", origem: "Tokio", coords: { x: 195, y: 65 }, flag: "🇬🇧" },
-    { id: "TK_IT", pais: "Itália", cidade: "Roma", origem: "Tokio", coords: { x: 215, y: 110 }, flag: "🇮🇹" },
-    { id: "TK_VA", pais: "Canadá", cidade: "Vancouver", origem: "Tokio", coords: { x: 15, y: 55 }, flag: "🇨🇦" },
-    { id: "TK_AE", pais: "Emirados Árabes", cidade: "Dubai", origem: "Tokio", coords: { x: 305, y: 150 }, flag: "🇦🇪" },
+    // De Tóquio
+    { id: "TK_RU", pais: "Rússia", cidade: "Moscou", origem: "Tóquio", coords: { x: 280, y: 70 }, flag: "🇷🇺" },
+    { id: "TK_GB", pais: "Reino Unido", cidade: "Londres", origem: "Tóquio", coords: { x: 195, y: 65 }, flag: "🇬🇧" },
+    { id: "TK_IT", pais: "Itália", cidade: "Roma", origem: "Tóquio", coords: { x: 215, y: 110 }, flag: "🇮🇹" },
+    { id: "TK_VA", pais: "Canadá", cidade: "Vancouver", origem: "Tóquio", coords: { x: 15, y: 55 }, flag: "🇨🇦" },
+    { id: "TK_AE", pais: "Emirados Árabes", cidade: "Dubai", origem: "Tóquio", coords: { x: 305, y: 150 }, flag: "🇦🇪" },
 
     // De Seul
     { id: "S_GB", pais: "Reino Unido", cidade: "Londres", origem: "Seul", coords: { x: 195, y: 65 }, flag: "🇬🇧" },
     { id: "S_PT", pais: "Portugal", cidade: "Lisboa", origem: "Seul", coords: { x: 160, y: 100 }, flag: "🇵🇹" },
     { id: "S_IT", pais: "Itália", cidade: "Roma", origem: "Seul", coords: { x: 215, y: 110 }, flag: "🇮🇹" },
-    { id: "S_TK", pais: "Japão", cidade: "Tokio", origem: "Seul", coords: { x: 360, y: 100 }, flag: "🇯🇵" },
+    { id: "S_TK", pais: "Japão", cidade: "Tóquio", origem: "Seul", coords: { x: 360, y: 100 }, flag: "🇯🇵" },
 
     // De Viena
     { id: "AT_PT", pais: "Portugal", cidade: "Lisboa", origem: "Viena", coords: { x: 160, y: 100 }, flag: "🇵🇹" },
@@ -421,13 +421,15 @@ export default function Caso() {
 
         // 🔥 REGRA CRÍTICA: Se a cidade final for igual à inicial (loop), 
         // só permitimos a captura se o jogador já tiver pistas das etapas intermediárias.
-        if (isFinalCity && activeScenario?.route && activeScenario.route[0] === activeScenario.finalCity) {
-            if (!hasMissionProgressed) isFinalCity = false;
+        // Além disso, verificamos se o jogador está REALMENTE na última etapa da rota.
+        if (isFinalCity && activeScenario?.route) {
+            const isLastStage = activeScenario.route.lastIndexOf(locObj.cidade) === activeScenario.route.length - 1;
+            if (!hasMissionProgressed || !isLastStage) isFinalCity = false;
         }
 
         if (isFinalCity) {
-            // Se for o Garçom OU se for a SEGUNDA investigação na cidade
-            if (locObj.personagem === "Garçom" || locObj.personagem === "Curadora" || locObj.personagem === "Monge" || locObj.personagem === "Segurança" || currentCount >= 2) {
+            // Se for a SEGUNDA investigação na cidade final (Etapa 5)
+            if (currentCount >= 2) {
                 const targetId = String(run.targetSuspectId || "008");
                 const warrantIdSelected = String(run.warrantId || "");
                 const isSuccess = run.mandadoEmitido && warrantIdSelected === targetId;

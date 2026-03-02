@@ -124,7 +124,7 @@ export const CIDADES = [
         descricao: "Capital do Butão, Thimphu é uma cidade única que preserva tradições budistas e não possui semáforos. Cercada por montanhas, combina natureza e cultura.",
     },
     {
-        cidade: "Tokio",
+        cidade: "Tóquio",
         pais: "Japão",
         continente: "Ásia",
         imagem: "/Paises/Tokio.png",
@@ -197,7 +197,7 @@ export const CIDADES = [
         descricao: "Istambul é a maior cidade da Turquia, localizada entre Europa e Ásia. Famosa por sua história, mesquitas e cultura rica, foi capital de grandes impérios.",
     },
     {
-        cidade: "Cingapura",
+        cidade: "Singapura",
         pais: "Singapura",
         continente: "Asia",
         imagem: "/Paises/Cingapura.png",
