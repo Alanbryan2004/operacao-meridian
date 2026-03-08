@@ -8,6 +8,7 @@ import MissaoIntro from "./pages/MissaoIntro";
 import Perfil from "./pages/Perfil";
 import Configuracao from "./pages/Configuracao";
 import PromocaoScreen from "./pages/PromocaoScreen";
+import HallDaFama from "./pages/HallDaFama";
 import AudioManager from "./components/AudioManager";
 import { GameProvider } from "./game/GameProvider";
 import { loadGame } from "./game/store";
@@ -45,6 +46,7 @@ export default function App() {
           <Route path="/perfil" element={<Perfil />} />
           <Route path="/configuracao" element={<Configuracao />} />
           <Route path="/promocao" element={<PromocaoScreen />} />
+          <Route path="/hall-da-fama" element={<HallDaFama />} />
         </Routes>
       </div>
     </GameProvider>

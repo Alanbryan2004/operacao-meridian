@@ -176,6 +176,19 @@ export const casesSeed = [
         replayable: true,
         interrogatorios: [],
     },
+    {
+        id: "C004",
+        titulo: "O Diamante que Muda de Cor",
+        dificuldade: "FACIL",
+        recompensa: 4000,
+        xp: 80,
+        tempoTotalHoras: 480,
+        localInicial: { pais: "África do Sul", cidade: "Cidade do Cabo" },
+        resumo: "💎 CASO 4 — O Diamante que Muda de Cor\n📍 Local: Museu de Ciências da Cidade do Cabo, África do Sul 🇿🇦\n\nUm diamante único, conhecido por mudar de cor sob diferentes condições de luz, foi roubado do Museu de Ciências. O ladrão foi visto fugindo logo após o crime.\n\nSua missão é rastrear o criminoso através de várias capitais globais e recuperar a joia. 🔎💎",
+        imgItem: "/reliquiaDesaparecida.png", // Usando um placeholder plausível
+        replayable: true,
+        interrogatorios: [],
+    },
 ];
 
 export const initialPlayer = {

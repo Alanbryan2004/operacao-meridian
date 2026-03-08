@@ -173,11 +173,8 @@ export default function Mural() {
                             <button className="om-miniBtn" onClick={() => nav("/perfil")}>
                                 PERFIL
                             </button>
-                            <button
-                                className="om-miniBtn"
-                                onClick={() => setModal({ show: true, message: "O sistema de Ranking e Clãs da A.T.L.A.S. será liberado em breve!" })}
-                            >
-                                CLÃS
+                            <button className="om-miniBtn" onClick={() => nav("/hall-da-fama")}>
+                                HALL DA FAMA
                             </button>
                         </div>
                     </div>

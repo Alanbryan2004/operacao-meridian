@@ -115,6 +115,8 @@ const DESTINATION_OPTIONS = [
     { id: "L_GB", pais: "Reino Unido", cidade: "Londres", origem: "Lisboa", coords: { x: 195, y: 65 }, flag: "🇬🇧" },
     { id: "L_CA", pais: "Canadá", cidade: "Toronto", origem: "Lisboa", coords: { x: 40, y: 60 }, flag: "🇨🇦" },
     { id: "L_ES", pais: "Espanha", cidade: "Madrid", origem: "Lisboa", coords: { x: 180, y: 105 }, flag: "🇪🇸" },
+    { id: "L_IT", pais: "Itália", cidade: "Roma", origem: "Lisboa", coords: { x: 215, y: 110 }, flag: "🇮🇹" },
+    { id: "L_DE", pais: "Alemanha", cidade: "Berlim", origem: "Lisboa", coords: { x: 220, y: 80 }, flag: "🇩🇪" },
 
     // De Cairo
     { id: "CA_RU", pais: "Rússia", cidade: "Moscou", origem: "Cairo", coords: { x: 280, y: 70 }, flag: "🇷🇺" },
@@ -130,6 +132,8 @@ const DESTINATION_OPTIONS = [
     { id: "M_IT", pais: "Itália", cidade: "Roma", origem: "Moscou", coords: { x: 215, y: 110 }, flag: "🇮🇹" },
     { id: "M_US", pais: "EUA", cidade: "Nova York", origem: "Moscou", coords: { x: 60, y: 75 }, flag: "🇺🇸" },
     { id: "M_PT", pais: "Portugal", cidade: "Lisboa", origem: "Moscou", coords: { x: 160, y: 100 }, flag: "🇵🇹" },
+    { id: "M_NL", pais: "Holanda", cidade: "Amsterdã", origem: "Moscou", coords: { x: 195, y: 75 }, flag: "🇳🇱" },
+    { id: "M_EG", pais: "Egito", cidade: "Cairo", origem: "Moscou", coords: { x: 245, y: 140 }, flag: "🇪🇬" },
 
     // De Londres
     { id: "GB_AE", pais: "Emirados Árabes", cidade: "Dubai", origem: "Londres", coords: { x: 305, y: 150 }, flag: "🇦🇪" },
@@ -143,6 +147,7 @@ const DESTINATION_OPTIONS = [
     { id: "GB_ES", pais: "Espanha", cidade: "Madrid", origem: "Londres", coords: { x: 180, y: 105 }, flag: "🇪🇸" },
     { id: "GB_AT", pais: "Áustria", cidade: "Viena", origem: "Londres", coords: { x: 220, y: 95 }, flag: "🇦🇹" },
     { id: "GB_PT", pais: "Portugal", cidade: "Lisboa", origem: "Londres", coords: { x: 160, y: 100 }, flag: "🇵🇹" },
+    { id: "GB_ZA", pais: "África do Sul", cidade: "Cidade do Cabo", origem: "Londres", coords: { x: 210, y: 195 }, flag: "🇿🇦" },
 
     // De Paris
     { id: "P_RU", pais: "Rússia", cidade: "Moscou", origem: "Paris", coords: { x: 280, y: 70 }, flag: "🇷🇺" },
@@ -153,6 +158,7 @@ const DESTINATION_OPTIONS = [
     { id: "P_US", pais: "EUA", cidade: "Nova York", origem: "Paris", coords: { x: 60, y: 75 }, flag: "🇺🇸" },
     { id: "P_KR", pais: "Coreia do Sul", cidade: "Seul", origem: "Paris", coords: { x: 335, y: 90 }, flag: "🇰🇷" },
     { id: "P_AT", pais: "Áustria", cidade: "Viena", origem: "Paris", coords: { x: 220, y: 95 }, flag: "🇦🇹" },
+    { id: "P_ES", pais: "Espanha", cidade: "Madrid", origem: "Paris", coords: { x: 180, y: 105 }, flag: "🇪🇸" },
 
     // De Toronto
     { id: "T_IT", pais: "Itália", cidade: "Roma", origem: "Toronto", coords: { x: 215, y: 110 }, flag: "🇮🇹" },
@@ -160,11 +166,12 @@ const DESTINATION_OPTIONS = [
     { id: "T_JP", pais: "Japão", cidade: "Tóquio", origem: "Toronto", coords: { x: 360, y: 100 }, flag: "🇯🇵" },
     { id: "T_US", pais: "EUA", cidade: "Nova York", origem: "Toronto", coords: { x: 60, y: 75 }, flag: "🇺🇸" },
     { id: "T_FR", pais: "França", cidade: "Paris", origem: "Toronto", coords: { x: 200, y: 85 }, flag: "🇫🇷" },
+    { id: "T_ZA", pais: "África do Sul", cidade: "Cidade do Cabo", origem: "Toronto", coords: { x: 210, y: 195 }, flag: "🇿🇦" },
 
     // De Roma
-    { id: "R_GB", pais: "Reino Unido", cidade: "Londres", origem: "Roma", coords: { x: 195, y: 65 }, flag: "🇬🇧" },
-    { id: "R_PT", pais: "Portugal", cidade: "Lisboa", origem: "Roma", coords: { x: 160, y: 100 }, flag: "🇵🇹" },
-    { id: "R_RU", pais: "Rússia", cidade: "Moscou", origem: "Roma", coords: { x: 280, y: 70 }, flag: "🇷🇺" },
+    { id: "R_CA", pais: "Canadá", cidade: "Toronto", origem: "Roma", coords: { x: 40, y: 60 }, flag: "🇨🇦" },
+    { id: "R_ES", pais: "Espanha", cidade: "Madrid", origem: "Roma", coords: { x: 180, y: 105 }, flag: "🇪🇸" },
+    { id: "R_EG", pais: "Egito", cidade: "Cairo", origem: "Roma", coords: { x: 245, y: 140 }, flag: "🇪🇬" },
 
     // De Tóquio
     { id: "TK_RU", pais: "Rússia", cidade: "Moscou", origem: "Tóquio", coords: { x: 280, y: 70 }, flag: "🇷🇺" },
@@ -173,6 +180,9 @@ const DESTINATION_OPTIONS = [
     { id: "TK_VA", pais: "Canadá", cidade: "Vancouver", origem: "Tóquio", coords: { x: 15, y: 55 }, flag: "🇨🇦" },
     { id: "TK_AE", pais: "Emirados Árabes", cidade: "Dubai", origem: "Tóquio", coords: { x: 305, y: 150 }, flag: "🇦🇪" },
     { id: "TK_DE", pais: "Alemanha", cidade: "Berlim", origem: "Tóquio", coords: { x: 220, y: 80 }, flag: "🇩🇪" },
+    { id: "TK_ZA", pais: "África do Sul", cidade: "Cidade do Cabo", origem: "Tóquio", coords: { x: 210, y: 195 }, flag: "🇿🇦" },
+    { id: "TK_FR", pais: "França", cidade: "Paris", origem: "Tóquio", coords: { x: 200, y: 85 }, flag: "🇫🇷" },
+    { id: "TK_KR", pais: "Coreia do Sul", cidade: "Seul", origem: "Tóquio", coords: { x: 335, y: 90 }, flag: "🇰🇷" },
     { id: "DE_IT", pais: "Itália", cidade: "Roma", origem: "Berlim", coords: { x: 215, y: 110 }, flag: "🇮🇹" },
     { id: "DE_AT", pais: "Áustria", cidade: "Viena", origem: "Berlim", coords: { x: 220, y: 95 }, flag: "🇦🇹" },
     { id: "DE_FR", pais: "França", cidade: "Paris", origem: "Berlim", coords: { x: 200, y: 85 }, flag: "🇫🇷" },
@@ -183,6 +193,8 @@ const DESTINATION_OPTIONS = [
     { id: "S_IT", pais: "Itália", cidade: "Roma", origem: "Seul", coords: { x: 215, y: 110 }, flag: "🇮🇹" },
     { id: "S_TK", pais: "Japão", cidade: "Tóquio", origem: "Seul", coords: { x: 360, y: 100 }, flag: "🇯🇵" },
     { id: "S_AE", pais: "Emirados Árabes", cidade: "Dubai", origem: "Seul", coords: { x: 305, y: 150 }, flag: "🇦🇪" },
+    { id: "S_CA", pais: "Canadá", cidade: "Vancouver", origem: "Seul", coords: { x: 15, y: 55 }, flag: "🇨🇦" },
+    { id: "S_FR", pais: "França", cidade: "Paris", origem: "Seul", coords: { x: 200, y: 85 }, flag: "🇫🇷" },
 
     // De Viena
     { id: "AT_PT", pais: "Portugal", cidade: "Lisboa", origem: "Viena", coords: { x: 160, y: 100 }, flag: "🇵🇹" },
@@ -200,11 +212,16 @@ const DESTINATION_OPTIONS = [
     { id: "MU_AT", pais: "Áustria", cidade: "Viena", origem: "Mumbai", coords: { x: 220, y: 95 }, flag: "🇦🇹" },
     { id: "MU_PT", pais: "Portugal", cidade: "Lisboa", origem: "Mumbai", coords: { x: 160, y: 100 }, flag: "🇵🇹" },
     { id: "MU_FR", pais: "França", cidade: "Paris", origem: "Mumbai", coords: { x: 200, y: 85 }, flag: "🇫🇷" },
+    { id: "MU_AE", pais: "Emirados Árabes", cidade: "Dubai", origem: "Mumbai", coords: { x: 305, y: 150 }, flag: "🇦🇪" },
+    { id: "MU_IT", pais: "Itália", cidade: "Roma", origem: "Mumbai", coords: { x: 215, y: 110 }, flag: "🇮🇹" },
+    { id: "MU_CA", pais: "Canadá", cidade: "Toronto", origem: "Mumbai", coords: { x: 40, y: 60 }, flag: "🇨🇦" },
 
     // De Vancouver
     { id: "VA_PT", pais: "Portugal", cidade: "Lisboa", origem: "Vancouver", coords: { x: 160, y: 100 }, flag: "🇵🇹" },
     { id: "VA_AT", pais: "Áustria", cidade: "Viena", origem: "Vancouver", coords: { x: 220, y: 95 }, flag: "🇦🇹" },
     { id: "VA_FR", pais: "França", cidade: "Paris", origem: "Vancouver", coords: { x: 200, y: 85 }, flag: "🇫🇷" },
+    { id: "VA_ZA", pais: "África do Sul", cidade: "Cidade do Cabo", origem: "Vancouver", coords: { x: 210, y: 195 }, flag: "🇿🇦" },
+    { id: "VA_GB", pais: "Reino Unido", cidade: "Londres", origem: "Vancouver", coords: { x: 195, y: 65 }, flag: "🇬🇧" },
 
     // De Nova York
     { id: "US_EG", pais: "Egito", cidade: "Cairo", origem: "Nova York", coords: { x: 245, y: 140 }, flag: "🇪🇬" },
@@ -237,6 +254,7 @@ const DESTINATION_OPTIONS = [
     { id: "DE_AT", pais: "Áustria", cidade: "Viena", origem: "Berlim", coords: { x: 220, y: 95 }, flag: "🇦🇹" },
     { id: "DE_FR", pais: "França", cidade: "Paris", origem: "Berlim", coords: { x: 200, y: 85 }, flag: "🇫🇷" },
     { id: "DE_IT", pais: "Itália", cidade: "Roma", origem: "Berlim", coords: { x: 215, y: 110 }, flag: "🇮🇹" },
+    { id: "DE_TK", pais: "Japão", cidade: "Tóquio", origem: "Berlim", coords: { x: 360, y: 100 }, flag: "🇯🇵" },
 
     // De Istambul
     { id: "TR_GB", pais: "Reino Unido", cidade: "Londres", origem: "Istambul", coords: { x: 195, y: 65 }, flag: "🇬🇧" },
@@ -247,6 +265,12 @@ const DESTINATION_OPTIONS = [
     { id: "ZA_TH", pais: "Tailândia", cidade: "Bangcoc", origem: "Cidade do Cabo", coords: { x: 330, y: 140 }, flag: "🇹🇭" },
     { id: "ZA_DE", pais: "Alemanha", cidade: "Berlim", origem: "Cidade do Cabo", coords: { x: 220, y: 80 }, flag: "🇩🇪" },
     { id: "ZA_ES", pais: "Espanha", cidade: "Madrid", origem: "Cidade do Cabo", coords: { x: 180, y: 105 }, flag: "🇪🇸" },
+    { id: "ZA_PT", pais: "Portugal", cidade: "Lisboa", origem: "Cidade do Cabo", coords: { x: 160, y: 100 }, flag: "🇵🇹" },
+    { id: "ZA_JP", pais: "Japão", cidade: "Tóquio", origem: "Cidade do Cabo", coords: { x: 360, y: 100 }, flag: "🇯🇵" },
+    { id: "ZA_IT", pais: "Itália", cidade: "Roma", origem: "Cidade do Cabo", coords: { x: 215, y: 110 }, flag: "🇮🇹" },
+    { id: "ZA_MU", pais: "Índia", cidade: "Mumbai", origem: "Cidade do Cabo", coords: { x: 315, y: 165 }, flag: "🇮🇳" },
+    { id: "ZA_FR", pais: "França", cidade: "Paris", origem: "Cidade do Cabo", coords: { x: 200, y: 85 }, flag: "🇫🇷" },
+    { id: "ZA_SG", pais: "Singapura", cidade: "Singapura", origem: "Cidade do Cabo", coords: { x: 330, y: 155 }, flag: "🇸🇬" },
 
     // De Bangcoc
     { id: "TH_CA", pais: "Canadá", cidade: "Vancouver", origem: "Bangcoc", coords: { x: 15, y: 55 }, flag: "🇨🇦" },
@@ -257,6 +281,19 @@ const DESTINATION_OPTIONS = [
     { id: "NL_DE", pais: "Alemanha", cidade: "Berlim", origem: "Amsterdã", coords: { x: 220, y: 80 }, flag: "🇩🇪" },
     { id: "NL_FR", pais: "França", cidade: "Paris", origem: "Amsterdã", coords: { x: 200, y: 85 }, flag: "🇫🇷" },
     { id: "NL_PT", pais: "Portugal", cidade: "Lisboa", origem: "Amsterdã", coords: { x: 160, y: 100 }, flag: "🇵🇹" },
+    { id: "NL_ZA", pais: "África do Sul", cidade: "Cidade do Cabo", origem: "Amsterdã", coords: { x: 210, y: 195 }, flag: "🇿🇦" },
+    { id: "NL_AT", pais: "Áustria", cidade: "Viena", origem: "Amsterdã", coords: { x: 220, y: 95 }, flag: "🇦🇹" },
+    { id: "NL_GB", pais: "Reino Unido", cidade: "Londres", origem: "Amsterdã", coords: { x: 195, y: 65 }, flag: "🇬🇧" },
+
+    // De Dubai
+    { id: "D_GB", pais: "Reino Unido", cidade: "Londres", origem: "Dubai", coords: { x: 195, y: 65 }, flag: "🇬🇧" },
+    { id: "D_ES", pais: "Espanha", cidade: "Madrid", origem: "Dubai", coords: { x: 180, y: 105 }, flag: "🇪🇸" },
+    { id: "D_IT", pais: "Itália", cidade: "Roma", origem: "Dubai", coords: { x: 215, y: 110 }, flag: "🇮🇹" },
+
+    // De Singapura
+    { id: "SG_DE", pais: "Alemanha", cidade: "Berlim", origem: "Singapura", coords: { x: 220, y: 80 }, flag: "🇩🇪" },
+    { id: "SG_PT", pais: "Portugal", cidade: "Lisboa", origem: "Singapura", coords: { x: 160, y: 100 }, flag: "🇵🇹" },
+    { id: "SG_EG", pais: "Egito", cidade: "Cairo", origem: "Singapura", coords: { x: 245, y: 140 }, flag: "🇪🇬" },
 ];
 
 const TRANSPORT_MODES = [

@@ -46,14 +46,17 @@ export async function saveGameState(state, slot = 0) {
     if (error) throw error;
 
     // 🔥 Sincroniza campos importantes com o 'profiles' para Ranking/Exibição
-    const { player } = state;
+    const { player, capturedSuspects } = state;
     if (player) {
+        const totalCapturas = Object.values(capturedSuspects || {}).reduce((acc, val) => acc + val, 0);
+
         await supabase
             .from("profiles")
             .update({
                 rank: player.nivelTitulo || "Novato",
                 xp: player.xp || 0,
                 level: player.nivel || 1,
+                total_capturas: totalCapturas,
                 updated_at: new Date().toISOString(),
             })
             .eq("id", user.id);
