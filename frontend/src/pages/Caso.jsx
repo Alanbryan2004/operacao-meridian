@@ -90,7 +90,12 @@ const ORIGIN_COORDS = {
     "Mumbai": { x: 315, y: 165 },
     "Vancouver": { x: 15, y: 55 },
     "Singapura": { x: 330, y: 155 },
-    "Sydney": { x: 380, y: 190 }
+    "Sydney": { x: 380, y: 190 },
+    "Berlim": { x: 220, y: 80 },
+    "Istambul": { x: 260, y: 120 },
+    "Amsterdã": { x: 195, y: 75 },
+    "Cidade do Cabo": { x: 210, y: 195 },
+    "Bangcoc": { x: 330, y: 140 }
 };
 
 const DESTINATION_OPTIONS = [
@@ -175,6 +180,13 @@ const DESTINATION_OPTIONS = [
     { id: "AT_PT", pais: "Portugal", cidade: "Lisboa", origem: "Viena", coords: { x: 160, y: 100 }, flag: "🇵🇹" },
     { id: "AT_RU", pais: "Rússia", cidade: "Moscou", origem: "Viena", coords: { x: 280, y: 70 }, flag: "🇷🇺" },
     { id: "AT_GB", pais: "Reino Unido", cidade: "Londres", origem: "Viena", coords: { x: 195, y: 65 }, flag: "🇬🇧" },
+    { id: "AT_FR", pais: "França", cidade: "Paris", origem: "Viena", coords: { x: 200, y: 85 }, flag: "🇫🇷" },
+    { id: "AT_DE", pais: "Alemanha", cidade: "Berlim", origem: "Viena", coords: { x: 220, y: 80 }, flag: "🇩🇪" },
+    { id: "AT_IT", pais: "Itália", cidade: "Roma", origem: "Viena", coords: { x: 215, y: 110 }, flag: "🇮🇹" },
+    { id: "AT_KR", pais: "Coreia do Sul", cidade: "Seul", origem: "Viena", coords: { x: 335, y: 90 }, flag: "🇰🇷" },
+    { id: "AT_ZA", pais: "África do Sul", cidade: "Cidade do Cabo", origem: "Viena", coords: { x: 210, y: 195 }, flag: "🇿🇦" },
+    { id: "AT_EG", pais: "Egito", cidade: "Cairo", origem: "Viena", coords: { x: 245, y: 140 }, flag: "🇪🇬" },
+    { id: "AT_AE", pais: "Emirados Árabes", cidade: "Dubai", origem: "Viena", coords: { x: 305, y: 150 }, flag: "🇦🇪" },
 
     // De Mumbai
     { id: "MU_AT", pais: "Áustria", cidade: "Viena", origem: "Mumbai", coords: { x: 220, y: 95 }, flag: "🇦🇹" },
@@ -210,6 +222,33 @@ const DESTINATION_OPTIONS = [
 
     // De Tóquio (Scenario 4)
     { id: "TK_SY", pais: "Austrália", cidade: "Sydney", origem: "Tóquio", coords: { x: 380, y: 190 }, flag: "🇦🇺" },
+
+    // De Berlim
+    { id: "DE_PT", pais: "Portugal", cidade: "Lisboa", origem: "Berlim", coords: { x: 160, y: 100 }, flag: "🇵🇹" },
+    { id: "DE_TR", pais: "Turquia", cidade: "Istambul", origem: "Berlim", coords: { x: 260, y: 120 }, flag: "🇹🇷" },
+    { id: "DE_AT", pais: "Áustria", cidade: "Viena", origem: "Berlim", coords: { x: 220, y: 95 }, flag: "🇦🇹" },
+    { id: "DE_FR", pais: "França", cidade: "Paris", origem: "Berlim", coords: { x: 200, y: 85 }, flag: "🇫🇷" },
+    { id: "DE_IT", pais: "Itália", cidade: "Roma", origem: "Berlim", coords: { x: 215, y: 110 }, flag: "🇮🇹" },
+
+    // De Istambul
+    { id: "TR_GB", pais: "Reino Unido", cidade: "Londres", origem: "Istambul", coords: { x: 195, y: 65 }, flag: "🇬🇧" },
+    { id: "TR_ES", pais: "Espanha", cidade: "Madrid", origem: "Istambul", coords: { x: 180, y: 105 }, flag: "🇪🇸" },
+    { id: "TR_IT", pais: "Itália", cidade: "Roma", origem: "Istambul", coords: { x: 215, y: 110 }, flag: "🇮🇹" },
+
+    // De Cidade do Cabo
+    { id: "ZA_TH", pais: "Tailândia", cidade: "Bangcoc", origem: "Cidade do Cabo", coords: { x: 330, y: 140 }, flag: "🇹🇭" },
+    { id: "ZA_DE", pais: "Alemanha", cidade: "Berlim", origem: "Cidade do Cabo", coords: { x: 220, y: 80 }, flag: "🇩🇪" },
+    { id: "ZA_ES", pais: "Espanha", cidade: "Madrid", origem: "Cidade do Cabo", coords: { x: 180, y: 105 }, flag: "🇪🇸" },
+
+    // De Bangcoc
+    { id: "TH_CA", pais: "Canadá", cidade: "Vancouver", origem: "Bangcoc", coords: { x: 15, y: 55 }, flag: "🇨🇦" },
+    { id: "TH_IT", pais: "Itália", cidade: "Roma", origem: "Bangcoc", coords: { x: 215, y: 110 }, flag: "🇮🇹" },
+    { id: "TH_PT", pais: "Portugal", cidade: "Lisboa", origem: "Bangcoc", coords: { x: 160, y: 100 }, flag: "🇵🇹" },
+
+    // De Amsterdã
+    { id: "NL_DE", pais: "Alemanha", cidade: "Berlim", origem: "Amsterdã", coords: { x: 220, y: 80 }, flag: "🇩🇪" },
+    { id: "NL_FR", pais: "França", cidade: "Paris", origem: "Amsterdã", coords: { x: 200, y: 85 }, flag: "🇫🇷" },
+    { id: "NL_PT", pais: "Portugal", cidade: "Lisboa", origem: "Amsterdã", coords: { x: 160, y: 100 }, flag: "🇵🇹" },
 ];
 
 const TRANSPORT_MODES = [

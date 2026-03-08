@@ -12,10 +12,13 @@
 
 import { CASO_1_SCENARIOS } from "./Caso1Scenarios";
 import { CASO_2_SCENARIOS } from "./Caso2Scenarios";
+import { CASO_3_SCENARIOS } from "./Caso3Scenarios";
+
 
 export const CASOS_SCENARIOS = {
     "C001": CASO_1_SCENARIOS,
-    "C002": CASO_2_SCENARIOS
+    "C002": CASO_2_SCENARIOS,
+    "C003": CASO_3_SCENARIOS
 };
 
 export const CASOS_CONFIG = {
@@ -26,6 +29,10 @@ export const CASOS_CONFIG = {
     "C002": {
         hasIntroVideo: true,
         introVideo: "/Videos/Caso2_LeilaoObradeArte.mp4"
+    },
+    "C003": {
+        hasIntroVideo: true,
+        introVideo: "/Videos/Caso3_ManuscritoRoubado.mp4"
     }
 };
 

@@ -163,6 +163,19 @@ export const casesSeed = [
         replayable: true,
         interrogatorios: [],
     },
+    {
+        id: "C003",
+        titulo: "O Manuscrito que Nunca Existiu",
+        dificuldade: "MEDIA",
+        recompensa: 4000,
+        xp: 150,
+        tempoTotalHoras: 360, // 360 horas conforme pedido
+        localInicial: { pais: "Áustria", cidade: "Viena" },
+        resumo: "📜 O Manuscrito que Nunca Existiu\n📍 Local: Biblioteca Imperial de Viena, Áustria 🇦🇹\n\nUm documento que muitos acreditavam ser apenas uma lenda urbana foi roubado do cofre subterrâneo da Biblioteca Imperial. O manuscrito, supostamente escrito por um alquimista do século XVII, conteria segredos sobre a transmutação de metais e a vida eterna.\n\nA equipe Meridian foi acionada para recuperar esta peça inestimável antes que ela caia em mãos erradas. Sua missão começa em Viena. 🔎📚",
+        imgItem: "/caso3_Manuscrito_que_nunca_existiu.png",
+        replayable: true,
+        interrogatorios: [],
+    },
 ];
 
 export const initialPlayer = {

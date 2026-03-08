@@ -69,7 +69,7 @@ export default function MissaoIntro() {
                 </div>
 
                 <h1 style={{ fontSize: "22px", fontWeight: "900", marginBottom: "40px", lineHeight: "1.4" }}>
-                    {player.nivelTitulo} "{player.nome}", você recebeu o valor de <span style={{ color: "#ffd700" }}>R$ 2.000,00</span> para custos de despesas.
+                    {player.nivelTitulo} "{player.nome}", você recebeu o valor de <span style={{ color: "#ffd700" }}>R$ 1.000,00</span> para custos de despesas.
                     <br /><br />
                     Você tem <span style={{ color: "#ffd700" }}>{dias} Dias</span> para resolver o caso.
                     <br /><br />
