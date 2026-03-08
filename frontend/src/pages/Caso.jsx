@@ -169,12 +169,14 @@ const DESTINATION_OPTIONS = [
     { id: "TK_IT", pais: "Itália", cidade: "Roma", origem: "Tóquio", coords: { x: 215, y: 110 }, flag: "🇮🇹" },
     { id: "TK_VA", pais: "Canadá", cidade: "Vancouver", origem: "Tóquio", coords: { x: 15, y: 55 }, flag: "🇨🇦" },
     { id: "TK_AE", pais: "Emirados Árabes", cidade: "Dubai", origem: "Tóquio", coords: { x: 305, y: 150 }, flag: "🇦🇪" },
+    { id: "TK_DE", pais: "Alemanha", cidade: "Berlim", origem: "Tóquio", coords: { x: 220, y: 80 }, flag: "🇩🇪" },
 
     // De Seul
     { id: "S_GB", pais: "Reino Unido", cidade: "Londres", origem: "Seul", coords: { x: 195, y: 65 }, flag: "🇬🇧" },
     { id: "S_PT", pais: "Portugal", cidade: "Lisboa", origem: "Seul", coords: { x: 160, y: 100 }, flag: "🇵🇹" },
     { id: "S_IT", pais: "Itália", cidade: "Roma", origem: "Seul", coords: { x: 215, y: 110 }, flag: "🇮🇹" },
     { id: "S_TK", pais: "Japão", cidade: "Tóquio", origem: "Seul", coords: { x: 360, y: 100 }, flag: "🇯🇵" },
+    { id: "S_AE", pais: "Emirados Árabes", cidade: "Dubai", origem: "Seul", coords: { x: 305, y: 150 }, flag: "🇦🇪" },
 
     // De Viena
     { id: "AT_PT", pais: "Portugal", cidade: "Lisboa", origem: "Viena", coords: { x: 160, y: 100 }, flag: "🇵🇹" },
@@ -344,12 +346,17 @@ export default function Caso() {
     // Centraliza a lógica de progresso da missão (etapa intermediária concluída)
     const hasMissionProgressed = useMemo(() => {
         if (!activeScenario?.route || (run?.pistasDescobertas || []).length === 0) return false;
+        
+        // Verifica se o jogador já coletou pistas em todas as etapas intermediárias (exceto a última)
+        // ou pelo menos na penúltima cidade da rota.
         const intermediateCities = activeScenario.route.slice(1, -1);
-        if (intermediateCities.length === 0) return true; // Caso de etapa única (não deve existir)
+        if (intermediateCities.length === 0) return true;
 
+        const penultimaCidade = intermediateCities[intermediateCities.length - 1];
+        
         return run.pistasDescobertas.some(p => {
             const clueCity = typeof p === "string" ? "" : (p.cidade || "");
-            return intermediateCities.some(city => clueCity.toLowerCase() === city.toLowerCase());
+            return clueCity.toLowerCase() === penultimaCidade.toLowerCase();
         });
     }, [activeScenario, run?.pistasDescobertas]);
 
@@ -416,11 +423,19 @@ export default function Caso() {
         // Se for o país correto, mostra o vídeo do suspeito
         let videoPath = null;
         if (activeScenario?.route) {
-            const destIndex = activeScenario.route.indexOf(destino.cidade);
-            // Etapa 2 (index 1): Suspeito passou por aqui
-            if (destIndex === 1) videoPath = "/Videos/suspeito.mp4";
-            // Etapa 5 (index 4): Suspeito fugindo/final
-            else if (destIndex === 4) videoPath = "/Videos/suspeito2.mp4";
+            // Usa lastIndexOf para detectar a chegada na etapa final se a cidade for a mesma que a inicial (loop)
+            const destIndexFirst = activeScenario.route.indexOf(destino.cidade);
+            const destIndexLast = activeScenario.route.lastIndexOf(destino.cidade);
+            
+            // Etapa de pista inicial (geralmente index 1)
+            if (destIndexFirst === 1) videoPath = "/Videos/suspeito.mp4";
+            
+            // Etapa final (index 4 ou último elemento da rota)
+            // Só dispara se não for a etapa 1 e o destino for o último da rota
+            const isLastStage = destIndexLast === activeScenario.route.length - 1;
+            if (isLastStage && destIndexLast !== 0 && hasMissionProgressed) {
+                videoPath = "/Videos/suspeito2.mp4";
+            }
         }
 
         setVideoEnded(false);

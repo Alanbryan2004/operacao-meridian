@@ -171,7 +171,7 @@ export const CASO_1_SCENARIOS = [
             { id: "S5_11", cidade: "Toronto", local: "Banco", personagem: "Banqueiro", imgLocal: "/NPC/Banco.png", imgPersonagem: "/NPC/Banqueiro.png", pista: "Ela falou sobre viajar para uma cidade tecnológica." },
             { id: "S5_12", cidade: "Toronto", local: "Morador de Rua", personagem: "Morador de Rua", imgLocal: "/NPC/CentrodaCidade.png", imgPersonagem: "/NPC/moradorderua.png", pista: "Ela mencionou uma grande cidade asiática." },
 
-            { id: "S5_13", cidade: "Tokio", local: "Banco", personagem: "Banqueiro", imgLocal: "/NPC/Banco.png", imgPersonagem: "/NPC/Banqueiro.png", pista: "Sim… ela está aqui em Tóquio. Era uma mulher de cabelo preto e olhos pretos. Antes de sair, comentou que queria comer comida asiática." },
+            { id: "S5_13", cidade: "Tokio", local: "Banco", personagem: "Banqueiro", imgLocal: "/NPC/Banco.png", imgPersonagem: "/NPC/Banqueiro.png", pista: "Sim… ela está aqui em Tokio. Era uma mulher de cabelo preto e olhos pretos. Antes de sair, comentou que queria comer comida asiática." },
             { id: "S5_14", cidade: "Tokio", local: "Restaurante", personagem: "Garçom", imgLocal: "/NPC/Restaurante.png", imgPersonagem: "/NPC/Garcon.png", pista: "Ela esteve aqui recentemente." },
             { id: "S5_15", cidade: "Tokio", local: "Táxi", personagem: "Taxista", imgLocal: "/NPC/Taxi.png", imgPersonagem: "/NPC/Taxista.png", pista: "Levei ela ao centro da cidade." }
         ]
