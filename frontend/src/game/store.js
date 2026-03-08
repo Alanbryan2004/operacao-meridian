@@ -140,6 +140,7 @@ export function startRunIfNeeded(state, caseObj) {
             { t: nowIso(), msg: `Tempo total: ${caseObj.tempoTotalHoras}h` },
             { t: nowIso(), msg: `Bônus de despesas recebido: R$ 1.000,00` },
         ],
+        cidadeAnterior: null,
         mandadoEmitido: false,
         warrantId: null,
         suspeitoCapturado: false,

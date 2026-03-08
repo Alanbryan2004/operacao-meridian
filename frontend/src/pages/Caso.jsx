@@ -170,6 +170,9 @@ const DESTINATION_OPTIONS = [
     { id: "TK_VA", pais: "Canadá", cidade: "Vancouver", origem: "Tóquio", coords: { x: 15, y: 55 }, flag: "🇨🇦" },
     { id: "TK_AE", pais: "Emirados Árabes", cidade: "Dubai", origem: "Tóquio", coords: { x: 305, y: 150 }, flag: "🇦🇪" },
     { id: "TK_DE", pais: "Alemanha", cidade: "Berlim", origem: "Tóquio", coords: { x: 220, y: 80 }, flag: "🇩🇪" },
+    { id: "DE_IT", pais: "Itália", cidade: "Roma", origem: "Berlim", coords: { x: 215, y: 110 }, flag: "🇮🇹" },
+    { id: "DE_AT", pais: "Áustria", cidade: "Viena", origem: "Berlim", coords: { x: 220, y: 95 }, flag: "🇦🇹" },
+    { id: "DE_FR", pais: "França", cidade: "Paris", origem: "Berlim", coords: { x: 200, y: 85 }, flag: "🇫🇷" },
 
     // De Seul
     { id: "S_GB", pais: "Reino Unido", cidade: "Londres", origem: "Seul", coords: { x: 195, y: 65 }, flag: "🇬🇧" },
@@ -411,7 +414,8 @@ export default function Caso() {
         const nextRun = spendTime(nextState.runs[caseId], horas, `✈️ Você chegou em ${destino.cidade} após ${horas}h de viagem.`);
 
         // Atualiza localização no run
-        nextRun.localAtual = { pais: destino.flag ? destino.pais : destino.pais, cidade: destino.cidade };
+        nextRun.localAtual = { flag: destino.flag, pais: destino.pais, cidade: destino.cidade };
+        nextRun.cidadeAnterior = run.localAtual.cidade;
 
         const finalState = saveGame({
             ...nextState,
@@ -549,28 +553,19 @@ export default function Caso() {
     }
 
     function handleVoltar() {
-        // Agora o 'Voltar' funciona com base na rota do cenário se disponível
-        let volta = null;
-        if (activeScenario) {
-            const currentIndex = activeScenario.route.indexOf(run.localAtual.cidade);
-            if (currentIndex > 0) {
-                const prevCityName = activeScenario.route[currentIndex - 1];
-                volta = { cidade: prevCityName, pais: "" }; // O sistema de viagem resolve o país pelo nome da cidade
-            }
-        } else {
-            // Fallback para lógica antiga se não houver cenário
-            if (run.localAtual.cidade === "Lisboa") volta = { cidade: "Campinas", pais: "Brasil" };
-            if (run.localAtual.cidade === "Madrid") volta = { cidade: "Lisboa", pais: "Portugal" };
-            if (run.localAtual.cidade === "Moscou") volta = { cidade: "Madrid", pais: "Espanha" };
-        }
-
-        if (volta) {
+        if (!run.cidadeAnterior) return;
+        
+        const prevCity = run.cidadeAnterior;
+        // Tenta achar os dados da cidade anterior em DESTINATION_OPTIONS ou CIDADES
+        const destObj = DESTINATION_OPTIONS.find(d => d.cidade === prevCity);
+        
+        if (destObj) {
             confirmarViagem({
                 id: "VOLTA",
-                nome: "Voo de Retorno",
-                custoBase: 500,
-                horasBase: 12,
-                customDest: volta
+                nome: "Retorno Direto",
+                custoBase: 0, // Voltar agora é direto e sem custo extra de seleção
+                horasBase: 4,  // Custo fixo menor para retorno
+                customDest: { cidade: destObj.cidade, pais: destObj.pais, flag: destObj.flag }
             });
         }
     }

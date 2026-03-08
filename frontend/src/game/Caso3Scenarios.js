@@ -86,24 +86,24 @@ export const CASO_3_SCENARIOS = [
         id: "C003_S3",
         suspectId: "003", // Brass Mantis
         finalCity: "Viena",
-        spottedAt: ["Lisboa", "Roma", "Toronto", "Viena"],
-        route: ["Viena", "Lisboa", "Roma", "Toronto", "Viena"],
+        spottedAt: ["Berlim", "Roma", "Toronto", "Viena"],
+        route: ["Viena", "Berlim", "Roma", "Toronto", "Viena"],
         travelTable: {
-            "Viena": ["Lisboa", "Berlim", "Cairo"],
-            "Lisboa": ["Roma", "Viena", "Paris"],
+            "Viena": ["Paris", "Berlim", "Roma"],
+            "Berlim": ["Roma", "Viena", "Paris"],
             "Roma": ["Toronto", "Dubai", "Madrid"],
             "Toronto": ["Viena", "Paris", "Londres"]
         },
         interrogatorios: [
             // ETAPA 1 — Viena
-            { id: "S3_1", cidade: "Viena", local: "Floricultura", personagem: "Florista", imgLocal: "/NPC/Floricultura.png", imgPersonagem: "/NPC/Florista.png", pista: "Ele perguntou sobre voos para uma cidade europeia próxima ao mar. Era claramente um homem." },
-            { id: "S3_2", cidade: "Viena", local: "Restaurante", personagem: "Garçom", imgLocal: "/NPC/Restaurante.png", imgPersonagem: "/NPC/Garcon.png", pista: "Ele estava vendo fotos de uma cidade costeira com muitos prédios históricos." },
-            { id: "S3_3", cidade: "Viena", local: "Hospital", personagem: "Médica", imgLocal: "/NPC/Hospital.png", imgPersonagem: "/NPC/Medica.png", pista: "Perguntou sobre o tempo de voo até uma capital antiga da Europa." },
+            { id: "S3_1", cidade: "Viena", local: "Floricultura", personagem: "Florista", imgLocal: "/NPC/Floricultura.png", imgPersonagem: "/NPC/Florista.png", pista: "Ele perguntou sobre voos para uma capital europeia moderna. Era claramente um homem." },
+            { id: "S3_2", cidade: "Viena", local: "Restaurante", personagem: "Garçom", imgLocal: "/NPC/Restaurante.png", imgPersonagem: "/NPC/Garcon.png", pista: "Ele estava vendo fotos de uma cidade famosa pelo seu Portão de Brandemburgo e história do século XX." },
+            { id: "S3_3", cidade: "Viena", local: "Hospital", personagem: "Médica", imgLocal: "/NPC/Hospital.png", imgPersonagem: "/NPC/Medica.png", pista: "Perguntou sobre o tempo de voo até a capital da Alemanha." },
 
-            // ETAPA 2 — Lisboa
-            { id: "S3_4", cidade: "Lisboa", local: "Táxi", personagem: "Taxista", imgLocal: "/NPC/Taxi.png", imgPersonagem: "/NPC/Taxista.png", pista: "Levei ele ao aeroporto. Tinha cabelo castanho e disse que viajaria para uma cidade cheia de história." },
-            { id: "S3_5", cidade: "Lisboa", local: "Banco", personagem: "Banqueiro", imgLocal: "/NPC/Banco.png", imgPersonagem: "/NPC/Banqueiro.png", pista: "Ele perguntou sobre voos para uma cidade muito antiga da Europa." },
-            { id: "S3_6", cidade: "Lisboa", local: "Morador de Rua", personagem: "Morador de Rua", imgLocal: "/NPC/CentrodaCidade.png", imgPersonagem: "/NPC/moradorderua.png", pista: "Comentou sobre uma cidade famosa por ruínas históricas." },
+            // ETAPA 2 — Berlim
+            { id: "S3_4", cidade: "Berlim", local: "Táxi", personagem: "Taxista", imgLocal: "/NPC/Taxi.png", imgPersonagem: "/NPC/Taxista.png", pista: "Levei ele ao aeroporto. Tinha cabelo castanho e disse que viajaria para uma cidade cheia de história e ruínas romanas." },
+            { id: "S3_5", cidade: "Berlim", local: "Banco", personagem: "Banqueiro", imgLocal: "/NPC/Banco.png", imgPersonagem: "/NPC/Banqueiro.png", pista: "Ele perguntou sobre voos para a Cidade Eterna." },
+            { id: "S3_6", cidade: "Berlim", local: "Morador de Rua", personagem: "Morador de Rua", imgLocal: "/NPC/CentrodaCidade.png", imgPersonagem: "/NPC/moradorderua.png", pista: "Comentou sobre visitar o Coliseu." },
 
             // ETAPA 3 — Roma
             { id: "S3_7", cidade: "Roma", local: "Biblioteca", personagem: "Bibliotecária", imgLocal: "/NPC/Biblioteca.png", imgPersonagem: "/NPC/Bibliotecaria.png", pista: "Ele tinha olhos castanhos e disse que viajaria para uma cidade moderna da América do Norte." },
