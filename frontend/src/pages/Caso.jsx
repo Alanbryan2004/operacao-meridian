@@ -488,9 +488,11 @@ export default function Caso() {
         if (isFinalCity) {
             // Se for a SEGUNDA investigação na cidade final (Etapa 5)
             if (currentCount >= 2) {
-                const targetId = String(run.targetSuspectId || "008");
-                const warrantIdSelected = String(run.warrantId || "");
+                const targetId = String(run.targetSuspectId || "008").trim();
+                const warrantIdSelected = String(run.warrantId || "").trim();
                 const isSuccess = run.mandadoEmitido && warrantIdSelected === targetId;
+
+                console.log(`[ATLAS] Captura Final: Target=${targetId}, Warrant=${warrantIdSelected}, Success=${isSuccess}`);
 
                 setDarkenScreen(true);
                 setVideoEnded(false);

@@ -132,7 +132,7 @@ export const CASO_3_SCENARIOS = [
             "Viena": ["Dubai", "Cidade do Cabo", "Roma"],
             "Cidade do Cabo": ["Bangcoc", "Berlim", "Madrid"],
             "Bangcoc": ["Vancouver", "Roma", "Lisboa"],
-            "Vancouver": ["Viena", "Paris", "Londres"]
+            "Vancouver": ["Viena", "Paris", "Lisboa"]
         },
         interrogatorios: [
             // ETAPA 1 — Viena

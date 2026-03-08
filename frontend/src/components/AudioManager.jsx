@@ -36,7 +36,7 @@ export default function AudioManager() {
 
         window.addEventListener("click", handleClick, true);
         return () => window.removeEventListener("click", handleClick, true);
-    }, []);
+    }, [settings.clickSoundEnabled, settings]);
 
     // Sincroniza com as configurações do estado global
     useEffect(() => {
