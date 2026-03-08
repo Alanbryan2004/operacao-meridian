@@ -187,4 +187,9 @@ export const initialPlayer = {
     xp: 0,
     dinheiro: 1000,
     especializacao: null,
+    settings: {
+        musicEnabled: true,
+        clickSoundEnabled: true
+    }
+
 };

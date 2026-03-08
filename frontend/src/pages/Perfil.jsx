@@ -51,7 +51,30 @@ export default function Perfil() {
             `}</style>
 
             <div className="pf-wrap">
-                <button className="pf-back" onClick={() => nav(-1)}>← VOLTAR</button>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
+                    <button className="pf-back" onClick={() => nav(-1)}>← VOLTAR</button>
+                    <button 
+                        onClick={() => nav("/configuracao")}
+                        style={{
+                            background: "rgba(255,255,255,0.06)",
+                            border: "1px solid rgba(255,255,255,0.12)",
+                            color: "white",
+                            width: 38,
+                            height: 38,
+                            borderRadius: 12,
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            fontSize: 18,
+                            cursor: "pointer",
+                            transition: "all 0.2s"
+                        }}
+                        onMouseEnter={(e) => { e.currentTarget.style.background = "rgba(128,189,255,0.15)"; e.currentTarget.style.borderColor = "#80bdff"; }}
+                        onMouseLeave={(e) => { e.currentTarget.style.background = "rgba(255,255,255,0.06)"; e.currentTarget.style.borderColor = "rgba(255,255,255,0.12)"; }}
+                    >
+                        ⚙️
+                    </button>
+                </div>
 
                 {/* Sub-tabs */}
                 <div style={{ display: "flex", gap: 8, marginBottom: 14 }}>

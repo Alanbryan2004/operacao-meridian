@@ -6,6 +6,7 @@ import CasoSolucionado from "./pages/CasoSolucionado";
 import Splash from "./pages/Splash";
 import MissaoIntro from "./pages/MissaoIntro";
 import Perfil from "./pages/Perfil";
+import Configuracao from "./pages/Configuracao";
 import PromocaoScreen from "./pages/PromocaoScreen";
 import AudioManager from "./components/AudioManager";
 import { GameProvider } from "./game/GameProvider";
@@ -20,6 +21,8 @@ function gameReducer(state, action) {
       return { ...state, ...action.payload };
     case "UPDATE_PLAYER":
       return { ...state, player: { ...state.player, ...action.payload } };
+    case "UPDATE_SETTINGS":
+      return { ...state, player: { ...state.player, settings: { ...state.player.settings, ...action.payload } } };
     default:
       return state;
   }
@@ -40,6 +43,7 @@ export default function App() {
           <Route path="/missao-intro/:caseId" element={<MissaoIntro />} />
           <Route path="/caso-solucionado/:caseId" element={<CasoSolucionado />} />
           <Route path="/perfil" element={<Perfil />} />
+          <Route path="/configuracao" element={<Configuracao />} />
           <Route path="/promocao" element={<PromocaoScreen />} />
         </Routes>
       </div>

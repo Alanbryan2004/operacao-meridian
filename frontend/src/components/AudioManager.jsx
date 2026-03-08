@@ -1,11 +1,17 @@
 import { useEffect, useRef, useState } from "react";
+import { useGame } from "../game/GameProvider";
 
 export default function AudioManager() {
+    const { state } = useGame();
     const audioRef = useRef(null);
     const clickAudioRef = useRef(null);
+
+    const settings = state?.player?.settings || { musicEnabled: true, clickSoundEnabled: true };
+
     const [enabled, setEnabled] = useState(() => {
-        // Recupera estado salvo para manter música tocando entre recarregamentos se necessário
-        return localStorage.getItem("meridian_music") === "1";
+        // Fallback para localStorage por retrocompatibilidade se necessário, mas prioriza settings do state
+        const savedMusic = localStorage.getItem("meridian_music");
+        return savedMusic !== null ? savedMusic === "1" : settings.musicEnabled;
     });
 
     // volume padrão e preload do clique
@@ -19,6 +25,8 @@ export default function AudioManager() {
     // Ouvinte global para cliques em botões
     useEffect(() => {
         const handleClick = (e) => {
+            if (!settings.clickSoundEnabled) return;
+            
             const target = e.target.closest("button, .om-btn, select, a");
             if (target && clickAudioRef.current) {
                 clickAudioRef.current.currentTime = 0;
@@ -30,12 +38,17 @@ export default function AudioManager() {
         return () => window.removeEventListener("click", handleClick, true);
     }, []);
 
+    // Sincroniza com as configurações do estado global
+    useEffect(() => {
+        setEnabled(settings.musicEnabled);
+    }, [settings.musicEnabled]);
+
     // Ouvinte para evento customizado (permite iniciar de outras telas)
     useEffect(() => {
         const handlePlay = (e) => {
             const shouldPlay = e.detail !== false; // default true
-            setEnabled(shouldPlay);
-            localStorage.setItem("meridian_music", shouldPlay ? "1" : "0");
+            // Disparamos um update no estado global via dispatch seria melhor,
+            // mas mantemos o handlePlay para compatibilidade interna se houver outros disparos
         };
 
         window.addEventListener("meridian-play-audio", handlePlay);
