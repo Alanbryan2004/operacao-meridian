@@ -138,6 +138,9 @@ const DESTINATION_OPTIONS = [
     { id: "GB_IT", pais: "Itália", cidade: "Roma", origem: "Londres", coords: { x: 215, y: 110 }, flag: "🇮🇹" },
     { id: "GB_FR", pais: "França", cidade: "Paris", origem: "Londres", coords: { x: 200, y: 85 }, flag: "🇫🇷" },
     { id: "GB_RU", pais: "Rússia", cidade: "Moscou", origem: "Londres", coords: { x: 280, y: 70 }, flag: "🇷🇺" },
+    { id: "GB_NL", pais: "Holanda", cidade: "Amsterdã", origem: "Londres", coords: { x: 195, y: 75 }, flag: "🇳🇱" },
+    { id: "GB_AT", pais: "Áustria", cidade: "Viena", origem: "Londres", coords: { x: 220, y: 95 }, flag: "🇦🇹" },
+    { id: "GB_ES", pais: "Espanha", cidade: "Madrid", origem: "Londres", coords: { x: 180, y: 105 }, flag: "🇪🇸" },
     { id: "GB_AT", pais: "Áustria", cidade: "Viena", origem: "Londres", coords: { x: 220, y: 95 }, flag: "🇦🇹" },
     { id: "GB_PT", pais: "Portugal", cidade: "Lisboa", origem: "Londres", coords: { x: 160, y: 100 }, flag: "🇵🇹" },
 
