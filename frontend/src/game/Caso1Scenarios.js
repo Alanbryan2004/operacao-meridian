@@ -19,7 +19,7 @@ export const CASO_1_SCENARIOS = [
             { id: "S1_2", cidade: "Campinas", local: "Restaurante", personagem: "Garçom", imgLocal: "/NPC/Restaurante.png", imgPersonagem: "/NPC/Garcon.png", pista: "Ele estava vendo fotos de um país famoso por suas pirâmides e história antiga." },
             { id: "S1_3", cidade: "Campinas", local: "Hospital", personagem: "Médica", imgLocal: "/NPC/Hospital.png", imgPersonagem: "/NPC/Medica.png", pista: "Ele perguntou sobre o voo até um país conhecido por seus desertos." },
 
-            { id: "S1_4", cidade: "Cairo", local: "Táxi", personagem: "Taxista", imgLocal: "/NPC/Taxi.png", imgPersonagem: "/NPC/Taxista.png", pista: "Levei ele ao aeroporto. Ele tinha cabelo preto e disse que iria para uma cidade muito fria." },
+            { id: "S1_4", cidade: "Cairo", local: "Táxi", personagem: "Taxista", imgLocal: "/NPC/Taxi.png", imgPersonagem: "/NPC/Taxista.png", pista: "Levei ele ao aeroporto. He tinha cabelo preto e disse que iria para uma cidade muito fria." },
             { id: "S1_5", cidade: "Cairo", local: "Pescador", personagem: "Pescador", imgLocal: "/NPC/Restaurante.png", imgPersonagem: "/NPC/Pescador.png", pista: "Ele falou que seu próximo destino era uma cidade com inverno rigoroso." },
             { id: "S1_6", cidade: "Cairo", local: "Hospital", personagem: "Dançarina", imgLocal: "/NPC/Hospital.png", imgPersonagem: "/NPC/Dancarina.png", pista: "Ele mencionou uma cidade conhecida pelo frio intenso." },
 
@@ -76,22 +76,23 @@ export const CASO_1_SCENARIOS = [
         id: "C001_S3",
         suspectId: "020", // Agulha Silenciosa
         finalCity: "Cairo",
-        spottedAt: ["Tokio", "Moscou", "Toronto", "Cairo"],
-        route: ["Campinas", "Tokio", "Moscou", "Toronto", "Cairo"],
+        spottedAt: ["Tóquio", "Moscou", "Toronto", "Cairo"],
+        route: ["Campinas", "Tóquio", "Moscou", "Toronto", "Cairo"],
         travelTable: {
-            "Campinas": ["Paris", "Toronto", "Tokio"],
-            "Tokio": ["Roma", "Londres", "Moscou"],
+            "Campinas": ["Paris", "Toronto", "Tóquio"],
+            "Tóquio": ["Roma", "Londres", "Moscou"],
             "Moscou": ["Lisboa", "Paris", "Toronto"],
-            "Toronto": ["Roma", "Nova York", "Cairo"]
+            "Toronto": ["Roma", "Nova York", "Cairo"],
+            "Cairo": ["Moscou", "Lisboa", "Dubai"]
         },
         interrogatorios: [
             { id: "S3_1", cidade: "Campinas", local: "Floricultura", personagem: "Florista", imgLocal: "/NPC/Floricultura.png", imgPersonagem: "/NPC/Florista.png", pista: "Ele perguntou sobre voos para uma cidade extremamente moderna na Ásia. Era claramente um homem e parecia muito focado." },
             { id: "S3_2", cidade: "Campinas", local: "Restaurante", personagem: "Garçom", imgLocal: "/NPC/Restaurante.png", imgPersonagem: "/NPC/Garcon.png", pista: "Ele estava vendo fotos de uma cidade cheia de luzes e tecnologia." },
             { id: "S3_3", cidade: "Campinas", local: "Hospital", personagem: "Médica", imgLocal: "/NPC/Hospital.png", imgPersonagem: "/NPC/Medica.png", pista: "Ele perguntou sobre o voo até uma grande metrópole asiática." },
 
-            { id: "S3_4", cidade: "Tokio", local: "Táxi", personagem: "Taxista", imgLocal: "/NPC/Taxi.png", imgPersonagem: "/NPC/Taxista.png", pista: "Levei ele ao aeroporto. Ele tinha cabelo preto e disse que viajaria para uma cidade muito fria." },
-            { id: "S3_5", cidade: "Tokio", local: "Camareira", personagem: "Camareira", imgLocal: "/NPC/Hospital.png", imgPersonagem: "/NPC/Camareira.png", pista: "Ele deixou um guia sobre uma cidade conhecida pelo inverno rigoroso." },
-            { id: "S3_6", cidade: "Tokio", local: "Restaurante", personagem: "Garçom", imgLocal: "/NPC/Restaurante.png", imgPersonagem: "/NPC/Garcon.png", pista: "Ele comentou sobre visitar uma cidade com temperaturas muito baixas." },
+            { id: "S3_4", cidade: "Tóquio", local: "Táxi", personagem: "Taxista", imgLocal: "/NPC/Taxi.png", imgPersonagem: "/NPC/Taxista.png", pista: "Levei ele ao aeroporto. Ele tinha cabelo preto e disse que viajaria para uma cidade muito fria." },
+            { id: "S3_5", cidade: "Tóquio", local: "Camareira", personagem: "Camareira", imgLocal: "/NPC/Hospital.png", imgPersonagem: "/NPC/Camareira.png", pista: "Ele deixou um guia sobre uma cidade conhecida pelo inverno rigoroso." },
+            { id: "S3_6", cidade: "Tóquio", local: "Restaurante", personagem: "Garçom", imgLocal: "/NPC/Restaurante.png", imgPersonagem: "/NPC/Garcon.png", pista: "Ele comentou sobre visitar uma cidade com temperaturas muito baixas." },
 
             { id: "S3_7", cidade: "Moscou", local: "Banco", personagem: "Banqueiro", imgLocal: "/NPC/Banco.png", imgPersonagem: "/NPC/Banqueiro.png", pista: "Ele esteve aqui hoje. Tinha olhos pretos e disse que viajaria para uma cidade moderna na América do Norte." },
             { id: "S3_8", cidade: "Moscou", local: "Táxi", personagem: "Taxista", imgLocal: "/NPC/Taxi.png", imgPersonagem: "/NPC/Taxista.png", pista: "Ele comentou sobre uma cidade com grandes prédios e muita organização." },
@@ -145,14 +146,14 @@ export const CASO_1_SCENARIOS = [
     {
         id: "C001_S5",
         suspectId: "002", // Echo Lark
-        finalCity: "Tokio",
-        spottedAt: ["Seul", "Londres", "Toronto", "Tokio"],
-        route: ["Campinas", "Seul", "Londres", "Toronto", "Tokio"],
+        finalCity: "Tóquio",
+        spottedAt: ["Seul", "Londres", "Toronto", "Tóquio"],
+        route: ["Campinas", "Seul", "Londres", "Toronto", "Tóquio"],
         travelTable: {
             "Campinas": ["Paris", "Toronto", "Seul"],
             "Seul": ["Roma", "Lisboa", "Londres"],
             "Londres": ["Paris", "Moscou", "Toronto"],
-            "Toronto": ["Cairo", "Roma", "Tokio"]
+            "Toronto": ["Cairo", "Roma", "Tóquio"]
         },
         interrogatorios: [
             { id: "S5_1", cidade: "Campinas", local: "Floricultura", personagem: "Florista", imgLocal: "/NPC/Floricultura.png", imgPersonagem: "/NPC/Florista.png", pista: "Ela perguntou sobre voos para uma cidade asiática extremamente moderna. Era claramente uma mulher e parecia muito atenta ao redor." },
@@ -171,9 +172,9 @@ export const CASO_1_SCENARIOS = [
             { id: "S5_11", cidade: "Toronto", local: "Banco", personagem: "Banqueiro", imgLocal: "/NPC/Banco.png", imgPersonagem: "/NPC/Banqueiro.png", pista: "Ela falou sobre viajar para uma cidade tecnológica." },
             { id: "S5_12", cidade: "Toronto", local: "Morador de Rua", personagem: "Morador de Rua", imgLocal: "/NPC/CentrodaCidade.png", imgPersonagem: "/NPC/moradorderua.png", pista: "Ela mencionou uma grande cidade asiática." },
 
-            { id: "S5_13", cidade: "Tokio", local: "Banco", personagem: "Banqueiro", imgLocal: "/NPC/Banco.png", imgPersonagem: "/NPC/Banqueiro.png", pista: "Sim… ela está aqui em Tokio. Era uma mulher de cabelo preto e olhos pretos. Antes de sair, comentou que queria comer comida asiática." },
-            { id: "S5_14", cidade: "Tokio", local: "Restaurante", personagem: "Garçom", imgLocal: "/NPC/Restaurante.png", imgPersonagem: "/NPC/Garcon.png", pista: "Ela esteve aqui recentemente." },
-            { id: "S5_15", cidade: "Tokio", local: "Táxi", personagem: "Taxista", imgLocal: "/NPC/Taxi.png", imgPersonagem: "/NPC/Taxista.png", pista: "Levei ela ao centro da cidade." }
+            { id: "S5_13", cidade: "Tóquio", local: "Banco", personagem: "Banqueiro", imgLocal: "/NPC/Banco.png", imgPersonagem: "/NPC/Banqueiro.png", pista: "Sim… ela está aqui em Tóquio. Era uma mulher de cabelo preto e olhos pretos. Antes de sair, comentou que queria comer comida asiática." },
+            { id: "S5_14", cidade: "Tóquio", local: "Restaurante", personagem: "Garçom", imgLocal: "/NPC/Restaurante.png", imgPersonagem: "/NPC/Garcon.png", pista: "Ela esteve aqui recentemente." },
+            { id: "S5_15", cidade: "Tóquio", local: "Táxi", personagem: "Taxista", imgLocal: "/NPC/Taxi.png", imgPersonagem: "/NPC/Taxista.png", pista: "Levei ela ao centro da cidade." }
         ]
     }
 ];
