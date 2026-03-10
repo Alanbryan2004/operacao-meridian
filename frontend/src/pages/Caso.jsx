@@ -231,9 +231,6 @@ const DESTINATION_OPTIONS = [
     // De Cairo
     { id: "CA_IT", pais: "Itália", cidade: "Roma", origem: "Cairo", coords: { x: 215, y: 110 }, flag: "🇮🇹" },
 
-    // De Toronto
-    { id: "T_PT", pais: "Portugal", cidade: "Lisboa", origem: "Toronto", coords: { x: 160, y: 100 }, flag: "🇵🇹" },
-    { id: "T_AT", pais: "Áustria", cidade: "Viena", origem: "Toronto", coords: { x: 220, y: 95 }, flag: "🇦🇹" },
 
     // De Roma (Scenario 3 - Loopback)
     { id: "R_FR", pais: "França", cidade: "Paris", origem: "Roma", coords: { x: 200, y: 85 }, flag: "🇫🇷" },
