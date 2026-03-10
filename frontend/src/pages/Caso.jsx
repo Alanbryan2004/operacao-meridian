@@ -167,6 +167,8 @@ const DESTINATION_OPTIONS = [
     { id: "T_US", pais: "EUA", cidade: "Nova York", origem: "Toronto", coords: { x: 60, y: 75 }, flag: "🇺🇸" },
     { id: "T_FR", pais: "França", cidade: "Paris", origem: "Toronto", coords: { x: 200, y: 85 }, flag: "🇫🇷" },
     { id: "T_ZA", pais: "África do Sul", cidade: "Cidade do Cabo", origem: "Toronto", coords: { x: 210, y: 195 }, flag: "🇿🇦" },
+    { id: "T_PT", pais: "Portugal", cidade: "Lisboa", origem: "Toronto", coords: { x: 160, y: 100 }, flag: "🇵🇹" },
+    { id: "T_AT", pais: "Áustria", cidade: "Viena", origem: "Toronto", coords: { x: 220, y: 95 }, flag: "🇦🇹" },
 
     // De Roma
     { id: "R_CA", pais: "Canadá", cidade: "Toronto", origem: "Roma", coords: { x: 40, y: 60 }, flag: "🇨🇦" },
@@ -268,6 +270,7 @@ const DESTINATION_OPTIONS = [
     { id: "ZA_MU", pais: "Índia", cidade: "Mumbai", origem: "Cidade do Cabo", coords: { x: 315, y: 165 }, flag: "🇮🇳" },
     { id: "ZA_FR", pais: "França", cidade: "Paris", origem: "Cidade do Cabo", coords: { x: 200, y: 85 }, flag: "🇫🇷" },
     { id: "ZA_SG", pais: "Singapura", cidade: "Singapura", origem: "Cidade do Cabo", coords: { x: 330, y: 155 }, flag: "🇸🇬" },
+    { id: "ZA_AE", pais: "Emirados Árabes", cidade: "Dubai", origem: "Cidade do Cabo", coords: { x: 305, y: 150 }, flag: "🇦🇪" },
 
     // De Bangcoc
     { id: "TH_CA", pais: "Canadá", cidade: "Vancouver", origem: "Bangcoc", coords: { x: 15, y: 55 }, flag: "🇨🇦" },
@@ -286,6 +289,7 @@ const DESTINATION_OPTIONS = [
     { id: "D_GB", pais: "Reino Unido", cidade: "Londres", origem: "Dubai", coords: { x: 195, y: 65 }, flag: "🇬🇧" },
     { id: "D_ES", pais: "Espanha", cidade: "Madrid", origem: "Dubai", coords: { x: 180, y: 105 }, flag: "🇪🇸" },
     { id: "D_IT", pais: "Itália", cidade: "Roma", origem: "Dubai", coords: { x: 215, y: 110 }, flag: "🇮🇹" },
+    { id: "D_ZA", pais: "África do Sul", cidade: "Cidade do Cabo", origem: "Dubai", coords: { x: 210, y: 195 }, flag: "🇿🇦" },
 
     // De Singapura
     { id: "SG_DE", pais: "Alemanha", cidade: "Berlim", origem: "Singapura", coords: { x: 220, y: 80 }, flag: "🇩🇪" },
