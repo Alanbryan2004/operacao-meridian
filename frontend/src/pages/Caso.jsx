@@ -174,6 +174,9 @@ const DESTINATION_OPTIONS = [
     { id: "R_CA", pais: "Canadá", cidade: "Toronto", origem: "Roma", coords: { x: 40, y: 60 }, flag: "🇨🇦" },
     { id: "R_ES", pais: "Espanha", cidade: "Madrid", origem: "Roma", coords: { x: 180, y: 105 }, flag: "🇪🇸" },
     { id: "R_EG", pais: "Egito", cidade: "Cairo", origem: "Roma", coords: { x: 245, y: 140 }, flag: "🇪🇬" },
+    { id: "R_LI", pais: "Portugal", cidade: "Lisboa", origem: "Roma", coords: { x: 160, y: 100 }, flag: "🇵🇹" },
+    { id: "R_RU", pais: "Rússia", cidade: "Moscou", origem: "Roma", coords: { x: 280, y: 70 }, flag: "🇷🇺" },
+    { id: "R_GB", pais: "Reino Unido", cidade: "Londres", origem: "Roma", coords: { x: 195, y: 65 }, flag: "🇬🇧" },
 
     // De Tóquio
     { id: "TK_RU", pais: "Rússia", cidade: "Moscou", origem: "Tóquio", coords: { x: 280, y: 70 }, flag: "🇷🇺" },
