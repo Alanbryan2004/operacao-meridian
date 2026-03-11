@@ -71,7 +71,7 @@ function Panel({ children }) {
     );
 }
 
-const ORIGIN_COORDS = {
+export const ORIGIN_COORDS = {
     "Campinas": { x: 100, y: 160 },
     "Buenos Aires": { x: 80, y: 180 },
     "Nova York": { x: 60, y: 75 },
@@ -98,7 +98,7 @@ const ORIGIN_COORDS = {
     "Bangcoc": { x: 330, y: 140 }
 };
 
-const DESTINATION_OPTIONS = [
+export const DESTINATION_OPTIONS = [
     // De Campinas
     { id: "C_PT", pais: "Portugal", cidade: "Lisboa", origem: "Campinas", coords: { x: 160, y: 100 }, flag: "🇵🇹" },
     { id: "C_EG", pais: "Egito", cidade: "Cairo", origem: "Campinas", coords: { x: 245, y: 140 }, flag: "🇪🇬" },
@@ -145,7 +145,6 @@ const DESTINATION_OPTIONS = [
     { id: "GB_NL", pais: "Holanda", cidade: "Amsterdã", origem: "Londres", coords: { x: 195, y: 75 }, flag: "🇳🇱" },
     { id: "GB_AT", pais: "Áustria", cidade: "Viena", origem: "Londres", coords: { x: 220, y: 95 }, flag: "🇦🇹" },
     { id: "GB_ES", pais: "Espanha", cidade: "Madrid", origem: "Londres", coords: { x: 180, y: 105 }, flag: "🇪🇸" },
-    { id: "GB_AT", pais: "Áustria", cidade: "Viena", origem: "Londres", coords: { x: 220, y: 95 }, flag: "🇦🇹" },
     { id: "GB_PT", pais: "Portugal", cidade: "Lisboa", origem: "Londres", coords: { x: 160, y: 100 }, flag: "🇵🇹" },
     { id: "GB_ZA", pais: "África do Sul", cidade: "Cidade do Cabo", origem: "Londres", coords: { x: 210, y: 195 }, flag: "🇿🇦" },
 
@@ -169,9 +168,11 @@ const DESTINATION_OPTIONS = [
     { id: "T_ZA", pais: "África do Sul", cidade: "Cidade do Cabo", origem: "Toronto", coords: { x: 210, y: 195 }, flag: "🇿🇦" },
     { id: "T_PT", pais: "Portugal", cidade: "Lisboa", origem: "Toronto", coords: { x: 160, y: 100 }, flag: "🇵🇹" },
     { id: "T_AT", pais: "Áustria", cidade: "Viena", origem: "Toronto", coords: { x: 220, y: 95 }, flag: "🇦🇹" },
+    { id: "T_GB", pais: "Reino Unido", cidade: "Londres", origem: "Toronto", coords: { x: 195, y: 65 }, flag: "🇬🇧" },
 
     // De Roma
     { id: "R_CA", pais: "Canadá", cidade: "Toronto", origem: "Roma", coords: { x: 40, y: 60 }, flag: "🇨🇦" },
+    { id: "R_AE", pais: "Emirados Árabes", cidade: "Dubai", origem: "Roma", coords: { x: 305, y: 150 }, flag: "🇦🇪" },
     { id: "R_ES", pais: "Espanha", cidade: "Madrid", origem: "Roma", coords: { x: 180, y: 105 }, flag: "🇪🇸" },
     { id: "R_EG", pais: "Egito", cidade: "Cairo", origem: "Roma", coords: { x: 245, y: 140 }, flag: "🇪🇬" },
     { id: "R_LI", pais: "Portugal", cidade: "Lisboa", origem: "Roma", coords: { x: 160, y: 100 }, flag: "🇵🇹" },

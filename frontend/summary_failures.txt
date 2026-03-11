@@ -1,0 +1,1 @@
+Scenario Configuration Validation Scenario: C003_S3 should ensure all travel options exist in global DESTINATION_OPTIONS

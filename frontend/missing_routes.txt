@@ -1,0 +1,11 @@
+AssertionError: Travel route from "Roma" to "Dubai" in scenario C003_S3 must be defined in DESTINATION_OPTIONS in Caso.jsx: expected false to be true // Object.is equality
+    at C:/Users/alanb/Projetos/operacao-meridian/frontend/src/game/__tests__/Scenarios.test.js:44:164
+    at Array.forEach (<anonymous>)
+    at C:/Users/alanb/Projetos/operacao-meridian/frontend/src/game/__tests__/Scenarios.test.js:42:34
+    at Array.forEach (<anonymous>)
+    at C:/Users/alanb/Projetos/operacao-meridian/frontend/src/game/__tests__/Scenarios.test.js:41:54
+    at file:///C:/Users/alanb/Projetos/operacao-meridian/frontend/node_modules/@vitest/runner/dist/index.js:145:11
+    at file:///C:/Users/alanb/Projetos/operacao-meridian/frontend/node_modules/@vitest/runner/dist/index.js:915:26
+    at file:///C:/Users/alanb/Projetos/operacao-meridian/frontend/node_modules/@vitest/runner/dist/index.js:1243:20
+    at new Promise (<anonymous>)
+    at runWithTimeout (file:///C:/Users/alanb/Projetos/operacao-meridian/frontend/node_modules/@vitest/runner/dist/index.js:1209:10)
