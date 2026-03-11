@@ -46,6 +46,18 @@ describe('Scenario Configuration Validation', () => {
                 });
             });
 
+            it('should ensure travel options are unique for each city in travelTable', () => {
+                Object.entries(scenario.travelTable).forEach(([origin, destinations]) => {
+                    const uniqueDestinations = new Set(destinations);
+                    expect(uniqueDestinations.size, `Scenario ${scenario.id}: City "${origin}" has duplicate travel options in travelTable`).toBe(destinations.length);
+                    
+                    // Also check if filtering from global leads to exactly 3 unique results
+                    const globalOptions = DESTINATION_OPTIONS.filter(d => d.origem === origin && destinations.includes(d.cidade));
+                    const uniqueGlobalCities = new Set(globalOptions.map(o => o.cidade));
+                    expect(uniqueGlobalCities.size, `Scenario ${scenario.id}: City "${origin}" results in ${uniqueGlobalCities.size} unique options instead of 3 due to duplicates in DESTINATION_OPTIONS`).toBe(3);
+                });
+            });
+
             it('should ensure the route is logically consistent (each city connects to the next)', () => {
                 for (let i = 0; i < scenario.route.length - 1; i++) {
                     const currentCity = scenario.route[i];

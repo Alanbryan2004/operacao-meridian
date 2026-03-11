@@ -189,9 +189,6 @@ export const DESTINATION_OPTIONS = [
     { id: "TK_ZA", pais: "África do Sul", cidade: "Cidade do Cabo", origem: "Tóquio", coords: { x: 210, y: 195 }, flag: "🇿🇦" },
     { id: "TK_FR", pais: "França", cidade: "Paris", origem: "Tóquio", coords: { x: 200, y: 85 }, flag: "🇫🇷" },
     { id: "TK_KR", pais: "Coreia do Sul", cidade: "Seul", origem: "Tóquio", coords: { x: 335, y: 90 }, flag: "🇰🇷" },
-    { id: "DE_IT", pais: "Itália", cidade: "Roma", origem: "Berlim", coords: { x: 215, y: 110 }, flag: "🇮🇹" },
-    { id: "DE_AT", pais: "Áustria", cidade: "Viena", origem: "Berlim", coords: { x: 220, y: 95 }, flag: "🇦🇹" },
-    { id: "DE_FR", pais: "França", cidade: "Paris", origem: "Berlim", coords: { x: 200, y: 85 }, flag: "🇫🇷" },
 
     // De Seul
     { id: "S_GB", pais: "Reino Unido", cidade: "Londres", origem: "Seul", coords: { x: 195, y: 65 }, flag: "🇬🇧" },
@@ -236,7 +233,6 @@ export const DESTINATION_OPTIONS = [
 
     // De Cairo
     { id: "CA_IT", pais: "Itália", cidade: "Roma", origem: "Cairo", coords: { x: 215, y: 110 }, flag: "🇮🇹" },
-
 
     // De Roma (Scenario 3 - Loopback)
     { id: "R_FR", pais: "França", cidade: "Paris", origem: "Roma", coords: { x: 200, y: 85 }, flag: "🇫🇷" },
@@ -427,9 +423,11 @@ export default function Caso() {
         const globalOptions = DESTINATION_OPTIONS.filter(d => d.origem === run.localAtual.cidade);
         if (activeScenario?.travelTable && activeScenario.travelTable[run.localAtual.cidade]) {
             const forcedCities = activeScenario.travelTable[run.localAtual.cidade];
-            return globalOptions.filter(d => forcedCities.includes(d.cidade));
+            return globalOptions
+                .filter(d => forcedCities.includes(d.cidade))
+                .filter((v, i, a) => a.findIndex(t => t.cidade === v.cidade) === i);
         }
-        return globalOptions;
+        return globalOptions.filter((v, i, a) => a.findIndex(t => t.cidade === v.cidade) === i);
     }, [run?.localAtual?.cidade, activeScenario]);
 
     if (!state || !caseObj || !run) return null;
