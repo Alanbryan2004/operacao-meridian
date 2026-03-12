@@ -254,7 +254,7 @@ export const suspectsSeed = [
         id: "001",
         codinome: "Vanta Quill",
         nomeReal: "Desconhecido",
-        sexo: "Não Binário/Incerto",
+        sexo: "Não Binário",
         corCabelo: "Platinado",
         corOlhos: "Castanho",
         esporte: "Xadrez",
@@ -890,6 +890,182 @@ export const suspectsSeed = [
         ],
         falsosPositivos: ["Estagiário"],
         relacaoMeridian: "Lembra muito Kite Needle."
-    }
+    },
 
+    {
+        id: "021",
+        codinome: "Lince",
+        nomeReal: "Gustavo Valente",
+        sexo: "Masculino",
+        corCabelo: "Loiro",
+        corOlhos: "Castanho",
+        esporte: "Surfe",
+        comidaFavorita: "Frutos do Mar",
+        idadeAparente: 34,
+        origem: "Brasil",
+        especialidade: ["Transporte marítimo", "Rotas ilegais"],
+        periculosidade: "Média",
+        raridade: "Incomum",
+        assinatura: ["Cordão com dente de tubarão"],
+        caracteristica: ["Atlético", "Casual"],
+        idiomas: [
+            { idioma: "Português", nivel: "Nativo" },
+            { idioma: "Espanhol", nivel: "Bom" }
+        ],
+        habitos: ["Fica observando o horizonte como marinheiro"],
+        pistasTipicas: [
+            "Falava muito de vento e maré.",
+            "Cheiro de sal nas roupas.",
+            "Usava um colar com dente de tubarão."
+        ],
+        falsosPositivos: ["Instrutor de surfe"],
+        relacaoMeridian: "Especialista em rotas costeiras."
+    },
+
+    {
+        id: "022",
+        codinome: "Duque",
+        nomeReal: "Eduardo Freitas",
+        sexo: "Masculino",
+        corCabelo: "Loiro",
+        corOlhos: "Verde",
+        esporte: "Esgrima",
+        comidaFavorita: "Mediterrânea",
+        idadeAparente: 39,
+        origem: "Brasil",
+        especialidade: ["Acesso VIP", "Roubo silencioso"],
+        periculosidade: "Alta",
+        raridade: "Raro",
+        assinatura: ["Luvas brancas impecáveis"],
+        caracteristica: ["Elegante", "Discreto"],
+        idiomas: [
+            { idioma: "Português", nivel: "Nativo" },
+            { idioma: "Inglês", nivel: "Fluente" }
+        ],
+        habitos: ["Arruma os punhos da camisa antes de agir"],
+        pistasTipicas: [
+            "Parecia alguém da alta sociedade.",
+            "Usava luvas brancas.",
+            "Falava com muita calma."
+        ],
+        falsosPositivos: ["Empresário"],
+        relacaoMeridian: "Infiltração em ambientes de elite."
+    },
+
+    {
+        id: "023",
+        codinome: "Nômade",
+        nomeReal: "Alex Ribeiro",
+        sexo: "Não Binário",
+        corCabelo: "Preto",
+        corOlhos: "Verde",
+        esporte: "Parkour",
+        comidaFavorita: "Vegana",
+        idadeAparente: 28,
+        origem: "Brasil",
+        especialidade: ["Fuga urbana", "Escalada de prédios"],
+        periculosidade: "Média",
+        raridade: "Incomum",
+        assinatura: ["Cordas ultrafinas abandonadas"],
+        caracteristica: ["Atlético", "Discreto"],
+        idiomas: [
+            { idioma: "Português", nivel: "Nativo" }
+        ],
+        habitos: ["Sempre olha telhados e saídas"],
+        pistasTipicas: [
+            "Alguém viu uma sombra nos prédios.",
+            "Cordas muito finas foram encontradas.",
+            "Parecia desaparecer nos telhados."
+        ],
+        falsosPositivos: ["Atleta urbano"],
+        relacaoMeridian: "Especialista em fuga."
+    },
+
+    {
+        id: "024",
+        codinome: "Ferrugem",
+        nomeReal: "Bruno Amaral",
+        sexo: "Masculino",
+        corCabelo: "Ruivo",
+        corOlhos: "Castanho",
+        esporte: "Boxe",
+        comidaFavorita: "Churrasco",
+        idadeAparente: 37,
+        origem: "Brasil",
+        especialidade: ["Cobrança", "Intimidação"],
+        periculosidade: "Alta",
+        raridade: "Incomum",
+        assinatura: ["Isqueiro antigo de metal"],
+        caracteristica: ["Robusto", "Casual"],
+        idiomas: [
+            { idioma: "Português", nivel: "Nativo" }
+        ],
+        habitos: ["Brinca com um isqueiro metálico"],
+        pistasTipicas: [
+            "Cheiro de fumaça no ambiente.",
+            "Um isqueiro antigo ficou no balcão.",
+            "Parecia acostumado a brigas."
+        ],
+        falsosPositivos: ["Segurança"],
+        relacaoMeridian: "Cobrança de dívidas clandestinas."
+    },
+
+    {
+        id: "025",
+        codinome: "Faísca",
+        nomeReal: "Caio Montenegro",
+        sexo: "Masculino",
+        corCabelo: "Ruivo",
+        corOlhos: "Azul",
+        esporte: "Ciclismo",
+        comidaFavorita: "Mexicana",
+        idadeAparente: 31,
+        origem: "Portugal",
+        especialidade: ["Mensagens clandestinas", "Entrega rápida"],
+        periculosidade: "Média",
+        raridade: "Comum",
+        assinatura: ["Mapas rabiscados"],
+        caracteristica: ["Atlético", "Casual"],
+        idiomas: [
+            { idioma: "Português", nivel: "Nativo" }
+        ],
+        habitos: ["Sempre com mochila leve"],
+        pistasTipicas: [
+            "Saiu pedalando muito rápido.",
+            "Tinha mapas rabiscados.",
+            "Parecia um mensageiro."
+        ],
+        falsosPositivos: ["Entregador"],
+        relacaoMeridian: "Mensageiro entre células."
+    },
+
+    {
+        id: "026",
+        codinome: "Nevado",
+        nomeReal: "Marcelo Tavares",
+        sexo: "Masculino",
+        corCabelo: "Platinado",
+        corOlhos: "Castanho",
+        esporte: "Tiro esportivo",
+        comidaFavorita: "Japonesa",
+        idadeAparente: 46,
+        origem: "Portugal",
+        especialidade: ["Operações de precisão"],
+        periculosidade: "Alta",
+        raridade: "Raro",
+        assinatura: ["Cartuchos limpos demais"],
+        caracteristica: ["Frio", "Discreto"],
+        idiomas: [
+            { idioma: "Português", nivel: "Nativo" }
+        ],
+        habitos: ["Observa ângulos e distâncias"],
+        pistasTipicas: [
+            "Falava de precisão.",
+            "Um cartucho limpo foi encontrado.",
+            "Parecia ex-militar."
+        ],
+        falsosPositivos: ["Instrutor de tiro"],
+        relacaoMeridian: "Atirador de elite."
+    }
+,
 ];
