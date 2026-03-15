@@ -295,6 +295,47 @@ export const DESTINATION_OPTIONS = [
     { id: "SG_DE", pais: "Alemanha", cidade: "Berlim", origem: "Singapura", coords: { x: 220, y: 80 }, flag: "🇩🇪" },
     { id: "SG_PT", pais: "Portugal", cidade: "Lisboa", origem: "Singapura", coords: { x: 160, y: 100 }, flag: "🇵🇹" },
     { id: "SG_EG", pais: "Egito", cidade: "Cairo", origem: "Singapura", coords: { x: 245, y: 140 }, flag: "🇪🇬" },
+
+    // Caso 5 Routes
+    { id: "C5_1", pais: "Turquia", cidade: "Istambul", origem: "Cairo", coords: { x: 260, y: 110 }, flag: "🇹🇷" },
+    { id: "C5_2", pais: "Alemanha", cidade: "Berlim", origem: "Cairo", coords: { x: 220, y: 80 }, flag: "🇩🇪" },
+    
+    { id: "C5_3", pais: "Emirados Árabes", cidade: "Dubai", origem: "Istambul", coords: { x: 305, y: 150 }, flag: "🇦🇪" },
+    { id: "C5_4", pais: "Canadá", cidade: "Toronto", origem: "Istambul", coords: { x: 40, y: 60 }, flag: "🇨🇦" },
+    
+    { id: "C5_5", pais: "Líbia", cidade: "Trípoli", origem: "Dubai", coords: { x: 230, y: 130 }, flag: "🇱🇾" },
+    { id: "C5_6", pais: "Portugal", cidade: "Lisboa", origem: "Dubai", coords: { x: 160, y: 100 }, flag: "🇵🇹" },
+    
+    { id: "C5_7", pais: "Canadá", cidade: "Toronto", origem: "Viena", coords: { x: 40, y: 60 }, flag: "🇨🇦" },
+    { id: "C5_8", pais: "Espanha", cidade: "Madrid", origem: "Viena", coords: { x: 180, y: 105 }, flag: "🇪🇸" },
+    { id: "C5_9", pais: "Turquia", cidade: "Istambul", origem: "Viena", coords: { x: 260, y: 110 }, flag: "🇹🇷" },
+    
+    { id: "C5_10", pais: "Egito", cidade: "Cairo", origem: "Paris", coords: { x: 245, y: 140 }, flag: "🇪🇬" },
+    
+    { id: "C5_11", pais: "México", cidade: "Cidade do México", origem: "Lisboa", coords: { x: 50, y: 140 }, flag: "🇲🇽" },
+    { id: "C5_12", pais: "Rússia", cidade: "Moscou", origem: "Lisboa", coords: { x: 280, y: 70 }, flag: "🇷🇺" },
+    { id: "C5_13", pais: "Holanda", cidade: "Amsterdã", origem: "Lisboa", coords: { x: 195, y: 75 }, flag: "🇳🇱" },
+    
+    { id: "C5_14", pais: "Japão", cidade: "Tóquio", origem: "Cidade do México", coords: { x: 360, y: 100 }, flag: "🇯🇵" },
+    { id: "C5_15", pais: "Portugal", cidade: "Lisboa", origem: "Cidade do México", coords: { x: 160, y: 100 }, flag: "🇵🇹" },
+    { id: "C5_16", pais: "Alemanha", cidade: "Berlim", origem: "Cidade do México", coords: { x: 220, y: 80 }, flag: "🇩🇪" },
+    
+    { id: "C5_17", pais: "Argentina", cidade: "Buenos Aires", origem: "Vancouver", coords: { x: 80, y: 180 }, flag: "🇦🇷" },
+    { id: "C5_18", pais: "Espanha", cidade: "Madrid", origem: "Vancouver", coords: { x: 180, y: 105 }, flag: "🇪🇸" },
+    
+    { id: "C5_19", pais: "China", cidade: "Pequim", origem: "Moscou", coords: { x: 340, y: 90 }, flag: "🇨🇳" },
+    
+    { id: "C5_20", pais: "Itália", cidade: "Roma", origem: "Pequim", coords: { x: 215, y: 110 }, flag: "🇮🇹" },
+    { id: "C5_21", pais: "Portugal", cidade: "Lisboa", origem: "Pequim", coords: { x: 160, y: 100 }, flag: "🇵🇹" },
+    { id: "C5_22", pais: "Turquia", cidade: "Istambul", origem: "Pequim", coords: { x: 260, y: 110 }, flag: "🇹🇷" },
+    
+    { id: "C5_23", pais: "Butão", cidade: "Thimphu", origem: "Amsterdã", coords: { x: 320, y: 120 }, flag: "🇧🇹" },
+    
+    { id: "C5_24", pais: "França", cidade: "Paris", origem: "Thimphu", coords: { x: 200, y: 85 }, flag: "🇫🇷" },
+    { id: "C5_25", pais: "Itália", cidade: "Roma", origem: "Thimphu", coords: { x: 215, y: 110 }, flag: "🇮🇹" },
+    { id: "C5_26", pais: "Canadá", cidade: "Toronto", origem: "Thimphu", coords: { x: 40, y: 60 }, flag: "🇨🇦" },
+    
+    { id: "C5_27", pais: "Turquia", cidade: "Istambul", origem: "Paris", coords: { x: 260, y: 110 }, flag: "🇹🇷" },
 ];
 
 const TRANSPORT_MODES = [

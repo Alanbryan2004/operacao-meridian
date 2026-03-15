@@ -14,13 +14,15 @@ import { CASO_1_SCENARIOS } from "./Caso1Scenarios";
 import { CASO_2_SCENARIOS } from "./Caso2Scenarios";
 import { CASO_3_SCENARIOS } from "./Caso3Scenarios";
 import { CASO_4_SCENARIOS } from "./Caso4Scenarios";
+import { Caso5Scenarios } from "./Caso5Scenarios";
 
 
 export const CASOS_SCENARIOS = {
     "C001": CASO_1_SCENARIOS,
     "C002": CASO_2_SCENARIOS,
     "C003": CASO_3_SCENARIOS,
-    "C004": CASO_4_SCENARIOS
+    "C004": CASO_4_SCENARIOS,
+    "C005": Caso5Scenarios,
 };
 
 export const CASOS_CONFIG = {
@@ -39,6 +41,10 @@ export const CASOS_CONFIG = {
     "C004": {
         hasIntroVideo: true,
         introVideo: "/Videos/Caso4_Diamante_Muda_Cor.mp4"
+    },
+    "C005": {
+        hasIntroVideo: true,
+        introVideo: "/Videos/Caso5_Mapa_Desaparecido.mp4"
     }
 };
 

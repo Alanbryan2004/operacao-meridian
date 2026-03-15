@@ -1,0 +1,110 @@
+[
+  {
+    "origem": "Cairo",
+    "cidade": "Istambul"
+  },
+  {
+    "origem": "Cairo",
+    "cidade": "Berlim"
+  },
+  {
+    "origem": "Istambul",
+    "cidade": "Dubai"
+  },
+  {
+    "origem": "Istambul",
+    "cidade": "Toronto"
+  },
+  {
+    "origem": "Dubai",
+    "cidade": "Trípoli"
+  },
+  {
+    "origem": "Dubai",
+    "cidade": "Lisboa"
+  },
+  {
+    "origem": "Viena",
+    "cidade": "Toronto"
+  },
+  {
+    "origem": "Viena",
+    "cidade": "Madrid"
+  },
+  {
+    "origem": "Viena",
+    "cidade": "Istambul"
+  },
+  {
+    "origem": "Paris",
+    "cidade": "Cairo"
+  },
+  {
+    "origem": "Lisboa",
+    "cidade": "Cidade do México"
+  },
+  {
+    "origem": "Cidade do México",
+    "cidade": "Tóquio"
+  },
+  {
+    "origem": "Cidade do México",
+    "cidade": "Lisboa"
+  },
+  {
+    "origem": "Cidade do México",
+    "cidade": "Berlim"
+  },
+  {
+    "origem": "Vancouver",
+    "cidade": "Buenos Aires"
+  },
+  {
+    "origem": "Vancouver",
+    "cidade": "Madrid"
+  },
+  {
+    "origem": "Lisboa",
+    "cidade": "Moscou"
+  },
+  {
+    "origem": "Moscou",
+    "cidade": "Pequim"
+  },
+  {
+    "origem": "Pequim",
+    "cidade": "Roma"
+  },
+  {
+    "origem": "Pequim",
+    "cidade": "Lisboa"
+  },
+  {
+    "origem": "Pequim",
+    "cidade": "Istambul"
+  },
+  {
+    "origem": "Lisboa",
+    "cidade": "Amsterdã"
+  },
+  {
+    "origem": "Amsterdã",
+    "cidade": "Thimphu"
+  },
+  {
+    "origem": "Thimphu",
+    "cidade": "Paris"
+  },
+  {
+    "origem": "Thimphu",
+    "cidade": "Roma"
+  },
+  {
+    "origem": "Thimphu",
+    "cidade": "Toronto"
+  },
+  {
+    "origem": "Paris",
+    "cidade": "Istambul"
+  }
+]

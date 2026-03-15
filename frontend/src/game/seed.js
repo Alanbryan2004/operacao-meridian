@@ -189,6 +189,17 @@ export const casesSeed = [
         replayable: true,
         interrogatorios: [],
     },
+    {
+        id: "C005",
+        titulo: "O Mapa que Não Aparece em Nenhum Atlas",
+        recompensa: 4500,
+        xp: 180,
+        tempoTotalHoras: 360,
+        videoIntro: "/Videos/Caso5_Mapa_Desaparecido.mp4",
+        dificuldade: "Médio",
+        historicoCurto: "Um pesquisador misterioso solicitou acesso ao documento. Minutos depois... O mapa desapareceu.",
+        localInicial: { pais: "Portugal", cidade: "Lisboa" }
+    }
 ];
 
 export const initialPlayer = {
