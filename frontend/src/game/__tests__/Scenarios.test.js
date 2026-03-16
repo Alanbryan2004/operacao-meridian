@@ -3,7 +3,7 @@ import { CASO_1_SCENARIOS } from '../Caso1Scenarios';
 import { CASO_2_SCENARIOS } from '../Caso2Scenarios';
 import { CASO_3_SCENARIOS } from '../Caso3Scenarios';
 import { CASO_4_SCENARIOS } from '../Caso4Scenarios';
-import { DESTINATION_OPTIONS } from '../../pages/Caso';
+import { DESTINATION_OPTIONS } from '../DestRoutes';
 
 const ALL_SCENARIOS = [
     ...CASO_1_SCENARIOS,

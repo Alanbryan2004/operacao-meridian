@@ -5,7 +5,7 @@ export const casesSeed = [
         id: "C001",
         titulo: "Relíquia desaparecida no centro histórico",
         dificuldade: "FACIL",
-        recompensa: 4500,
+        recompensa: 2500,
         xp: 80,
         tempoTotalHoras: 20 * DIAS_PARA_HORAS, // 20 dias
         localInicial: { pais: "Brasil", cidade: "Campinas" },
@@ -154,7 +154,7 @@ export const casesSeed = [
         id: "C002",
         titulo: "Obra de Arte sumiu após o Leilão",
         dificuldade: "MEDIA",
-        recompensa: 7500,
+        recompensa: 4000,
         xp: 150,
         tempoTotalHoras: 15 * DIAS_PARA_HORAS, // 15 dias
         localInicial: { pais: "França", cidade: "Paris" },
@@ -180,7 +180,7 @@ export const casesSeed = [
         id: "C004",
         titulo: "O Diamante que Muda de Cor",
         dificuldade: "FACIL",
-        recompensa: 4000,
+        recompensa: 2500,
         xp: 80,
         tempoTotalHoras: 480,
         localInicial: { pais: "África do Sul", cidade: "Cidade do Cabo" },

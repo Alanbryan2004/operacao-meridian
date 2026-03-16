@@ -72,271 +72,42 @@ function Panel({ children }) {
 }
 
 export const ORIGIN_COORDS = {
-    "Campinas": { x: 100, y: 160 },
-    "Buenos Aires": { x: 80, y: 180 },
-    "Nova York": { x: 60, y: 75 },
-    "Toronto": { x: 40, y: 60 },
-    "Lisboa": { x: 160, y: 100 },
-    "Madrid": { x: 180, y: 105 },
-    "Paris": { x: 200, y: 85 },
-    "Londres": { x: 195, y: 65 },
-    "Roma": { x: 215, y: 110 },
-    "Cairo": { x: 245, y: 140 },
-    "Moscou": { x: 280, y: 70 },
-    "Dubai": { x: 305, y: 150 },
-    "Seul": { x: 335, y: 90 },
-    "Tóquio": { x: 360, y: 100 },
-    "Viena": { x: 220, y: 95 },
-    "Mumbai": { x: 315, y: 165 },
-    "Vancouver": { x: 15, y: 55 },
-    "Singapura": { x: 330, y: 155 },
-    "Sydney": { x: 380, y: 190 },
-    "Berlim": { x: 220, y: 80 },
-    "Istambul": { x: 260, y: 120 },
-    "Amsterdã": { x: 195, y: 75 },
-    "Cidade do Cabo": { x: 210, y: 195 },
-    "Bangcoc": { x: 330, y: 140 }
+    "Campinas": { x: 137, y: 149 },
+    "Buenos Aires": { x: 124, y: 165 },
+    "Nova York": { x: 107, y: 61 },
+    "Toronto": { x: 101, y: 57 },
+    "Lisboa": { x: 179, y: 64 },
+    "Madrid": { x: 185, y: 62 },
+    "Paris": { x: 192, y: 50 },
+    "Londres": { x: 189, y: 46 },
+    "Roma": { x: 203, y: 59 },
+    "Cairo": { x: 224, y: 76 },
+    "Moscou": { x: 231, y: 40 },
+    "Dubai": { x: 250, y: 82 },
+    "Seul": { x: 330, y: 65 },
+    "Tóquio": { x: 344, y: 68 },
+    "Viena": { x: 207, y: 51 },
+    "Mumbai": { x: 270, y: 91 },
+    "Vancouver": { x: 52, y: 49 },
+    "Singapura": { x: 304, y: 115 },
+    "Sydney": { x: 357, y: 164 },
+    "Berlim": { x: 204, y: 45 },
+    "Istambul": { x: 221, y: 61 },
+    "Amsterdã": { x: 194, y: 45 },
+    "Cidade do Cabo": { x: 209, y: 164 },
+    "Bangcoc": { x: 301, y: 98 },
+    "Trípoli": { x: 204, y: 72 },
+    "Cidade do México": { x: 79, y: 90 },
+    "Pequim": { x: 318, y: 62 },
+    "Thimphu": { x: 288, y: 79 },
+    "Sao Paulo": { x: 137, y: 150 },
+    "Rio de Janeiro": { x: 141, y: 149 },
+    "Nova Delhi": { x: 275, y: 78 },
+    "Salvador": { x: 146, y: 135 },
 };
 
-export const DESTINATION_OPTIONS = [
-    // De Campinas
-    { id: "C_PT", pais: "Portugal", cidade: "Lisboa", origem: "Campinas", coords: { x: 160, y: 100 }, flag: "🇵🇹" },
-    { id: "C_EG", pais: "Egito", cidade: "Cairo", origem: "Campinas", coords: { x: 245, y: 140 }, flag: "🇪🇬" },
-    { id: "C_FR", pais: "França", cidade: "Paris", origem: "Campinas", coords: { x: 200, y: 85 }, flag: "🇫🇷" },
-    { id: "C_JP", pais: "Japão", cidade: "Tóquio", origem: "Campinas", coords: { x: 360, y: 100 }, flag: "🇯🇵" },
-    { id: "C_KR", pais: "Coreia do Sul", cidade: "Seul", origem: "Campinas", coords: { x: 335, y: 90 }, flag: "🇰🇷" },
-    { id: "C_AR", pais: "Argentina", cidade: "Buenos Aires", origem: "Campinas", coords: { x: 80, y: 180 }, flag: "🇦🇷" },
-    { id: "C_US", pais: "EUA", cidade: "Nova York", origem: "Campinas", coords: { x: 60, y: 75 }, flag: "🇺🇸" },
-    { id: "C_IT", pais: "Itália", cidade: "Roma", origem: "Campinas", coords: { x: 215, y: 110 }, flag: "🇮🇹" },
-    { id: "C_CA", pais: "Canadá", cidade: "Toronto", origem: "Campinas", coords: { x: 40, y: 60 }, flag: "🇨🇦" },
+import { DESTINATION_OPTIONS } from '../game/DestRoutes';
 
-    // De Lisboa
-    { id: "L_FR", pais: "França", cidade: "Paris", origem: "Lisboa", coords: { x: 200, y: 85 }, flag: "🇫🇷" },
-    { id: "L_GB", pais: "Reino Unido", cidade: "Londres", origem: "Lisboa", coords: { x: 195, y: 65 }, flag: "🇬🇧" },
-    { id: "L_CA", pais: "Canadá", cidade: "Toronto", origem: "Lisboa", coords: { x: 40, y: 60 }, flag: "🇨🇦" },
-    { id: "L_ES", pais: "Espanha", cidade: "Madrid", origem: "Lisboa", coords: { x: 180, y: 105 }, flag: "🇪🇸" },
-    { id: "L_IT", pais: "Itália", cidade: "Roma", origem: "Lisboa", coords: { x: 215, y: 110 }, flag: "🇮🇹" },
-    { id: "L_DE", pais: "Alemanha", cidade: "Berlim", origem: "Lisboa", coords: { x: 220, y: 80 }, flag: "🇩🇪" },
-
-    // De Cairo
-    { id: "CA_RU", pais: "Rússia", cidade: "Moscou", origem: "Cairo", coords: { x: 280, y: 70 }, flag: "🇷🇺" },
-    { id: "CA_PT", pais: "Portugal", cidade: "Lisboa", origem: "Cairo", coords: { x: 160, y: 100 }, flag: "🇵🇹" },
-    { id: "CA_CA", pais: "Canadá", cidade: "Toronto", origem: "Cairo", coords: { x: 40, y: 60 }, flag: "🇨🇦" },
-    { id: "CA_MU", pais: "Índia", cidade: "Mumbai", origem: "Cairo", coords: { x: 315, y: 165 }, flag: "🇮🇳" },
-    { id: "CA_AE", pais: "Emirados Árabes", cidade: "Dubai", origem: "Cairo", coords: { x: 305, y: 150 }, flag: "🇦🇪" },
-
-    // De Moscou
-    { id: "M_GB", pais: "Reino Unido", cidade: "Londres", origem: "Moscou", coords: { x: 195, y: 65 }, flag: "🇬🇧" },
-    { id: "M_CA", pais: "Canadá", cidade: "Toronto", origem: "Moscou", coords: { x: 40, y: 60 }, flag: "🇨🇦" },
-    { id: "M_FR", pais: "França", cidade: "Paris", origem: "Moscou", coords: { x: 200, y: 85 }, flag: "🇫🇷" },
-    { id: "M_IT", pais: "Itália", cidade: "Roma", origem: "Moscou", coords: { x: 215, y: 110 }, flag: "🇮🇹" },
-    { id: "M_US", pais: "EUA", cidade: "Nova York", origem: "Moscou", coords: { x: 60, y: 75 }, flag: "🇺🇸" },
-    { id: "M_PT", pais: "Portugal", cidade: "Lisboa", origem: "Moscou", coords: { x: 160, y: 100 }, flag: "🇵🇹" },
-    { id: "M_NL", pais: "Holanda", cidade: "Amsterdã", origem: "Moscou", coords: { x: 195, y: 75 }, flag: "🇳🇱" },
-    { id: "M_EG", pais: "Egito", cidade: "Cairo", origem: "Moscou", coords: { x: 245, y: 140 }, flag: "🇪🇬" },
-
-    // De Londres
-    { id: "GB_AE", pais: "Emirados Árabes", cidade: "Dubai", origem: "Londres", coords: { x: 305, y: 150 }, flag: "🇦🇪" },
-    { id: "GB_CA", pais: "Canadá", cidade: "Toronto", origem: "Londres", coords: { x: 40, y: 60 }, flag: "🇨🇦" },
-    { id: "GB_EG", pais: "Egito", cidade: "Cairo", origem: "Londres", coords: { x: 245, y: 140 }, flag: "🇪🇬" },
-    { id: "GB_IT", pais: "Itália", cidade: "Roma", origem: "Londres", coords: { x: 215, y: 110 }, flag: "🇮🇹" },
-    { id: "GB_FR", pais: "França", cidade: "Paris", origem: "Londres", coords: { x: 200, y: 85 }, flag: "🇫🇷" },
-    { id: "GB_RU", pais: "Rússia", cidade: "Moscou", origem: "Londres", coords: { x: 280, y: 70 }, flag: "🇷🇺" },
-    { id: "GB_NL", pais: "Holanda", cidade: "Amsterdã", origem: "Londres", coords: { x: 195, y: 75 }, flag: "🇳🇱" },
-    { id: "GB_AT", pais: "Áustria", cidade: "Viena", origem: "Londres", coords: { x: 220, y: 95 }, flag: "🇦🇹" },
-    { id: "GB_ES", pais: "Espanha", cidade: "Madrid", origem: "Londres", coords: { x: 180, y: 105 }, flag: "🇪🇸" },
-    { id: "GB_PT", pais: "Portugal", cidade: "Lisboa", origem: "Londres", coords: { x: 160, y: 100 }, flag: "🇵🇹" },
-    { id: "GB_ZA", pais: "África do Sul", cidade: "Cidade do Cabo", origem: "Londres", coords: { x: 210, y: 195 }, flag: "🇿🇦" },
-
-    // De Paris
-    { id: "P_RU", pais: "Rússia", cidade: "Moscou", origem: "Paris", coords: { x: 280, y: 70 }, flag: "🇷🇺" },
-    { id: "P_CA", pais: "Canadá", cidade: "Toronto", origem: "Paris", coords: { x: 40, y: 60 }, flag: "🇨🇦" },
-    { id: "P_GB", pais: "Reino Unido", cidade: "Londres", origem: "Paris", coords: { x: 195, y: 65 }, flag: "🇬🇧" },
-    { id: "P_IT", pais: "Itália", cidade: "Roma", origem: "Paris", coords: { x: 215, y: 110 }, flag: "🇮🇹" },
-    { id: "P_PT", pais: "Portugal", cidade: "Lisboa", origem: "Paris", coords: { x: 160, y: 100 }, flag: "🇵🇹" },
-    { id: "P_US", pais: "EUA", cidade: "Nova York", origem: "Paris", coords: { x: 60, y: 75 }, flag: "🇺🇸" },
-    { id: "P_KR", pais: "Coreia do Sul", cidade: "Seul", origem: "Paris", coords: { x: 335, y: 90 }, flag: "🇰🇷" },
-    { id: "P_AT", pais: "Áustria", cidade: "Viena", origem: "Paris", coords: { x: 220, y: 95 }, flag: "🇦🇹" },
-    { id: "P_ES", pais: "Espanha", cidade: "Madrid", origem: "Paris", coords: { x: 180, y: 105 }, flag: "🇪🇸" },
-
-    // De Toronto
-    { id: "T_IT", pais: "Itália", cidade: "Roma", origem: "Toronto", coords: { x: 215, y: 110 }, flag: "🇮🇹" },
-    { id: "T_EG", pais: "Egito", cidade: "Cairo", origem: "Toronto", coords: { x: 245, y: 140 }, flag: "🇪🇬" },
-    { id: "T_JP", pais: "Japão", cidade: "Tóquio", origem: "Toronto", coords: { x: 360, y: 100 }, flag: "🇯🇵" },
-    { id: "T_US", pais: "EUA", cidade: "Nova York", origem: "Toronto", coords: { x: 60, y: 75 }, flag: "🇺🇸" },
-    { id: "T_FR", pais: "França", cidade: "Paris", origem: "Toronto", coords: { x: 200, y: 85 }, flag: "🇫🇷" },
-    { id: "T_ZA", pais: "África do Sul", cidade: "Cidade do Cabo", origem: "Toronto", coords: { x: 210, y: 195 }, flag: "🇿🇦" },
-    { id: "T_PT", pais: "Portugal", cidade: "Lisboa", origem: "Toronto", coords: { x: 160, y: 100 }, flag: "🇵🇹" },
-    { id: "T_AT", pais: "Áustria", cidade: "Viena", origem: "Toronto", coords: { x: 220, y: 95 }, flag: "🇦🇹" },
-    { id: "T_GB", pais: "Reino Unido", cidade: "Londres", origem: "Toronto", coords: { x: 195, y: 65 }, flag: "🇬🇧" },
-
-    // De Roma
-    { id: "R_CA", pais: "Canadá", cidade: "Toronto", origem: "Roma", coords: { x: 40, y: 60 }, flag: "🇨🇦" },
-    { id: "R_AE", pais: "Emirados Árabes", cidade: "Dubai", origem: "Roma", coords: { x: 305, y: 150 }, flag: "🇦🇪" },
-    { id: "R_ES", pais: "Espanha", cidade: "Madrid", origem: "Roma", coords: { x: 180, y: 105 }, flag: "🇪🇸" },
-    { id: "R_EG", pais: "Egito", cidade: "Cairo", origem: "Roma", coords: { x: 245, y: 140 }, flag: "🇪🇬" },
-    { id: "R_LI", pais: "Portugal", cidade: "Lisboa", origem: "Roma", coords: { x: 160, y: 100 }, flag: "🇵🇹" },
-    { id: "R_RU", pais: "Rússia", cidade: "Moscou", origem: "Roma", coords: { x: 280, y: 70 }, flag: "🇷🇺" },
-    { id: "R_GB", pais: "Reino Unido", cidade: "Londres", origem: "Roma", coords: { x: 195, y: 65 }, flag: "🇬🇧" },
-
-    // De Tóquio
-    { id: "TK_RU", pais: "Rússia", cidade: "Moscou", origem: "Tóquio", coords: { x: 280, y: 70 }, flag: "🇷🇺" },
-    { id: "TK_GB", pais: "Reino Unido", cidade: "Londres", origem: "Tóquio", coords: { x: 195, y: 65 }, flag: "🇬🇧" },
-    { id: "TK_IT", pais: "Itália", cidade: "Roma", origem: "Tóquio", coords: { x: 215, y: 110 }, flag: "🇮🇹" },
-    { id: "TK_VA", pais: "Canadá", cidade: "Vancouver", origem: "Tóquio", coords: { x: 15, y: 55 }, flag: "🇨🇦" },
-    { id: "TK_AE", pais: "Emirados Árabes", cidade: "Dubai", origem: "Tóquio", coords: { x: 305, y: 150 }, flag: "🇦🇪" },
-    { id: "TK_DE", pais: "Alemanha", cidade: "Berlim", origem: "Tóquio", coords: { x: 220, y: 80 }, flag: "🇩🇪" },
-    { id: "TK_ZA", pais: "África do Sul", cidade: "Cidade do Cabo", origem: "Tóquio", coords: { x: 210, y: 195 }, flag: "🇿🇦" },
-    { id: "TK_FR", pais: "França", cidade: "Paris", origem: "Tóquio", coords: { x: 200, y: 85 }, flag: "🇫🇷" },
-    { id: "TK_KR", pais: "Coreia do Sul", cidade: "Seul", origem: "Tóquio", coords: { x: 335, y: 90 }, flag: "🇰🇷" },
-
-    // De Seul
-    { id: "S_GB", pais: "Reino Unido", cidade: "Londres", origem: "Seul", coords: { x: 195, y: 65 }, flag: "🇬🇧" },
-    { id: "S_PT", pais: "Portugal", cidade: "Lisboa", origem: "Seul", coords: { x: 160, y: 100 }, flag: "🇵🇹" },
-    { id: "S_IT", pais: "Itália", cidade: "Roma", origem: "Seul", coords: { x: 215, y: 110 }, flag: "🇮🇹" },
-    { id: "S_TK", pais: "Japão", cidade: "Tóquio", origem: "Seul", coords: { x: 360, y: 100 }, flag: "🇯🇵" },
-    { id: "S_AE", pais: "Emirados Árabes", cidade: "Dubai", origem: "Seul", coords: { x: 305, y: 150 }, flag: "🇦🇪" },
-    { id: "S_CA", pais: "Canadá", cidade: "Vancouver", origem: "Seul", coords: { x: 15, y: 55 }, flag: "🇨🇦" },
-    { id: "S_FR", pais: "França", cidade: "Paris", origem: "Seul", coords: { x: 200, y: 85 }, flag: "🇫🇷" },
-
-    // De Viena
-    { id: "AT_PT", pais: "Portugal", cidade: "Lisboa", origem: "Viena", coords: { x: 160, y: 100 }, flag: "🇵🇹" },
-    { id: "AT_RU", pais: "Rússia", cidade: "Moscou", origem: "Viena", coords: { x: 280, y: 70 }, flag: "🇷🇺" },
-    { id: "AT_GB", pais: "Reino Unido", cidade: "Londres", origem: "Viena", coords: { x: 195, y: 65 }, flag: "🇬🇧" },
-    { id: "AT_FR", pais: "França", cidade: "Paris", origem: "Viena", coords: { x: 200, y: 85 }, flag: "🇫🇷" },
-    { id: "AT_DE", pais: "Alemanha", cidade: "Berlim", origem: "Viena", coords: { x: 220, y: 80 }, flag: "🇩🇪" },
-    { id: "AT_IT", pais: "Itália", cidade: "Roma", origem: "Viena", coords: { x: 215, y: 110 }, flag: "🇮🇹" },
-    { id: "AT_KR", pais: "Coreia do Sul", cidade: "Seul", origem: "Viena", coords: { x: 335, y: 90 }, flag: "🇰🇷" },
-    { id: "AT_ZA", pais: "África do Sul", cidade: "Cidade do Cabo", origem: "Viena", coords: { x: 210, y: 195 }, flag: "🇿🇦" },
-    { id: "AT_EG", pais: "Egito", cidade: "Cairo", origem: "Viena", coords: { x: 245, y: 140 }, flag: "🇪🇬" },
-    { id: "AT_AE", pais: "Emirados Árabes", cidade: "Dubai", origem: "Viena", coords: { x: 305, y: 150 }, flag: "🇦🇪" },
-
-    // De Mumbai
-    { id: "MU_AT", pais: "Áustria", cidade: "Viena", origem: "Mumbai", coords: { x: 220, y: 95 }, flag: "🇦🇹" },
-    { id: "MU_PT", pais: "Portugal", cidade: "Lisboa", origem: "Mumbai", coords: { x: 160, y: 100 }, flag: "🇵🇹" },
-    { id: "MU_FR", pais: "França", cidade: "Paris", origem: "Mumbai", coords: { x: 200, y: 85 }, flag: "🇫🇷" },
-    { id: "MU_AE", pais: "Emirados Árabes", cidade: "Dubai", origem: "Mumbai", coords: { x: 305, y: 150 }, flag: "🇦🇪" },
-    { id: "MU_IT", pais: "Itália", cidade: "Roma", origem: "Mumbai", coords: { x: 215, y: 110 }, flag: "🇮🇹" },
-    { id: "MU_CA", pais: "Canadá", cidade: "Toronto", origem: "Mumbai", coords: { x: 40, y: 60 }, flag: "🇨🇦" },
-
-    // De Vancouver
-    { id: "VA_PT", pais: "Portugal", cidade: "Lisboa", origem: "Vancouver", coords: { x: 160, y: 100 }, flag: "🇵🇹" },
-    { id: "VA_AT", pais: "Áustria", cidade: "Viena", origem: "Vancouver", coords: { x: 220, y: 95 }, flag: "🇦🇹" },
-    { id: "VA_FR", pais: "França", cidade: "Paris", origem: "Vancouver", coords: { x: 200, y: 85 }, flag: "🇫🇷" },
-    { id: "VA_ZA", pais: "África do Sul", cidade: "Cidade do Cabo", origem: "Vancouver", coords: { x: 210, y: 195 }, flag: "🇿🇦" },
-    { id: "VA_GB", pais: "Reino Unido", cidade: "Londres", origem: "Vancouver", coords: { x: 195, y: 65 }, flag: "🇬🇧" },
-
-    // De Nova York
-    { id: "US_EG", pais: "Egito", cidade: "Cairo", origem: "Nova York", coords: { x: 245, y: 140 }, flag: "🇪🇬" },
-    { id: "US_FR", pais: "França", cidade: "Paris", origem: "Nova York", coords: { x: 200, y: 85 }, flag: "🇫🇷" },
-    { id: "US_PT", pais: "Portugal", cidade: "Lisboa", origem: "Nova York", coords: { x: 160, y: 100 }, flag: "🇵🇹" },
-
-    // De Cairo
-    { id: "CA_IT", pais: "Itália", cidade: "Roma", origem: "Cairo", coords: { x: 215, y: 110 }, flag: "🇮🇹" },
-
-    // De Roma (Scenario 3 - Loopback)
-    { id: "R_FR", pais: "França", cidade: "Paris", origem: "Roma", coords: { x: 200, y: 85 }, flag: "🇫🇷" },
-
-    // De Lisboa (Scenario 3)
-    { id: "L_AT", pais: "Áustria", cidade: "Viena", origem: "Lisboa", coords: { x: 220, y: 95 }, flag: "🇦🇹" },
-    { id: "L_EG", pais: "Egito", cidade: "Cairo", origem: "Lisboa", coords: { x: 245, y: 140 }, flag: "🇪🇬" },
-
-    // De Seul (Scenario 4)
-    { id: "S_SI", pais: "Singapura", cidade: "Singapura", origem: "Seul", coords: { x: 330, y: 155 }, flag: "🇸🇬" },
-
-    // De Tóquio (Scenario 4)
-    { id: "TK_SY", pais: "Austrália", cidade: "Sydney", origem: "Tóquio", coords: { x: 380, y: 190 }, flag: "🇦🇺" },
-
-    // De Berlim
-    { id: "DE_PT", pais: "Portugal", cidade: "Lisboa", origem: "Berlim", coords: { x: 160, y: 100 }, flag: "🇵🇹" },
-    { id: "DE_TR", pais: "Turquia", cidade: "Istambul", origem: "Berlim", coords: { x: 260, y: 120 }, flag: "🇹🇷" },
-    { id: "DE_AT", pais: "Áustria", cidade: "Viena", origem: "Berlim", coords: { x: 220, y: 95 }, flag: "🇦🇹" },
-    { id: "DE_FR", pais: "França", cidade: "Paris", origem: "Berlim", coords: { x: 200, y: 85 }, flag: "🇫🇷" },
-    { id: "DE_IT", pais: "Itália", cidade: "Roma", origem: "Berlim", coords: { x: 215, y: 110 }, flag: "🇮🇹" },
-    { id: "DE_TK", pais: "Japão", cidade: "Tóquio", origem: "Berlim", coords: { x: 360, y: 100 }, flag: "🇯🇵" },
-
-    // De Istambul
-    { id: "TR_GB", pais: "Reino Unido", cidade: "Londres", origem: "Istambul", coords: { x: 195, y: 65 }, flag: "🇬🇧" },
-    { id: "TR_ES", pais: "Espanha", cidade: "Madrid", origem: "Istambul", coords: { x: 180, y: 105 }, flag: "🇪🇸" },
-    { id: "TR_IT", pais: "Itália", cidade: "Roma", origem: "Istambul", coords: { x: 215, y: 110 }, flag: "🇮🇹" },
-
-    // De Cidade do Cabo
-    { id: "ZA_TH", pais: "Tailândia", cidade: "Bangcoc", origem: "Cidade do Cabo", coords: { x: 330, y: 140 }, flag: "🇹🇭" },
-    { id: "ZA_DE", pais: "Alemanha", cidade: "Berlim", origem: "Cidade do Cabo", coords: { x: 220, y: 80 }, flag: "🇩🇪" },
-    { id: "ZA_ES", pais: "Espanha", cidade: "Madrid", origem: "Cidade do Cabo", coords: { x: 180, y: 105 }, flag: "🇪🇸" },
-    { id: "ZA_PT", pais: "Portugal", cidade: "Lisboa", origem: "Cidade do Cabo", coords: { x: 160, y: 100 }, flag: "🇵🇹" },
-    { id: "ZA_JP", pais: "Japão", cidade: "Tóquio", origem: "Cidade do Cabo", coords: { x: 360, y: 100 }, flag: "🇯🇵" },
-    { id: "ZA_IT", pais: "Itália", cidade: "Roma", origem: "Cidade do Cabo", coords: { x: 215, y: 110 }, flag: "🇮🇹" },
-    { id: "ZA_MU", pais: "Índia", cidade: "Mumbai", origem: "Cidade do Cabo", coords: { x: 315, y: 165 }, flag: "🇮🇳" },
-    { id: "ZA_FR", pais: "França", cidade: "Paris", origem: "Cidade do Cabo", coords: { x: 200, y: 85 }, flag: "🇫🇷" },
-    { id: "ZA_SG", pais: "Singapura", cidade: "Singapura", origem: "Cidade do Cabo", coords: { x: 330, y: 155 }, flag: "🇸🇬" },
-    { id: "ZA_AE", pais: "Emirados Árabes", cidade: "Dubai", origem: "Cidade do Cabo", coords: { x: 305, y: 150 }, flag: "🇦🇪" },
-
-    // De Bangcoc
-    { id: "TH_CA", pais: "Canadá", cidade: "Vancouver", origem: "Bangcoc", coords: { x: 15, y: 55 }, flag: "🇨🇦" },
-    { id: "TH_IT", pais: "Itália", cidade: "Roma", origem: "Bangcoc", coords: { x: 215, y: 110 }, flag: "🇮🇹" },
-    { id: "TH_PT", pais: "Portugal", cidade: "Lisboa", origem: "Bangcoc", coords: { x: 160, y: 100 }, flag: "🇵🇹" },
-
-    // De Amsterdã
-    { id: "NL_DE", pais: "Alemanha", cidade: "Berlim", origem: "Amsterdã", coords: { x: 220, y: 80 }, flag: "🇩🇪" },
-    { id: "NL_FR", pais: "França", cidade: "Paris", origem: "Amsterdã", coords: { x: 200, y: 85 }, flag: "🇫🇷" },
-    { id: "NL_PT", pais: "Portugal", cidade: "Lisboa", origem: "Amsterdã", coords: { x: 160, y: 100 }, flag: "🇵🇹" },
-    { id: "NL_ZA", pais: "África do Sul", cidade: "Cidade do Cabo", origem: "Amsterdã", coords: { x: 210, y: 195 }, flag: "🇿🇦" },
-    { id: "NL_AT", pais: "Áustria", cidade: "Viena", origem: "Amsterdã", coords: { x: 220, y: 95 }, flag: "🇦🇹" },
-    { id: "NL_GB", pais: "Reino Unido", cidade: "Londres", origem: "Amsterdã", coords: { x: 195, y: 65 }, flag: "🇬🇧" },
-
-    // De Dubai
-    { id: "D_GB", pais: "Reino Unido", cidade: "Londres", origem: "Dubai", coords: { x: 195, y: 65 }, flag: "🇬🇧" },
-    { id: "D_ES", pais: "Espanha", cidade: "Madrid", origem: "Dubai", coords: { x: 180, y: 105 }, flag: "🇪🇸" },
-    { id: "D_IT", pais: "Itália", cidade: "Roma", origem: "Dubai", coords: { x: 215, y: 110 }, flag: "🇮🇹" },
-    { id: "D_ZA", pais: "África do Sul", cidade: "Cidade do Cabo", origem: "Dubai", coords: { x: 210, y: 195 }, flag: "🇿🇦" },
-
-    // De Singapura
-    { id: "SG_DE", pais: "Alemanha", cidade: "Berlim", origem: "Singapura", coords: { x: 220, y: 80 }, flag: "🇩🇪" },
-    { id: "SG_PT", pais: "Portugal", cidade: "Lisboa", origem: "Singapura", coords: { x: 160, y: 100 }, flag: "🇵🇹" },
-    { id: "SG_EG", pais: "Egito", cidade: "Cairo", origem: "Singapura", coords: { x: 245, y: 140 }, flag: "🇪🇬" },
-
-    // Caso 5 Routes
-    { id: "C5_1", pais: "Turquia", cidade: "Istambul", origem: "Cairo", coords: { x: 260, y: 110 }, flag: "🇹🇷" },
-    { id: "C5_2", pais: "Alemanha", cidade: "Berlim", origem: "Cairo", coords: { x: 220, y: 80 }, flag: "🇩🇪" },
-    
-    { id: "C5_3", pais: "Emirados Árabes", cidade: "Dubai", origem: "Istambul", coords: { x: 305, y: 150 }, flag: "🇦🇪" },
-    { id: "C5_4", pais: "Canadá", cidade: "Toronto", origem: "Istambul", coords: { x: 40, y: 60 }, flag: "🇨🇦" },
-    
-    { id: "C5_5", pais: "Líbia", cidade: "Trípoli", origem: "Dubai", coords: { x: 230, y: 130 }, flag: "🇱🇾" },
-    { id: "C5_6", pais: "Portugal", cidade: "Lisboa", origem: "Dubai", coords: { x: 160, y: 100 }, flag: "🇵🇹" },
-    
-    { id: "C5_7", pais: "Canadá", cidade: "Toronto", origem: "Viena", coords: { x: 40, y: 60 }, flag: "🇨🇦" },
-    { id: "C5_8", pais: "Espanha", cidade: "Madrid", origem: "Viena", coords: { x: 180, y: 105 }, flag: "🇪🇸" },
-    { id: "C5_9", pais: "Turquia", cidade: "Istambul", origem: "Viena", coords: { x: 260, y: 110 }, flag: "🇹🇷" },
-    
-    { id: "C5_10", pais: "Egito", cidade: "Cairo", origem: "Paris", coords: { x: 245, y: 140 }, flag: "🇪🇬" },
-    
-    { id: "C5_11", pais: "México", cidade: "Cidade do México", origem: "Lisboa", coords: { x: 50, y: 140 }, flag: "🇲🇽" },
-    { id: "C5_12", pais: "Rússia", cidade: "Moscou", origem: "Lisboa", coords: { x: 280, y: 70 }, flag: "🇷🇺" },
-    { id: "C5_13", pais: "Holanda", cidade: "Amsterdã", origem: "Lisboa", coords: { x: 195, y: 75 }, flag: "🇳🇱" },
-    
-    { id: "C5_14", pais: "Japão", cidade: "Tóquio", origem: "Cidade do México", coords: { x: 360, y: 100 }, flag: "🇯🇵" },
-    { id: "C5_15", pais: "Portugal", cidade: "Lisboa", origem: "Cidade do México", coords: { x: 160, y: 100 }, flag: "🇵🇹" },
-    { id: "C5_16", pais: "Alemanha", cidade: "Berlim", origem: "Cidade do México", coords: { x: 220, y: 80 }, flag: "🇩🇪" },
-    
-    { id: "C5_17", pais: "Argentina", cidade: "Buenos Aires", origem: "Vancouver", coords: { x: 80, y: 180 }, flag: "🇦🇷" },
-    { id: "C5_18", pais: "Espanha", cidade: "Madrid", origem: "Vancouver", coords: { x: 180, y: 105 }, flag: "🇪🇸" },
-    
-    { id: "C5_19", pais: "China", cidade: "Pequim", origem: "Moscou", coords: { x: 340, y: 90 }, flag: "🇨🇳" },
-    
-    { id: "C5_20", pais: "Itália", cidade: "Roma", origem: "Pequim", coords: { x: 215, y: 110 }, flag: "🇮🇹" },
-    { id: "C5_21", pais: "Portugal", cidade: "Lisboa", origem: "Pequim", coords: { x: 160, y: 100 }, flag: "🇵🇹" },
-    { id: "C5_22", pais: "Turquia", cidade: "Istambul", origem: "Pequim", coords: { x: 260, y: 110 }, flag: "🇹🇷" },
-    
-    { id: "C5_23", pais: "Butão", cidade: "Thimphu", origem: "Amsterdã", coords: { x: 320, y: 120 }, flag: "🇧🇹" },
-    
-    { id: "C5_24", pais: "França", cidade: "Paris", origem: "Thimphu", coords: { x: 200, y: 85 }, flag: "🇫🇷" },
-    { id: "C5_25", pais: "Itália", cidade: "Roma", origem: "Thimphu", coords: { x: 215, y: 110 }, flag: "🇮🇹" },
-    { id: "C5_26", pais: "Canadá", cidade: "Toronto", origem: "Thimphu", coords: { x: 40, y: 60 }, flag: "🇨🇦" },
-    
-    { id: "C5_27", pais: "Turquia", cidade: "Istambul", origem: "Paris", coords: { x: 260, y: 110 }, flag: "🇹🇷" },
-];
 
 const TRANSPORT_MODES = [
     { id: "AVIAO", nome: "Avião", icon: "✈️", custoBase: 800, horasBase: 12, desc: "Rápido e caro" },
@@ -561,12 +332,20 @@ export default function Caso() {
         // Lógica de Captura Final (Dinâmica por Cenário)
         let isFinalCity = activeScenario ? locObj.cidade === activeScenario.finalCity : locObj.cidade === "Nova York";
 
-        // 🔥 REGRA CRÍTICA: Se a cidade final for igual à inicial (loop), 
+                // 🔥 REGRA CRÍTICA: Se a cidade final for igual à inicial (loop), 
         // só permitimos a captura se o jogador já tiver pistas das etapas intermediárias.
         // Além disso, verificamos se o jogador está REALMENTE na última etapa da rota.
         if (isFinalCity && activeScenario?.route) {
+            const isLoopScenario = activeScenario.route[0] === activeScenario.finalCity;
             const isLastStage = activeScenario.route.lastIndexOf(locObj.cidade) === activeScenario.route.length - 1;
-            if (!hasMissionProgressed || !isLastStage) isFinalCity = false;
+            
+            // Só barramos a conclusão do caso por falta de "progresso" se for um cenário de loop.
+            // Se o jogador descobrir o destino de outra forma nos cenários normais, deixamos concluir.
+            if (isLoopScenario && !hasMissionProgressed) {
+                isFinalCity = false;
+            } else if (!isLastStage) {
+                isFinalCity = false;
+            }
         }
 
         if (isFinalCity) {
@@ -851,49 +630,114 @@ export default function Caso() {
                                 />
                             ) : (viewMode === "TRAVEL_MAP" || viewMode === "TRAVEL_MODES") ? (
                                 <div className="om-map-container">
-                                    {/* Origem — ponto azul dinâmico */}
+                                    {/* Map layer with dynamic zoom/pan */}
                                     {(() => {
+                                        // 1. Gather all points that need to be visible
+                                        const pts = [];
+                                        
+                                        // Current location
                                         const oc = ORIGIN_COORDS[run.localAtual.cidade] || { x: 160, y: 100 };
-                                        const leftPercent = (oc.x / 400) * 100;
-                                        const topPercent = (oc.y / 200) * 100;
-                                        return (<>
-                                            <div className="om-map-origin" style={{ left: `${leftPercent}%`, top: `${topPercent}%` }} />
-                                            <div className="om-map-label" style={{ left: `${leftPercent}%`, top: `${topPercent}%`, color: "#80bdff", transform: "translate(-50%, 14px)" }}>
-                                                {run.localAtual.cidade.toUpperCase()}
-                                            </div>
-                                        </>);
-                                    })()}
+                                        pts.push(oc);
+                                        
+                                        // Destination locations
+                                        travelOptions.forEach(d => {
+                                            pts.push(d.coords);
+                                        });
 
-                                    {/* Destinos */}
-                                    {travelOptions.map(d => {
-                                        const leftPercent = (d.coords.x / 400) * 100;
-                                        const topPercent = (d.coords.y / 200) * 100;
+                                        // 2. Find bounding box of these points
+                                        let minX = 400, maxX = 0, minY = 200, maxY = 0;
+                                        pts.forEach(p => {
+                                            if (p.x < minX) minX = p.x;
+                                            if (p.x > maxX) maxX = p.x;
+                                            if (p.y < minY) minY = p.y;
+                                            if (p.y > maxY) maxY = p.y;
+                                        });
+
+                                        // 3. Add padding to the bounding box
+                                        const paddingX = 40; // game coords padding
+                                        const paddingY = 40;
+                                        minX = Math.max(0, minX - paddingX);
+                                        maxX = Math.min(400, maxX + paddingX);
+                                        minY = Math.max(0, minY - paddingY);
+                                        maxY = Math.min(200, maxY + paddingY);
+
+                                        // 4. Calculate required scale to fit this box into the 400x200 viewport
+                                        const boxWidth = maxX - minX;
+                                        const boxHeight = maxY - minY;
+                                        
+                                        // How much larger is the viewport than our box? (min scale 1x, max scale e.g. 3x)
+                                        const scaleX = 400 / (boxWidth || 1);
+                                        const scaleY = 200 / (boxHeight || 1);
+                                        const scale = Math.min(scaleX, scaleY, 3.5); // Cap zoom at 3.5x
+
+                                        // 5. Calculate the center of our bounding box
+                                        const centerX = minX + boxWidth / 2;
+                                        const centerY = minY + boxHeight / 2;
+
+                                        // 6. Convert to percentage for transform-origin
+                                        const originX = (centerX / 400) * 100;
+                                        const originY = (centerY / 200) * 100;
+
+                                        const mapStyle = {
+                                            position: "absolute",
+                                            inset: 0,
+                                            backgroundImage: "url('/MapaMundi.png')",
+                                            backgroundSize: "100% 100%",
+                                            backgroundPosition: "center",
+                                            backgroundRepeat: "no-repeat",
+                                            transformOrigin: `${originX}% ${originY}%`,
+                                            transform: `scale(${scale})`,
+                                            transition: "transform 0.8s ease, transform-origin 0.8s ease"
+                                        };
+
                                         return (
-                                            <React.Fragment key={d.id}>
-                                                <div
-                                                    className={`om-map-dest ${selectedDest && selectedDest.id === d.id ? "selected" : ""}`}
-                                                    style={{
-                                                        left: `${leftPercent}%`,
-                                                        top: `${topPercent}%`,
-                                                        filter: selectedDest && selectedDest.id !== d.id ? "grayscale(1) opacity(0.25)" : "none"
-                                                    }}
-                                                />
-                                                {(!selectedDest || selectedDest.id === d.id) && (
-                                                    <div
-                                                        className="om-map-label"
-                                                        style={{
-                                                            left: `${leftPercent}%`,
-                                                            top: `${topPercent}%`,
-                                                            color: selectedDest?.id === d.id ? "#ffd700" : "#fff",
-                                                            transform: "translate(-50%, 14px)"
-                                                        }}
-                                                    >
-                                                        {d.cidade.toUpperCase()}
-                                                    </div>
-                                                )}
-                                            </React.Fragment>
+                                            <div style={mapStyle}>
+                                                {/* Origem — ponto azul dinâmico */}
+                                                {(() => {
+                                                    const leftPercent = (oc.x / 400) * 100;
+                                                    const topPercent = (oc.y / 200) * 100;
+                                                    return (<>
+                                                        <div className="om-map-origin" style={{ left: `${leftPercent}%`, top: `${topPercent}%`, transform: `translate(-50%, -50%) scale(${1/scale})` }} />
+                                                        <div className="om-map-label" style={{ left: `${leftPercent}%`, top: `${topPercent}%`, color: "#80bdff", transform: `translate(-50%, 14px) scale(${1/scale})` }}>
+                                                            {run.localAtual.cidade.toUpperCase()}
+                                                        </div>
+                                                    </>);
+                                                })()}
+
+                                                {/* Destinos */}
+                                                {travelOptions.map(d => {
+                                                    const leftPercent = (d.coords.x / 400) * 100;
+                                                    const topPercent = (d.coords.y / 200) * 100;
+                                                    return (
+                                                        <React.Fragment key={d.id}>
+                                                            <div
+                                                                className={`om-map-dest ${selectedDest && selectedDest.id === d.id ? "selected" : ""}`}
+                                                                style={{
+                                                                    left: `${leftPercent}%`,
+                                                                    top: `${topPercent}%`,
+                                                                    filter: selectedDest && selectedDest.id !== d.id ? "grayscale(1) opacity(0.25)" : "none",
+                                                                    transform: `translate(-50%, -50%) scale(${1/scale})`
+                                                                }}
+                                                            />
+                                                            {(!selectedDest || selectedDest.id === d.id) && (
+                                                                <div
+                                                                    className="om-map-label"
+                                                                    style={{
+                                                                        left: `${leftPercent}%`,
+                                                                        top: `${topPercent}%`,
+                                                                        color: selectedDest?.id === d.id ? "#ffd700" : "#fff",
+                                                                        transform: `translate(-50%, 14px) scale(${1/scale})`
+                                                                    }}
+                                                                >
+                                                                    {d.cidade.toUpperCase()}
+                                                                </div>
+                                                            )}
+                                                        </React.Fragment>
+                                                    );
+                                                })}
+                                            </div>
                                         );
-                                    })}
+                                    })()}
 
                                     {/* Location badge */}
                                     <div className="om-map-loc-badge">
