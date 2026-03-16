@@ -678,13 +678,9 @@ export default function Caso() {
                                         const originX = (centerX / 400) * 100;
                                         const originY = (centerY / 200) * 100;
 
-                                        const mapStyle = {
+                                                                                const mapStyle = {
                                             position: "absolute",
                                             inset: 0,
-                                            backgroundImage: "url('/MapaMundi.png')",
-                                            backgroundSize: "100% 100%",
-                                            backgroundPosition: "center",
-                                            backgroundRepeat: "no-repeat",
                                             transformOrigin: `${originX}% ${originY}%`,
                                             transform: `scale(${scale})`,
                                             transition: "transform 0.8s ease, transform-origin 0.8s ease"
