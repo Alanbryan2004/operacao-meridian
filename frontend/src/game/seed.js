@@ -199,6 +199,17 @@ export const casesSeed = [
         dificuldade: "Médio",
         historicoCurto: "Um pesquisador misterioso solicitou acesso ao documento. Minutos depois... O mapa desapareceu.",
         localInicial: { pais: "Portugal", cidade: "Lisboa" }
+    },
+    {
+        id: "C006",
+        titulo: "O Leilão Fantasma",
+        recompensa: 4000,
+        xp: 200,
+        tempoTotalHoras: 360,
+        videoIntro: "/Videos/Caso6_Leilao_Fantasma.mp4",
+        dificuldade: "Médio",
+        historicoCurto: "Uma peça inestimável desapareceu misteriosamente logo após ser arrematada em um leilão de elite.",
+        localInicial: { pais: "Áustria", cidade: "Viena" }
     }
 ];
 

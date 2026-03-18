@@ -15,6 +15,7 @@ import { CASO_2_SCENARIOS } from "./Caso2Scenarios";
 import { CASO_3_SCENARIOS } from "./Caso3Scenarios";
 import { CASO_4_SCENARIOS } from "./Caso4Scenarios";
 import { Caso5Scenarios } from "./Caso5Scenarios";
+import { Caso6Scenarios } from "./Caso6Scenarios";
 
 
 export const CASOS_SCENARIOS = {
@@ -23,6 +24,7 @@ export const CASOS_SCENARIOS = {
     "C003": CASO_3_SCENARIOS,
     "C004": CASO_4_SCENARIOS,
     "C005": Caso5Scenarios,
+    "C006": Caso6Scenarios,
 };
 
 export const CASOS_CONFIG = {
@@ -45,6 +47,10 @@ export const CASOS_CONFIG = {
     "C005": {
         hasIntroVideo: true,
         introVideo: "/Videos/Caso5_Mapa_Desaparecido.mp4"
+    },
+    "C006": {
+        hasIntroVideo: true,
+        introVideo: "/Videos/Caso6_Leilao_Fantasma.mp4"
     }
 };
 
