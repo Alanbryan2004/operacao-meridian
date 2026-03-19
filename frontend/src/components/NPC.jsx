@@ -83,6 +83,11 @@ const NPC_LIST = [
         img: "/NPC/Antiquario.png",
         fundoPadrao: "/NPC/Antiguidade.png",
     },
+    {
+        nome: "Mercador",
+        img: "/NPC/Mercador.png",
+        fundoPadrao: "/NPC/FeiraVendas.png",
+    },
 ];
 
 /**

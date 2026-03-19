@@ -210,6 +210,17 @@ export const casesSeed = [
         dificuldade: "Médio",
         historicoCurto: "Uma peça inestimável desapareceu misteriosamente logo após ser arrematada em um leilão de elite.",
         localInicial: { pais: "Áustria", cidade: "Viena" }
+    },
+    {
+        id: "C007",
+        titulo: "O Contêiner que Chegou Vazio",
+        recompensa: 5500,
+        xp: 220,
+        tempoTotalHoras: 360,
+        videoIntro: "/Videos/Caso7_Container_Vazio.mp4",
+        dificuldade: "Médio",
+        historicoCurto: "Um contêiner chegou ao porto totalmente vazio. A carga valiosa desapareceu sem deixar rastros.",
+        localInicial: { pais: "Portugal", cidade: "Lisboa" }
     }
 ];
 

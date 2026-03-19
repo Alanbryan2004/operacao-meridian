@@ -36,8 +36,8 @@ export const CIDADES = [
         cidade: "Sao Paulo",
         pais: "Brasil",
         continente: "América do Sul",
-        imagem: "/Paises/default.png",
-        descricao: "A maior metrópole da América do Sul, centro financeiro e cultural do Brasil. Famosa por seu ritmo frenético, diversidade gastronômica e grandes monumentos.",
+        imagem: "/Paises/SaoPaulo.png",
+        descricao: "São Paulo é a maior cidade do Brasil, vibrante, diversa e cheia de cultura e oportunidades.",
     },
     {
         cidade: "Lisboa",
@@ -114,7 +114,7 @@ export const CIDADES = [
         pais: "Brasil",
         continente: "América do Sul",
         imagem: "/Paises/SaoPaulo.png",
-        descricao: "Maior cidade do Brasil e da América do Sul, São Paulo é o coração financeiro e cultural do país. Metrópole diversa, combina arranha-céus, gastronomia de todos os cantos e uma vida noturna intensa.",
+        descricao: "A maior metrópole da América do Sul, centro financeiro e cultural do Brasil. Famosa por seu ritmo frenético, diversidade gastronômica e grandes monumentos.",
     },
     {
         cidade: "Thimphu",
