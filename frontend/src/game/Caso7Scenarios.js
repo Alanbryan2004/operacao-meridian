@@ -44,11 +44,9 @@ export const Caso7Scenarios = [
     spottedAt: ["Rio de Janeiro", "Cidade do Cabo", "Lisboa", "Roma"],
     route: ["Lisboa", "Rio de Janeiro", "Cidade do Cabo", "Lisboa", "Roma"],
     travelTable: {
-      "Lisboa": ["Rio de Janeiro", "Madrid", "Roma", "Istambul", "Paris"], // Agrupado para evitar erros com Lisboa revisitada
+      "Lisboa": ["Rio de Janeiro", "Roma", "Madrid"],
       "Rio de Janeiro": ["Cidade do Cabo", "Lisboa", "Toronto"],
-      "Cidade do Cabo": ["Lisboa", "Roma", "Madrid"],
-      // A segunda passagem por Lisboa usará as mesmas rotas da viagem table base de Lisboa, pois a HUD mescla. 
-      // Por segurança, vou definir o objeto sem quebrar a chave:
+      "Cidade do Cabo": ["Lisboa", "Paris", "Madrid"],
       "Roma": []
     },
     interrogatorios: [
@@ -119,7 +117,7 @@ export const Caso7Scenarios = [
     spottedAt: ["Cairo", "Dubai", "Lisboa", "Istambul"],
     route: ["Lisboa", "Cairo", "Dubai", "Lisboa", "Istambul"],
     travelTable: {
-      "Lisboa": ["Cairo", "Roma", "Madrid", "Istambul", "Paris"], 
+      "Lisboa": ["Cairo", "Istambul", "Roma"],
       "Cairo": ["Dubai", "Roma", "Lisboa"],
       "Dubai": ["Lisboa", "Madrid", "Roma"],
       "Istambul": []
@@ -155,8 +153,8 @@ export const Caso7Scenarios = [
     spottedAt: ["São Paulo", "Cidade do México", "Nova York", "Lisboa"],
     route: ["Lisboa", "São Paulo", "Cidade do México", "Nova York", "Lisboa"],
     travelTable: {
-      "Lisboa": ["São Paulo", "Madrid", "Roma", "Paris"], // consolidado
-      "São Paulo": ["Cidade do México", "Lisboa", "Roma"],
+      "Lisboa": ["São Paulo", "Madrid", "Roma"],
+      "São Paulo": ["Cidade do México", "Paris", "Roma"],
       "Cidade do México": ["Nova York", "Toronto", "Madrid"],
       "Nova York": ["Lisboa", "Roma", "Madrid"]
     },

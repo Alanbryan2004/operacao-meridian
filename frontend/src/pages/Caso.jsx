@@ -332,18 +332,12 @@ export default function Caso() {
         // Lógica de Captura Final (Dinâmica por Cenário)
         let isFinalCity = activeScenario ? locObj.cidade === activeScenario.finalCity : locObj.cidade === "Nova York";
 
-                // 🔥 REGRA CRÍTICA: Se a cidade final for igual à inicial (loop), 
-        // só permitimos a captura se o jogador já tiver pistas das etapas intermediárias.
-        // Além disso, verificamos se o jogador está REALMENTE na última etapa da rota.
+                // 🔥 REGRA CRÍTICA: Só permitimos a captura se o jogador já tiver pistas
+        // das etapas intermediárias (penúltima cidade da rota visitada).
+        // Isso impede que o jogador acabe a missão acidentalmente ao visitar
+        // a cidade final antes de completar as etapas anteriores.
         if (isFinalCity && activeScenario?.route) {
-            const isLoopScenario = activeScenario.route[0] === activeScenario.finalCity;
-            const isLastStage = activeScenario.route.lastIndexOf(locObj.cidade) === activeScenario.route.length - 1;
-            
-            // Só barramos a conclusão do caso por falta de "progresso" se for um cenário de loop.
-            // Se o jogador descobrir o destino de outra forma nos cenários normais, deixamos concluir.
-            if (isLoopScenario && !hasMissionProgressed) {
-                isFinalCity = false;
-            } else if (!isLastStage) {
+            if (!hasMissionProgressed) {
                 isFinalCity = false;
             }
         }

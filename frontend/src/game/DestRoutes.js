@@ -339,6 +339,7 @@ export const DESTINATION_OPTIONS = [
     { id: "C7_35", pais: "México", cidade: "Cidade do México", origem: "São Paulo", coords: { x: 79, y: 90 }, flag: "🇲🇽" },
     { id: "C7_36", pais: "Portugal", cidade: "Lisboa", origem: "São Paulo", coords: { x: 179, y: 64 }, flag: "🇵🇹" },
     { id: "C7_37", pais: "Itália", cidade: "Roma", origem: "São Paulo", coords: { x: 203, y: 59 }, flag: "🇮🇹" },
+    { id: "C7_37b", pais: "França", cidade: "Paris", origem: "São Paulo", coords: { x: 192, y: 50 }, flag: "🇫🇷" },
 
     { id: "C7_38", pais: "Estados Unidos", cidade: "Nova York", origem: "Cidade do México", coords: { x: 107, y: 68 }, flag: "🇺🇸" },
     { id: "C7_39", pais: "Canadá", cidade: "Toronto", origem: "Cidade do México", coords: { x: 101, y: 57 }, flag: "🇨🇦" },

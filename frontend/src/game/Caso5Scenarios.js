@@ -119,7 +119,7 @@ export const Caso5Scenarios = [
     route: ["Lisboa", "Moscou", "Pequim", "Roma", "Paris"],
     travelTable: {
       "Lisboa": ["Moscou", "Roma", "Madrid"],
-      "Moscou": ["Pequim", "Toronto", "Paris"],
+      "Moscou": ["Pequim", "Toronto", "Londres"],
       "Pequim": ["Roma", "Lisboa", "Istambul"],
       "Roma": ["Paris", "Madrid", "Lisboa"],
       "Paris": []

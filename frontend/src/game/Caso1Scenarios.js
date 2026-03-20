@@ -45,7 +45,7 @@ export const CASO_1_SCENARIOS = [
         route: ["Campinas", "Paris", "Toronto", "Roma", "Londres"],
         travelTable: {
             "Campinas": ["Roma", "Cairo", "Paris"],
-            "Paris": ["Londres", "Lisboa", "Toronto"],
+            "Paris": ["Madrid", "Lisboa", "Toronto"],
             "Toronto": ["Cairo", "Nova York", "Roma"],
             "Roma": ["Lisboa", "Moscou", "Londres"]
         },
@@ -116,8 +116,8 @@ export const CASO_1_SCENARIOS = [
         route: ["Campinas", "Lisboa", "Paris", "Moscou", "Toronto"],
         travelTable: {
             "Campinas": ["Roma", "Cairo", "Lisboa"],
-            "Lisboa": ["Londres", "Toronto", "Paris"],
-            "Paris": ["Roma", "Toronto", "Moscou"],
+            "Lisboa": ["Londres", "Roma", "Paris"],
+            "Paris": ["Roma", "Lisboa", "Moscou"],
             "Moscou": ["Londres", "Nova York", "Toronto"]
         },
         interrogatorios: [
