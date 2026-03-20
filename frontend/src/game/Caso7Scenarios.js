@@ -137,7 +137,7 @@ export const Caso7Scenarios = [
 
       { id: "S4_10", cidade: "Lisboa", local: "Pescador", personagem: "Pescador", imgLocal: "/NPC/Restaurante.png", imgPersonagem: "/NPC/Pescador.png", pista: "Ele comentou sobre um país cuja bandeira tem uma lua crescente." },
       { id: "S4_11", cidade: "Lisboa", local: "Táxi", personagem: "Taxista", imgLocal: "/NPC/Taxi.png", imgPersonagem: "/NPC/Taxista.png", pista: "Levei ele ao aeroporto. Disse que iria para uma cidade entre continentes." },
-      { id: "S4_12", cidade: "Lisboa", local: "Banco", personagem: "Banqueiro", imgLocal: "/NPC/Banco.png", imgPersonagem: "/NPC/Banqueiro.png", pista: "Ele comentou que gosta de comida árabe." },
+      { id: "S4_12", cidade: "Lisboa", local: "Banco", personagem: "Banqueiro", imgLocal: "/NPC/Banco.png", imgPersonagem: "/NPC/Banqueiro.png", pista: "Ele comentou que gosta de jogar Tenis." },
 
       { id: "S4_13", cidade: "Istambul", local: "Banco", personagem: "Banqueiro", imgLocal: "/NPC/Banco.png", imgPersonagem: "/NPC/Banqueiro.png", pista: "Sim… ele passou por aqui." },
       { id: "S4_14", cidade: "Istambul", local: "Restaurante", personagem: "Garçom", imgLocal: "/NPC/Restaurante.png", imgPersonagem: "/NPC/Garcon.png", pista: "Ele esteve no restaurante." },
