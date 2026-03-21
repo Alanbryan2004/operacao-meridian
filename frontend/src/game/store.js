@@ -660,7 +660,7 @@ export const suspectsSeed = [
         corCabelo: "Castanho",
         corOlhos: "Castanho",
         esporte: "Remo",
-        comidaFavorita: "Italiana",
+        comidaFavorita: "Apimentada",
         idadeAparente: 43,
         origem: "América Latina",
         especialidade: ["Rotas portuárias", "Carga fracionada"],
@@ -1067,5 +1067,5 @@ export const suspectsSeed = [
         falsosPositivos: ["Instrutor de tiro"],
         relacaoMeridian: "Atirador de elite."
     }
-,
+    ,
 ];

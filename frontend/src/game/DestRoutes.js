@@ -347,5 +347,44 @@ export const DESTINATION_OPTIONS = [
 
     { id: "C7_41", pais: "Portugal", cidade: "Lisboa", origem: "Nova York", coords: { x: 179, y: 64 }, flag: "🇵🇹" },
     { id: "C7_42", pais: "Itália", cidade: "Roma", origem: "Nova York", coords: { x: 203, y: 59 }, flag: "🇮🇹" },
-    { id: "C7_43", pais: "Espanha", cidade: "Madrid", origem: "Nova York", coords: { x: 185, y: 62 }, flag: "🇪🇸" }
+    { id: "C7_43", pais: "Espanha", cidade: "Madrid", origem: "Nova York", coords: { x: 185, y: 62 }, flag: "🇪🇸" },
+
+    // ============ CASO 8 — O Código que Não Existe ============
+    // De Seul
+    { id: "C8_1", pais: "China", cidade: "Pequim", origem: "Seul", coords: { x: 318, y: 62 }, flag: "🇨🇳" },
+    { id: "C8_2", pais: "Tailândia", cidade: "Bangcoc", origem: "Seul", coords: { x: 301, y: 98 }, flag: "🇹🇭" },
+    { id: "C8_3", pais: "Rússia", cidade: "Moscou", origem: "Seul", coords: { x: 231, y: 40 }, flag: "🇷🇺" },
+    { id: "C8_4", pais: "Brasil", cidade: "São Paulo", origem: "Seul", coords: { x: 147, y: 145 }, flag: "🇧🇷" },
+    { id: "C8_5", pais: "Espanha", cidade: "Madrid", origem: "Seul", coords: { x: 185, y: 62 }, flag: "🇪🇸" },
+
+    // De Tóquio
+    { id: "C8_6", pais: "Índia", cidade: "Mumbai", origem: "Tóquio", coords: { x: 270, y: 91 }, flag: "🇮🇳" },
+
+    // De Singapura
+    { id: "C8_7", pais: "Emirados Árabes", cidade: "Dubai", origem: "Singapura", coords: { x: 250, y: 82 }, flag: "🇦🇪" },
+    { id: "C8_8", pais: "Espanha", cidade: "Madrid", origem: "Singapura", coords: { x: 185, y: 62 }, flag: "🇪🇸" },
+
+    // De Dubai
+    { id: "C8_9", pais: "França", cidade: "Paris", origem: "Dubai", coords: { x: 192, y: 50 }, flag: "🇫🇷" },
+    { id: "C8_9b", pais: "Turquia", cidade: "Istambul", origem: "Dubai", coords: { x: 221, y: 61 }, flag: "🇹🇷" },
+
+    // De Pequim
+    { id: "C8_10", pais: "Índia", cidade: "Mumbai", origem: "Pequim", coords: { x: 270, y: 91 }, flag: "🇮🇳" },
+    { id: "C8_11", pais: "Coreia do Sul", cidade: "Seul", origem: "Pequim", coords: { x: 330, y: 65 }, flag: "🇰🇷" },
+    { id: "C8_12", pais: "Singapura", cidade: "Singapura", origem: "Pequim", coords: { x: 304, y: 115 }, flag: "🇸🇬" },
+
+    // De Bangcoc
+    { id: "C8_13", pais: "Índia", cidade: "Mumbai", origem: "Bangcoc", coords: { x: 270, y: 91 }, flag: "🇮🇳" },
+    { id: "C8_14", pais: "Coreia do Sul", cidade: "Seul", origem: "Bangcoc", coords: { x: 330, y: 65 }, flag: "🇰🇷" },
+    { id: "C8_15", pais: "Singapura", cidade: "Singapura", origem: "Bangcoc", coords: { x: 304, y: 115 }, flag: "🇸🇬" },
+
+    // De Mumbai
+    { id: "C8_16", pais: "Espanha", cidade: "Madrid", origem: "Mumbai", coords: { x: 185, y: 62 }, flag: "🇪🇸" },
+
+    // De Moscou
+    { id: "C8_17", pais: "Alemanha", cidade: "Berlim", origem: "Moscou", coords: { x: 204, y: 45 }, flag: "🇩🇪" },
+
+    // De Berlim
+    { id: "C8_18", pais: "Reino Unido", cidade: "Londres", origem: "Berlim", coords: { x: 189, y: 46 }, flag: "🇬🇧" },
+    { id: "C8_19", pais: "Espanha", cidade: "Madrid", origem: "Berlim", coords: { x: 185, y: 62 }, flag: "🇪🇸" }
 ];

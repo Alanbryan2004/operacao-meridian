@@ -221,6 +221,17 @@ export const casesSeed = [
         dificuldade: "Médio",
         historicoCurto: "Um contêiner chegou ao porto totalmente vazio. A carga valiosa desapareceu sem deixar rastros.",
         localInicial: { pais: "Portugal", cidade: "Lisboa" }
+    },
+    {
+        id: "C008",
+        titulo: "O Código que Não Existe",
+        recompensa: 4000,
+        xp: 250,
+        tempoTotalHoras: 360,
+        videoIntro: "/Videos/Caso8_Codigo_que_nunca_existiu.mp4",
+        dificuldade: "Médio",
+        historicoCurto: "Um código misterioso surgiu em servidores de Seul e desapareceu sem deixar rastros. Alguém está por trás.",
+        localInicial: { pais: "Coreia do Sul", cidade: "Seul" }
     }
 ];
 
