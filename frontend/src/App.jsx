@@ -9,6 +9,7 @@ import Perfil from "./pages/Perfil";
 import Configuracao from "./pages/Configuracao";
 import PromocaoScreen from "./pages/PromocaoScreen";
 import HallDaFama from "./pages/HallDaFama";
+import AvatarCreator from "./pages/AvatarCreator";
 import AudioManager from "./components/AudioManager";
 import { GameProvider } from "./game/GameProvider";
 import { loadGame } from "./game/store";
@@ -47,6 +48,7 @@ export default function App() {
           <Route path="/configuracao" element={<Configuracao />} />
           <Route path="/promocao" element={<PromocaoScreen />} />
           <Route path="/hall-da-fama" element={<HallDaFama />} />
+          <Route path="/avatar-creator" element={<AvatarCreator />} />
         </Routes>
       </div>
     </GameProvider>

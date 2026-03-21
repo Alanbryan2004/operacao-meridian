@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useGame } from "../game/GameProvider";
 import { supabase } from "../lib/supabase";
 import SuspectGallery from "../components/SuspectGallery";
+import AvatarDisplay from "../components/AvatarDisplay";
 
 function Badge({ children, tone = "gray" }) {
     const map = {
@@ -106,18 +107,23 @@ export default function Perfil() {
                         {/* Card do Agente */}
                         <div className="pf-panel">
                             <div style={{ display: "flex", alignItems: "center", gap: 16, marginBottom: 16 }}>
-                                <div style={{
+                            <div 
+                                onClick={() => nav("/avatar-creator")}
+                                style={{
                                     width: 72, height: 72, borderRadius: 36,
                                     background: "rgba(255,255,255,0.05)",
                                     display: "flex", alignItems: "center", justifyContent: "center",
-                                    fontSize: 32, border: "2px solid rgba(128,189,255,0.3)",
+                                    border: "2px solid rgba(128,189,255,0.3)",
                                     overflow: "hidden",
                                     flexShrink: 0,
-                                }}>
-                                    {player.avatarUrl ? (
-                                        <img src={player.avatarUrl} alt="Avatar" style={{ width: "100%", height: "100%", objectFit: "cover" }} referrerPolicy="no-referrer" />
-                                    ) : "👤"}
-                                </div>
+                                    cursor: "pointer",
+                                    transition: "all 0.2s"
+                                }}
+                                onMouseEnter={(e) => { e.currentTarget.style.borderColor = "#80bdff"; e.currentTarget.style.transform = "scale(1.05)"; }}
+                                onMouseLeave={(e) => { e.currentTarget.style.borderColor = "rgba(128,189,255,0.3)"; e.currentTarget.style.transform = "scale(1)"; }}
+                            >
+                                <AvatarDisplay config={player.avatar} size={70} />
+                            </div>
                                 <div>
                                     <div style={{ fontSize: 20, fontWeight: 800 }}>{player.nome}</div>
                                     <div style={{ marginTop: 4 }}>

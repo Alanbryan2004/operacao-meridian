@@ -244,6 +244,23 @@ export const initialPlayer = {
     xp: 0,
     dinheiro: 1000,
     especializacao: null,
+    avatar: {
+        gender: "M",
+        skinColor: "#FDE2C6",
+        hairType: 1,
+        hairColor: "#361D18",
+        eyeType: 1,
+        eyeColor: "#742B1C",
+        mouthType: 1,
+        mouthColor: "#ED8E74",
+        noseType: 1,
+        eyebrowType: 1,
+        eyebrowColor: "#361D18",
+        beardType: 0, // 0 means no beard
+        beardColor: "#361D18",
+        clothingType: 1,
+        clothingColor: "#5B2214"
+    },
     settings: {
         musicEnabled: true,
         clickSoundEnabled: true

@@ -659,7 +659,7 @@ export const suspectsSeed = [
         sexo: "Masculino",
         corCabelo: "Castanho",
         corOlhos: "Castanho",
-        esporte: "Remo",
+        esporte: "Surfe",
         comidaFavorita: "Apimentada",
         idadeAparente: 43,
         origem: "América Latina",
