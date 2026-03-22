@@ -192,7 +192,15 @@ export default function Mural() {
                                 <CaseCard
                                     c={c}
                                     status={run?.status}
-                                    onOpen={() => nav(isActive ? `/caso/${c.id}` : `/missao-intro/${c.id}`)}
+                                    onOpen={() => {
+                                        if (isActive) {
+                                            nav(`/caso/${c.id}`);
+                                        } else if (c.isCompetitive) {
+                                            nav(`/competitive-lobby/${c.id}`);
+                                        } else {
+                                            nav(`/missao-intro/${c.id}`);
+                                        }
+                                    }}
                                 />
                                 {isOtherActive && (
                                     <div style={{ fontSize: 10, color: "#ff9090", textAlign: "center", marginTop: 4, fontWeight: 700 }}>

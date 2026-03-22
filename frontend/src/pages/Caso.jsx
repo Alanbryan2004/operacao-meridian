@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, useSearchParams } from "react-router-dom";
+import { supabase } from "../lib/supabase";
 import {
     saveGame,
     spendMoney,
@@ -11,10 +12,52 @@ import {
 import { useGame } from "../game/GameProvider";
 import { getCidadeImagem, getCidadeDescricao } from "../game/Cidades";
 import { CASOS_SCENARIOS, findScenario } from "../game/CasosScenarios";
+import { DESTINATION_OPTIONS } from '../game/DestRoutes';
 import Analisar from "./Analisar";
 import SuspectGallery from "../components/SuspectGallery";
 import DialogBox from "../components/DialogBox";
 import ModalMsg from "../components/ModalMsg";
+
+export const ORIGIN_COORDS = {
+    "Campinas": { x: 137, y: 149 },
+    "Buenos Aires": { x: 124, y: 165 },
+    "Nova York": { x: 107, y: 61 },
+    "Toronto": { x: 101, y: 57 },
+    "Lisboa": { x: 179, y: 64 },
+    "Madrid": { x: 185, y: 62 },
+    "Paris": { x: 192, y: 50 },
+    "Londres": { x: 189, y: 46 },
+    "Roma": { x: 203, y: 59 },
+    "Cairo": { x: 224, y: 76 },
+    "Moscou": { x: 231, y: 40 },
+    "Dubai": { x: 250, y: 82 },
+    "Seul": { x: 330, y: 65 },
+    "Tóquio": { x: 344, y: 68 },
+    "Viena": { x: 207, y: 51 },
+    "Mumbai": { x: 270, y: 91 },
+    "Vancouver": { x: 52, y: 49 },
+    "Singapura": { x: 304, y: 115 },
+    "Sydney": { x: 357, y: 164 },
+    "Berlim": { x: 204, y: 45 },
+    "Istambul": { x: 221, y: 61 },
+    "Amsterdã": { x: 194, y: 45 },
+    "Cidade do Cabo": { x: 209, y: 164 },
+    "Bangcoc": { x: 301, y: 98 },
+    "Trípoli": { x: 204, y: 72 },
+    "Cidade do México": { x: 79, y: 90 },
+    "Pequim": { x: 318, y: 62 },
+    "Thimphu": { x: 288, y: 79 },
+    "Sao Paulo": { x: 137, y: 150 },
+    "Rio de Janeiro": { x: 141, y: 149 },
+    "Nova Delhi": { x: 275, y: 78 },
+    "Salvador": { x: 146, y: 135 },
+};
+
+const TRANSPORT_MODES = [
+    { id: "AVIAO", nome: "Avião", icon: "✈️", custoBase: 800, horasBase: 12, desc: "Rápido e caro" },
+    { id: "METRO", nome: "Trem/Metrô", icon: "🚆", custoBase: 300, horasBase: 36, desc: "Econômico e moderado" },
+    { id: "BARCO", nome: "Navio/Barco", icon: "🚢", custoBase: 150, horasBase: 72, desc: "Lento e barato" },
+];
 
 function fmtHoras(h) {
     const horas = Math.max(0, Number(h || 0));
@@ -71,54 +114,14 @@ function Panel({ children }) {
     );
 }
 
-export const ORIGIN_COORDS = {
-    "Campinas": { x: 137, y: 149 },
-    "Buenos Aires": { x: 124, y: 165 },
-    "Nova York": { x: 107, y: 61 },
-    "Toronto": { x: 101, y: 57 },
-    "Lisboa": { x: 179, y: 64 },
-    "Madrid": { x: 185, y: 62 },
-    "Paris": { x: 192, y: 50 },
-    "Londres": { x: 189, y: 46 },
-    "Roma": { x: 203, y: 59 },
-    "Cairo": { x: 224, y: 76 },
-    "Moscou": { x: 231, y: 40 },
-    "Dubai": { x: 250, y: 82 },
-    "Seul": { x: 330, y: 65 },
-    "Tóquio": { x: 344, y: 68 },
-    "Viena": { x: 207, y: 51 },
-    "Mumbai": { x: 270, y: 91 },
-    "Vancouver": { x: 52, y: 49 },
-    "Singapura": { x: 304, y: 115 },
-    "Sydney": { x: 357, y: 164 },
-    "Berlim": { x: 204, y: 45 },
-    "Istambul": { x: 221, y: 61 },
-    "Amsterdã": { x: 194, y: 45 },
-    "Cidade do Cabo": { x: 209, y: 164 },
-    "Bangcoc": { x: 301, y: 98 },
-    "Trípoli": { x: 204, y: 72 },
-    "Cidade do México": { x: 79, y: 90 },
-    "Pequim": { x: 318, y: 62 },
-    "Thimphu": { x: 288, y: 79 },
-    "Sao Paulo": { x: 137, y: 150 },
-    "Rio de Janeiro": { x: 141, y: 149 },
-    "Nova Delhi": { x: 275, y: 78 },
-    "Salvador": { x: 146, y: 135 },
-};
-
-import { DESTINATION_OPTIONS } from '../game/DestRoutes';
-
-
-const TRANSPORT_MODES = [
-    { id: "AVIAO", nome: "Avião", icon: "✈️", custoBase: 800, horasBase: 12, desc: "Rápido e caro" },
-    { id: "METRO", nome: "Trem/Metrô", icon: "🚆", custoBase: 300, horasBase: 36, desc: "Econômico e moderado" },
-    { id: "BARCO", nome: "Navio/Barco", icon: "🚢", custoBase: 150, horasBase: 72, desc: "Lento e barato" },
-];
-
 export default function Caso() {
     const nav = useNavigate();
     const { caseId } = useParams();
     const { state, replaceState } = useGame();
+    const [searchParams] = useSearchParams();
+    const isCompetitive = searchParams.get("mode") === "competitive";
+    const lobbyId = searchParams.get("lobbyId");
+    const forcedScenarioId = searchParams.get("scenario");
 
     // MODOS CARD 2: "RESUMO" | "ACTIONS" | "LOCATIONS" | "DIALOGUE" | "JOURNAL" | "PROFILE" | "TRAVEL_MAP" | "TRAVEL_MODES" | "ARRIVAL"
     const [viewMode, setViewMode] = useState("RESUMO");
@@ -148,14 +151,18 @@ export default function Caso() {
             return;
         }
 
-        const next = startRunIfNeeded(state, caseObj);
+        const next = startRunIfNeeded(state, { ...caseObj, isCompetitive });
         if (next !== state) {
-            replaceState(saveGame(next));
+            let updatedRun = next.runs[caseId];
+            if (isCompetitive && forcedScenarioId) {
+                updatedRun = { ...updatedRun, scenarioId: forcedScenarioId };
+            }
+            replaceState(saveGame({ ...next, runs: { ...next.runs, [caseId]: updatedRun } }));
         }
 
         // tenta tocar áudio (se já liberou no splash/login)
         window.dispatchEvent(new CustomEvent("meridian-play-audio", { detail: true }));
-    }, [caseId]);
+    }, [caseId, isCompetitive, forcedScenarioId, nav, replaceState, state]);
 
     const caseObj = useMemo(
         () => state?.cases?.find((x) => x.id === caseId),
@@ -184,6 +191,41 @@ export default function Caso() {
         }
     }, [viewMode, run?.status]);
 
+    // Lógica de Sincronização Competitiva
+    useEffect(() => {
+        if (!isCompetitive || !lobbyId || !run || run.status !== "IN_PROGRESS") return;
+
+        const channel = supabase
+            .channel(`case-sync-${lobbyId}`)
+            .on("postgres_changes", {
+                event: "UPDATE",
+                schema: "public",
+                table: "competitive_lobbies",
+                filter: `id=eq.${lobbyId}`
+            }, (payload) => {
+                if (payload.new.status === "finished" && run.status === "IN_PROGRESS") {
+                    // Outro jogador venceu
+                    const nextRun = {
+                        ...run,
+                        status: "LOST",
+                        jornal: [...run.jornal, { t: new Date().toISOString(), msg: "📡 ALERTA A.T.L.A.S.: Suspeito capturado por outro agente de elite. Missão encerrada." }]
+                    };
+                    updateRun(nextRun);
+                    setModalConfig({
+                        show: true,
+                        message: "A conexão com o sinal do suspeito foi perdida. Outro agente realizou a captura primeiro.",
+                        type: "ERROR",
+                        onConfirm: () => nav("/mural")
+                    });
+                }
+            })
+            .subscribe();
+
+        return () => {
+            supabase.removeChannel(channel);
+        };
+    }, [isCompetitive, lobbyId, run?.status, nav]);
+
     const currentCityImg = useMemo(() => {
         if (!run) return caseObj?.imgItem || "/reliquiaDesaparecida.png";
 
@@ -193,7 +235,7 @@ export default function Caso() {
             return caseObj?.imgItem || "/reliquiaDesaparecida.png";
         }
         return img;
-    }, [run?.localAtual?.cidade]);
+    }, [run?.localAtual?.cidade, caseObj?.imgItem]);
 
     const activeScenario = useMemo(() => {
         return findScenario(caseId, run?.scenarioId, run?.targetSuspectId);
@@ -227,7 +269,7 @@ export default function Caso() {
         }
 
         return matches;
-    }, [run?.localAtual?.cidade, activeScenario, run?.interrogatorios, caseObj?.interrogatorios, run?.pistasDescobertas]);
+    }, [run?.localAtual?.cidade, activeScenario, run?.interrogatorios, caseObj?.interrogatorios, hasMissionProgressed]);
 
     // Opções de viagem filtradas pelo cenário
     const travelOptions = useMemo(() => {
@@ -252,6 +294,7 @@ export default function Caso() {
     function confirmarViagem(transport) {
         const destino = transport.customDest || selectedDest;
         if (!destino) return;
+
         const custo = transport.custoBase;
         const horas = transport.horasBase;
 
@@ -279,7 +322,6 @@ export default function Caso() {
         replaceState(finalState);
         setViewMode("ARRIVAL");
 
-        // Se for o país correto, mostra o vídeo do suspeito
         let videoPath = null;
         if (activeScenario?.route) {
             // Usa lastIndexOf para detectar a chegada na etapa final se a cidade for a mesma que a inicial (loop)
@@ -332,10 +374,8 @@ export default function Caso() {
         // Lógica de Captura Final (Dinâmica por Cenário)
         let isFinalCity = activeScenario ? locObj.cidade === activeScenario.finalCity : locObj.cidade === "Nova York";
 
-                // 🔥 REGRA CRÍTICA: Só permitimos a captura se o jogador já tiver pistas
+        // 🔥 REGRA CRÍTICA: Só permitimos a captura se o jogador já tiver pistas
         // das etapas intermediárias (penúltima cidade da rota visitada).
-        // Isso impede que o jogador acabe a missão acidentalmente ao visitar
-        // a cidade final antes de completar as etapas anteriores.
         if (isFinalCity && activeScenario?.route) {
             if (!hasMissionProgressed) {
                 isFinalCity = false;
@@ -343,7 +383,7 @@ export default function Caso() {
         }
 
         if (isFinalCity) {
-            // Se for a SEGUNDA investigação na cidade final (Etapa 5)
+            // Se for a SEGUNDA investigação na cidade final
             if (currentCount >= 2) {
                 const targetId = String(run.targetSuspectId || "008").trim();
                 const warrantIdSelected = String(run.warrantId || "").trim();
@@ -373,6 +413,12 @@ export default function Caso() {
                         runs: { ...state.runs, [caseId]: nextRun },
                     }, run.warrantId);
                     replaceState(saveGame(nextState));
+
+                    // Sincronização Competitiva: Bloquear Lobby
+                    if (isCompetitive && lobbyId) {
+                        supabase.from("competitive_lobbies").update({ status: "finished", winner_id: state.player.supabaseId }).eq("id", lobbyId).then();
+                        supabase.from("competitive_players").update({ status: "won" }).eq("lobby_id", lobbyId).eq("player_id", state.player.supabaseId).then();
+                    }
                 } else {
                     const nextRun = {
                         ...nextRunCount,
@@ -422,8 +468,8 @@ export default function Caso() {
             confirmarViagem({
                 id: "VOLTA",
                 nome: "Retorno Direto",
-                custoBase: 0, // Voltar agora é direto e sem custo extra de seleção
-                horasBase: 4,  // Custo fixo menor para retorno
+                custoBase: 0,
+                horasBase: 4,
                 customDest: { cidade: destObj.cidade, pais: destObj.pais, flag: destObj.flag }
             });
         }
@@ -431,7 +477,7 @@ export default function Caso() {
 
     function analisar() {
         if (run.status !== "IN_PROGRESS") return;
-        const horas = 2; // Reduzi um pouco para incentivar o uso
+        const horas = 2;
         updateRun(spendTime(run, horas, `🔍 Acessando Laboratório de Análise: -${2}h.`));
         setViewMode("ANALYZE");
     }
@@ -451,38 +497,11 @@ export default function Caso() {
         updateRun(next);
     }
 
-    function capturar() {
-        if (run.status !== "IN_PROGRESS") return;
-        if (!run.mandadoEmitido) {
-            updateRun({
-                ...run,
-                jornal: [...run.jornal, { t: new Date().toISOString(), msg: "🚫 Mandado necessário." }],
-            });
-            return;
-        }
-        const sucesso = run.pistasDescobertas.length >= 2;
-        if (!sucesso) {
-            updateRun(spendTime(run, 4, "🚨 Captura falhou. -4h."));
-            return;
-        }
-        const nextRun = {
-            ...run,
-            status: "WON",
-            suspeitoCapturado: true,
-            jornal: [...run.jornal, { t: new Date().toISOString(), msg: "✅ Capturado!" }],
-        };
-        const nextState = registerCapture({
-            ...state,
-            player: { ...state.player, dinheiro: state.player.dinheiro + caseObj.recompensa, xp: state.player.xp + caseObj.xp },
-            runs: { ...state.runs, [caseId]: nextRun },
-        }, run.warrantId);
-        replaceState(saveGame(nextState));
-    }
-
     function handleAbort() {
+        const isComp = isCompetitive;
         setModalConfig({
             show: true,
-            message: "Deseja realmente ABORTAR esta missão? Todo o progresso atual será perdido e o bônus de despesas será descontado.",
+            message: isComp ? "Deseja realmente ABORTAR esta missão competitiva? Todo o progresso será perdido." : "Deseja realmente ABORTAR esta missão? Todo o progresso atual será perdido e o bônus de despesas será descontado.",
             type: "ERROR",
             isConfirm: true,
             onConfirm: () => {
@@ -494,7 +513,6 @@ export default function Caso() {
         });
     }
 
-    const diffTone = caseObj.dificuldade === "FACIL" ? "green" : caseObj.dificuldade === "MEDIO" ? "blue" : "amber";
     const canAct = run.status === "IN_PROGRESS";
 
     return (
@@ -575,17 +593,25 @@ export default function Caso() {
                                         <div style={{ fontSize: 14, fontWeight: 900 }}>${state.player.dinheiro}</div>
                                         <div style={{ fontSize: 10, opacity: 0.6 }}>SALDO</div>
                                     </div>
-                                    <div>
-                                        <div style={{ fontSize: 14, fontWeight: 900 }}>{fmtHoras(run.tempoRestanteHoras)}</div>
-                                        <div style={{ fontSize: 10, opacity: 0.6 }}>RESTANTES</div>
-                                    </div>
+                                    {!isCompetitive && (
+                                        <div>
+                                            <div style={{ fontSize: 14, fontWeight: 900 }}>{fmtHoras(run.tempoRestanteHoras)}</div>
+                                            <div style={{ fontSize: 10, opacity: 0.6 }}>RESTANTES</div>
+                                        </div>
+                                    )}
+                                    {isCompetitive && (
+                                        <div>
+                                            <div style={{ fontSize: 14, fontWeight: 900, color: "#80bdff" }}>PVP</div>
+                                            <div style={{ fontSize: 10, opacity: 0.6 }}>MODO</div>
+                                        </div>
+                                    )}
                                 </div>
                             </div>
                         </Panel>
                     </div>
                 )}
 
-                {/* CARD 1: Imagem do que foi roubado OU Cena de Interrogatório OU Mapa */}
+                {/* CARD 1: Imagem/Cena/Mapa */}
                 {viewMode !== "ANALYZE" && !(viewMode === "PROFILE" && profileTab === "GALERIA") && (
                     <div className="om-card">
                         <div className="om-img-card">
@@ -601,15 +627,11 @@ export default function Caso() {
                                     autoPlay
                                     loop={false}
                                     onEnded={() => {
-                                        // Usa ref para ler o status mais recente (evita stale closure)
                                         const currentStatus = runStatusRef.current;
-
                                         if (currentStatus === "WON" || currentStatus === "LOST") {
-                                            // Navega imediatamente para a tela de conclusão
                                             nav(`/caso-solucionado/${caseId}`);
                                             return;
                                         }
-
                                         setVideoEnded(true);
                                         setTimeout(() => {
                                             setShowSuspectVideo(false);
@@ -624,21 +646,11 @@ export default function Caso() {
                                 />
                             ) : (viewMode === "TRAVEL_MAP" || viewMode === "TRAVEL_MODES") ? (
                                 <div className="om-map-container">
-                                    {/* Map layer with dynamic zoom/pan */}
                                     {(() => {
-                                        // 1. Gather all points that need to be visible
                                         const pts = [];
-                                        
-                                        // Current location
                                         const oc = ORIGIN_COORDS[run.localAtual.cidade] || { x: 160, y: 100 };
                                         pts.push(oc);
-                                        
-                                        // Destination locations
-                                        travelOptions.forEach(d => {
-                                            pts.push(d.coords);
-                                        });
-
-                                        // 2. Find bounding box of these points
+                                        travelOptions.forEach(d => pts.push(d.coords));
                                         let minX = 400, maxX = 0, minY = 200, maxY = 0;
                                         pts.forEach(p => {
                                             if (p.x < minX) minX = p.x;
@@ -646,90 +658,33 @@ export default function Caso() {
                                             if (p.y < minY) minY = p.y;
                                             if (p.y > maxY) maxY = p.y;
                                         });
-
-                                        // 3. Add padding to the bounding box
-                                        const paddingX = 40; // game coords padding
-                                        const paddingY = 40;
-                                        minX = Math.max(0, minX - paddingX);
-                                        maxX = Math.min(400, maxX + paddingX);
-                                        minY = Math.max(0, minY - paddingY);
-                                        maxY = Math.min(200, maxY + paddingY);
-
-                                        // 4. Calculate required scale to fit this box into the 400x200 viewport
-                                        const boxWidth = maxX - minX;
-                                        const boxHeight = maxY - minY;
-                                        
-                                        // How much larger is the viewport than our box? (min scale 1x, max scale e.g. 3x)
-                                        const scaleX = 400 / (boxWidth || 1);
-                                        const scaleY = 200 / (boxHeight || 1);
-                                        const scale = Math.min(scaleX, scaleY, 3.5); // Cap zoom at 3.5x
-
-                                        // 5. Calculate the center of our bounding box
-                                        const centerX = minX + boxWidth / 2;
-                                        const centerY = minY + boxHeight / 2;
-
-                                        // 6. Convert to percentage for transform-origin
-                                        const originX = (centerX / 400) * 100;
-                                        const originY = (centerY / 200) * 100;
-
-                                                                                const mapStyle = {
-                                            position: "absolute",
-                                            inset: 0,
-                                            transformOrigin: `${originX}% ${originY}%`,
-                                            transform: `scale(${scale})`,
-                                            transition: "transform 0.8s ease, transform-origin 0.8s ease"
-                                        };
+                                        const padding = 40;
+                                        minX = Math.max(0, minX - padding); maxX = Math.min(400, maxX + padding);
+                                        minY = Math.max(0, minY - padding); maxY = Math.min(200, maxY + padding);
+                                        const boxW = maxX - minX; const boxH = maxY - minY;
+                                        const scaleX = 400 / (boxW || 1); const scaleY = 200 / (boxH || 1);
+                                        const scale = Math.min(scaleX, scaleY, 3.5);
+                                        const originX = ((minX + boxW / 2) / 400) * 100;
+                                        const originY = ((minY + boxH / 2) / 200) * 100;
 
                                         return (
-                                            <div style={mapStyle}>
-                                                {/* Origem — ponto azul dinâmico */}
-                                                {(() => {
-                                                    const leftPercent = (oc.x / 400) * 100;
-                                                    const topPercent = (oc.y / 200) * 100;
-                                                    return (<>
-                                                        <div className="om-map-origin" style={{ left: `${leftPercent}%`, top: `${topPercent}%`, transform: `translate(-50%, -50%) scale(${1/scale})` }} />
-                                                        <div className="om-map-label" style={{ left: `${leftPercent}%`, top: `${topPercent}%`, color: "#80bdff", transform: `translate(-50%, 14px) scale(${1/scale})` }}>
-                                                            {run.localAtual.cidade.toUpperCase()}
-                                                        </div>
-                                                    </>);
-                                                })()}
-
-                                                {/* Destinos */}
-                                                {travelOptions.map(d => {
-                                                    const leftPercent = (d.coords.x / 400) * 100;
-                                                    const topPercent = (d.coords.y / 200) * 100;
-                                                    return (
-                                                        <React.Fragment key={d.id}>
-                                                            <div
-                                                                className={`om-map-dest ${selectedDest && selectedDest.id === d.id ? "selected" : ""}`}
-                                                                style={{
-                                                                    left: `${leftPercent}%`,
-                                                                    top: `${topPercent}%`,
-                                                                    filter: selectedDest && selectedDest.id !== d.id ? "grayscale(1) opacity(0.25)" : "none",
-                                                                    transform: `translate(-50%, -50%) scale(${1/scale})`
-                                                                }}
-                                                            />
-                                                            {(!selectedDest || selectedDest.id === d.id) && (
-                                                                <div
-                                                                    className="om-map-label"
-                                                                    style={{
-                                                                        left: `${leftPercent}%`,
-                                                                        top: `${topPercent}%`,
-                                                                        color: selectedDest?.id === d.id ? "#ffd700" : "#fff",
-                                                                        transform: `translate(-50%, 14px) scale(${1/scale})`
-                                                                    }}
-                                                                >
-                                                                    {d.cidade.toUpperCase()}
-                                                                </div>
-                                                            )}
-                                                        </React.Fragment>
-                                                    );
-                                                })}
+                                            <div style={{ position: "absolute", inset: 0, transformOrigin: `${originX}% ${originY}%`, transform: `scale(${scale})`, transition: "transform 0.8s ease" }}>
+                                                <div className="om-map-origin" style={{ left: `${(oc.x / 400) * 100}%`, top: `${(oc.y / 200) * 100}%`, transform: `translate(-50%, -50%) scale(${1 / scale})` }} />
+                                                <div className="om-map-label" style={{ left: `${(oc.x / 400) * 100}%`, top: `${(oc.y / 200) * 100}%`, color: "#80bdff", transform: `translate(-50%, 14px) scale(${1 / scale})` }}>{run.localAtual.cidade.toUpperCase()}</div>
+                                                {travelOptions.map(d => (
+                                                    <React.Fragment key={d.id}>
+                                                        <div
+                                                            className={`om-map-dest ${selectedDest?.id === d.id ? "selected" : ""}`}
+                                                            style={{ left: `${(d.coords.x / 400) * 100}%`, top: `${(d.coords.y / 200) * 100}%`, transform: `translate(-50%, -50%) scale(${1 / scale})`, filter: selectedDest && selectedDest.id !== d.id ? "grayscale(1) opacity(0.25)" : "none" }}
+                                                        />
+                                                        {(!selectedDest || selectedDest.id === d.id) && (
+                                                            <div className="om-map-label" style={{ left: `${(d.coords.x / 400) * 100}%`, top: `${(d.coords.y / 200) * 100}%`, color: selectedDest?.id === d.id ? "#ffd700" : "#fff", transform: `translate(-50%, 14px) scale(${1 / scale})` }}>{d.cidade.toUpperCase()}</div>
+                                                        )}
+                                                    </React.Fragment>
+                                                ))}
                                             </div>
                                         );
                                     })()}
-
-                                    {/* Location badge */}
                                     <div className="om-map-loc-badge">
                                         <span style={{ width: 6, height: 6, borderRadius: 3, background: "#4ade80", display: "inline-block", boxShadow: "0 0 6px #4ade80" }} />
                                         <span style={{ color: "rgba(255,255,255,0.5)", fontWeight: 700 }}>LOCAL:</span>
@@ -737,17 +692,13 @@ export default function Caso() {
                                     </div>
                                 </div>
                             ) : (
-                                <img
-                                    src={currentCityImg}
-                                    style={{ width: "100%", height: "220px", objectFit: "cover" }}
-                                    alt="Cena"
-                                />
+                                <img src={currentCityImg} style={{ width: "100%", height: "220px", objectFit: "cover" }} alt="Cena" />
                             )}
                         </div>
                     </div>
                 )}
 
-                {/* DialogBox views — render directly, the balloon IS the card */}
+                {/* DialogBox views */}
                 {viewMode === "RESUMO" && (() => {
                     const dias = Math.floor(run.tempoRestanteHoras / 24);
                     const horas = run.tempoRestanteHoras % 24;
@@ -755,7 +706,7 @@ export default function Caso() {
                     return (
                         <DialogBox
                             title="MISSÃO ATIVA"
-                            text={`Você ainda tem ${tempoStr} restantes para localizar e prender o Suspeito antes que o tempo se esgote.\n\n📍 Local Atual: ${run.localAtual.cidade} · ${run.localAtual.pais}`}
+                            text={isCompetitive ? `Protocolo Fantasma: Colete as pistas, emita o mandado e capture o alvo antes dos outros agentes.\n\n📍 Local Atual: ${run.localAtual.cidade} · ${run.localAtual.pais}` : `Você ainda tem ${tempoStr} restantes para localizar e prender o Suspeito antes que o tempo se esgote.\n\n📍 Local Atual: ${run.localAtual.cidade} · ${run.localAtual.pais}`}
                             onComplete={() => setViewMode("ACTIONS")}
                         />
                     );
@@ -769,7 +720,7 @@ export default function Caso() {
                     />
                 )}
 
-                {/* CARD 2: Menus/Interativos — ficam dentro do Panel */}
+                {/* CARD 2: Menus */}
                 {viewMode !== "ANALYZE" && viewMode !== "RESUMO" && viewMode !== "DIALOGUE" && (
                     <div className="om-card">
                         <Panel>
@@ -781,126 +732,64 @@ export default function Caso() {
                                         <button className="om-btn" onClick={abrirLocais} disabled={!canAct}>🔍 INVESTIGAR</button>
                                         <button className="om-btn" onClick={analisar} disabled={!canAct} style={{ gridColumn: "1 / -1" }}>🧪 ANALISAR</button>
                                     </div>
-
                                 </div>
                             )}
 
                             {viewMode === "TRAVEL_MAP" && (
                                 <div>
                                     <div style={{ fontSize: 13, fontWeight: 800, marginBottom: 12, color: "#80bdff" }}>ESCOLHER DESTINO</div>
-                                    <div className="om-muted" style={{ marginBottom: 15 }}>Seu próximo destino para seguir a trilha:</div>
                                     <div style={{ display: "grid", gap: 10, maxHeight: 200, overflowY: "auto", paddingRight: 4 }}>
                                         {travelOptions.map(d => (
-                                            <button
-                                                key={d.id}
-                                                className="om-btn"
-                                                style={{ textAlign: "left", paddingLeft: 15 }}
-                                                onClick={() => { setSelectedDest(d); setViewMode("TRAVEL_MODES"); }}
-                                            >
+                                            <button key={d.id} className="om-btn" style={{ textAlign: "left", paddingLeft: 15 }} onClick={() => { setSelectedDest(d); setViewMode("TRAVEL_MODES"); }}>
                                                 {d.flag} {d.cidade}, <span style={{ opacity: 0.6 }}>{d.pais}</span>
                                             </button>
                                         ))}
                                         {run.localAtual.cidade !== "Campinas" && (
-                                            <button
-                                                className="om-btn"
-                                                onClick={handleVoltar}
-                                                style={{ marginTop: 10, border: "1px solid rgba(128,189,255,0.3)", background: "rgba(128,189,255,0.1)", color: "#80bdff" }}
-                                            >
-                                                ↩️ VOLTAR PARA CIDADE ANTERIOR
+                                            <button className="om-btn" onClick={handleVoltar} style={{ marginTop: 10, border: "1px solid rgba(128,189,255,0.3)", background: "rgba(128,189,255,0.1)", color: "#80bdff" }}>
+                                                ↩️ VOLTAR
                                             </button>
                                         )}
                                     </div>
-                                    <button onClick={() => setViewMode("ACTIONS")} className="om-btn" style={{ marginTop: 15, background: "transparent", border: "none", color: "#80bdff" }}>
-                                        Cancelar
-                                    </button>
+                                    <button onClick={() => setViewMode("ACTIONS")} className="om-btn" style={{ marginTop: 15, background: "transparent", border: "none", color: "#80bdff" }}>Cancelar</button>
                                 </div>
                             )}
 
                             {viewMode === "TRAVEL_MODES" && selectedDest && (
                                 <div>
-                                    <div style={{ fontSize: 13, fontWeight: 800, marginBottom: 4, color: "#80bdff" }}>VIAJAR PARA {selectedDest.cidade.toUpperCase()}</div>
-                                    <div className="om-muted" style={{ marginBottom: 15 }}>Selecione o meio de transporte:</div>
+                                    <div style={{ fontSize: 13, fontWeight: 800, marginBottom: 12, color: "#80bdff" }}>VIAJAR PARA {selectedDest.cidade.toUpperCase()}</div>
                                     <div style={{ display: "grid", gap: 10 }}>
                                         {TRANSPORT_MODES.map(t => (
-                                            <button
-                                                key={t.id}
-                                                className="om-btn"
-                                                style={{ textAlign: "left", padding: "10px 15px", height: "auto" }}
-                                                onClick={() => confirmarViagem(t)}
-                                            >
+                                            <button key={t.id} className="om-btn" style={{ textAlign: "left", padding: "10px 15px", height: "auto" }} onClick={() => confirmarViagem(t)}>
                                                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                                                     <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
                                                         <span style={{ fontSize: 18 }}>{t.icon}</span>
-                                                        <div>
-                                                            <div style={{ fontSize: 13, fontWeight: 700 }}>{t.nome}</div>
-                                                            <div style={{ fontSize: 10, opacity: 0.6 }}>{t.desc}</div>
-                                                        </div>
+                                                        <div><div style={{ fontSize: 13, fontWeight: 700 }}>{t.nome}</div><div style={{ fontSize: 10, opacity: 0.6 }}>{t.desc}</div></div>
                                                     </div>
-                                                    <div style={{ textAlign: "right" }}>
-                                                        <div style={{ fontSize: 12, color: "#ffd700", fontWeight: 700 }}>${t.custoBase}</div>
-                                                        <div style={{ fontSize: 10, opacity: 0.6 }}>{t.horasBase}h</div>
-                                                    </div>
+                                                    <div style={{ textAlign: "right" }}><div style={{ fontSize: 12, color: "#ffd700", fontWeight: 700 }}>${t.custoBase}</div><div style={{ fontSize: 10, opacity: 0.6 }}>{t.horasBase}h</div></div>
                                                 </div>
                                             </button>
                                         ))}
                                     </div>
-                                    <button onClick={() => { setViewMode("TRAVEL_MAP"); setSelectedDest(null); }} className="om-btn" style={{ marginTop: 15, background: "transparent", border: "none", color: "#80bdff" }}>
-                                        Mudar Destino
-                                    </button>
+                                    <button onClick={() => { setViewMode("TRAVEL_MAP"); setSelectedDest(null); }} className="om-btn" style={{ marginTop: 15, background: "transparent", border: "none", color: "#80bdff" }}>Mudar Destino</button>
                                 </div>
                             )}
 
                             {viewMode === "ARRIVAL" && (
                                 <div>
-                                    <div style={{ fontSize: 13, fontWeight: 800, marginBottom: 12, color: "#80bdff" }}>
-                                        {(run.status === "WON" || run.status === "LOST") ? "MISSÃO CONCLUÍDA" : `VOCÊ CHEGOU EM ${selectedDest?.cidade.toUpperCase() || ""}`}
-                                    </div>
-
+                                    <div style={{ fontSize: 13, fontWeight: 800, marginBottom: 12, color: "#80bdff" }}>{(run.status === "WON" || run.status === "LOST") ? "MISSÃO CONCLUÍDA" : `CHEGADA: ${selectedDest?.cidade.toUpperCase()}`}</div>
                                     {run.status !== "IN_PROGRESS" ? (
-                                        <div style={{
-                                            marginTop: 12,
-                                            textAlign: "center",
-                                            transition: "opacity 0.8s ease",
-                                            opacity: revealFinalResult ? 1 : 0,
-                                            transform: revealFinalResult ? "translateY(0)" : "translateY(10px)"
-                                        }}>
-                                            <div style={{
-                                                background: "#ffd700",
-                                                color: "#000",
-                                                padding: "12px",
-                                                borderRadius: "12px",
-                                                fontWeight: 900,
-                                                fontSize: 15,
-                                                letterSpacing: 1,
-                                                boxShadow: "0 8px 25px rgba(255, 215, 0, 0.4)",
-                                                display: "inline-block",
-                                                minWidth: "200px"
-                                            }}>
-                                                {run.status === "WON" ? "SUSPEITO CAPTURADO!" : "SUSPEITO FUGIU!"}
-                                            </div>
+                                        <div style={{ marginTop: 12, textAlign: "center", transition: "opacity 0.8s", opacity: revealFinalResult ? 1 : 0 }}>
+                                            <div style={{ background: "#ffd700", color: "#000", padding: "12px", borderRadius: "12px", fontWeight: 900, fontSize: 15, boxShadow: "0 8px 25px rgba(255, 215, 0, 0.4)", display: "inline-block", minWidth: "200px" }}>{run.status === "WON" ? "SUSPEITO CAPTURADO!" : "SUSPEITO FUGIU!"}</div>
                                         </div>
                                     ) : (
                                         <>
                                             {(showSuspectVideo || viewMode === "ARRIVAL") && activeVideo ? (
                                                 <div style={{ marginTop: 12, textAlign: "center" }}>
-                                                    <div style={{ fontSize: 13, fontWeight: 700, fontStyle: "italic", opacity: 0.9, marginBottom: 12, color: "#ffd700" }}>
-                                                        "Sombra detectada: O Suspeito passou por aqui!"
-                                                    </div>
-                                                    {videoEnded && (
-                                                        <button
-                                                            onClick={() => { setViewMode("ACTIONS"); setSelectedDest(null); setShowSuspectVideo(false); setActiveVideo(null); setVideoEnded(false); }}
-                                                            className="om-btn om-btn-primary"
-                                                            style={{ marginTop: 10 }}
-                                                        >
-                                                            ENTENDIDO
-                                                        </button>
-                                                    )}
+                                                    <div style={{ fontSize: 13, fontWeight: 700, fontStyle: "italic", opacity: 0.9, marginBottom: 12, color: "#ffd700" }}>"Sombra detectada: O Suspeito passou por aqui!"</div>
+                                                    {videoEnded && <button onClick={() => { setViewMode("ACTIONS"); setSelectedDest(null); setShowSuspectVideo(false); setActiveVideo(null); setVideoEnded(false); }} className="om-btn om-btn-primary" style={{ marginTop: 10 }}>ENTENDIDO</button>}
                                                 </div>
                                             ) : (
-                                                <DialogBox
-                                                    text={getCidadeDescricao(selectedDest?.cidade) || selectedDest?.desc || ""}
-                                                    onComplete={() => { setViewMode("ACTIONS"); setSelectedDest(null); }}
-                                                />
+                                                <DialogBox text={getCidadeDescricao(selectedDest?.cidade) || selectedDest?.desc || ""} onComplete={() => { setViewMode("ACTIONS"); setSelectedDest(null); }} />
                                             )}
                                         </>
                                     )}
@@ -908,58 +797,24 @@ export default function Caso() {
                             )}
 
                             {viewMode === "LOCATIONS" && (
-                                <fieldset style={{
-                                    border: "none",
-                                    padding: "0",
-                                    margin: 0
-                                }}>
-                                    <legend style={{
-                                        fontSize: 13,
-                                        fontWeight: 800,
-                                        color: "#80bdff",
-                                        padding: "0 8px"
-                                    }}>PONTOS DE INVESTIGAÇÃO</legend>
+                                <fieldset style={{ border: "none", padding: 0, margin: 0 }}>
+                                    <legend style={{ fontSize: 13, fontWeight: 800, color: "#80bdff", padding: "0 8px" }}>PONTOS DE INVESTIGAÇÃO</legend>
                                     <div style={{ display: "grid", gap: 10 }}>
                                         {localInterrogatorios.length > 0 ? (
                                             localInterrogatorios.map(loc => (
-                                                <button
-                                                    key={loc.id}
-                                                    className="om-btn"
-                                                    style={{ textAlign: "left", paddingLeft: 15 }}
-                                                    onClick={() => interrogarNoLocal(loc)}
-                                                >
-                                                    🕵️‍♂️ Ir para <span style={{ fontWeight: 800 }}>{loc.local}</span>
-                                                </button>
+                                                <button key={loc.id} className="om-btn" style={{ textAlign: "left", paddingLeft: 15 }} onClick={() => interrogarNoLocal(loc)}>🕵️‍♂️ Ir para <span style={{ fontWeight: 800 }}>{loc.local}</span></button>
                                             ))
                                         ) : (
-                                            // Fallback NPCs para quando está no país errado
                                             <>
-                                                {[
-                                                    { id: "F1", local: "Táxi", personagem: "Taxista", imgLocal: "/NPC/Taxi.png", imgPersonagem: "/NPC/Taxista.png" },
-                                                    { id: "F2", local: "Banco", personagem: "Banqueiro", imgLocal: "/NPC/Banco.png", imgPersonagem: "/NPC/Banqueiro.png" },
-                                                    { id: "F3", local: "Casa de Shows", personagem: "Dançarina", imgLocal: "/NPC/Hospital.png", imgPersonagem: "/NPC/Dancarina.png" }
-                                                ].map(loc => (
-                                                    <button
-                                                        key={loc.id}
-                                                        className="om-btn"
-                                                        style={{ textAlign: "left", paddingLeft: 15 }}
-                                                        onClick={() => interrogarNoLocal({
-                                                            ...loc,
-                                                            pista: "Desculpe. Não Souberam de Nenhum Suspeito por aqui."
-                                                        })}
-                                                    >
-                                                        🕵️‍♂️ Ir para <span style={{ fontWeight: 800 }}>{loc.local}</span>
-                                                    </button>
+                                                {[{ id: "F1", local: "Táxi", personagem: "Taxista", imgLocal: "/NPC/Taxi.png", imgPersonagem: "/NPC/Taxista.png" }, { id: "F2", local: "Banco", personagem: "Banqueiro", imgLocal: "/NPC/Banco.png", imgPersonagem: "/NPC/Banqueiro.png" }, { id: "F3", local: "Restaurante", personagem: "Chef", imgLocal: "/NPC/Hospital.png", imgPersonagem: "/NPC/Chef.png" }].map(loc => (
+                                                    <button key={loc.id} className="om-btn" style={{ textAlign: "left", paddingLeft: 15 }} onClick={() => interrogarNoLocal({ ...loc, pista: "Desculpe, não vi ninguém suspeito por aqui." })}>🕵️‍♂️ Ir para <span style={{ fontWeight: 800 }}>{loc.local}</span></button>
                                                 ))}
                                             </>
                                         )}
                                     </div>
-                                    <button onClick={() => setViewMode("ACTIONS")} className="om-btn" style={{ marginTop: 15, background: "transparent", border: "none", color: "#80bdff" }}>
-                                        Cancelar
-                                    </button>
+                                    <button onClick={() => setViewMode("ACTIONS")} className="om-btn" style={{ marginTop: 15, background: "transparent", border: "none", color: "#80bdff" }}>Cancelar</button>
                                 </fieldset>
                             )}
-
 
                             {viewMode === "JOURNAL" && (
                                 <div>
@@ -971,147 +826,49 @@ export default function Caso() {
                                                 <div style={{ marginTop: 4, fontSize: 13 }}>{j.msg}</div>
                                             </div>
                                         ))}
-                                        {run.jornal.length === 0 && <div className="om-muted">Nenhum registro encontrado.</div>}
                                     </div>
                                 </div>
                             )}
 
                             {viewMode === "PROFILE" && (
                                 <div>
-                                    {/* Sub-tabs: Perfil / Galeria */}
                                     <div style={{ display: "flex", gap: 8, marginBottom: 15 }}>
                                         {["PERFIL", "GALERIA"].map(t => (
-                                            <button
-                                                key={t}
-                                                onClick={() => setProfileTab(t)}
-                                                style={{
-                                                    flex: 1,
-                                                    padding: "8px 0",
-                                                    borderRadius: 10,
-                                                    fontSize: 11,
-                                                    fontWeight: 800,
-                                                    letterSpacing: 0.5,
-                                                    border: "1px solid",
-                                                    borderColor: profileTab === t ? "#80bdff" : "rgba(255,255,255,0.12)",
-                                                    background: profileTab === t ? "rgba(128,189,255,0.15)" : "transparent",
-                                                    color: profileTab === t ? "#80bdff" : "rgba(255,255,255,0.5)",
-                                                    cursor: "pointer",
-                                                }}
-                                            >
-                                                {t === "PERFIL" ? "👤 PERFIL" : "🔍 GALERIA"}
-                                            </button>
+                                            <button key={t} onClick={() => setProfileTab(t)} style={{ flex: 1, padding: "8px 0", borderRadius: 10, fontSize: 11, fontWeight: 800, border: "1px solid", borderColor: profileTab === t ? "#80bdff" : "rgba(255,255,255,0.12)", background: profileTab === t ? "rgba(128,189,255,0.15)" : "transparent", color: profileTab === t ? "#80bdff" : "rgba(255,255,255,0.5)" }}>{t === "PERFIL" ? "👤 PERFIL" : "🔍 GALERIA"}</button>
                                         ))}
                                     </div>
-
                                     {profileTab === "PERFIL" && (
                                         <>
-                                            <div style={{ fontSize: 13, fontWeight: 800, marginBottom: 15, color: "#80bdff" }}>PERFIL DO AGENTE</div>
                                             <div style={{ display: "flex", alignItems: "center", gap: 15, marginBottom: 20 }}>
-                                                <div style={{ width: 64, height: 64, borderRadius: 32, background: "rgba(255,255,255,0.05)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 28, border: "1px solid rgba(255,255,255,0.15)", overflow: "hidden" }}>
-                                                    {state.player.avatarUrl ? (
-                                                        <img src={state.player.avatarUrl} alt="Avatar" style={{ width: "100%", height: "100%", objectFit: "cover" }} referrerPolicy="no-referrer" />
-                                                    ) : "👤"}
-                                                </div>
-                                                <div>
-                                                    <div style={{ fontSize: 18, fontWeight: 800 }}>{state.player.nome}</div>
-                                                    <Badge tone="blue">{state.player.classeEmoji || "🟢"} {state.player.nivelTitulo || "Novato"}</Badge>
-                                                    <div style={{ fontSize: 10, opacity: 0.6, marginTop: 4 }}>Saldo: ${state.player.dinheiro} | XP: {state.player.xp}</div>
-                                                </div>
+                                                <div style={{ width: 64, height: 64, borderRadius: 32, background: "rgba(255,255,255,0.05)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 28, border: "1px solid rgba(255,255,255,0.15)", overflow: "hidden" }}>{state.player.avatarUrl ? <img src={state.player.avatarUrl} alt="Avatar" style={{ width: "100%", height: "100%", objectFit: "cover" }} /> : "👤"}</div>
+                                                <div><div style={{ fontSize: 18, fontWeight: 800 }}>{state.player.nome}</div><Badge tone="blue">{state.player.classeEmoji || "🟢"} {state.player.nivelTitulo || "Novato"}</Badge></div>
                                             </div>
                                             <div style={{ borderTop: "1px solid rgba(255,255,255,0.1)", paddingTop: 15 }}>
                                                 <div style={{ fontSize: 12, fontWeight: 700, marginBottom: 10 }}>MISSÕES EM CURSO</div>
-                                                <div style={{ padding: 12, borderRadius: 12, background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.1)", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                                                    <div style={{ fontSize: 13 }}>{caseObj.titulo}</div>
-                                                    <Badge tone="green">Ativa</Badge>
-                                                </div>
-                                                <button
-                                                    onClick={handleAbort}
-                                                    style={{
-                                                        width: "100%",
-                                                        marginTop: 20,
-                                                        padding: "12px",
-                                                        borderRadius: 12,
-                                                        border: "1px solid rgba(255,70,70,0.3)",
-                                                        background: "rgba(255,70,70,0.1)",
-                                                        color: "#ff8080",
-                                                        fontSize: 11,
-                                                        fontWeight: 800,
-                                                        letterSpacing: 1,
-                                                        cursor: "pointer"
-                                                    }}
-                                                >
-                                                    🚩 ABORTAR MISSÃO
-                                                </button>
+                                                <div style={{ padding: 12, borderRadius: 12, background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.1)", display: "flex", justifyContent: "space-between", alignItems: "center" }}><div style={{ fontSize: 13 }}>{caseObj.titulo}</div><Badge tone="green">Ativa</Badge></div>
+                                                <button onClick={handleAbort} style={{ width: "100%", marginTop: 20, padding: 12, borderRadius: 12, border: "1px solid rgba(255,70,70,0.3)", background: "rgba(255,70,70,0.1)", color: "#ff8080", fontSize: 11, fontWeight: 800 }}>🚩 ABORTAR MISSÃO</button>
                                             </div>
                                         </>
                                     )}
-
-                                    {profileTab === "GALERIA" && (
-                                        <SuspectGallery capturedSuspects={state.capturedSuspects || {}} />
-                                    )}
+                                    {profileTab === "GALERIA" && <SuspectGallery capturedSuspects={state.capturedSuspects || {}} />}
                                 </div>
                             )}
                         </Panel>
                     </div>
                 )}
 
-                {viewMode === "ANALYZE" && (
-                    <Analisar
-                        onBack={() => setViewMode("ACTIONS")}
-                        filters={run.filtrosAnalise || {
-                            sexo: [],
-                            corCabelo: [],
-                            corOlhos: [],
-                            esporte: [],
-                            comidaFavorita: [],
-                            caracteristica: [],
-                            origem: []
-                        }}
-                        setFilters={(nextFilters) => {
-                            const nextVal = typeof nextFilters === 'function' ? nextFilters(run.filtrosAnalise) : nextFilters;
-                            updateRun({ ...run, filtrosAnalise: nextVal });
-                        }}
-                        warrantId={run.warrantId}
-                        setWarrantId={(id) => {
-                            updateRun({ ...run, warrantId: id, mandadoEmitido: true });
-                        }}
-                    />
-                )}
+                {viewMode === "ANALYZE" && <Analisar onBack={() => setViewMode("ACTIONS")} filters={run.filtrosAnalise || {}} setFilters={(f) => { const n = typeof f === 'function' ? f(run.filtrosAnalise) : f; updateRun({ ...run, filtrosAnalise: n }); }} warrantId={run.warrantId} setWarrantId={(id) => updateRun({ ...run, warrantId: id, mandadoEmitido: true })} />}
             </div>
 
-            {/* Footer Navigation */}
             <div className="om-tabs">
                 <div className="om-tabs-inner">
-                    <button
-                        className={`om-tab ${viewMode === "ACTIONS" || viewMode === "LOCATIONS" || viewMode.startsWith("TRAVEL") ? "om-tab-active" : ""}`}
-                        onClick={() => setViewMode("ACTIONS")}
-                    >
-                        AÇÃO
-                    </button>
-                    <button
-                        className={`om-tab ${viewMode === "JOURNAL" ? "om-tab-active" : ""}`}
-                        onClick={() => setViewMode(viewMode === "JOURNAL" ? "ACTIONS" : "JOURNAL")}
-                    >
-                        JORNAL
-                    </button>
-                    <button
-                        className={`om-tab ${viewMode === "PROFILE" ? "om-tab-active" : ""}`}
-                        onClick={() => setViewMode(viewMode === "PROFILE" ? "ACTIONS" : "PROFILE")}
-                    >
-                        CASOS
-                    </button>
+                    <button className={`om-tab ${viewMode === "ACTIONS" || viewMode === "LOCATIONS" || viewMode.startsWith("TRAVEL") ? "om-tab-active" : ""}`} onClick={() => setViewMode("ACTIONS")}>AÇÃO</button>
+                    <button className={`om-tab ${viewMode === "JOURNAL" ? "om-tab-active" : ""}`} onClick={() => setViewMode(viewMode === "JOURNAL" ? "ACTIONS" : "JOURNAL")}>JORNAL</button>
+                    <button className={`om-tab ${viewMode === "PROFILE" ? "om-tab-active" : ""}`} onClick={() => setViewMode(viewMode === "PROFILE" ? "ACTIONS" : "PROFILE")}>CASOS</button>
                 </div>
             </div>
 
-            {modalConfig.show && (
-                <ModalMsg
-                    message={modalConfig.message}
-                    type={modalConfig.type}
-                    isConfirm={modalConfig.isConfirm}
-                    onConfirm={modalConfig.onConfirm}
-                    onClose={() => setModalConfig({ ...modalConfig, show: false })}
-                />
-            )}
+            {modalConfig.show && <ModalMsg message={modalConfig.message} type={modalConfig.type} isConfirm={modalConfig.isConfirm} onConfirm={modalConfig.onConfirm} onClose={() => setModalConfig({ ...modalConfig, show: false })} />}
         </div>
     );
 }

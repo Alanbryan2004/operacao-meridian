@@ -10,6 +10,7 @@ import Configuracao from "./pages/Configuracao";
 import PromocaoScreen from "./pages/PromocaoScreen";
 import HallDaFama from "./pages/HallDaFama";
 import AvatarCreator from "./pages/AvatarCreator";
+import CompetitiveLobby from "./pages/CompetitiveLobby";
 import AudioManager from "./components/AudioManager";
 import { GameProvider } from "./game/GameProvider";
 import { loadGame } from "./game/store";
@@ -49,6 +50,7 @@ export default function App() {
           <Route path="/promocao" element={<PromocaoScreen />} />
           <Route path="/hall-da-fama" element={<HallDaFama />} />
           <Route path="/avatar-creator" element={<AvatarCreator />} />
+          <Route path="/competitive-lobby/:caseId" element={<CompetitiveLobby />} />
         </Routes>
       </div>
     </GameProvider>

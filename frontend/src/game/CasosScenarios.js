@@ -18,6 +18,7 @@ import { Caso5Scenarios } from "./Caso5Scenarios";
 import { Caso6Scenarios } from "./Caso6Scenarios";
 import { Caso7Scenarios } from "./Caso7Scenarios";
 import { Caso8Scenarios } from "./Caso8Scenarios";
+import { Caso9Scenarios } from "./Caso9Scenarios";
 
 
 export const CASOS_SCENARIOS = {
@@ -29,6 +30,7 @@ export const CASOS_SCENARIOS = {
     "C006": Caso6Scenarios,
     "C007": Caso7Scenarios,
     "C008": Caso8Scenarios,
+    "C009": Caso9Scenarios,
 };
 
 export const CASOS_CONFIG = {
@@ -63,6 +65,12 @@ export const CASOS_CONFIG = {
     "C008": {
         hasIntroVideo: true,
         introVideo: "/Videos/Caso8_Codigo_que_nunca_existiu.mp4"
+    },
+    "C009": {
+        hasIntroVideo: false,
+        isCompetitive: true,
+        title: "Caso Especial: Protocolo Fantasma",
+        description: "Um artefato de inteligência da A.T.L.A.S. foi fragmentado e espalhado pelo submundo digital. Vários agentes foram mobilizados para a recuperação. Apenas o mais rápido garantirá a integridade do sistema."
     }
 };
 

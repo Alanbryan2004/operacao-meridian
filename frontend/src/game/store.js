@@ -133,13 +133,14 @@ export function startRunIfNeeded(state, caseObj) {
         tempoRestanteHoras: caseObj.tempoTotalHoras,
         dinheiroNoInicio: state.player.dinheiro,
         localAtual: { ...caseObj.localInicial },
+        isCompetitive: !!caseObj.isCompetitive,
         pistasDescobertas: [],
         jornal: [
             { t: nowIso(), msg: `Caso iniciado: ${caseObj.titulo} (${caseObj.dificuldade})` },
             { t: nowIso(), msg: `Local inicial: ${caseObj.localInicial.cidade} - ${caseObj.localInicial.pais}` },
             { t: nowIso(), msg: `Tempo total: ${caseObj.tempoTotalHoras}h` },
-            { t: nowIso(), msg: `Bônus de despesas recebido: R$ 1.000,00` },
-        ],
+            !caseObj.isCompetitive && { t: nowIso(), msg: `Bônus de despesas recebido: R$ 1.000,00` },
+        ].filter(Boolean),
         cidadeAnterior: null,
         mandadoEmitido: false,
         warrantId: null,
@@ -160,7 +161,7 @@ export function startRunIfNeeded(state, caseObj) {
         ...state,
         player: {
             ...state.player,
-            dinheiro: state.player.dinheiro + 1000 // Adiantamento de R$ 1000
+            dinheiro: caseObj.isCompetitive ? state.player.dinheiro : state.player.dinheiro + 1000
         },
         runs: {
             ...state.runs,
@@ -182,8 +183,8 @@ export function abortRun(state, caseId) {
     };
 
     // Penalidade: Remove o adiantamento de 1000. 
-    // Se o saldo for menor que 1000, apenas zera.
-    const penalty = 1000;
+    // Se for competitivo, não houve adiantamento, então não há penalidade de devolução.
+    const penalty = run.isCompetitive ? 0 : 1000;
     const nextDinheiro = Math.max(0, state.player.dinheiro - penalty);
 
     return {
