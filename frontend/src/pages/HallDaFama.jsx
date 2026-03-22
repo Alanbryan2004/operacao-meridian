@@ -14,10 +14,10 @@ export default function HallDaFama() {
     useEffect(() => {
         async function fetchRankings() {
             try {
-                // Ensure we select 'avatar' and 'frase'
+                // Ensure we select 'avatar', 'frase' AND 'avatar_key'
                 const { data, error } = await supabase
                     .from("profiles")
-                    .select("id, nickname, rank, total_capturas, level, avatar, frase")
+                    .select("id, nickname, rank, total_capturas, level, avatar, frase, avatar_key")
                     .order("total_capturas", { ascending: false })
                     .limit(20);
 
@@ -66,6 +66,12 @@ export default function HallDaFama() {
                 .hf-rank-2 { color: #c0c0c0; }
                 .hf-rank-3 { color: #cd7f32; }
                 
+                .hf-avatar { 
+                    width: 50px; height: 50px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1); 
+                    overflow: hidden; flex-shrink: 0; background: #000;
+                }
+                .hf-avatar img { width: 100%; height: 100%; object-fit: cover; }
+
                 .hf-info { flex: 1; }
                 .hf-name { font-size: 15px; font-weight: 700; color: #fff; }
                 .hf-role { font-size: 11px; opacity: 0.5; text-transform: uppercase; letter-spacing: 1px; margin-top: 2px; }
@@ -127,7 +133,16 @@ export default function HallDaFama() {
                                 <div className={`hf-rank ${rankNum <= 3 ? `hf-rank-${rankNum}` : ''}`}>
                                     {rankNum}
                                 </div>
-                                <AvatarDisplay config={r.avatar} size={50} style={{ borderRadius: 12, border: 'none' }} />
+                                <div className="hf-avatar">
+                                    <img 
+                                        src={r.avatar_key || `https://api.dicebear.com/7.x/avataaars/svg?seed=${r.nickname}`} 
+                                        alt={r.nickname} 
+                                        onError={(e) => {
+                                            e.target.onerror = null; 
+                                            e.target.src = `https://api.dicebear.com/7.x/avataaars/svg?seed=${r.nickname}`;
+                                        }}
+                                    />
+                                </div>
                                 <div className="hf-info">
                                     <div className="hf-name">{r.nickname} {isPlayer && "(VOCÊ)"}</div>
                                     <div className="hf-role">{r.rank || "Agente"} (Nível {r.level || 1})</div>
