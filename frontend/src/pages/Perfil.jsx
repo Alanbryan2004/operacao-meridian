@@ -53,7 +53,7 @@ export default function Perfil() {
 
             <div className="pf-wrap">
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
-                    <button className="pf-back" onClick={() => nav(-1)}>← VOLTAR</button>
+                    <button className="pf-back" onClick={() => nav("/mural")}>← VOLTAR</button>
                     <button 
                         onClick={() => nav("/configuracao")}
                         style={{
@@ -110,25 +110,42 @@ export default function Perfil() {
                             <div 
                                 onClick={() => nav("/avatar-creator")}
                                 style={{
-                                    width: 72, height: 72, borderRadius: 36,
-                                    background: "rgba(255,255,255,0.05)",
-                                    display: "flex", alignItems: "center", justifyContent: "center",
-                                    border: "2px solid rgba(128,189,255,0.3)",
-                                    overflow: "hidden",
-                                    flexShrink: 0,
-                                    cursor: "pointer",
+                                    width: 100, height: 100, borderRadius: "50%",
+                                    border: "2px solid rgba(128,189,255,0.2)",
+                                    background: "rgba(0,0,0,0.4)",
+                                    flexShrink: 0, overflow: "hidden", cursor: "pointer",
+                                    position: "relative",
+                                    display: 'flex', alignItems: 'center', justifyContent: 'center',
                                     transition: "all 0.2s"
                                 }}
                                 onMouseEnter={(e) => { e.currentTarget.style.borderColor = "#80bdff"; e.currentTarget.style.transform = "scale(1.05)"; }}
                                 onMouseLeave={(e) => { e.currentTarget.style.borderColor = "rgba(128,189,255,0.3)"; e.currentTarget.style.transform = "scale(1)"; }}
                             >
-                                <AvatarDisplay config={player.avatar} size={70} />
+                                <AvatarDisplay config={player.avatar} size={100} />
+                                {!player.avatar && (
+                                    <div style={{ fontSize: 10, opacity: 0.5, textAlign: "center", padding: 10, position: 'absolute' }}>
+                                        DEFINIR<br/>AVATAR
+                                    </div>
+                                )}
                             </div>
                                 <div>
                                     <div style={{ fontSize: 20, fontWeight: 800 }}>{player.nome}</div>
-                                    <div style={{ marginTop: 4 }}>
+                                    <div style={{ marginTop: 4, display: "flex", gap: 6, flexWrap: "wrap" }}>
                                         <Badge tone="blue">{player.classeEmoji || "🟢"} {player.nivelTitulo || "Novato"}</Badge>
                                     </div>
+                                    {player.avatar?.frase && (
+                                        <div style={{ 
+                                            marginTop: 8, 
+                                            fontSize: 12, 
+                                            fontStyle: "italic", 
+                                            color: "rgba(255,255,255,0.5)",
+                                            borderLeft: "2px solid #80bdff",
+                                            paddingLeft: 8,
+                                            lineHeight: "1.4"
+                                        }}>
+                                            "{player.avatar.frase}"
+                                        </div>
+                                    )}
                                 </div>
                             </div>
 

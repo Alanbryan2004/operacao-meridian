@@ -57,6 +57,8 @@ export async function saveGameState(state, slot = 0) {
                 xp: player.xp || 0,
                 level: player.nivel || 1,
                 total_capturas: totalCapturas,
+                avatar: player.avatar, // Salva o objeto completo {gender, id, frase}
+                frase: player.avatar?.frase || "",
                 updated_at: new Date().toISOString(),
             })
             .eq("id", user.id);
