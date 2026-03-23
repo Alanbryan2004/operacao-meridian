@@ -10,10 +10,10 @@ export const Caso9Scenarios = [
       "Berlim": ["Londres", "Roma", "Madrid"],
       "Londres": ["Toronto", "Paris", "Roma"],
       "Toronto": ["Paris", "Madrid", "Istambul"],
-      "Paris": ["Roma", "Londres", "Lisboa"],
+      "Paris": ["Roma", "Londres", "Moscou"],
       "Roma": ["Viena", "Paris", "Madrid"],
       "Viena": ["Istambul", "Roma", "Toronto"],
-      "Istambul": ["Moscou", "Paris", "Lisboa"],
+      "Istambul": ["Moscou", "Paris", "Londres"],
       "Moscou": ["Amsterdã", "Roma", "Madrid"],
       "Amsterdã": ["Lisboa", "Paris", "Roma"],
       "Lisboa": []
@@ -69,10 +69,10 @@ export const Caso9Scenarios = [
     travelTable: {
       "Berlim": ["Nova Delhi", "Seul", "Istambul"],
       "Nova Delhi": ["Dubai", "Mumbai", "Bangcoc"],
-      "Dubai": ["Istambul", "Roma", "Madrid"],
-      "Istambul": ["Paris", "Roma", "Dubai"],
-      "Paris": ["Viena", "Roma", "Londres"],
-      "Viena": ["Mumbai", "Paris", "Roma"],
+      "Dubai": ["Istambul", "Paris", "Madrid"],
+      "Istambul": ["Paris", "Moscou", "Dubai"],
+      "Paris": ["Viena", "Moscou", "Londres"],
+      "Viena": ["Mumbai", "Paris", "Dubai"],
       "Mumbai": ["Singapura", "Dubai", "Nova Delhi"],
       "Singapura": ["Londres", "Mumbai", "Bangcoc"],
       "Londres": ["Roma", "Paris", "Madrid"],
@@ -125,17 +125,17 @@ export const Caso9Scenarios = [
     id: "C009_S3",
     suspectId: "010", // Echo Lark (Laila Kwon)
     finalCity: "Roma",
-    spottedAt: ["Tóquio", "Pequim", "Bangkok", "Mumbai", "Dubai", "Istambul", "Paris", "Londres", "Roma"],
-    route: ["Berlim", "Tóquio", "Pequim", "Bangkok", "Mumbai", "Dubai", "Istambul", "Paris", "Londres", "Roma"],
+    spottedAt: ["Tóquio", "Pequim", "Bangcoc", "Mumbai", "Dubai", "Istambul", "Paris", "Londres", "Roma"],
+    route: ["Berlim", "Tóquio", "Pequim", "Bangcoc", "Mumbai", "Dubai", "Istambul", "Paris", "Londres", "Roma"],
     travelTable: {
-      "Berlim": ["Tóquio", "Pequim", "Bangkok"],
-      "Tóquio": ["Pequim", "Seul", "Bangkok"],
-      "Pequim": ["Bangkok", "Singapura", "Mumbai"],
-      "Bangkok": ["Mumbai", "Singapura", "Dubai"],
-      "Mumbai": ["Dubai", "Paris", "Roma"],
-      "Dubai": ["Istambul", "Roma", "Madrid"],
-      "Istambul": ["Paris", "Roma", "Madrid"],
-      "Paris": ["Londres", "Lisboa", "Roma"],
+      "Berlim": ["Tóquio", "Pequim", "Bangcoc"],
+      "Tóquio": ["Pequim", "Seul", "Bangcoc"],
+      "Pequim": ["Bangcoc", "Singapura", "Mumbai"],
+      "Bangcoc": ["Mumbai", "Singapura", "Dubai"],
+      "Mumbai": ["Dubai", "Paris", "Pequim"],
+      "Dubai": ["Istambul", "Paris", "Madrid"],
+      "Istambul": ["Paris", "Moscou", "Madrid"],
+      "Paris": ["Londres", "Lisboa", "Madrid"],
       "Londres": ["Roma", "Madrid", "Paris"],
       "Roma": []
     },
@@ -152,9 +152,9 @@ export const Caso9Scenarios = [
       { id: "S3_8", cidade: "Pequim", local: "Táxi", personagem: "Taxista", imgLocal: "/NPC/Taxi.png", imgPersonagem: "/NPC/Taxista.png", pista: "Levei ao aeroporto." },
       { id: "S3_9", cidade: "Pequim", local: "Banco", personagem: "Banqueiro", imgLocal: "/NPC/Banco.png", imgPersonagem: "/NPC/Banqueiro.png", pista: "Parecia acostumada a lidar com pessoas." },
 
-      { id: "S3_10", cidade: "Bangkok", local: "Biblioteca", personagem: "Bibliotecária", imgLocal: "/NPC/Biblioteca.png", imgPersonagem: "/NPC/Bibliotecaria.png", pista: "Comentava sobre um país cuja bandeira possui três cores horizontais." },
-      { id: "S3_11", cidade: "Bangkok", local: "Restaurante", personagem: "Garçom", imgLocal: "/NPC/Restaurante.png", imgPersonagem: "/NPC/Garcon.png", pista: "Lembro dela… tinha cabelo preto." },
-      { id: "S3_12", cidade: "Bangkok", local: "Táxi", personagem: "Taxista", imgLocal: "/NPC/Taxi.png", imgPersonagem: "/NPC/Taxista.png", pista: "Levei ao aeroporto." },
+      { id: "S3_10", cidade: "Bangcoc", local: "Biblioteca", personagem: "Bibliotecária", imgLocal: "/NPC/Biblioteca.png", imgPersonagem: "/NPC/Bibliotecaria.png", pista: "Comentava sobre um país cuja bandeira possui três cores horizontais." },
+      { id: "S3_11", cidade: "Bangcoc", local: "Restaurante", personagem: "Garçom", imgLocal: "/NPC/Restaurante.png", imgPersonagem: "/NPC/Garcon.png", pista: "Lembro dela… tinha cabelo preto." },
+      { id: "S3_12", cidade: "Bangcoc", local: "Táxi", personagem: "Taxista", imgLocal: "/NPC/Taxi.png", imgPersonagem: "/NPC/Taxista.png", pista: "Levei ao aeroporto." },
 
       { id: "S3_13", cidade: "Mumbai", local: "Banco", personagem: "Banqueiro", imgLocal: "/NPC/Banco.png", imgPersonagem: "/NPC/Banqueiro.png", pista: "Comentava sobre um país com quatro cores na bandeira." },
       { id: "S3_14", cidade: "Mumbai", local: "Táxi", personagem: "Taxista", imgLocal: "/NPC/Taxi.png", imgPersonagem: "/NPC/Taxista.png", pista: "Levei ao aeroporto." },
@@ -198,7 +198,7 @@ export const Caso9Scenarios = [
       "Madrid": ["Trípoli", "Lisboa", "Paris"],
       "Trípoli": ["Cairo", "Lisboa", "Madrid"],
       "Cairo": ["Dubai", "Trípoli", "Istambul"],
-      "Dubai": []
+      "Dubai": ["Istambul", "Roma", "Cairo"]
     },
     interrogatorios: [
       { id: "S4_1", cidade: "Berlim", local: "Biblioteca", personagem: "Bibliotecária", imgLocal: "/NPC/Biblioteca.png", imgPersonagem: "/NPC/Bibliotecaria.png", pista: "Ele comentou sobre um país cuja bandeira possui verde, branco, preto e vermelho." },

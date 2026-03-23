@@ -1,0 +1,329 @@
+﻿
+> frontend@0.0.0 test:run
+> vitest run
+
+
+[1m[46m RUN [49m[22m [36mv4.0.18 [39m[90mC:/Users/alanb/Projetos/operacao-meridian/frontend[39m
+
+ [31mÔØ»[39m src/game/__tests__/Scenarios.test.js [2m([22m[2m315 tests[22m[2m | [22m[31m16 failed[39m[2m)[22m[32m 50[2mms[22m[39m
+       [32mÔ£ô[39m should have exactly 3 travel options for each city in the route (except final)[32m 1[2mms[22m[39m
+       [32mÔ£ô[39m should have exactly 3 investigation points (interrogatorios) for each city in the route[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should ensure all travel options exist in global DESTINATION_OPTIONS[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should ensure travel options are unique for each city in travelTable[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should ensure the route is logically consistent (each city connects to the next)[32m 1[2mms[22m[39m
+       [32mÔ£ô[39m should NOT have finalCity as a wrong travel option in early stages (anti-early-completion)[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should have the penultimate route city leading to finalCity[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should have exactly 3 travel options for each city in the route (except final)[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should have exactly 3 investigation points (interrogatorios) for each city in the route[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should ensure all travel options exist in global DESTINATION_OPTIONS[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should ensure travel options are unique for each city in travelTable[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should ensure the route is logically consistent (each city connects to the next)[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should NOT have finalCity as a wrong travel option in early stages (anti-early-completion)[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should have the penultimate route city leading to finalCity[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should have exactly 3 travel options for each city in the route (except final)[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should have exactly 3 investigation points (interrogatorios) for each city in the route[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should ensure all travel options exist in global DESTINATION_OPTIONS[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should ensure travel options are unique for each city in travelTable[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should ensure the route is logically consistent (each city connects to the next)[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should NOT have finalCity as a wrong travel option in early stages (anti-early-completion)[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should have the penultimate route city leading to finalCity[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should have exactly 3 travel options for each city in the route (except final)[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should have exactly 3 investigation points (interrogatorios) for each city in the route[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should ensure all travel options exist in global DESTINATION_OPTIONS[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should ensure travel options are unique for each city in travelTable[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should ensure the route is logically consistent (each city connects to the next)[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should NOT have finalCity as a wrong travel option in early stages (anti-early-completion)[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should have the penultimate route city leading to finalCity[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should have exactly 3 travel options for each city in the route (except final)[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should have exactly 3 investigation points (interrogatorios) for each city in the route[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should ensure all travel options exist in global DESTINATION_OPTIONS[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should ensure travel options are unique for each city in travelTable[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should ensure the route is logically consistent (each city connects to the next)[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should NOT have finalCity as a wrong travel option in early stages (anti-early-completion)[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should have the penultimate route city leading to finalCity[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should have exactly 3 travel options for each city in the route (except final)[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should have exactly 3 investigation points (interrogatorios) for each city in the route[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should ensure all travel options exist in global DESTINATION_OPTIONS[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should ensure travel options are unique for each city in travelTable[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should ensure the route is logically consistent (each city connects to the next)[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should NOT have finalCity as a wrong travel option in early stages (anti-early-completion)[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should have the penultimate route city leading to finalCity[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should have exactly 3 travel options for each city in the route (except final)[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should have exactly 3 investigation points (interrogatorios) for each city in the route[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should ensure all travel options exist in global DESTINATION_OPTIONS[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should ensure travel options are unique for each city in travelTable[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should ensure the route is logically consistent (each city connects to the next)[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should NOT have finalCity as a wrong travel option in early stages (anti-early-completion)[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should have the penultimate route city leading to finalCity[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should have exactly 3 travel options for each city in the route (except final)[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should have exactly 3 investigation points (interrogatorios) for each city in the route[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should ensure all travel options exist in global DESTINATION_OPTIONS[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should ensure travel options are unique for each city in travelTable[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should ensure the route is logically consistent (each city connects to the next)[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should NOT have finalCity as a wrong travel option in early stages (anti-early-completion)[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should have the penultimate route city leading to finalCity[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should have exactly 3 travel options for each city in the route (except final)[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should have exactly 3 investigation points (interrogatorios) for each city in the route[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should ensure all travel options exist in global DESTINATION_OPTIONS[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should ensure travel options are unique for each city in travelTable[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should ensure the route is logically consistent (each city connects to the next)[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should NOT have finalCity as a wrong travel option in early stages (anti-early-completion)[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should have the penultimate route city leading to finalCity[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should have exactly 3 travel options for each city in the route (except final)[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should have exactly 3 investigation points (interrogatorios) for each city in the route[32m 1[2mms[22m[39m
+       [32mÔ£ô[39m should ensure all travel options exist in global DESTINATION_OPTIONS[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should ensure travel options are unique for each city in travelTable[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should ensure the route is logically consistent (each city connects to the next)[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should NOT have finalCity as a wrong travel option in early stages (anti-early-completion)[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should have the penultimate route city leading to finalCity[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should have exactly 3 travel options for each city in the route (except final)[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should have exactly 3 investigation points (interrogatorios) for each city in the route[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should ensure all travel options exist in global DESTINATION_OPTIONS[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should ensure travel options are unique for each city in travelTable[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should ensure the route is logically consistent (each city connects to the next)[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should NOT have finalCity as a wrong travel option in early stages (anti-early-completion)[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should have the penultimate route city leading to finalCity[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should have exactly 3 travel options for each city in the route (except final)[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should have exactly 3 investigation points (interrogatorios) for each city in the route[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should ensure all travel options exist in global DESTINATION_OPTIONS[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should ensure travel options are unique for each city in travelTable[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should ensure the route is logically consistent (each city connects to the next)[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should NOT have finalCity as a wrong travel option in early stages (anti-early-completion)[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should have the penultimate route city leading to finalCity[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should have exactly 3 travel options for each city in the route (except final)[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should have exactly 3 investigation points (interrogatorios) for each city in the route[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should ensure all travel options exist in global DESTINATION_OPTIONS[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should ensure travel options are unique for each city in travelTable[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should ensure the route is logically consistent (each city connects to the next)[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should NOT have finalCity as a wrong travel option in early stages (anti-early-completion)[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should have the penultimate route city leading to finalCity[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should have exactly 3 travel options for each city in the route (except final)[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should have exactly 3 investigation points (interrogatorios) for each city in the route[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should ensure all travel options exist in global DESTINATION_OPTIONS[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should ensure travel options are unique for each city in travelTable[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should ensure the route is logically consistent (each city connects to the next)[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should NOT have finalCity as a wrong travel option in early stages (anti-early-completion)[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should have the penultimate route city leading to finalCity[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should have exactly 3 travel options for each city in the route (except final)[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should have exactly 3 investigation points (interrogatorios) for each city in the route[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should ensure all travel options exist in global DESTINATION_OPTIONS[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should ensure travel options are unique for each city in travelTable[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should ensure the route is logically consistent (each city connects to the next)[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should NOT have finalCity as a wrong travel option in early stages (anti-early-completion)[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should have the penultimate route city leading to finalCity[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should have exactly 3 travel options for each city in the route (except final)[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should have exactly 3 investigation points (interrogatorios) for each city in the route[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should ensure all travel options exist in global DESTINATION_OPTIONS[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should ensure travel options are unique for each city in travelTable[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should ensure the route is logically consistent (each city connects to the next)[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should NOT have finalCity as a wrong travel option in early stages (anti-early-completion)[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should have the penultimate route city leading to finalCity[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should have exactly 3 travel options for each city in the route (except final)[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should have exactly 3 investigation points (interrogatorios) for each city in the route[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should ensure all travel options exist in global DESTINATION_OPTIONS[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should ensure travel options are unique for each city in travelTable[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should ensure the route is logically consistent (each city connects to the next)[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should NOT have finalCity as a wrong travel option in early stages (anti-early-completion)[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should have the penultimate route city leading to finalCity[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should have exactly 3 travel options for each city in the route (except final)[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should have exactly 3 investigation points (interrogatorios) for each city in the route[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should ensure all travel options exist in global DESTINATION_OPTIONS[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should ensure travel options are unique for each city in travelTable[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should ensure the route is logically consistent (each city connects to the next)[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should NOT have finalCity as a wrong travel option in early stages (anti-early-completion)[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should have the penultimate route city leading to finalCity[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should have exactly 3 travel options for each city in the route (except final)[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should have exactly 3 investigation points (interrogatorios) for each city in the route[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should ensure all travel options exist in global DESTINATION_OPTIONS[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should ensure travel options are unique for each city in travelTable[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should ensure the route is logically consistent (each city connects to the next)[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should NOT have finalCity as a wrong travel option in early stages (anti-early-completion)[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should have the penultimate route city leading to finalCity[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should have exactly 3 travel options for each city in the route (except final)[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should have exactly 3 investigation points (interrogatorios) for each city in the route[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should ensure all travel options exist in global DESTINATION_OPTIONS[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should ensure travel options are unique for each city in travelTable[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should ensure the route is logically consistent (each city connects to the next)[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should NOT have finalCity as a wrong travel option in early stages (anti-early-completion)[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should have the penultimate route city leading to finalCity[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should have exactly 3 travel options for each city in the route (except final)[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should have exactly 3 investigation points (interrogatorios) for each city in the route[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should ensure all travel options exist in global DESTINATION_OPTIONS[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should ensure travel options are unique for each city in travelTable[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should ensure the route is logically consistent (each city connects to the next)[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should NOT have finalCity as a wrong travel option in early stages (anti-early-completion)[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should have the penultimate route city leading to finalCity[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should have exactly 3 travel options for each city in the route (except final)[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should have exactly 3 investigation points (interrogatorios) for each city in the route[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should ensure all travel options exist in global DESTINATION_OPTIONS[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should ensure travel options are unique for each city in travelTable[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should ensure the route is logically consistent (each city connects to the next)[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should NOT have finalCity as a wrong travel option in early stages (anti-early-completion)[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should have the penultimate route city leading to finalCity[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should have exactly 3 travel options for each city in the route (except final)[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should have exactly 3 investigation points (interrogatorios) for each city in the route[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should ensure all travel options exist in global DESTINATION_OPTIONS[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should ensure travel options are unique for each city in travelTable[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should ensure the route is logically consistent (each city connects to the next)[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should NOT have finalCity as a wrong travel option in early stages (anti-early-completion)[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should have the penultimate route city leading to finalCity[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should have exactly 3 travel options for each city in the route (except final)[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should have exactly 3 investigation points (interrogatorios) for each city in the route[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should ensure all travel options exist in global DESTINATION_OPTIONS[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should ensure travel options are unique for each city in travelTable[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should ensure the route is logically consistent (each city connects to the next)[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should NOT have finalCity as a wrong travel option in early stages (anti-early-completion)[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should have the penultimate route city leading to finalCity[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should have exactly 3 travel options for each city in the route (except final)[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should have exactly 3 investigation points (interrogatorios) for each city in the route[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should ensure all travel options exist in global DESTINATION_OPTIONS[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should ensure travel options are unique for each city in travelTable[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should ensure the route is logically consistent (each city connects to the next)[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should NOT have finalCity as a wrong travel option in early stages (anti-early-completion)[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should have the penultimate route city leading to finalCity[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should have exactly 3 travel options for each city in the route (except final)[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should have exactly 3 investigation points (interrogatorios) for each city in the route[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should ensure all travel options exist in global DESTINATION_OPTIONS[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should ensure travel options are unique for each city in travelTable[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should ensure the route is logically consistent (each city connects to the next)[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should NOT have finalCity as a wrong travel option in early stages (anti-early-completion)[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should have the penultimate route city leading to finalCity[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should have exactly 3 travel options for each city in the route (except final)[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should have exactly 3 investigation points (interrogatorios) for each city in the route[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should ensure all travel options exist in global DESTINATION_OPTIONS[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should ensure travel options are unique for each city in travelTable[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should ensure the route is logically consistent (each city connects to the next)[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should NOT have finalCity as a wrong travel option in early stages (anti-early-completion)[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should have the penultimate route city leading to finalCity[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should have exactly 3 travel options for each city in the route (except final)[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should have exactly 3 investigation points (interrogatorios) for each city in the route[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should ensure all travel options exist in global DESTINATION_OPTIONS[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should ensure travel options are unique for each city in travelTable[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should ensure the route is logically consistent (each city connects to the next)[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should NOT have finalCity as a wrong travel option in early stages (anti-early-completion)[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should have the penultimate route city leading to finalCity[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should have exactly 3 travel options for each city in the route (except final)[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should have exactly 3 investigation points (interrogatorios) for each city in the route[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should ensure all travel options exist in global DESTINATION_OPTIONS[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should ensure travel options are unique for each city in travelTable[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should ensure the route is logically consistent (each city connects to the next)[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should NOT have finalCity as a wrong travel option in early stages (anti-early-completion)[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should have the penultimate route city leading to finalCity[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should have exactly 3 travel options for each city in the route (except final)[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should have exactly 3 investigation points (interrogatorios) for each city in the route[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should ensure all travel options exist in global DESTINATION_OPTIONS[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should ensure travel options are unique for each city in travelTable[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should ensure the route is logically consistent (each city connects to the next)[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should NOT have finalCity as a wrong travel option in early stages (anti-early-completion)[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should have the penultimate route city leading to finalCity[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should have exactly 3 travel options for each city in the route (except final)[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should have exactly 3 investigation points (interrogatorios) for each city in the route[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should ensure all travel options exist in global DESTINATION_OPTIONS[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should ensure travel options are unique for each city in travelTable[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should ensure the route is logically consistent (each city connects to the next)[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should NOT have finalCity as a wrong travel option in early stages (anti-early-completion)[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should have the penultimate route city leading to finalCity[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should have exactly 3 travel options for each city in the route (except final)[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should have exactly 3 investigation points (interrogatorios) for each city in the route[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should ensure all travel options exist in global DESTINATION_OPTIONS[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should ensure travel options are unique for each city in travelTable[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should ensure the route is logically consistent (each city connects to the next)[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should NOT have finalCity as a wrong travel option in early stages (anti-early-completion)[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should have the penultimate route city leading to finalCity[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should have exactly 3 travel options for each city in the route (except final)[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should have exactly 3 investigation points (interrogatorios) for each city in the route[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should ensure all travel options exist in global DESTINATION_OPTIONS[32m 1[2mms[22m[39m
+       [32mÔ£ô[39m should ensure travel options are unique for each city in travelTable[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should ensure the route is logically consistent (each city connects to the next)[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should NOT have finalCity as a wrong travel option in early stages (anti-early-completion)[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should have the penultimate route city leading to finalCity[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should have exactly 3 travel options for each city in the route (except final)[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should have exactly 3 investigation points (interrogatorios) for each city in the route[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should ensure all travel options exist in global DESTINATION_OPTIONS[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should ensure travel options are unique for each city in travelTable[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should ensure the route is logically consistent (each city connects to the next)[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should NOT have finalCity as a wrong travel option in early stages (anti-early-completion)[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should have the penultimate route city leading to finalCity[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should have exactly 3 travel options for each city in the route (except final)[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should have exactly 3 investigation points (interrogatorios) for each city in the route[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should ensure all travel options exist in global DESTINATION_OPTIONS[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should ensure travel options are unique for each city in travelTable[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should ensure the route is logically consistent (each city connects to the next)[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should NOT have finalCity as a wrong travel option in early stages (anti-early-completion)[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should have the penultimate route city leading to finalCity[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should have exactly 3 travel options for each city in the route (except final)[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should have exactly 3 investigation points (interrogatorios) for each city in the route[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should ensure all travel options exist in global DESTINATION_OPTIONS[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should ensure travel options are unique for each city in travelTable[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should ensure the route is logically consistent (each city connects to the next)[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should NOT have finalCity as a wrong travel option in early stages (anti-early-completion)[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should have the penultimate route city leading to finalCity[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should have exactly 3 travel options for each city in the route (except final)[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should have exactly 3 investigation points (interrogatorios) for each city in the route[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should ensure all travel options exist in global DESTINATION_OPTIONS[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should ensure travel options are unique for each city in travelTable[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should ensure the route is logically consistent (each city connects to the next)[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should NOT have finalCity as a wrong travel option in early stages (anti-early-completion)[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should have the penultimate route city leading to finalCity[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should have exactly 3 travel options for each city in the route (except final)[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should have exactly 3 investigation points (interrogatorios) for each city in the route[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should ensure all travel options exist in global DESTINATION_OPTIONS[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should ensure travel options are unique for each city in travelTable[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should ensure the route is logically consistent (each city connects to the next)[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should NOT have finalCity as a wrong travel option in early stages (anti-early-completion)[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should have the penultimate route city leading to finalCity[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should have exactly 3 travel options for each city in the route (except final)[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should have exactly 3 investigation points (interrogatorios) for each city in the route[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should ensure all travel options exist in global DESTINATION_OPTIONS[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should ensure travel options are unique for each city in travelTable[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should ensure the route is logically consistent (each city connects to the next)[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should NOT have finalCity as a wrong travel option in early stages (anti-early-completion)[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should have the penultimate route city leading to finalCity[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should have exactly 3 travel options for each city in the route (except final)[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should have exactly 3 investigation points (interrogatorios) for each city in the route[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should ensure all travel options exist in global DESTINATION_OPTIONS[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should ensure travel options are unique for each city in travelTable[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should ensure the route is logically consistent (each city connects to the next)[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should NOT have finalCity as a wrong travel option in early stages (anti-early-completion)[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should have the penultimate route city leading to finalCity[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should have exactly 3 travel options for each city in the route (except final)[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should have exactly 3 investigation points (interrogatorios) for each city in the route[32m 0[2mms[22m[39m
+[31m       [31m├ù[31m should ensure all travel options exist in global DESTINATION_OPTIONS[39m[32m 5[2mms[22m[39m
+[31m       [31m├ù[31m should ensure travel options are unique for each city in travelTable[39m[32m 1[2mms[22m[39m
+       [32mÔ£ô[39m should ensure the route is logically consistent (each city connects to the next)[32m 0[2mms[22m[39m
+[31m       [31m├ù[31m should NOT have finalCity as a wrong travel option in early stages (anti-early-completion)[39m[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should have the penultimate route city leading to finalCity[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should have exactly 3 travel options for each city in the route (except final)[32m 1[2mms[22m[39m
+       [32mÔ£ô[39m should have exactly 3 investigation points (interrogatorios) for each city in the route[32m 0[2mms[22m[39m
+[31m       [31m├ù[31m should ensure all travel options exist in global DESTINATION_OPTIONS[39m[32m 1[2mms[22m[39m
+[31m       [31m├ù[31m should ensure travel options are unique for each city in travelTable[39m[32m 1[2mms[22m[39m
+       [32mÔ£ô[39m should ensure the route is logically consistent (each city connects to the next)[32m 0[2mms[22m[39m
+[31m       [31m├ù[31m should NOT have finalCity as a wrong travel option in early stages (anti-early-completion)[39m[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should have the penultimate route city leading to finalCity[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should have exactly 3 travel options for each city in the route (except final)[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should have exactly 3 investigation points (interrogatorios) for each city in the route[32m 0[2mms[22m[39m
+[31m       [31m├ù[31m should ensure all travel options exist in global DESTINATION_OPTIONS[39m[32m 0[2mms[22m[39m
+[31m       [31m├ù[31m should ensure travel options are unique for each city in travelTable[39m[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should ensure the route is logically consistent (each city connects to the next)[32m 0[2mms[22m[39m
+[31m       [31m├ù[31m should NOT have finalCity as a wrong travel option in early stages (anti-early-completion)[39m[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should have the penultimate route city leading to finalCity[32m 0[2mms[22m[39m
+[31m       [31m├ù[31m should have exactly 3 travel options for each city in the route (except final)[39m[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should have exactly 3 investigation points (interrogatorios) for each city in the route[32m 0[2mms[22m[39m
+[31m       [31m├ù[31m should ensure all travel options exist in global DESTINATION_OPTIONS[39m[32m 0[2mms[22m[39m
+[31m       [31m├ù[31m should ensure travel options are unique for each city in travelTable[39m[32m 0[2mms[22m[39m
+[31m       [31m├ù[31m should ensure the route is logically consistent (each city connects to the next)[39m[32m 1[2mms[22m[39m
+       [32mÔ£ô[39m should NOT have finalCity as a wrong travel option in early stages (anti-early-completion)[32m 0[2mms[22m[39m
+[31m       [31m├ù[31m should have the penultimate route city leading to finalCity[39m[32m 1[2mms[22m[39m
+       [32mÔ£ô[39m should have exactly 3 travel options for each city in the route (except final)[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should have exactly 3 investigation points (interrogatorios) for each city in the route[32m 0[2mms[22m[39m
+[31m       [31m├ù[31m should ensure all travel options exist in global DESTINATION_OPTIONS[39m[32m 0[2mms[22m[39m
+[31m       [31m├ù[31m should ensure travel options are unique for each city in travelTable[39m[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should ensure the route is logically consistent (each city connects to the next)[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should NOT have finalCity as a wrong travel option in early stages (anti-early-completion)[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should have the penultimate route city leading to finalCity[32m 0[2mms[22m[39m
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m16 failed[39m[22m[2m | [22m[1m[32m299 passed[39m[22m[90m (315)[39m
+[2m   Start at [22m 22:45:47
+[2m   Duration [22m 1.45s[2m (transform 245ms, setup 145ms, import 255ms, tests 50ms, environment 786ms)[22m
+

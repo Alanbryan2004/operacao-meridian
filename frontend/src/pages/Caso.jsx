@@ -152,11 +152,14 @@ export default function Caso() {
             return;
         }
 
-        // Force reset para modo competitivo para garantir que todos comecem do zero no mesmo cenário
-        const next = startRunIfNeeded(state, { ...caseObj, isCompetitive }, isCompetitive);
+        // Só forçamos o reset se estiver em modo competitivo E (não houver missão OU o cenário for diferente do forçado)
+        const currentRun = state.runs?.[caseId];
+        const needsReset = isCompetitive && (!currentRun || (forcedScenarioId && currentRun.scenarioId !== forcedScenarioId));
         
-        if (next !== state || (isCompetitive && forcedScenarioId && next.runs[caseId]?.scenarioId !== forcedScenarioId)) {
-            let updatedRun = next.runs[caseId];
+        const next = startRunIfNeeded(state, { ...caseObj, isCompetitive }, needsReset);
+        
+        if (next !== state || (isCompetitive && forcedScenarioId && next.runs?.[caseId]?.scenarioId !== forcedScenarioId)) {
+            let updatedRun = next.runs?.[caseId];
             if (isCompetitive && forcedScenarioId) {
                 updatedRun = { ...updatedRun, scenarioId: forcedScenarioId };
             }

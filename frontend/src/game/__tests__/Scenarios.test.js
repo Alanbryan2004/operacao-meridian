@@ -7,6 +7,7 @@ import { Caso5Scenarios } from '../Caso5Scenarios';
 import { Caso6Scenarios } from '../Caso6Scenarios';
 import { Caso7Scenarios } from '../Caso7Scenarios';
 import { Caso8Scenarios } from '../Caso8Scenarios';
+import { Caso9Scenarios } from '../Caso9Scenarios';
 import { DESTINATION_OPTIONS } from '../DestRoutes';
 
 const ALL_SCENARIOS = [
@@ -17,7 +18,8 @@ const ALL_SCENARIOS = [
     ...Caso5Scenarios,
     ...Caso6Scenarios,
     ...Caso7Scenarios,
-    ...Caso8Scenarios
+    ...Caso8Scenarios,
+    ...Caso9Scenarios
 ];
 
 describe('Scenario Configuration Validation', () => {
