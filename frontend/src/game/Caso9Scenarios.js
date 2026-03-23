@@ -186,19 +186,19 @@ export const Caso9Scenarios = [
     id: "C009_S4",
     suspectId: "013", // Sand Helix (Hassan Al-Rashid)
     finalCity: "Dubai",
-    spottedAt: ["Dubai", "Istambul", "Roma", "Paris", "Lisboa", "Madri", "Trípoli", "Cairo", "Dubai"],
-    route: ["Berlim", "Dubai", "Istambul", "Roma", "Paris", "Lisboa", "Madri", "Trípoli", "Cairo", "Dubai"],
+    spottedAt: ["Dubai", "Istambul", "Roma", "Paris", "Lisboa", "Madrid", "Trípoli", "Cairo", "Dubai"],
+    route: ["Berlim", "Dubai", "Istambul", "Roma", "Paris", "Lisboa", "Madrid", "Trípoli", "Cairo", "Dubai"],
     travelTable: {
       "Berlim": ["Dubai", "Roma", "Madrid"],
       "Dubai": ["Istambul", "Roma", "Cairo"],
       "Istambul": ["Roma", "Paris", "Moscou"],
       "Roma": ["Paris", "Lisboa", "Londres"],
-      "Paris": ["Lisboa", "Madri", "Roma"],
-      "Lisboa": ["Madri", "Paris", "Trípoli"],
-      "Madri": ["Trípoli", "Lisboa", "Paris"],
-      "Trípoli": ["Cairo", "Lisboa", "Madri"],
+      "Paris": ["Lisboa", "Madrid", "Roma"],
+      "Lisboa": ["Madrid", "Paris", "Trípoli"],
+      "Madrid": ["Trípoli", "Lisboa", "Paris"],
+      "Trípoli": ["Cairo", "Lisboa", "Madrid"],
       "Cairo": ["Dubai", "Trípoli", "Istambul"],
-      "Dubai_FINAL": []
+      "Dubai": []
     },
     interrogatorios: [
       { id: "S4_1", cidade: "Berlim", local: "Biblioteca", personagem: "Bibliotecária", imgLocal: "/NPC/Biblioteca.png", imgPersonagem: "/NPC/Bibliotecaria.png", pista: "Ele comentou sobre um país cuja bandeira possui verde, branco, preto e vermelho." },
@@ -225,9 +225,9 @@ export const Caso9Scenarios = [
       { id: "S4_17", cidade: "Lisboa", local: "Professor", personagem: "Professor", imgLocal: "/NPC/Biblioteca.png", imgPersonagem: "/NPC/Professor.png", pista: "Ele tinha olhos castanhos." },
       { id: "S4_18", cidade: "Lisboa", local: "Táxi", personagem: "Taxista", imgLocal: "/NPC/Taxi.png", imgPersonagem: "/NPC/Taxista.png", pista: "Levei ao aeroporto." },
 
-      { id: "S4_19", cidade: "Madri", local: "Biblioteca", personagem: "Bibliotecária", imgLocal: "/NPC/Biblioteca.png", imgPersonagem: "/NPC/Bibliotecaria.png", pista: "Comentava sobre um país do norte da África." },
-      { id: "S4_20", cidade: "Madri", local: "Táxi", personagem: "Taxista", imgLocal: "/NPC/Taxi.png", imgPersonagem: "/NPC/Taxista.png", pista: "Levei ao aeroporto." },
-      { id: "S4_21", cidade: "Madri", local: "Mercador", personagem: "Mercador", imgLocal: "/NPC/FeiraVendas.png", imgPersonagem: "/NPC/Mercador.png", pista: "Falava sobre rotas discretas." },
+      { id: "S4_19", cidade: "Madrid", local: "Biblioteca", personagem: "Bibliotecária", imgLocal: "/NPC/Biblioteca.png", imgPersonagem: "/NPC/Bibliotecaria.png", pista: "Comentava sobre um país do norte da África." },
+      { id: "S4_20", cidade: "Madrid", local: "Táxi", personagem: "Taxista", imgLocal: "/NPC/Taxi.png", imgPersonagem: "/NPC/Taxista.png", pista: "Levei ao aeroporto." },
+      { id: "S4_21", cidade: "Madrid", local: "Mercador", personagem: "Mercador", imgLocal: "/NPC/FeiraVendas.png", imgPersonagem: "/NPC/Mercador.png", pista: "Falava sobre rotas discretas." },
 
       { id: "S4_22", cidade: "Trípoli", local: "Banco", personagem: "Banqueiro", imgLocal: "/NPC/Banco.png", imgPersonagem: "/NPC/Banqueiro.png", pista: "Comentava sobre um país cuja bandeira possui três cores horizontais." },
       { id: "S4_23", cidade: "Trípoli", local: "Restaurante", personagem: "Garçom", imgLocal: "/NPC/Restaurante.png", imgPersonagem: "/NPC/Garcon.png", pista: "Ele comentou que gosta de comida árabe." },
@@ -247,16 +247,16 @@ export const Caso9Scenarios = [
     id: "C009_S5",
     suspectId: "018", // Doutor Marfim (Henrik Stahl)
     finalCity: "Zurique",
-    spottedAt: ["Rio de Janeiro", "Moscou", "Londres", "Paris", "Roma", "Madri", "Amsterdã", "Viena", "Zurique"],
-    route: ["Berlim", "Rio de Janeiro", "Moscou", "Londres", "Paris", "Roma", "Madri", "Amsterdã", "Viena", "Zurique"],
+    spottedAt: ["Rio de Janeiro", "Moscou", "Londres", "Paris", "Roma", "Madrid", "Amsterdã", "Viena", "Zurique"],
+    route: ["Berlim", "Rio de Janeiro", "Moscou", "Londres", "Paris", "Roma", "Madrid", "Amsterdã", "Viena", "Zurique"],
     travelTable: {
       "Berlim": ["Rio de Janeiro", "Londres", "Moscou"],
       "Rio de Janeiro": ["Moscou", "Lisboa", "Nova York"],
       "Moscou": ["Londres", "Berlim", "Roma"],
       "Londres": ["Paris", "Roma", "Toronto"],
       "Paris": ["Roma", "Viena", "Lisboa"],
-      "Roma": ["Madri", "Paris", "Viena"],
-      "Madri": ["Amsterdã", "Roma", "Lisboa"],
+      "Roma": ["Madrid", "Paris", "Viena"],
+      "Madrid": ["Amsterdã", "Roma", "Lisboa"],
       "Amsterdã": ["Viena", "Paris", "Roma"],
       "Viena": ["Zurique", "Roma", "Toronto"],
       "Zurique": []
@@ -286,9 +286,9 @@ export const Caso9Scenarios = [
       { id: "S5_17", cidade: "Roma", local: "Professor", personagem: "Professor", imgLocal: "/NPC/Biblioteca.png", imgPersonagem: "/NPC/Professor.png", pista: "Ele tinha olhos azuis." },
       { id: "S5_18", cidade: "Roma", local: "Táxi", personagem: "Taxista", imgLocal: "/NPC/Taxi.png", imgPersonagem: "/NPC/Taxista.png", pista: "Levei ao aeroporto." },
 
-      { id: "S5_19", cidade: "Madri", local: "Biblioteca", personagem: "Bibliotecária", imgLocal: "/NPC/Biblioteca.png", imgPersonagem: "/NPC/Bibliotecaria.png", pista: "Comentava sobre um país cuja bandeira possui faixas vermelha, branca e azul." },
-      { id: "S5_20", cidade: "Madri", local: "Táxi", personagem: "Taxista", imgLocal: "/NPC/Taxi.png", imgPersonagem: "/NPC/Taxista.png", pista: "Levei ao aeroporto." },
-      { id: "S5_21", cidade: "Madri", local: "Mercador", personagem: "Mercador", imgLocal: "/NPC/FeiraVendas.png", imgPersonagem: "/NPC/Mercador.png", pista: "Falava com extrema precisão." },
+      { id: "S5_19", cidade: "Madrid", local: "Biblioteca", personagem: "Bibliotecária", imgLocal: "/NPC/Biblioteca.png", imgPersonagem: "/NPC/Bibliotecaria.png", pista: "Comentava sobre um país cuja bandeira possui faixas vermelha, branca e azul." },
+      { id: "S5_20", cidade: "Madrid", local: "Táxi", personagem: "Taxista", imgLocal: "/NPC/Taxi.png", imgPersonagem: "/NPC/Taxista.png", pista: "Levei ao aeroporto." },
+      { id: "S5_21", cidade: "Madrid", local: "Mercador", personagem: "Mercador", imgLocal: "/NPC/FeiraVendas.png", imgPersonagem: "/NPC/Mercador.png", pista: "Falava com extrema precisão." },
 
       { id: "S5_22", cidade: "Amsterdã", local: "Banco", personagem: "Banqueiro", imgLocal: "/NPC/Banco.png", imgPersonagem: "/NPC/Banqueiro.png", pista: "Comentava sobre um país europeu central." },
       { id: "S5_23", cidade: "Amsterdã", local: "Restaurante", personagem: "Garçom", imgLocal: "/NPC/Restaurante.png", imgPersonagem: "/NPC/Garcon.png", pista: "Lembro dele… era da Europa." },

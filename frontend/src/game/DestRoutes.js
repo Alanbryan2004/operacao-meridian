@@ -386,5 +386,50 @@ export const DESTINATION_OPTIONS = [
 
     // De Berlim
     { id: "C8_18", pais: "Reino Unido", cidade: "Londres", origem: "Berlim", coords: { x: 189, y: 46 }, flag: "🇬🇧" },
-    { id: "C8_19", pais: "Espanha", cidade: "Madrid", origem: "Berlim", coords: { x: 185, y: 62 }, flag: "🇪🇸" }
+    { id: "C8_19", pais: "Espanha", cidade: "Madrid", origem: "Berlim", coords: { x: 185, y: 62 }, flag: "🇪🇸" },
+
+    // ============ CASO 9 — Protocolo Fantasma (COMPETITIVO) ============
+    // Adicionando rotas específicas necessárias para as 10 etapas
+    { id: "C9_1",  pais: "Índia", cidade: "Nova Delhi", origem: "Berlim", coords: { x: 275, y: 78 }, flag: "🇮🇳" },
+    { id: "C9_2",  pais: "Brasil", cidade: "Rio de Janeiro", origem: "Berlim", coords: { x: 141, y: 149 }, flag: "🇧🇷" },
+    { id: "C9_3",  pais: "China", cidade: "Pequim", origem: "Berlim", coords: { x: 318, y: 62 }, flag: "🇨🇳" },
+    { id: "C9_4",  pais: "Tailândia", cidade: "Bangcoc", origem: "Berlim", coords: { x: 301, y: 98 }, flag: "🇹🇭" },
+    { id: "C9_5",  pais: "Japão", cidade: "Tóquio", origem: "Berlim", coords: { x: 344, y: 68 }, flag: "🇯🇵" },
+    
+    { id: "C9_6",  pais: "Emirados Árabes", cidade: "Dubai", origem: "Nova Delhi", coords: { x: 250, y: 82 }, flag: "🇦🇪" },
+    { id: "C9_7",  pais: "Índia", cidade: "Mumbai", origem: "Nova Delhi", coords: { x: 270, y: 91 }, flag: "🇮🇳" },
+    { id: "C9_8",  pais: "Tailândia", cidade: "Bangcoc", origem: "Nova Delhi", coords: { x: 301, y: 98 }, flag: "🇹🇭" },
+    
+    { id: "C9_9",  pais: "Singapura", cidade: "Singapura", origem: "Mumbai", coords: { x: 304, y: 115 }, flag: "🇸🇬" },
+    { id: "C9_10", pais: "Tailândia", cidade: "Bangcoc", origem: "Singapura", coords: { x: 301, y: 98 }, flag: "🇹🇭" },
+    { id: "C9_11", pais: "Reino Unido", cidade: "Londres", origem: "Singapura", coords: { x: 189, y: 46 }, flag: "🇬🇧" },
+    
+    { id: "C9_12", pais: "Índia", cidade: "Mumbai", origem: "Bangcoc", coords: { x: 270, y: 91 }, flag: "🇮🇳" },
+    { id: "C9_13", pais: "Singapura", cidade: "Singapura", origem: "Bangcoc", coords: { x: 304, y: 115 }, flag: "🇸🇬" },
+    { id: "C9_14", pais: "Emirados Árabes", cidade: "Dubai", origem: "Bangcoc", coords: { x: 250, y: 82 }, flag: "🇦🇪" },
+    
+    { id: "C9_15", pais: "Líbia", cidade: "Trípoli", origem: "Madrid", coords: { x: 204, y: 72 }, flag: "🇱🇾" },
+    { id: "C9_16", pais: "Portugal", cidade: "Lisboa", origem: "Madrid", coords: { x: 179, y: 64 }, flag: "🇵🇹" },
+    { id: "C9_17", pais: "França", cidade: "Paris", origem: "Madrid", coords: { x: 192, y: 50 }, flag: "🇫🇷" },
+    
+    { id: "C9_18", pais: "Egito", cidade: "Cairo", origem: "Trípoli", coords: { x: 224, y: 76 }, flag: "🇪🇬" },
+    { id: "C9_19", pais: "Portugal", cidade: "Lisboa", origem: "Trípoli", coords: { x: 179, y: 64 }, flag: "🇵🇹" },
+    { id: "C9_20", pais: "Espanha", cidade: "Madrid", origem: "Trípoli", coords: { x: 185, y: 62 }, flag: "🇪🇸" },
+    
+    { id: "C9_21", pais: "Emirados Árabes", cidade: "Dubai", origem: "Cairo", coords: { x: 250, y: 82 }, flag: "🇦🇪" },
+    { id: "C9_22", pais: "Líbia", cidade: "Trípoli", origem: "Cairo", coords: { x: 204, y: 72 }, flag: "🇱🇾" },
+    { id: "C9_23", pais: "Turquia", cidade: "Istambul", origem: "Cairo", coords: { x: 221, y: 61 }, flag: "🇹🇷" },
+    
+    { id: "C9_24", pais: "Rússia", cidade: "Moscou", origem: "Rio de Janeiro", coords: { x: 231, y: 40 }, flag: "🇷🇺" },
+    { id: "C9_25", pais: "Portugal", cidade: "Lisboa", origem: "Rio de Janeiro", coords: { x: 179, y: 64 }, flag: "🇵🇹" },
+    { id: "C9_26", pais: "EUA", cidade: "Nova York", origem: "Rio de Janeiro", coords: { x: 107, y: 61 }, flag: "🇺🇸" },
+    
+    { id: "C9_27", pais: "Suíça", cidade: "Zurique", origem: "Viena", coords: { x: 198, y: 52 }, flag: "🇨🇭" },
+    { id: "C9_28", pais: "Turquia", cidade: "Istambul", origem: "Toronto", coords: { x: 221, y: 61 }, flag: "🇹🇷" },
+    { id: "C9_29", pais: "Coreia do Sul", cidade: "Seul", origem: "Tóquio", coords: { x: 330, y: 65 }, flag: "🇰🇷" },
+    { id: "C9_30", pais: "Itália", cidade: "Roma", origem: "Amsterdã", coords: { x: 203, y: 59 }, flag: "🇮🇹" },
+    { id: "C9_31", pais: "Rússia", cidade: "Moscou", origem: "Istambul", coords: { x: 231, y: 40 }, flag: "🇷🇺" },
+    { id: "C9_32", pais: "França", cidade: "Paris", origem: "Istambul", coords: { x: 192, y: 50 }, flag: "🇫🇷" },
+    { id: "C9_33", pais: "Turquia", cidade: "Istambul", origem: "Viena", coords: { x: 221, y: 61 }, flag: "🇹🇷" },
+    { id: "C9_34", pais: "Espanha", cidade: "Madrid", origem: "Toronto", coords: { x: 185, y: 62 }, flag: "🇪🇸" },
 ];

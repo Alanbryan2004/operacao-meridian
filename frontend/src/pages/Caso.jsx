@@ -51,6 +51,7 @@ export const ORIGIN_COORDS = {
     "Rio de Janeiro": { x: 141, y: 149 },
     "Nova Delhi": { x: 275, y: 78 },
     "Salvador": { x: 146, y: 135 },
+    "Zurique": { x: 198, y: 52 },
 };
 
 const TRANSPORT_MODES = [
@@ -151,8 +152,10 @@ export default function Caso() {
             return;
         }
 
-        const next = startRunIfNeeded(state, { ...caseObj, isCompetitive });
-        if (next !== state) {
+        // Force reset para modo competitivo para garantir que todos comecem do zero no mesmo cenário
+        const next = startRunIfNeeded(state, { ...caseObj, isCompetitive }, isCompetitive);
+        
+        if (next !== state || (isCompetitive && forcedScenarioId && next.runs[caseId]?.scenarioId !== forcedScenarioId)) {
             let updatedRun = next.runs[caseId];
             if (isCompetitive && forcedScenarioId) {
                 updatedRun = { ...updatedRun, scenarioId: forcedScenarioId };

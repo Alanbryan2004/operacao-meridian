@@ -103,13 +103,15 @@ export function resetGame() {
     return loadGame();
 }
 
-export function startRunIfNeeded(state, caseObj) {
-    const existing = state.runs?.[caseObj.id];
-    if (existing && existing.status === "IN_PROGRESS") return state;
+export function startRunIfNeeded(state, caseObj, forceReset = false) {
+    if (!forceReset) {
+        const existing = state.runs?.[caseObj.id];
+        if (existing && existing.status === "IN_PROGRESS") return state;
 
-    // Bloqueia se já houver QUALQUER missão em progresso
-    const hasActiveMission = Object.values(state.runs || {}).some(r => r.status === "IN_PROGRESS");
-    if (hasActiveMission) return state;
+        // Bloqueia se já houver QUALQUER missão em progresso
+        const hasActiveMission = Object.values(state.runs || {}).some(r => r.status === "IN_PROGRESS");
+        if (hasActiveMission) return state;
+    }
 
     // Sorteio de Cenário (SE existir para este caso)
     let scenario = null;
