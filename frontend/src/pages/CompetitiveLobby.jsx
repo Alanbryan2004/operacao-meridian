@@ -3,6 +3,8 @@ import { useState, useEffect, useCallback } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useGame } from "../game/GameProvider";
 import { supabase } from "../lib/supabase";
+import { scenarios } from "../game/seed";
+import { useRef } from "react";
 
 function Badge({ children, tone = "gray" }) {
     const map = {
@@ -28,8 +30,20 @@ export default function CompetitiveLobby() {
     const [lobby, setLobby] = useState(null);
     const [players, setPlayers] = useState([]);
     const [status, setStatus] = useState("Acessando a Lista A.T.L.A.S...");
-    const [timeLeft, setTimeLeft] = useState(180);
+    const [timeLeft, setTimeLeft] = useState(null);
     const [errorMsg, setErrorMsg] = useState(null);
+    const [isExpiredWithoutPlayers, setIsExpiredWithoutPlayers] = useState(false);
+
+    const playersRef = useRef([]);
+    const statePlayerRef = useRef(state.player);
+
+    useEffect(() => {
+        playersRef.current = players;
+    }, [players]);
+
+    useEffect(() => {
+        statePlayerRef.current = state.player;
+    }, [state.player]);
 
     const fetchOrCreateLobby = useCallback(async () => {
         if (!state.player?.supabaseId) {
@@ -38,6 +52,7 @@ export default function CompetitiveLobby() {
         }
 
         try {
+            console.log("[ATLAS] Buscando lobby...");
             setStatus("Buscando outros jogadores para este caso..");
             // 1. Procurar lobby esperando
             const { data: fetchLobby, error: fetchError } = await supabase
@@ -50,7 +65,7 @@ export default function CompetitiveLobby() {
                 .maybeSingle();
 
             if (fetchError) {
-                console.error("Erro fetchLobby:", fetchError);
+                console.error("[ATLAS] Erro fetchLobby:", fetchError);
                 if (fetchError.code === "42P01") {
                     setErrorMsg("Tabela 'competitive_lobbies' não encontrada. Verifique se executou o SQL.");
                 } else {
@@ -61,32 +76,26 @@ export default function CompetitiveLobby() {
 
             let targetLobby = fetchLobby;
 
-            // 🔥 Se o lobby encontrado tem mais de 180s, ele expirou. Vamos marcar como tal e criar outro.
             if (targetLobby) {
-                const now = new Date();
-                const created = new Date(targetLobby.created_at);
-                const ageSec = (now - created) / 1000;
-                if (ageSec > 180) {
-                    await supabase.from("competitive_lobbies").update({ status: "expired" }).eq("id", targetLobby.id);
-                    targetLobby = null; // Vamos criar um novo abaixo
-                }
-            }
-
-            if (targetLobby) {
+                console.log("[ATLAS] Lobby encontrado:", targetLobby.id, "Criado em:", targetLobby.created_at);
                 // Checar se o lobby está vazio (caso o último jogador tenha saído)
-                // Se estiver vazio, vamos EXSPIRAR e criar um novo para ter timer fresco
+                // Se estiver vazio, vamos EXPIRAR e criar um novo para ter timer fresco
                 const { count, error: countError } = await supabase
                     .from("competitive_players")
                     .select("*", { count: 'exact', head: true })
                     .eq("lobby_id", targetLobby.id);
                 
+                console.log("[ATLAS] Jogadores no lobby:", count);
+
                 if (!countError && count === 0) {
+                    console.log("[ATLAS] Lobby vazio detectado. Expirando e criando novo.");
                     await supabase.from("competitive_lobbies").update({ status: "expired" }).eq("id", targetLobby.id);
                     targetLobby = null;
                 }
             }
 
             if (!targetLobby) {
+                console.log("[ATLAS] Criando novo lobby...");
                 setStatus("Iniciando novo canal A.T.L.A.S...");
                 // 2. Criar novo lobby se não existe (ou expirou/abandonado)
                 const { data: newLobby, error: createError } = await supabase
@@ -96,31 +105,34 @@ export default function CompetitiveLobby() {
                     .single();
                 
                 if (createError) {
-                    console.error("Erro createLobby:", createError);
+                    console.error("[ATLAS] Erro createLobby:", createError);
                     setErrorMsg(`Erro ao criar lobby: ${createError.message}`);
                     return;
                 }
                 targetLobby = newLobby;
+                console.log("[ATLAS] Novo lobby criado:", targetLobby.id, "em:", targetLobby.created_at);
             }
 
             setStatus("Agente Sincronizado. Entrando na Missão...");
 
             // 3. Entrar no lobby
+            console.log("[ATLAS] Entrando no lobby:", targetLobby.id);
             const { error: joinError } = await supabase
                 .from("competitive_players")
                 .upsert([{ lobby_id: targetLobby.id, player_id: state.player.supabaseId }], { onConflict: "lobby_id,player_id" });
             
             if (joinError) {
-                console.error("Erro joinLobby:", joinError);
+                console.error("[ATLAS] Erro joinLobby:", joinError);
                 setErrorMsg(`Erro ao entrar no lobby: ${joinError.message}`);
                 return;
             }
 
             // Apenas aqui setamos o lobby, que gatilha o useEffect da sala
+            console.log("[ATLAS] Lobby definido no state.");
             setLobby(targetLobby);
 
         } catch (e) {
-            console.error("Erro inesperado:", e);
+            console.error("[ATLAS] Erro inesperado:", e);
             setErrorMsg("Ocorreu um erro inesperado ao conectar à rede.");
         }
     }, [caseId, state.player?.supabaseId]);
@@ -133,6 +145,7 @@ export default function CompetitiveLobby() {
     useEffect(() => {
         if (!lobby) return;
 
+        console.log("[ATLAS] Subscritibilidade Realtime ativada para lobby:", lobby.id);
         // Inscrever no Realtime para atualizações de jogadores
         const channel = supabase
             .channel(`lobby-${lobby.id}`)
@@ -160,8 +173,12 @@ export default function CompetitiveLobby() {
             const { data } = await supabase
                 .from("competitive_players")
                 .select("player_id, profiles(nickname, avatar)")
-                .eq("lobby_id", lobby.id);
-            if (data) setPlayers(data);
+                .eq("lobby_id", lobby.id)
+                .order("joined_at", { ascending: true });
+            if (data) {
+                console.log("[ATLAS] Lista de jogadores atualizada:", data.length);
+                setPlayers(data);
+            }
         };
 
         refreshPlayers();
@@ -170,29 +187,43 @@ export default function CompetitiveLobby() {
         const interval = setInterval(() => {
             const now = new Date();
             const created = new Date(lobby.created_at);
-            const diff = Math.floor(180 - (now - created) / 1000);
+            const elapsed = (now - created) / 1000;
+            const diff = Math.floor(180 - elapsed);
+            
             if (diff <= 0) {
-                handleStartCondition();
                 setTimeLeft(0);
+                handleStartCondition();
             } else {
                 setTimeLeft(diff);
             }
         }, 1000);
 
         return () => {
+            console.log("[ATLAS] Limpando conexão Realtime.");
             supabase.removeChannel(channel);
             clearInterval(interval);
         };
     }, [lobby]);
 
     const handleStartCondition = async () => {
-        if (players.length >= 2 && players[0].player_id === state.player.supabaseId) {
-            // Sou o "líder" (primeiro da lista), sorteio e inicio
-            const scenarioId = `C009_S${Math.floor(Math.random() * 5) + 1}`;
-            await supabase
-                .from("competitive_lobbies")
-                .update({ status: "active", scenario_id: scenarioId, started_at: new Date().toISOString() })
-                .eq("id", lobby.id);
+        const currentPlayers = playersRef.current;
+        const currentPlayerId = statePlayerRef.current?.supabaseId;
+
+        if (currentPlayers.length >= 2) {
+            // Só o líder (primeiro da lista) sorteia e inicia
+            if (currentPlayers[0].player_id === currentPlayerId) {
+                console.log("[ATLAS] Condição de início atingida. Sorteando cenário...");
+                const case9Scenarios = scenarios.filter(s => s.caseId === "C009");
+                const randomScenario = case9Scenarios[Math.floor(Math.random() * case9Scenarios.length)];
+                
+                await supabase.from("competitive_lobbies").update({ 
+                    status: "active", 
+                    scenario_id: randomScenario.id 
+                }).eq("id", lobby.id);
+            }
+        } else {
+            // Tempo acabou e só tem 1 jogador
+            setIsExpiredWithoutPlayers(true);
         }
     };
 
@@ -256,7 +287,18 @@ export default function CompetitiveLobby() {
             }}>
                 <div style={{ fontSize: 14, letterSpacing: 2, color: "#00ffcc",  marginBottom: 10 }}>FALTA POUCO</div>
                 <div style={{ fontSize: 48, fontWeight: 900, color: "#fff", fontFamily: "monospace" }}>
-                    {Math.floor(timeLeft / 60)}:{(timeLeft % 60).toString().padStart(2, '0')}
+                    {isExpiredWithoutPlayers ? (
+                        <div style={{ color: "#ff4d6a", fontSize: 16, fontWeight: 700 }}>
+                            NEHUM OUTRO AGENTE LOCALIZADO.<br/>
+                            <span style={{ fontSize: 12, opacity: 0.7 }}>Tente novamente mais tarde.</span>
+                        </div>
+                    ) : (
+                        timeLeft !== null ? (
+                            `${Math.floor(timeLeft / 60)}:${((timeLeft % 60) || 0).toString().padStart(2, '0')}`
+                        ) : (
+                            "--:--"
+                        )
+                    )}
                 </div>
                 <div style={{ fontSize: 12, opacity: 0.5, marginTop: 4 }}>TEMPO LIMITE DE ESPERA</div>
 
@@ -290,12 +332,12 @@ export default function CompetitiveLobby() {
 
             <button
                 onClick={async () => {
-                   if (lobby && state.player?.supabaseId) {
-                       // Se eu for o único no lobby, vamos deletar o lobby também para resetar o tempo
-                       if (players.length <= 1) {
+                   if (lobby && statePlayerRef.current?.supabaseId) {
+                       const currentPlayers = playersRef.current;
+                       if (currentPlayers.length <= 1) {
                            await supabase.from("competitive_lobbies").delete().eq("id", lobby.id);
                        } else {
-                           await supabase.from("competitive_players").delete().eq("lobby_id", lobby.id).eq("player_id", state.player.supabaseId);
+                           await supabase.from("competitive_players").delete().eq("lobby_id", lobby.id).eq("player_id", statePlayerRef.current.supabaseId);
                        }
                    }
                    nav("/mural");
@@ -303,19 +345,19 @@ export default function CompetitiveLobby() {
                 style={{
                     marginTop: 30,
                     marginBottom: 40,
-                    background: "rgba(255,0,0,0.1)",
-                    border: "1px solid rgba(255,0,0,0.3)",
-                    color: "#ff4444",
+                    background: isExpiredWithoutPlayers ? "rgba(255,255,255,0.1)" : "rgba(255,0,0,0.1)",
+                    border: isExpiredWithoutPlayers ? "1px solid rgba(255,255,255,0.2)" : "1px solid rgba(255,0,0,0.2)",
+                    color: isExpiredWithoutPlayers ? "#fff" : "#ff4d6a",
                     padding: "12px 24px",
                     borderRadius: 12,
                     fontSize: 14,
-                    fontWeight: 700,
-                    letterSpacing: 1,
+                    fontWeight: 900,
+                    letterSpacing: 2,
                     cursor: "pointer",
-                    textTransform: "uppercase"
+                    width: 200,
                 }}
             >
-                Cancelar
+                {isExpiredWithoutPlayers ? "VOLTAR AO MURAL" : "CANCELAR"}
             </button>
         </div>
     );
