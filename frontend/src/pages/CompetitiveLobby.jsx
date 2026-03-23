@@ -3,7 +3,7 @@ import { useState, useEffect, useCallback } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useGame } from "../game/GameProvider";
 import { supabase } from "../lib/supabase";
-import { scenarios } from "../game/seed";
+import { Caso9Scenarios } from "../game/Caso9Scenarios";
 import { useRef } from "react";
 
 function Badge({ children, tone = "gray" }) {
@@ -213,13 +213,19 @@ export default function CompetitiveLobby() {
             // Só o líder (primeiro da lista) sorteia e inicia
             if (currentPlayers[0].player_id === currentPlayerId) {
                 console.log("[ATLAS] Condição de início atingida. Sorteando cenário...");
-                const case9Scenarios = scenarios.filter(s => s.caseId === "C009");
-                const randomScenario = case9Scenarios[Math.floor(Math.random() * case9Scenarios.length)];
+                const randomScenario = Caso9Scenarios[Math.floor(Math.random() * Caso9Scenarios.length)];
                 
-                await supabase.from("competitive_lobbies").update({ 
+                console.log("[ATLAS] Cenário sorteado:", randomScenario.id);
+                const { error: updateError } = await supabase.from("competitive_lobbies").update({ 
                     status: "active", 
                     scenario_id: randomScenario.id 
                 }).eq("id", lobby.id);
+
+                if (updateError) {
+                    console.error("[ATLAS] Erro ao ativar lobby:", updateError);
+                } else {
+                    console.log("[ATLAS] Lobby ativado com sucesso.");
+                }
             }
         } else {
             // Tempo acabou e só tem 1 jogador
