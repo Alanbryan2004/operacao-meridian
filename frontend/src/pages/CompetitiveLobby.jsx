@@ -40,7 +40,7 @@ export default function CompetitiveLobby() {
         try {
             setStatus("Buscando outros jogadores para este caso..");
             // 1. Procurar lobby esperando
-            const { data: existingLobby, error: fetchError } = await supabase
+            const { data: fetchLobby, error: fetchError } = await supabase
                 .from("competitive_lobbies")
                 .select("*")
                 .eq("case_id", caseId)
@@ -51,7 +51,6 @@ export default function CompetitiveLobby() {
 
             if (fetchError) {
                 console.error("Erro fetchLobby:", fetchError);
-                // Se a tabela não existir, fetchError.code será 'PGRST116' ou '42P01' etc.
                 if (fetchError.code === "42P01") {
                     setErrorMsg("Tabela 'competitive_lobbies' não encontrada. Verifique se executou o SQL.");
                 } else {
@@ -60,11 +59,36 @@ export default function CompetitiveLobby() {
                 return;
             }
 
-            let targetLobby = existingLobby;
+            let targetLobby = fetchLobby;
 
-            if (!existingLobby) {
-                setStatus("Criando novo lobby A.T.L.A.S...");
-                // 2. Criar novo lobby se não existe
+            // 🔥 Se o lobby encontrado tem mais de 180s, ele expirou. Vamos marcar como tal e criar outro.
+            if (targetLobby) {
+                const now = new Date();
+                const created = new Date(targetLobby.created_at);
+                const ageSec = (now - created) / 1000;
+                if (ageSec > 180) {
+                    await supabase.from("competitive_lobbies").update({ status: "expired" }).eq("id", targetLobby.id);
+                    targetLobby = null; // Vamos criar um novo abaixo
+                }
+            }
+
+            if (targetLobby) {
+                // Checar se o lobby está vazio (caso o último jogador tenha saído)
+                // Se estiver vazio, vamos EXSPIRAR e criar um novo para ter timer fresco
+                const { count, error: countError } = await supabase
+                    .from("competitive_players")
+                    .select("*", { count: 'exact', head: true })
+                    .eq("lobby_id", targetLobby.id);
+                
+                if (!countError && count === 0) {
+                    await supabase.from("competitive_lobbies").update({ status: "expired" }).eq("id", targetLobby.id);
+                    targetLobby = null;
+                }
+            }
+
+            if (!targetLobby) {
+                setStatus("Iniciando novo canal A.T.L.A.S...");
+                // 2. Criar novo lobby se não existe (ou expirou/abandonado)
                 const { data: newLobby, error: createError } = await supabase
                     .from("competitive_lobbies")
                     .insert([{ case_id: caseId, status: "waiting" }])
@@ -267,7 +291,12 @@ export default function CompetitiveLobby() {
             <button
                 onClick={async () => {
                    if (lobby && state.player?.supabaseId) {
-                       await supabase.from("competitive_players").delete().eq("lobby_id", lobby.id).eq("player_id", state.player.supabaseId);
+                       // Se eu for o único no lobby, vamos deletar o lobby também para resetar o tempo
+                       if (players.length <= 1) {
+                           await supabase.from("competitive_lobbies").delete().eq("id", lobby.id);
+                       } else {
+                           await supabase.from("competitive_players").delete().eq("lobby_id", lobby.id).eq("player_id", state.player.supabaseId);
+                       }
                    }
                    nav("/mural");
                 }}
