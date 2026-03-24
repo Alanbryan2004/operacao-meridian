@@ -188,7 +188,7 @@ export default function CompetitiveLobby() {
             const now = new Date();
             const created = new Date(lobby.created_at);
             const elapsed = (now - created) / 1000;
-            const diff = Math.floor(180 - elapsed);
+            const diff = Math.floor(60 - elapsed);
             
             if (diff <= 0) {
                 setTimeLeft(0);
@@ -207,25 +207,34 @@ export default function CompetitiveLobby() {
 
     const handleStartCondition = async () => {
         const currentPlayers = playersRef.current;
-        const currentPlayerId = statePlayerRef.current?.supabaseId;
+        if (currentPlayers.length === 0) return;
 
         if (currentPlayers.length >= 2) {
-            // Só o líder (primeiro da lista) sorteia e inicia
-            if (currentPlayers[0].player_id === currentPlayerId) {
-                console.log("[ATLAS] Condição de início atingida. Sorteando cenário...");
-                const randomScenario = Caso9Scenarios[Math.floor(Math.random() * Caso9Scenarios.length)];
-                
-                console.log("[ATLAS] Cenário sorteado:", randomScenario.id);
-                const { error: updateError } = await supabase.from("competitive_lobbies").update({ 
+            // 🔥 NOVO: Qualquer um pode tentar disparar o início se o tempo acabou e o lobby ainda está 'waiting'.
+            // Isso evita que o lobby trave se o líder (primeiro da lista) cair ou ficar inativo.
+            console.log("[ATLAS] Tempo esgotado com jogadores suficientes. Tentando ativar lobby...");
+            
+            // Sorteamos o cenário localmente (o primeiro que gravar no Supabase vence)
+            const randomScenario = Caso9Scenarios[Math.floor(Math.random() * Caso9Scenarios.length)];
+            
+            setStatus("Iniciando Missão: Sincronizando cenário...");
+
+            const { data, error: updateError } = await supabase
+                .from("competitive_lobbies")
+                .update({ 
                     status: "active", 
                     scenario_id: randomScenario.id 
-                }).eq("id", lobby.id);
+                })
+                .eq("id", lobby.id)
+                .eq("status", "waiting") // Atomicidade: só o primeiro consegue trocar de 'waiting' para 'active'
+                .select();
 
-                if (updateError) {
-                    console.error("[ATLAS] Erro ao ativar lobby:", updateError);
-                } else {
-                    console.log("[ATLAS] Lobby ativado com sucesso.");
-                }
+            if (updateError) {
+                console.error("[ATLAS] Erro ao ativar lobby:", updateError);
+            } else if (data && data.length > 0) {
+                console.log("[ATLAS] Lobby ativado com sucesso por este agente.");
+            } else {
+                console.log("[ATLAS] Outro agente já ativou o lobby.");
             }
         } else {
             // Tempo acabou e só tem 1 jogador
@@ -311,7 +320,7 @@ export default function CompetitiveLobby() {
                 <div style={{ marginTop: 30, height: 4, background: "rgba(255,255,255,0.1)", borderRadius: 2, overflow: "hidden" }}>
                     <div style={{
                         height: "100%",
-                        width: `${(timeLeft / 180) * 100}%`,
+                        width: `${(timeLeft / 60) * 100}%`,
                         background: timeLeft < 30 ? "#ff4444" : "#00ffcc",
                         boxShadow: `0 0 10px ${timeLeft < 30 ? "#ff4444" : "#00ffcc"}`,
                         transition: "width 1s linear"

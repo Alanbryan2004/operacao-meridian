@@ -103,7 +103,7 @@ export function resetGame() {
     return loadGame();
 }
 
-export function startRunIfNeeded(state, caseObj, forceReset = false) {
+export function startRunIfNeeded(state, caseObj, forceReset = false, forcedScenarioId = null) {
     if (!forceReset) {
         const existing = state.runs?.[caseObj.id];
         if (existing && existing.status === "IN_PROGRESS") return state;
@@ -120,10 +120,19 @@ export function startRunIfNeeded(state, caseObj, forceReset = false) {
 
     if (CASOS_SCENARIOS[caseObj.id]) {
         const scenarios = CASOS_SCENARIOS[caseObj.id];
-        scenario = scenarios[Math.floor(Math.random() * scenarios.length)];
+        // 🔥 FIX: Se um cenário específico foi forçado (ex: via URL no competitivo), usamos ele.
+        if (forcedScenarioId) {
+            scenario = scenarios.find(s => s.id === forcedScenarioId);
+        }
+        
+        // Fallback para aleatório se não encontrou ou não foi forçado
+        if (!scenario) {
+            scenario = scenarios[Math.floor(Math.random() * scenarios.length)];
+        }
+
         interrogatoriosOverride = scenario.interrogatorios;
         targetSuspectId = scenario.suspectId;
-        console.log(`[ATLAS] Cenário sorteado para ${caseObj.id}: ${scenario.id} (Suspeito: ${targetSuspectId})`);
+        console.log(`[ATLAS] Cenário ${forcedScenarioId ? "FORÇADO" : "SORTEADO"} para ${caseObj.id}: ${scenario.id} (Suspeito: ${targetSuspectId})`);
     }
 
     const run = {
@@ -212,7 +221,10 @@ export function spendTime(run, horas, msg) {
         jornal: [...run.jornal, { t: nowIso(), msg }],
     };
 
-    if (tempo <= 0 && run.status === "IN_PROGRESS") {
+    // 🔥 FIX: Em missões competitivas (C9), o tempo é apenas para registro (PVP), não causa derrota por esgotamento.
+    const isCompetitive = run.isCompetitive;
+
+    if (!isCompetitive && tempo <= 0 && run.status === "IN_PROGRESS") {
         next.status = "LOST";
         next.jornal = [
             ...next.jornal,

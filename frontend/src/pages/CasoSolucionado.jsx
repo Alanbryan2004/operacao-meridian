@@ -1,5 +1,5 @@
 import React, { useMemo } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { useGame } from "../game/GameProvider";
 import { getCargoByXp, getProximoCargo } from "../game/Cargos";
 import { suspectsSeed } from "../game/store";
@@ -15,8 +15,14 @@ export default function CasoSolucionado() {
 
     if (!state || !caseObj || !run) return null;
 
+    const [searchParams] = useSearchParams();
+    const isCompetitive = useMemo(() => {
+        return searchParams.get("mode") === "competitive" || !!caseObj?.isCompetitive;
+    }, [searchParams, caseObj]);
+
     const isWon = run.status === "WON";
     const player = state.player;
+    const winnerName = run.winnerName || "um Agente de Elite";
 
     const realCriminal = useMemo(() => suspectsSeed.find(s => String(s.id) === String(run.targetSuspectId)), [run.targetSuspectId]);
     const warrantSuspect = useMemo(() => suspectsSeed.find(s => String(s.id) === String(run.warrantId)), [run.warrantId]);
@@ -25,9 +31,19 @@ export default function CasoSolucionado() {
         ? `/Suspeitos/Presos/${run.warrantId}.png`
         : `/Suspeitos/Presos/missaoFracassada.png`;
 
-    const reportText = isWon
-        ? `O suspeito foi capturado com êxito.\nA relíquia foi integralmente recuperada e devolvida à custódia internacional.\n\nO brilhante trabalho do(a) Agente ${player.nivelTitulo} "${player.nome}" foi decisivo para o sucesso desta missão.\nSua análise precisa, leitura estratégica das pistas e execução impecável elevaram o padrão operacional da Agência.\n\nA.T.L.A.S. reconhece oficialmente sua conduta exemplar.\nContinue assim, Agente. O mundo precisa de mentes afiadas como a sua.\n\nEsperamos trabalhar novamente com você em futuras operações de alto risco.\n🌍 Justiça restaurada. Ordem mantida.\n\n🏆 RECOMPENSA: +R$${caseObj.recompensa} | +${caseObj.xp} XP`
-        : `O suspeito escapou da captura.\nA relíquia permanece desaparecida.\n\nCulpado Real: ${realCriminal?.codinome || "Desconhecido"}\nMandado Emitido para: ${warrantSuspect?.codinome || "Nenhum"}\n\nA Agência reconhece que o(a) Agente ${player.nivelTitulo} "${player.nome}" demonstrou potencial estratégico acima da média.\nPorém, falhas na identificação final permitiram que o alvo deixasse o país antes da captura.\n\nA.T.L.A.S. espera mais de alguém que já demonstrou ser brilhante.\nFracassos não definem um agente. Eles moldam os próximos acertos.\n\nReavalie as pistas. Ajuste a estratégia. O próximo movimento será decisivo.\n🌍 O jogo continua.`;
+    const reportText = useMemo(() => {
+        if (isCompetitive) {
+            if (isWon) {
+                return `Parabéns pelo excelente desempenho e pela rapidez na conclusão do caso! sua eficiência foi absoluta, deixando os demais agentes para trás.\n\nA Agência A.T.L.A.S. reconhece sua superioridade tática nesta operação.\n\n🌍 Caso Encerrado.\n\n🏆 RECOMPENSA: +R$${caseObj.recompensa} | +${caseObj.xp} XP`;
+            } else {
+                return `Infelizmente, você falhou. O Agente "${winnerName}" fez um excelente trabalho completando a missão antes de você.\n\nÉ necessário melhorar suas táticas e evoluir para não ser superado novamente nas próximas operações.\n\n🌍 Caso Encerrado.`;
+            }
+        }
+
+        return isWon
+            ? `O suspeito foi capturado com êxito.\nA relíquia foi integralmente recuperada e devolvida à custódia internacional.\n\nO brilhante trabalho do(a) Agente ${player.nivelTitulo} "${player.nome}" foi decisivo para o sucesso desta missão.\nSua análise precisa, leitura estratégica das pistas e execução impecável elevaram o padrão operacional da Agência.\n\nA.T.L.A.S. reconhece oficialmente sua conduta exemplar.\nContinue assim, Agente. O mundo precisa de mentes afiadas como a sua.\n\nEsperamos trabalhar novamente com você em futuras operações de alto risco.\n🌍 Justiça restaurada. Ordem mantida.\n\n🏆 RECOMPENSA: +R$${caseObj.recompensa} | +${caseObj.xp} XP`
+            : `O suspeito escapou da captura.\nA relíquia permanece desaparecida.\n\nCulpado Real: ${realCriminal?.codinome || "Desconhecido"}\nMandado Emitido para: ${warrantSuspect?.codinome || "Nenhum"}\n\nA Agência reconhece que o(a) Agente ${player.nivelTitulo} "${player.nome}" demonstrou potencial estratégico acima da média.\nPorém, falhas na identificação final permitiram que o alvo deixasse o país antes da captura.\n\nA.T.L.A.S. espera mais de alguém que já demonstrou ser brilhante.\nFracassos não definem um agente. Eles moldam os próximos acertos.\n\nReavalie as pistas. Ajuste a estratégia. O próximo movimento será decisivo.\n🌍 O jogo continua.`;
+    }, [isWon, isCompetitive, winnerName, player.nome, player.nivelTitulo, caseObj.recompensa, caseObj.xp, realCriminal, warrantSuspect]);
 
     function handleEncerrar() {
         if (isWon) {

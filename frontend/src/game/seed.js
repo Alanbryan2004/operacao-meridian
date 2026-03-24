@@ -239,7 +239,7 @@ export const casesSeed = [
         dificuldade: "DIFICIL",
         recompensa: 10000,
         xp: 500,
-        tempoTotalHoras: 0, // Sem prazo fixo, competitivo
+        tempoTotalHoras: 999, // Sem prazo fixo no UI, mas mantemos valor positivo por segurança de sistema 
         localInicial: { pais: "Alemanha", cidade: "Berlim" },
         resumo: "⚠️ PROTOCOLO FANTASMA ATIVADO\n\nUm artefato de segurança máxima da A.T.L.A.S. foi fragmentado e espalhado por diversos nós do submundo digital. Vários agentes foram detectados tentando a mesma recuperação.\n\nApenas o mais rápido e eficiente garantirá a reconfiguração do sistema. Prepare-se: você está competindo em tempo real contra outros agentes de elite.\n\nRegras de Engajamento:\n1. Sem Fundo de Reserva ($ 0,00 iniciais).\n2. 10 Etapas Críticas.\n3. Vitória única para o primeiro a capturar o sinal. 🕵️‍♂️⚡",
         imgItem: "/reliquiaDesaparecida.png",

@@ -120,9 +120,11 @@ export default function Caso() {
     const { caseId } = useParams();
     const { state, replaceState } = useGame();
     const [searchParams] = useSearchParams();
-    const isCompetitive = searchParams.get("mode") === "competitive";
-    const lobbyId = searchParams.get("lobbyId");
-    const forcedScenarioId = searchParams.get("scenario");
+    // 🔥 RELEVANTE: Precisamos saber se a missão é competitiva tanto pela URL quanto pela definição do Caso
+    const isMissionCompetitive = useMemo(() => {
+        const cObj = state?.cases?.find(c => c.id === caseId);
+        return searchParams.get("mode") === "competitive" || !!cObj?.isCompetitive;
+    }, [state?.cases, caseId, searchParams]);
 
     // MODOS CARD 2: "RESUMO" | "ACTIONS" | "LOCATIONS" | "DIALOGUE" | "JOURNAL" | "PROFILE" | "TRAVEL_MAP" | "TRAVEL_MODES" | "ARRIVAL"
     const [viewMode, setViewMode] = useState("RESUMO");
@@ -144,6 +146,9 @@ export default function Caso() {
         isConfirm: false
     });
 
+    const lobbyId = searchParams.get("lobbyId");
+    const forcedScenarioId = searchParams.get("scenario");
+
     useEffect(() => {
         if (!state) return;
         const caseObj = state.cases.find((x) => x.id === caseId);
@@ -154,21 +159,18 @@ export default function Caso() {
 
         // Só forçamos o reset se estiver em modo competitivo E (não houver missão OU o cenário for diferente do forçado)
         const currentRun = state.runs?.[caseId];
-        const needsReset = isCompetitive && (!currentRun || (forcedScenarioId && currentRun.scenarioId !== forcedScenarioId));
+        const needsReset = isMissionCompetitive && (!currentRun || (forcedScenarioId && currentRun.scenarioId !== forcedScenarioId));
         
-        const next = startRunIfNeeded(state, { ...caseObj, isCompetitive }, needsReset);
+        // Passamos o forcedScenarioId para que o startRunIfNeeded já inicialize com o cenário correto
+        const next = startRunIfNeeded(state, { ...caseObj, isCompetitive: isMissionCompetitive }, needsReset, forcedScenarioId);
         
-        if (next !== state || (isCompetitive && forcedScenarioId && next.runs?.[caseId]?.scenarioId !== forcedScenarioId)) {
-            let updatedRun = next.runs?.[caseId];
-            if (isCompetitive && forcedScenarioId) {
-                updatedRun = { ...updatedRun, scenarioId: forcedScenarioId };
-            }
-            replaceState(saveGame({ ...next, runs: { ...next.runs, [caseId]: updatedRun } }));
+        if (next !== state) {
+            replaceState(saveGame(next));
         }
 
         // tenta tocar áudio (se já liberou no splash/login)
         window.dispatchEvent(new CustomEvent("meridian-play-audio", { detail: true }));
-    }, [caseId, isCompetitive, forcedScenarioId, nav, replaceState, state]);
+    }, [caseId, isMissionCompetitive, forcedScenarioId, nav, replaceState, state]);
 
     const caseObj = useMemo(
         () => state?.cases?.find((x) => x.id === caseId),
@@ -199,7 +201,7 @@ export default function Caso() {
 
     // Lógica de Sincronização Competitiva
     useEffect(() => {
-        if (!isCompetitive || !lobbyId || !run || run.status !== "IN_PROGRESS") return;
+        if (!isMissionCompetitive || !lobbyId || !run || run.status !== "IN_PROGRESS") return;
 
         const channel = supabase
             .channel(`case-sync-${lobbyId}`)
@@ -208,21 +210,35 @@ export default function Caso() {
                 schema: "public",
                 table: "competitive_lobbies",
                 filter: `id=eq.${lobbyId}`
-            }, (payload) => {
-                if (payload.new.status === "finished" && run.status === "IN_PROGRESS") {
+            }, async (payload) => {
+                const currentPlayerId = state?.player?.supabaseId;
+                if (payload.new.status === "finished" && payload.new.winner_id !== currentPlayerId && runStatusRef.current === "IN_PROGRESS") {
                     // Outro jogador venceu
+                    console.log("[ATLAS] Outro agente de elite capturou o alvo primeiro.");
+                    
+                    // Busca o nome do vencedor para o relatório final
+                    const { data: winnerProfile } = await supabase
+                        .from("profiles")
+                        .select("nickname")
+                        .eq("supabase_id", payload.new.winner_id)
+                        .single();
+                    
+                    const wName = winnerProfile?.nickname || "um Agente de Elite";
+
                     const nextRun = {
                         ...run,
                         status: "LOST",
-                        jornal: [...run.jornal, { t: new Date().toISOString(), msg: "📡 ALERTA A.T.L.A.S.: Suspeito capturado por outro agente de elite. Missão encerrada." }]
+                        winnerName: wName,
+                        jornal: [...run.jornal, { t: new Date().toISOString(), msg: `📡 ALERTA A.T.L.A.S.: Missão encerrada. O Agente ${wName} realizou a captura primeiro.` }]
                     };
-                    updateRun(nextRun);
-                    setModalConfig({
-                        show: true,
-                        message: "A conexão com o sinal do suspeito foi perdida. Outro agente realizou a captura primeiro.",
-                        type: "ERROR",
-                        onConfirm: () => nav("/mural")
-                    });
+                    
+                    const nextState = { ...state, runs: { ...state.runs, [caseId]: nextRun } };
+                    replaceState(saveGame(nextState));
+
+                    // Redireciona para a tela de conclusão com o modo competitivo ativado
+                    setTimeout(() => {
+                        nav(`/caso-solucionado/${caseId}?mode=competitive`);
+                    }, 500);
                 }
             })
             .subscribe();
@@ -230,7 +246,7 @@ export default function Caso() {
         return () => {
             supabase.removeChannel(channel);
         };
-    }, [isCompetitive, lobbyId, run?.status, nav]);
+    }, [isMissionCompetitive, lobbyId, run?.status, nav]);
 
     const currentCityImg = useMemo(() => {
         if (!run) return caseObj?.imgItem || "/reliquiaDesaparecida.png";
@@ -421,7 +437,7 @@ export default function Caso() {
                     replaceState(saveGame(nextState));
 
                     // Sincronização Competitiva: Bloquear Lobby
-                    if (isCompetitive && lobbyId) {
+                    if (isMissionCompetitive && lobbyId) {
                         supabase.from("competitive_lobbies").update({ status: "finished", winner_id: state.player.supabaseId }).eq("id", lobbyId).then();
                         supabase.from("competitive_players").update({ status: "won" }).eq("lobby_id", lobbyId).eq("player_id", state.player.supabaseId).then();
                     }
@@ -504,7 +520,7 @@ export default function Caso() {
     }
 
     function handleAbort() {
-        const isComp = isCompetitive;
+        const isComp = isMissionCompetitive;
         setModalConfig({
             show: true,
             message: isComp ? "Deseja realmente ABORTAR esta missão competitiva? Todo o progresso será perdido." : "Deseja realmente ABORTAR esta missão? Todo o progresso atual será perdido e o bônus de despesas será descontado.",
@@ -599,13 +615,13 @@ export default function Caso() {
                                         <div style={{ fontSize: 14, fontWeight: 900 }}>${state.player.dinheiro}</div>
                                         <div style={{ fontSize: 10, opacity: 0.6 }}>SALDO</div>
                                     </div>
-                                    {!isCompetitive && (
+                                    {!isMissionCompetitive && (
                                         <div>
                                             <div style={{ fontSize: 14, fontWeight: 900 }}>{fmtHoras(run.tempoRestanteHoras)}</div>
                                             <div style={{ fontSize: 10, opacity: 0.6 }}>RESTANTES</div>
                                         </div>
                                     )}
-                                    {isCompetitive && (
+                                    {isMissionCompetitive && (
                                         <div>
                                             <div style={{ fontSize: 14, fontWeight: 900, color: "#80bdff" }}>PVP</div>
                                             <div style={{ fontSize: 10, opacity: 0.6 }}>MODO</div>
@@ -635,7 +651,8 @@ export default function Caso() {
                                     onEnded={() => {
                                         const currentStatus = runStatusRef.current;
                                         if (currentStatus === "WON" || currentStatus === "LOST") {
-                                            nav(`/caso-solucionado/${caseId}`);
+                                            const compQuery = isMissionCompetitive ? "?mode=competitive" : "";
+                                            nav(`/caso-solucionado/${caseId}${compQuery}`);
                                             return;
                                         }
                                         setVideoEnded(true);
@@ -712,7 +729,7 @@ export default function Caso() {
                     return (
                         <DialogBox
                             title="MISSÃO ATIVA"
-                            text={isCompetitive ? `Protocolo Fantasma: Colete as pistas, emita o mandado e capture o alvo antes dos outros agentes.\n\n📍 Local Atual: ${run.localAtual.cidade} · ${run.localAtual.pais}` : `Você ainda tem ${tempoStr} restantes para localizar e prender o Suspeito antes que o tempo se esgote.\n\n📍 Local Atual: ${run.localAtual.cidade} · ${run.localAtual.pais}`}
+                            text={isMissionCompetitive ? `Protocolo Fantasma: Colete as pistas, emita o mandado e capture o alvo antes dos outros agentes.\n\n📍 Local Atual: ${run.localAtual.cidade} · ${run.localAtual.pais}` : `Você ainda tem ${tempoStr} restantes para localizar e prender o Suspeito antes que o tempo se esgote.\n\n📍 Local Atual: ${run.localAtual.cidade} · ${run.localAtual.pais}`}
                             onComplete={() => setViewMode("ACTIONS")}
                         />
                     );
