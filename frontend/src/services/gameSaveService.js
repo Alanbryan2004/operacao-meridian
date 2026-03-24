@@ -53,6 +53,8 @@ export async function saveGameState(state, slot = 0) {
         await supabase
             .from("profiles")
             .update({
+                nickname: player.nome || "Agente",
+                avatar_key: player.avatarUrl || null,
                 rank: player.nivelTitulo || "Novato",
                 xp: player.xp || 0,
                 level: player.nivel || 1,

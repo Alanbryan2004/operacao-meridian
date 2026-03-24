@@ -121,7 +121,7 @@ export default function Perfil() {
                                 onMouseEnter={(e) => { e.currentTarget.style.borderColor = "#80bdff"; e.currentTarget.style.transform = "scale(1.05)"; }}
                                 onMouseLeave={(e) => { e.currentTarget.style.borderColor = "rgba(128,189,255,0.3)"; e.currentTarget.style.transform = "scale(1)"; }}
                             >
-                                <AvatarDisplay config={player.avatar} size={100} />
+                                <AvatarDisplay config={player.avatar} googlePhoto={player.avatarUrl} size={100} />
                                 {!player.avatar && (
                                     <div style={{ fontSize: 10, opacity: 0.5, textAlign: "center", padding: 10, position: 'absolute' }}>
                                         DEFINIR<br/>AVATAR

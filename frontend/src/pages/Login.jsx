@@ -5,6 +5,7 @@ import { loadGame, saveGame, resetGame } from "../game/store";
 import { supabase } from "../lib/supabase";
 import { ensureProfile, loadGameState, saveGameState } from "../services/gameSaveService";
 import { initialPlayer, casesSeed } from "../game/seed";
+import { useGame } from "../game/GameProvider";
 
 export default function Login() {
     const nav = useNavigate();
@@ -61,6 +62,7 @@ export default function Login() {
             };
 
             saveGame(merged);
+            replaceState(merged);
         } else {
             // Primeira vez logando com ESTA conta social:
             // Começa uma ficha LIMPA baseada nos dados do Google/Facebook.
@@ -79,6 +81,7 @@ export default function Login() {
 
             // Salva local e sobe para nuvem como o primeiro save desta conta
             saveGame(freshState);
+            replaceState(freshState);
             await saveGameState(freshState, 0);
         }
 
@@ -138,7 +141,9 @@ export default function Login() {
         window.dispatchEvent(new CustomEvent("meridian-play-audio", { detail: true }));
     }
 
-    function entrar() {
+    const { replaceState } = useGame();
+
+    async function entrar() {
         const finalNome = (nome || "").trim() || "Recruta";
 
         const s = loadGame();
@@ -147,7 +152,21 @@ export default function Login() {
             player: { ...s.player, nome: finalNome },
         };
         saveGame(next);
-        nav("/mural");
+        replaceState(next);
+        
+        // 🔥 Garante que o nome seja salvo no Supabase IMEDIATAMENTE
+        try {
+            await saveGameState(next, 0);
+        } catch (e) {
+            console.error("Erro ao salvar nome no Supabase:", e);
+        }
+
+        // Se o jogador não tem avatar, manda para o criador em modo onboarding
+        if (!s.player?.avatar) {
+            nav("/avatar-creator?onboarding=true");
+        } else {
+            nav("/mural");
+        }
     }
 
     async function sair() {

@@ -93,7 +93,12 @@ export default function Mural() {
     useEffect(() => {
         // tenta tocar (se já liberou no splash/login)
         window.dispatchEvent(new CustomEvent("meridian-play-audio", { detail: true }));
-    }, []);
+
+        // Segurança: se o jogador não tem avatar, manda para o criador
+        if (state && !state.player?.avatar) {
+            nav("/avatar-creator?onboarding=true");
+        }
+    }, [state, nav]);
 
     if (!state) return null;
 

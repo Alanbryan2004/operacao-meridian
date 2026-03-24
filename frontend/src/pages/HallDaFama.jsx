@@ -134,13 +134,12 @@ export default function HallDaFama() {
                                     {rankNum}
                                 </div>
                                 <div className="hf-avatar">
-                                    <img 
-                                        src={r.avatar_key || `https://api.dicebear.com/7.x/avataaars/svg?seed=${r.nickname}`} 
-                                        alt={r.nickname} 
-                                        onError={(e) => {
-                                            e.target.onerror = null; 
-                                            e.target.src = `https://api.dicebear.com/7.x/avataaars/svg?seed=${r.nickname}`;
-                                        }}
+                                    <AvatarDisplay 
+                                        config={r.avatar} 
+                                        googlePhoto={r.avatar_key} 
+                                        size={50} 
+                                        style={{ borderRadius: 12 }}
+                                        useGoogleFirst={true}
                                     />
                                 </div>
                                 <div className="hf-info">
@@ -166,7 +165,13 @@ export default function HallDaFama() {
                 <div className="hf-overlay" onClick={() => setSelectedAgent(null)}>
                     <div className="hf-dossier" onClick={e => e.stopPropagation()}>
                         <div className="hf-d-title">DOSSIÊ DO AGENTE</div>
-                        <AvatarDisplay config={selectedAgent.avatar} size={180} style={{ borderRadius: 24 }} />
+                        <AvatarDisplay 
+                            config={selectedAgent.avatar} 
+                            googlePhoto={selectedAgent.avatar_key} 
+                            size={180} 
+                            style={{ borderRadius: 24 }} 
+                            useGoogleFirst={false}
+                        />
                         <div className="hf-d-name">{selectedAgent.nickname}</div>
                         <div className="hf-d-role">
                             {selectedAgent.rank || "Agente"} · Nível {selectedAgent.level || 1}
