@@ -183,9 +183,8 @@ export default function Caso() {
 
     // Ref para manter o status mais recente do run, acessível dentro de closures (ex: onEnded do vídeo)
     const runStatusRef = useRef(run?.status);
-    useEffect(() => {
-        runStatusRef.current = run?.status;
-    }, [run?.status]);
+    useEffect(() => { runStatusRef.current = run?.status; }, [run?.status]);
+    const syncChannelRef = useRef(null);
 
     useEffect(() => {
         if (viewMode === "ARRIVAL" && (run?.status === "WON" || run?.status === "LOST")) {
@@ -203,6 +202,47 @@ export default function Caso() {
     useEffect(() => {
         if (!isMissionCompetitive || !lobbyId || !run || run.status !== "IN_PROGRESS") return;
 
+        console.log("[ATLAS] Iniciando Sincronização Realtime para Lobby:", lobbyId);
+
+        // Função para encerrar a missão localmente como "LOST" (Outro Agente venceu)
+        async function terminateAsLost(winnerId) {
+            console.log("[ATLAS] Finalizando missão: Outro agente venceu.", winnerId);
+            try {
+                const { data: winnerProfile } = await supabase
+                    .from("profiles")
+                    .select("nickname")
+                    .eq("supabase_id", winnerId)
+                    .single();
+                
+                const wName = winnerProfile?.nickname || "um Agente de Elite";
+                
+                const nextRun = {
+                    ...run,
+                    status: "LOST",
+                    winnerName: wName,
+                    jornal: [...run.jornal, { t: new Date().toISOString(), msg: `📡 ALERTA A.T.L.A.S.: Missão encerrada. O Agente ${wName} realizou a captura primeiro.` }]
+                };
+                
+                const nextState = { ...state, runs: { ...state.runs, [caseId]: nextRun } };
+                replaceState(saveGame(nextState));
+                nav(`/caso-solucionado/${caseId}?mode=competitive`);
+            } catch (err) {
+                console.error("[ATLAS] Erro ao encerrar missão competitiva:", err);
+                nav("/mural");
+            }
+        }
+
+        // 🔍 Check inicial: Ver se já finalizou enquanto carregava
+        supabase.from("competitive_lobbies")
+            .select("status, winner_id")
+            .eq("id", lobbyId)
+            .single()
+            .then(({ data }) => {
+                if (data?.status === "finished" && data?.winner_id !== state?.player?.supabaseId) {
+                    terminateAsLost(data.winner_id);
+                }
+            });
+
         const channel = supabase
             .channel(`case-sync-${lobbyId}`)
             .on("postgres_changes", {
@@ -210,43 +250,50 @@ export default function Caso() {
                 schema: "public",
                 table: "competitive_lobbies",
                 filter: `id=eq.${lobbyId}`
-            }, async (payload) => {
+            }, (payload) => {
                 const currentPlayerId = state?.player?.supabaseId;
-                if (payload.new.status === "finished" && payload.new.winner_id !== currentPlayerId && runStatusRef.current === "IN_PROGRESS") {
-                    // Outro jogador venceu
-                    console.log("[ATLAS] Outro agente de elite capturou o alvo primeiro.");
-                    
-                    // Busca o nome do vencedor para o relatório final
-                    const { data: winnerProfile } = await supabase
-                        .from("profiles")
-                        .select("nickname")
-                        .eq("supabase_id", payload.new.winner_id)
-                        .single();
-                    
-                    const wName = winnerProfile?.nickname || "um Agente de Elite";
+                const currentStatus = runStatusRef.current;
+                
+                console.log("[ATLAS] Update Realtime Recebido:", payload.new.status, "Vencedor ID:", payload.new.winner_id);
 
+                if (payload.new.status === "finished" && payload.new.winner_id !== currentPlayerId && currentStatus === "IN_PROGRESS") {
+                    terminateAsLost(payload.new.winner_id);
+                }
+            })
+            .on("broadcast", { event: "mission_finished" }, ({ payload }) => {
+                const currentPlayerId = state?.player?.supabaseId;
+                const currentStatus = runStatusRef.current;
+                
+                console.log("[ATLAS] Broadcast de Fim de Missão Recebido:", payload);
+
+                if (payload.winnerId !== currentPlayerId && currentStatus === "IN_PROGRESS") {
+                    console.log("[ATLAS] Recebido sinal de vitória do Agente:", payload.winnerName);
+                    
+                    // Finaliza localmente com os dados recebidos via broadcast (mais rápido)
                     const nextRun = {
                         ...run,
                         status: "LOST",
-                        winnerName: wName,
-                        jornal: [...run.jornal, { t: new Date().toISOString(), msg: `📡 ALERTA A.T.L.A.S.: Missão encerrada. O Agente ${wName} realizou a captura primeiro.` }]
+                        winnerName: payload.winnerName,
+                        jornal: [...run.jornal, { t: new Date().toISOString(), msg: `📡 ALERTA A.T.L.A.S.: Missão encerrada. O Agente ${payload.winnerName} realizou a captura primeiro.` }]
                     };
                     
                     const nextState = { ...state, runs: { ...state.runs, [caseId]: nextRun } };
                     replaceState(saveGame(nextState));
-
-                    // Redireciona para a tela de conclusão com o modo competitivo ativado
-                    setTimeout(() => {
-                        nav(`/caso-solucionado/${caseId}?mode=competitive`);
-                    }, 500);
+                    nav(`/caso-solucionado/${caseId}?mode=competitive`);
                 }
             })
-            .subscribe();
+            .subscribe((status) => {
+                console.log(`[ATLAS] Realtime Status Lobby ${lobbyId}:`, status);
+            });
+
+        syncChannelRef.current = channel;
 
         return () => {
+            console.log("[ATLAS] Removendo canal de sync competitivo:", lobbyId);
             supabase.removeChannel(channel);
+            syncChannelRef.current = null;
         };
-    }, [isMissionCompetitive, lobbyId, run?.status, nav]);
+    }, [isMissionCompetitive, lobbyId, caseId, nav]);
 
     const currentCityImg = useMemo(() => {
         if (!run) return caseObj?.imgItem || "/reliquiaDesaparecida.png";
@@ -438,7 +485,22 @@ export default function Caso() {
 
                     // Sincronização Competitiva: Bloquear Lobby
                     if (isMissionCompetitive && lobbyId) {
-                        supabase.from("competitive_lobbies").update({ status: "finished", winner_id: state.player.supabaseId }).eq("id", lobbyId).then();
+                        console.log("[ATLAS] Bloqueando lobby competitivo como vencedor...");
+                        // Notifica os outros agentes via Broadcast (Imediato)
+                        if (syncChannelRef.current) {
+                            syncChannelRef.current.send({
+                                type: "broadcast",
+                                event: "mission_finished",
+                                payload: { 
+                                    winnerId: state.player.supabaseId, 
+                                    winnerName: state.player.nome || state.player.nickname || "um Agente de Elite" 
+                                }
+                            });
+                        }
+
+                        supabase.from("competitive_lobbies").update({ status: "finished", winner_id: state.player.supabaseId }).eq("id", lobbyId).then(r => {
+                            if (r.error) console.error("[ATLAS] Erro ao marcar vitória no lobby:", r.error);
+                        });
                         supabase.from("competitive_players").update({ status: "won" }).eq("lobby_id", lobbyId).eq("player_id", state.player.supabaseId).then();
                     }
                 } else {
@@ -650,7 +712,9 @@ export default function Caso() {
                                     loop={false}
                                     onEnded={() => {
                                         const currentStatus = runStatusRef.current;
-                                        if (currentStatus === "WON" || currentStatus === "LOST") {
+                                        // Busca o status mais atual possível da run
+                                        if (currentStatus === "WON" || currentStatus === "LOST" || run.status === "WON" || run.status === "LOST") {
+                                            console.log("[ATLAS] Vídeo encerrado. Navegando para relatório final...");
                                             const compQuery = isMissionCompetitive ? "?mode=competitive" : "";
                                             nav(`/caso-solucionado/${caseId}${compQuery}`);
                                             return;
@@ -762,11 +826,16 @@ export default function Caso() {
                                 <div>
                                     <div style={{ fontSize: 13, fontWeight: 800, marginBottom: 12, color: "#80bdff" }}>ESCOLHER DESTINO</div>
                                     <div style={{ display: "grid", gap: 10, maxHeight: 200, overflowY: "auto", paddingRight: 4 }}>
-                                        {travelOptions.map(d => (
-                                            <button key={d.id} className="om-btn" style={{ textAlign: "left", paddingLeft: 15 }} onClick={() => { setSelectedDest(d); setViewMode("TRAVEL_MODES"); }}>
-                                                {d.flag} {d.cidade}, <span style={{ opacity: 0.6 }}>{d.pais}</span>
-                                            </button>
-                                        ))}
+                                        {(() => {
+                                            const hideDetails = caseObj.dificuldade === "DIFICIL" || caseObj.dificuldade === "LENDARIO";
+                                            return travelOptions.map(d => (
+                                                <button key={d.id} className="om-btn" style={{ textAlign: "left", paddingLeft: 15 }} onClick={() => { setSelectedDest(d); setViewMode("TRAVEL_MODES"); }}>
+                                                    {!hideDetails && <>{d.flag} </>}
+                                                    {d.cidade}
+                                                    {!hideDetails && <>, <span style={{ opacity: 0.6 }}>{d.pais}</span></>}
+                                                </button>
+                                            ));
+                                        })()}
                                         {run.localAtual.cidade !== "Campinas" && (
                                             <button className="om-btn" onClick={handleVoltar} style={{ marginTop: 10, border: "1px solid rgba(128,189,255,0.3)", background: "rgba(128,189,255,0.1)", color: "#80bdff" }}>
                                                 ↩️ VOLTAR

@@ -123,7 +123,7 @@ export const Caso9Scenarios = [
   // Cenário 3 — Echo Lark
   {
     id: "C009_S3",
-    suspectId: "010", // Echo Lark (Laila Kwon)
+    suspectId: "002", // Echo Lark (Laila Kwon)
     finalCity: "Roma",
     spottedAt: ["Tóquio", "Pequim", "Bangcoc", "Mumbai", "Dubai", "Istambul", "Paris", "Londres", "Roma"],
     route: ["Berlim", "Tóquio", "Pequim", "Bangcoc", "Mumbai", "Dubai", "Istambul", "Paris", "Londres", "Roma"],
@@ -184,7 +184,7 @@ export const Caso9Scenarios = [
   // Cenário 4 — Sand Helix
   {
     id: "C009_S4",
-    suspectId: "013", // Sand Helix (Hassan Al-Rashid)
+    suspectId: "008", // Sand Helix (Hassan Al-Rashid)
     finalCity: "Dubai",
     spottedAt: ["Dubai", "Istambul", "Roma", "Paris", "Lisboa", "Madrid", "Trípoli", "Cairo", "Dubai"],
     route: ["Berlim", "Dubai", "Istambul", "Roma", "Paris", "Lisboa", "Madrid", "Trípoli", "Cairo", "Dubai"],
@@ -245,7 +245,7 @@ export const Caso9Scenarios = [
   // Cenário 5 — Doutor Marfim
   {
     id: "C009_S5",
-    suspectId: "018", // Doutor Marfim (Henrik Stahl)
+    suspectId: "015", // Doutor Marfim (Henrik Stahl)
     finalCity: "Zurique",
     spottedAt: ["Rio de Janeiro", "Moscou", "Londres", "Paris", "Roma", "Madrid", "Amsterdã", "Viena", "Zurique"],
     route: ["Berlim", "Rio de Janeiro", "Moscou", "Londres", "Paris", "Roma", "Madrid", "Amsterdã", "Viena", "Zurique"],

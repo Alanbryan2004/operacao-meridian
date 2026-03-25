@@ -1,8 +1,9 @@
-import React, { useMemo } from "react";
+import React, { useMemo, useState, useEffect } from "react";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { useGame } from "../game/GameProvider";
 import { getCargoByXp, getProximoCargo } from "../game/Cargos";
 import { suspectsSeed } from "../game/store";
+import { supabase } from "../lib/supabase";
 import DialogBox from "../components/DialogBox";
 
 export default function CasoSolucionado() {
@@ -22,7 +23,35 @@ export default function CasoSolucionado() {
 
     const isWon = run.status === "WON";
     const player = state.player;
-    const winnerName = run.winnerName || "um Agente de Elite";
+    const [foundWinnerName, setFoundWinnerName] = useState(run?.winnerName || "");
+
+    // 🔍 Tenta buscar o nome do vencedor caso não tenha sido sincronizado via Broadcast/Realtime
+    useEffect(() => {
+        const lobbyId = searchParams.get("lobbyId");
+        if (isCompetitive && !isWon && !foundWinnerName && lobbyId) {
+            console.log("[ATLAS] Buscando nome do vencedor no banco...");
+            supabase.from("competitive_lobbies")
+                .select("winner_id")
+                .eq("id", lobbyId)
+                .single()
+                .then(async ({ data }) => {
+                    if (data?.winner_id) {
+                        const { data: profile } = await supabase
+                            .from("profiles")
+                            .select("nickname")
+                            .eq("id", data.winner_id)
+                            .maybeSingle();
+                        
+                        if (profile?.nickname) {
+                            setFoundWinnerName(profile.nickname);
+                        }
+                    }
+                })
+                .catch(err => console.error("[ATLAS] Erro ao buscar vencedor:", err));
+        }
+    }, [isCompetitive, isWon, foundWinnerName, searchParams]);
+
+    const winnerName = foundWinnerName || "um Agente de Elite";
 
     const realCriminal = useMemo(() => suspectsSeed.find(s => String(s.id) === String(run.targetSuspectId)), [run.targetSuspectId]);
     const warrantSuspect = useMemo(() => suspectsSeed.find(s => String(s.id) === String(run.warrantId)), [run.warrantId]);
@@ -35,8 +64,11 @@ export default function CasoSolucionado() {
         if (isCompetitive) {
             if (isWon) {
                 return `Parabéns pelo excelente desempenho e pela rapidez na conclusão do caso! sua eficiência foi absoluta, deixando os demais agentes para trás.\n\nA Agência A.T.L.A.S. reconhece sua superioridade tática nesta operação.\n\n🌍 Caso Encerrado.\n\n🏆 RECOMPENSA: +R$${caseObj.recompensa} | +${caseObj.xp} XP`;
-            } else {
+            } else if (run.winnerName) {
                 return `Infelizmente, você falhou. O Agente "${winnerName}" fez um excelente trabalho completando a missão antes de você.\n\nÉ necessário melhorar suas táticas e evoluir para não ser superado novamente nas próximas operações.\n\n🌍 Caso Encerrado.`;
+            } else {
+                // Caso o jogador tenha falhado por conta própria (Mandado errado / Target fugiu)
+                return `Infelizmente, você falhou. O suspeito escapou da captura porque o mandado de prisão emitido não correspondia à identidade do alvo.\n\nA Agência A.T.L.A.S. espera mais precisão em operações de alto risco. Verifique as pistas com mais atenção da próxima vez.\n\n🌍 Caso Encerrado.`;
             }
         }
 
@@ -116,7 +148,7 @@ export default function CasoSolucionado() {
                     text={reportText}
                     onComplete={handleEncerrar}
                     buttonLabel="ENCERRAR"
-                    maxChars={200}
+                    maxChars={1000}
                 />
             </div>
         </div>

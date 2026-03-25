@@ -106,9 +106,10 @@ export function resetGame() {
 export function startRunIfNeeded(state, caseObj, forceReset = false, forcedScenarioId = null) {
     if (!forceReset) {
         const existing = state.runs?.[caseObj.id];
-        if (existing && existing.status === "IN_PROGRESS") return state;
+        // Se já existe uma run (em progresso ou já concluída), não inicia outra automaticamente
+        if (existing && (existing.status === "IN_PROGRESS" || existing.status === "WON" || existing.status === "LOST")) return state;
 
-        // Bloqueia se já houver QUALQUER missão em progresso
+        // Bloqueia se já houver OUTRA missão em progresso
         const hasActiveMission = Object.values(state.runs || {}).some(r => r.status === "IN_PROGRESS");
         if (hasActiveMission) return state;
     }
