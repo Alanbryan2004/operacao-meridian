@@ -103,7 +103,7 @@ export function resetGame() {
     return loadGame();
 }
 
-export function startRunIfNeeded(state, caseObj, forceReset = false, forcedScenarioId = null) {
+export function startRunIfNeeded(state, caseObj, forceReset = false, forcedScenarioId = null, lobbyId = null) {
     if (!forceReset) {
         const existing = state.runs?.[caseObj.id];
         // Se já existe uma run (em progresso ou já concluída), não inicia outra automaticamente
@@ -112,6 +112,16 @@ export function startRunIfNeeded(state, caseObj, forceReset = false, forcedScena
         // Bloqueia se já houver OUTRA missão em progresso
         const hasActiveMission = Object.values(state.runs || {}).some(r => r.status === "IN_PROGRESS");
         if (hasActiveMission) return state;
+    } else if (forceReset) {
+        // 🔥 FIX: Bloqueamos o reset AUTOMÁTICO apenas se a missão já estiver em status final 
+        // E o lobby/cenário forem os mesmos. Se o lobby mudou, é uma nova partida!
+        const existing = state.runs?.[caseObj.id];
+        const isSameMatch = existing && existing.lobbyId === lobbyId && (forcedScenarioId ? existing.scenarioId === forcedScenarioId : true);
+        
+        if (isSameMatch && (existing.status === "WON" || existing.status === "LOST")) {
+            console.log("[ATLAS] Reset bloqueado: Partida já concluída.");
+            return state;
+        }
     }
 
     // Sorteio de Cenário (SE existir para este caso)
@@ -138,6 +148,7 @@ export function startRunIfNeeded(state, caseObj, forceReset = false, forcedScena
 
     const run = {
         caseId: caseObj.id,
+        lobbyId: lobbyId,
         scenarioId: scenario?.id || null,
         targetSuspectId: targetSuspectId,
         status: "IN_PROGRESS",

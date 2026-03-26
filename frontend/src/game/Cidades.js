@@ -247,6 +247,20 @@ export const CIDADES = [
         imagem: "/Paises/Bangcoc.png",
         descricao: "Bangcoc é a capital da Tailândia, famosa por sua história, cultura e arquitetura. É um importante centro político e cultural do país.",
     },
+    {
+        cidade: "Zurich",
+        pais: "Suiça",
+        continente: "Europa",
+        imagem: "/Paises/Zurich.png",
+        descricao: "Zurique é a maior cidade da Suíça, famosa por sua qualidade de vida, bancos globais e belas paisagens às margens do lago.",
+    },
+    {
+        cidade: "Hong Kong",
+        pais: "China",
+        continente: "Asia",
+        imagem: "/Paises/HongKong.png",
+        descricao: "Hong Kong é uma metrópole vibrante que mistura tradição chinesa e modernidade, com arranha-céus, porto icônico e forte centro financeiro global.",
+    },
 
 ];
 

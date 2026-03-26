@@ -157,12 +157,16 @@ export default function Caso() {
             return;
         }
 
-        // Só forçamos o reset se estiver em modo competitivo E (não houver missão OU o cenário for diferente do forçado)
+        // Só forçamos o reset se estiver em modo competitivo E (não houver missão OU o cenário/lobby for diferente)
         const currentRun = state.runs?.[caseId];
-        const needsReset = isMissionCompetitive && (!currentRun || (forcedScenarioId && currentRun.scenarioId !== forcedScenarioId));
+        const scenarioMismatch = forcedScenarioId && currentRun?.scenarioId !== forcedScenarioId;
+        const lobbyMismatch = lobbyId && currentRun?.lobbyId !== lobbyId;
+        const noRun = !currentRun;
+
+        const needsReset = isMissionCompetitive && (noRun || lobbyMismatch || scenarioMismatch);
         
-        // Passamos o forcedScenarioId para que o startRunIfNeeded já inicialize com o cenário correto
-        const next = startRunIfNeeded(state, { ...caseObj, isCompetitive: isMissionCompetitive }, needsReset, forcedScenarioId);
+        // Passamos lobbyId e forcedScenarioId para que o startRunIfNeeded já inicialize corretamente
+        const next = startRunIfNeeded(state, { ...caseObj, isCompetitive: isMissionCompetitive }, needsReset, forcedScenarioId, lobbyId);
         
         if (next !== state) {
             replaceState(saveGame(next));
@@ -293,7 +297,7 @@ export default function Caso() {
             supabase.removeChannel(channel);
             syncChannelRef.current = null;
         };
-    }, [isMissionCompetitive, lobbyId, caseId, nav]);
+    }, [isMissionCompetitive, lobbyId, caseId, nav, run?.status]);
 
     const currentCityImg = useMemo(() => {
         if (!run) return caseObj?.imgItem || "/reliquiaDesaparecida.png";
@@ -312,19 +316,12 @@ export default function Caso() {
 
     // Centraliza a lógica de progresso da missão (etapa intermediária concluída)
     const hasMissionProgressed = useMemo(() => {
-        if (!activeScenario?.route || (run?.pistasDescobertas || []).length === 0) return false;
+        if (!activeScenario?.route) return true;
         
-        // Verifica se o jogador já coletou pistas em todas as etapas intermediárias (exceto a última)
-        // ou pelo menos na penúltima cidade da rota.
-        const intermediateCities = activeScenario.route.slice(1, -1);
-        if (intermediateCities.length === 0) return true;
-
-        const penultimaCidade = intermediateCities[intermediateCities.length - 1];
-        
-        return run.pistasDescobertas.some(p => {
-            const clueCity = typeof p === "string" ? "" : (p.cidade || "");
-            return clueCity.toLowerCase() === penultimaCidade.toLowerCase();
-        });
+        // 🎮 MUDANÇA: Exigimos que o jogador tenha pelo menos 3 pistas. 
+        // Isso prova que ele investigou, mas permite "pular" etapas.
+        const clues = run?.pistasDescobertas || [];
+        return clues.length >= 3;
     }, [activeScenario, run?.pistasDescobertas]);
 
     const localInterrogatorios = useMemo(() => {
@@ -441,12 +438,16 @@ export default function Caso() {
         };
 
         // Lógica de Captura Final (Dinâmica por Cenário)
-        let isFinalCity = activeScenario ? locObj.cidade === activeScenario.finalCity : locObj.cidade === "Nova York";
+        const isScenarioFinalCity = activeScenario ? (locObj.cidade === activeScenario.finalCity || (activeScenario.route && locObj.cidade === activeScenario.route[activeScenario.route.length - 1])) : false;
+        const isStaticFinalCity = locObj.cidade === caseObj?.localFinal?.cidade;
+        let isFinalCity = isScenarioFinalCity || isStaticFinalCity;
 
-        // 🔥 REGRA CRÍTICA: Só permitimos a captura se o jogador já tiver pistas
-        // das etapas intermediárias (penúltima cidade da rota visitada).
+        console.log("[ATLAS] Investigação:", locObj.cidade, "isFinal?", isFinalCity, "Progress?", hasMissionProgressed, "Count:", currentCount);
+
+        // 🔥 REGRA: Só permitimos a captura se o jogador já tiver pistas suficientes
         if (isFinalCity && activeScenario?.route) {
             if (!hasMissionProgressed) {
+                console.log("[ATLAS] Captura bloqueada: Poucas pistas descobertas (mínimo 3).");
                 isFinalCity = false;
             }
         }
@@ -476,32 +477,60 @@ export default function Caso() {
                         suspeitoCapturado: true,
                         jornal: [...run.jornal, { t: new Date().toISOString(), msg: `🎯 MISSÃO CUMPRIDA! O suspeito foi preso em ${locObj.cidade}.` }],
                     };
-                    const nextState = registerCapture({
-                        ...state,
-                        player: { ...state.player, dinheiro: state.player.dinheiro + caseObj.recompensa, xp: state.player.xp + caseObj.xp },
-                        runs: { ...state.runs, [caseId]: nextRun },
-                    }, run.warrantId);
-                    replaceState(saveGame(nextState));
 
-                    // Sincronização Competitiva: Bloquear Lobby
+                    // Sincronização Competitiva: Bloquear Lobby ATOMICAMENTE
                     if (isMissionCompetitive && lobbyId) {
-                        console.log("[ATLAS] Bloqueando lobby competitivo como vencedor...");
-                        // Notifica os outros agentes via Broadcast (Imediato)
-                        if (syncChannelRef.current) {
-                            syncChannelRef.current.send({
-                                type: "broadcast",
-                                event: "mission_finished",
-                                payload: { 
-                                    winnerId: state.player.supabaseId, 
-                                    winnerName: state.player.nome || state.player.nickname || "um Agente de Elite" 
+                        console.log("[ATLAS] Tentando bloquear lobby competitivo como vencedor...");
+                        
+                        // 🔐 Só ganhamos se conseguirmos mudar o status de 'active' para 'finished'
+                        supabase.from("competitive_lobbies")
+                            .update({ status: "finished", winner_id: state.player.supabaseId })
+                            .eq("id", lobbyId)
+                            .eq("status", "active")
+                            .select()
+                            .then(({ data, error }) => {
+                                if (error || !data || data.length === 0) {
+                                    console.log("[ATLAS] Tarde demais! Outro agente já venceu.");
+                                    // Não damos a recompensa e abortamos o fluxo de vitória local
+                                    // O listener Realtime vai cuidar do redirecionamento para o "LOST"
+                                    return;
                                 }
-                            });
-                        }
 
-                        supabase.from("competitive_lobbies").update({ status: "finished", winner_id: state.player.supabaseId }).eq("id", lobbyId).then(r => {
-                            if (r.error) console.error("[ATLAS] Erro ao marcar vitória no lobby:", r.error);
-                        });
-                        supabase.from("competitive_players").update({ status: "won" }).eq("lobby_id", lobbyId).eq("player_id", state.player.supabaseId).then();
+                                // 🏆 Se chegamos aqui, somos o PRIMEIRO vencedor oficial
+                                console.log("[ATLAS] Vitória Confirmada no Servidor!");
+                                
+                                // 📡 Notifica os outros agentes via Broadcast (Imediato)
+                                // Fazemos isso ANTES de mudar o status local para WON, 
+                                // pois mudar o status faria o useEffect de sincronização desmontar.
+                                if (syncChannelRef.current) {
+                                    syncChannelRef.current.send({
+                                        type: "broadcast",
+                                        event: "mission_finished",
+                                        payload: { 
+                                            winnerId: state.player.supabaseId, 
+                                            winnerName: state.player.nome || "um Agente de Elite" 
+                                        }
+                                    });
+                                }
+
+                                // Só agora registramos a captura e damos o dinheiro/XP na state local
+                                const finalState = registerCapture({
+                                    ...state,
+                                    player: { ...state.player, dinheiro: state.player.dinheiro + caseObj.recompensa, xp: state.player.xp + caseObj.xp },
+                                    runs: { ...state.runs, [caseId]: nextRun },
+                                }, run.warrantId);
+                                replaceState(saveGame(finalState));
+
+                                supabase.from("competitive_players").update({ status: "won" }).eq("lobby_id", lobbyId).eq("player_id", state.player.supabaseId).then();
+                            });
+                    } else {
+                        // Modo Solo: Comportamento normal
+                        const nextState = registerCapture({
+                            ...state,
+                            player: { ...state.player, dinheiro: state.player.dinheiro + caseObj.recompensa, xp: state.player.xp + caseObj.xp },
+                            runs: { ...state.runs, [caseId]: nextRun },
+                        }, run.warrantId);
+                        replaceState(saveGame(nextState));
                     }
                 } else {
                     const nextRun = {

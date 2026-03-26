@@ -246,9 +246,9 @@ export const Caso9Scenarios = [
   {
     id: "C009_S5",
     suspectId: "015", // Doutor Marfim (Henrik Stahl)
-    finalCity: "Zurique",
-    spottedAt: ["Rio de Janeiro", "Moscou", "Londres", "Paris", "Roma", "Madrid", "Amsterdã", "Viena", "Zurique"],
-    route: ["Berlim", "Rio de Janeiro", "Moscou", "Londres", "Paris", "Roma", "Madrid", "Amsterdã", "Viena", "Zurique"],
+    finalCity: "Zurich",
+    spottedAt: ["Rio de Janeiro", "Moscou", "Londres", "Paris", "Roma", "Madrid", "Amsterdã", "Viena", "Zurich"],
+    route: ["Berlim", "Rio de Janeiro", "Moscou", "Londres", "Paris", "Roma", "Madrid", "Amsterdã", "Viena", "Zurich"],
     travelTable: {
       "Berlim": ["Rio de Janeiro", "Londres", "Moscou"],
       "Rio de Janeiro": ["Moscou", "Lisboa", "Nova York"],
@@ -258,8 +258,8 @@ export const Caso9Scenarios = [
       "Roma": ["Madrid", "Paris", "Viena"],
       "Madrid": ["Amsterdã", "Roma", "Lisboa"],
       "Amsterdã": ["Viena", "Paris", "Roma"],
-      "Viena": ["Zurique", "Roma", "Toronto"],
-      "Zurique": []
+      "Viena": ["Zurich", "Roma", "Toronto"],
+      "Zurich": []
     },
     interrogatorios: [
       { id: "S5_1", cidade: "Berlim", local: "Biblioteca", personagem: "Bibliotecária", imgLocal: "/NPC/Biblioteca.png", imgPersonagem: "/NPC/Bibliotecaria.png", pista: "Ele comentou sobre um país cuja bandeira possui verde, amarelo e azul com um losango central." },
@@ -298,9 +298,9 @@ export const Caso9Scenarios = [
       { id: "S5_26", cidade: "Viena", local: "Táxi", personagem: "Taxista", imgLocal: "/NPC/Taxi.png", imgPersonagem: "/NPC/Taxista.png", pista: "Levei ao aeroporto." },
       { id: "S5_27", cidade: "Viena", local: "Mercador", personagem: "Mercador", imgLocal: "/NPC/FeiraVendas.png", imgPersonagem: "/NPC/Mercador.png", pista: "Agora tenho certeza… ele comentou que joga xadrez." },
 
-      { id: "S5_28", cidade: "Zurique", local: "Banco", personagem: "Banqueiro", imgLocal: "/NPC/Banco.png", imgPersonagem: "/NPC/Banqueiro.png", pista: "Sim… ele passou por aqui hoje." },
-      { id: "S5_29", cidade: "Zurique", local: "Restaurante", personagem: "Garçom", imgLocal: "/NPC/Restaurante.png", imgPersonagem: "/NPC/Garcon.png", pista: "Esteve no restaurante do centro." },
-      { id: "S5_30", cidade: "Zurique", local: "Táxi", personagem: "Taxista", imgLocal: "/NPC/Taxi.png", imgPersonagem: "/NPC/Taxista.png", pista: "Levei ele ao distrito financeiro." }
+      { id: "S5_28", cidade: "Zurich", local: "Banco", personagem: "Banqueiro", imgLocal: "/NPC/Banco.png", imgPersonagem: "/NPC/Banqueiro.png", pista: "Sim… ele passou por aqui hoje." },
+      { id: "S5_29", cidade: "Zurich", local: "Restaurante", personagem: "Garçom", imgLocal: "/NPC/Restaurante.png", imgPersonagem: "/NPC/Garcon.png", pista: "Esteve no restaurante do centro." },
+      { id: "S5_30", cidade: "Zurich", local: "Táxi", personagem: "Taxista", imgLocal: "/NPC/Taxi.png", imgPersonagem: "/NPC/Taxista.png", pista: "Levei ele ao distrito financeiro." }
     ]
   }
 ];

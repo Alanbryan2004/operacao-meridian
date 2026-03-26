@@ -28,7 +28,9 @@ export default function CasoSolucionado() {
     // 🔍 Tenta buscar o nome do vencedor caso não tenha sido sincronizado via Broadcast/Realtime
     useEffect(() => {
         const lobbyId = searchParams.get("lobbyId");
-        if (isCompetitive && !isWon && !foundWinnerName && lobbyId) {
+        const isGenericName = !foundWinnerName || foundWinnerName === "um Agente de Elite";
+        
+        if (isCompetitive && !isWon && isGenericName && lobbyId) {
             console.log("[ATLAS] Buscando nome do vencedor no banco...");
             supabase.from("competitive_lobbies")
                 .select("winner_id")
@@ -39,7 +41,7 @@ export default function CasoSolucionado() {
                         const { data: profile } = await supabase
                             .from("profiles")
                             .select("nickname")
-                            .eq("id", data.winner_id)
+                            .eq("supabase_id", data.winner_id)
                             .maybeSingle();
                         
                         if (profile?.nickname) {
