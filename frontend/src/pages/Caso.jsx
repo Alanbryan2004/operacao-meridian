@@ -116,351 +116,264 @@ function Panel({ children }) {
 }
 
 export default function Caso() {
-    const nav = useNavigate();
-    const { caseId } = useParams();
-    const { state, replaceState } = useGame();
-    const [searchParams] = useSearchParams();
-    // 🔥 RELEVANTE: Precisamos saber se a missão é competitiva tanto pela URL quanto pela definição do Caso
-    const isMissionCompetitive = useMemo(() => {
-        const cObj = state?.cases?.find(c => c.id === caseId);
-        return searchParams.get("mode") === "competitive" || !!cObj?.isCompetitive;
-    }, [state?.cases, caseId, searchParams]);
-
-    // MODOS CARD 2: "RESUMO" | "ACTIONS" | "LOCATIONS" | "DIALOGUE" | "JOURNAL" | "PROFILE" | "TRAVEL_MAP" | "TRAVEL_MODES" | "ARRIVAL"
-    const [viewMode, setViewMode] = useState("RESUMO");
-    const [selectedLocal, setSelectedLocal] = useState(null);
-    const [selectedDest, setSelectedDest] = useState(null);
-    const [showSuspectVideo, setShowSuspectVideo] = useState(false);
-    const [activeVideo, setActiveVideo] = useState(null);
-    const [darkenScreen, setDarkenScreen] = useState(false);
-    const [videoEnded, setVideoEnded] = useState(false);
-    const [profileTab, setProfileTab] = useState("PERFIL");
-    const [revealFinalResult, setRevealFinalResult] = useState(false);
-
-    // Modal de mensagem padronizado
-    const [modalConfig, setModalConfig] = useState({
-        show: false,
-        message: "",
-        type: "SUCCESS",
-        onConfirm: null,
-        isConfirm: false
-    });
-
-    const lobbyId = searchParams.get("lobbyId");
-    const forcedScenarioId = searchParams.get("scenario");
-
-    useEffect(() => {
-        if (!state) return;
-        const caseObj = state.cases.find((x) => x.id === caseId);
-        if (!caseObj) {
-            nav("/mural");
-            return;
-        }
-
-        // Só forçamos o reset se estiver em modo competitivo E (não houver missão OU o cenário/lobby for diferente)
-        const currentRun = state.runs?.[caseId];
-        const scenarioMismatch = forcedScenarioId && currentRun?.scenarioId !== forcedScenarioId;
-        const lobbyMismatch = lobbyId && currentRun?.lobbyId !== lobbyId;
-        const noRun = !currentRun;
-
-        const needsReset = isMissionCompetitive && (noRun || lobbyMismatch || scenarioMismatch);
+    try {
+        const nav = useNavigate();
+        const { caseId } = useParams();
+        const { state, replaceState } = useGame();
+        const [searchParams] = useSearchParams();
         
-        // Passamos lobbyId e forcedScenarioId para que o startRunIfNeeded já inicialize corretamente
-        const next = startRunIfNeeded(state, { ...caseObj, isCompetitive: isMissionCompetitive }, needsReset, forcedScenarioId, lobbyId);
-        
-        if (next !== state) {
-            replaceState(saveGame(next));
-        }
+        const isMissionCompetitive = useMemo(() => {
+            const cObj = state?.cases?.find(c => c.id === caseId);
+            return searchParams.get("mode") === "competitive" || !!cObj?.isCompetitive;
+        }, [state?.cases, caseId, searchParams]);
 
-        // tenta tocar áudio (se já liberou no splash/login)
-        window.dispatchEvent(new CustomEvent("meridian-play-audio", { detail: true }));
-    }, [caseId, isMissionCompetitive, forcedScenarioId, nav, replaceState, state]);
+        const [viewMode, setViewMode] = useState("RESUMO");
+        const [selectedLocal, setSelectedLocal] = useState(null);
+        const [selectedDest, setSelectedDest] = useState(null);
+        const [showSuspectVideo, setShowSuspectVideo] = useState(false);
+        const [activeVideo, setActiveVideo] = useState(null);
+        const [darkenScreen, setDarkenScreen] = useState(false);
+        const [videoEnded, setVideoEnded] = useState(false);
+        const [profileTab, setProfileTab] = useState("PERFIL");
+        const [revealFinalResult, setRevealFinalResult] = useState(false);
 
-    const caseObj = useMemo(
-        () => state?.cases?.find((x) => x.id === caseId),
-        [state, caseId]
-    );
-    const run = useMemo(
-        () => (state?.runs ? state.runs[caseId] : null),
-        [state, caseId]
-    );
+        const [modalConfig, setModalConfig] = useState({
+            show: false,
+            message: "",
+            type: "SUCCESS",
+            onConfirm: null,
+            isConfirm: false
+        });
 
-    // Ref para manter o status mais recente do run, acessível dentro de closures (ex: onEnded do vídeo)
-    const runStatusRef = useRef(run?.status);
-    useEffect(() => { runStatusRef.current = run?.status; }, [run?.status]);
-    const syncChannelRef = useRef(null);
+        const lobbyId = searchParams.get("lobbyId");
+        const forcedScenarioId = searchParams.get("scenario");
 
-    useEffect(() => {
-        if (viewMode === "ARRIVAL" && (run?.status === "WON" || run?.status === "LOST")) {
-            setRevealFinalResult(false);
-            const timer = setTimeout(() => {
-                setRevealFinalResult(true);
-            }, 10000); // 10 segundos de suspense
-            return () => clearTimeout(timer);
-        } else if (viewMode !== "ARRIVAL") {
-            setRevealFinalResult(false);
-        }
-    }, [viewMode, run?.status]);
-
-    // Lógica de Sincronização Competitiva
-    useEffect(() => {
-        if (!isMissionCompetitive || !lobbyId || !run || run.status !== "IN_PROGRESS") return;
-
-        console.log("[ATLAS] Iniciando Sincronização Realtime para Lobby:", lobbyId);
-
-        // Função para encerrar a missão localmente como "LOST" (Outro Agente venceu)
-        async function terminateAsLost(winnerId) {
-            console.log("[ATLAS] Finalizando missão: Outro agente venceu.", winnerId);
-            try {
-                const { data: winnerProfile } = await supabase
-                    .from("profiles")
-                    .select("nickname")
-                    .eq("supabase_id", winnerId)
-                    .single();
-                
-                const wName = winnerProfile?.nickname || "um Agente de Elite";
-                
-                const nextRun = {
-                    ...run,
-                    status: "LOST",
-                    winnerName: wName,
-                    jornal: [...run.jornal, { t: new Date().toISOString(), msg: `📡 ALERTA A.T.L.A.S.: Missão encerrada. O Agente ${wName} realizou a captura primeiro.` }]
-                };
-                
-                const nextState = { ...state, runs: { ...state.runs, [caseId]: nextRun } };
-                replaceState(saveGame(nextState));
-                nav(`/caso-solucionado/${caseId}?mode=competitive`);
-            } catch (err) {
-                console.error("[ATLAS] Erro ao encerrar missão competitiva:", err);
+        useEffect(() => {
+            if (!state) return;
+            const caseObj = state.cases.find((x) => x.id === caseId);
+            if (!caseObj) {
                 nav("/mural");
+                return;
             }
-        }
 
-        // 🔍 Check inicial: Ver se já finalizou enquanto carregava
-        supabase.from("competitive_lobbies")
-            .select("status, winner_id")
-            .eq("id", lobbyId)
-            .single()
-            .then(({ data }) => {
-                if (data?.status === "finished" && data?.winner_id !== state?.player?.supabaseId) {
-                    terminateAsLost(data.winner_id);
-                }
-            });
+            const currentRun = state.runs?.[caseId];
+            const scenarioMismatch = forcedScenarioId && currentRun?.scenarioId !== forcedScenarioId;
+            const lobbyMismatch = lobbyId && currentRun?.lobbyId !== lobbyId;
+            const noRun = !currentRun;
+            const needsReset = isMissionCompetitive && (noRun || lobbyMismatch || scenarioMismatch);
+            
+            const next = startRunIfNeeded(state, { ...caseObj, isCompetitive: isMissionCompetitive }, needsReset, forcedScenarioId, lobbyId);
+            
+            if (next !== state) {
+                replaceState(saveGame(next));
+            }
+            window.dispatchEvent(new CustomEvent("meridian-play-audio", { detail: true }));
+        }, [caseId, isMissionCompetitive, forcedScenarioId, nav, replaceState, state]);
 
-        const channel = supabase
-            .channel(`case-sync-${lobbyId}`)
-            .on("postgres_changes", {
-                event: "UPDATE",
-                schema: "public",
-                table: "competitive_lobbies",
-                filter: `id=eq.${lobbyId}`
-            }, (payload) => {
-                const currentPlayerId = state?.player?.supabaseId;
-                const currentStatus = runStatusRef.current;
-                
-                console.log("[ATLAS] Update Realtime Recebido:", payload.new.status, "Vencedor ID:", payload.new.winner_id);
+        const caseObj = useMemo(
+            () => state?.cases?.find((x) => x.id === caseId),
+            [state, caseId]
+        );
+        const run = useMemo(
+            () => (state?.runs ? state.runs[caseId] : null),
+            [state, caseId]
+        );
 
-                if (payload.new.status === "finished" && payload.new.winner_id !== currentPlayerId && currentStatus === "IN_PROGRESS") {
-                    terminateAsLost(payload.new.winner_id);
-                }
-            })
-            .on("broadcast", { event: "mission_finished" }, ({ payload }) => {
-                const currentPlayerId = state?.player?.supabaseId;
-                const currentStatus = runStatusRef.current;
-                
-                console.log("[ATLAS] Broadcast de Fim de Missão Recebido:", payload);
+        const runStatusRef = useRef(run?.status);
+        useEffect(() => { runStatusRef.current = run?.status; }, [run?.status]);
+        const syncChannelRef = useRef(null);
 
-                if (payload.winnerId !== currentPlayerId && currentStatus === "IN_PROGRESS") {
-                    console.log("[ATLAS] Recebido sinal de vitória do Agente:", payload.winnerName);
+        useEffect(() => {
+            if (viewMode === "ARRIVAL" && (run?.status === "WON" || run?.status === "LOST")) {
+                setRevealFinalResult(false);
+                const timer = setTimeout(() => {
+                    setRevealFinalResult(true);
+                }, 10000);
+                return () => clearTimeout(timer);
+            } else if (viewMode !== "ARRIVAL") {
+                setRevealFinalResult(false);
+            }
+        }, [viewMode, run?.status]);
+
+        useEffect(() => {
+            if (!isMissionCompetitive || !lobbyId || !run || run?.status !== "IN_PROGRESS") return;
+
+            async function terminateAsLost(winnerId) {
+                try {
+                    const { data: winnerProfile } = await supabase
+                        .from("profiles")
+                        .select("nickname")
+                        .eq("supabase_id", winnerId)
+                        .single();
                     
-                    // Finaliza localmente com os dados recebidos via broadcast (mais rápido)
+                    const wName = winnerProfile?.nickname || "um Agente de Elite";
                     const nextRun = {
                         ...run,
                         status: "LOST",
-                        winnerName: payload.winnerName,
-                        jornal: [...run.jornal, { t: new Date().toISOString(), msg: `📡 ALERTA A.T.L.A.S.: Missão encerrada. O Agente ${payload.winnerName} realizou a captura primeiro.` }]
+                        winnerName: wName,
+                        jornal: [...run.jornal, { t: new Date().toISOString(), msg: `📡 ALERTA A.T.L.A.S.: Missão encerrada. O Agente ${wName} realizou a captura primeiro.` }]
                     };
-                    
                     const nextState = { ...state, runs: { ...state.runs, [caseId]: nextRun } };
                     replaceState(saveGame(nextState));
                     nav(`/caso-solucionado/${caseId}?mode=competitive`);
+                } catch (err) {
+                    nav("/mural");
                 }
-            })
-            .subscribe((status) => {
-                console.log(`[ATLAS] Realtime Status Lobby ${lobbyId}:`, status);
-            });
+            }
 
-        syncChannelRef.current = channel;
+            supabase.from("competitive_lobbies")
+                .select("status, winner_id")
+                .eq("id", lobbyId)
+                .single()
+                .then(({ data }) => {
+                    if (data?.status === "finished" && data?.winner_id !== state?.player?.supabaseId) {
+                        terminateAsLost(data.winner_id);
+                    }
+                });
 
-        return () => {
-            console.log("[ATLAS] Removendo canal de sync competitivo:", lobbyId);
-            supabase.removeChannel(channel);
-            syncChannelRef.current = null;
+            const channel = supabase
+                .channel(`case-sync-${lobbyId}`)
+                .on("postgres_changes", {
+                    event: "UPDATE",
+                    schema: "public",
+                    table: "competitive_lobbies",
+                    filter: `id=eq.${lobbyId}`
+                }, (payload) => {
+                    const currentPlayerId = state?.player?.supabaseId;
+                    const currentStatus = runStatusRef.current;
+                    if (payload.new.status === "finished" && payload.new.winner_id !== currentPlayerId && currentStatus === "IN_PROGRESS") {
+                        terminateAsLost(payload.new.winner_id);
+                    }
+                })
+                .on("broadcast", { event: "mission_finished" }, ({ payload }) => {
+                    const currentPlayerId = state?.player?.supabaseId;
+                    const currentStatus = runStatusRef.current;
+                    if (payload.winnerId !== currentPlayerId && currentStatus === "IN_PROGRESS") {
+                        const nextRun = {
+                            ...run,
+                            status: "LOST",
+                            winnerName: payload.winnerName,
+                            jornal: [...run.jornal, { t: new Date().toISOString(), msg: `📡 ALERTA A.T.L.A.S.: Missão encerrada. O Agente ${payload.winnerName} realizou a captura primeiro.` }]
+                        };
+                        const nextState = { ...state, runs: { ...state.runs, [caseId]: nextRun } };
+                        replaceState(saveGame(nextState));
+                        nav(`/caso-solucionado/${caseId}?mode=competitive`);
+                    }
+                })
+                .subscribe();
+
+            syncChannelRef.current = channel;
+            return () => {
+                supabase.removeChannel(channel);
+                syncChannelRef.current = null;
+            };
+        }, [isMissionCompetitive, lobbyId, caseId, nav, run?.status]);
+
+        const currentCityImg = useMemo(() => {
+            if (!run) return caseObj?.imgItem || "/reliquiaDesaparecida.png";
+            const img = getCidadeImagem(run.localAtual?.cidade);
+            if (run.localAtual?.cidade === "Campinas" || img === "/Paises/default.png") {
+                return caseObj?.imgItem || "/reliquiaDesaparecida.png";
+            }
+            return img;
+        }, [run?.localAtual?.cidade, caseObj?.imgItem]);
+
+        const activeScenario = useMemo(() => {
+            return findScenario(caseId, run?.scenarioId, run?.targetSuspectId);
+        }, [run?.scenarioId, run?.targetSuspectId, caseId]);
+
+        const hasMissionProgressed = useMemo(() => {
+            if (!activeScenario?.route) return true;
+            const clues = run?.pistasDescobertas || [];
+            return clues.length >= 3;
+        }, [activeScenario, run?.pistasDescobertas]);
+
+        const localInterrogatorios = useMemo(() => {
+            const source = activeScenario?.interrogatorios || run?.interrogatorios || caseObj?.interrogatorios || [];
+            const matches = source.filter(loc => loc.cidade === run?.localAtual?.cidade);
+            if (matches.length > 3 && activeScenario?.route) {
+                return hasMissionProgressed ? matches.slice(-3) : matches.slice(0, 3);
+            }
+            return matches;
+        }, [run?.localAtual?.cidade, activeScenario, run?.interrogatorios, caseObj?.interrogatorios, hasMissionProgressed]);
+
+        const travelOptions = useMemo(() => {
+            if (!run?.localAtual?.cidade) return [];
+            const globalOptions = DESTINATION_OPTIONS.filter(d => d.origem === run.localAtual?.cidade);
+            if (activeScenario?.travelTable && activeScenario.travelTable[run.localAtual?.cidade]) {
+                const forcedCities = activeScenario.travelTable[run.localAtual?.cidade];
+                return globalOptions
+                    .filter(d => forcedCities.includes(d.cidade))
+                    .filter((v, i, a) => a.findIndex(t => t.cidade === v.cidade) === i);
+            }
+            return globalOptions.filter((v, i, a) => a.findIndex(t => t.cidade === v.cidade) === i);
+        }, [run?.localAtual?.cidade, activeScenario]);
+
+        if (!state || !caseObj || !run) return null;
+
+        const updateRun = (nextRun) => {
+            const nextState = { ...state, runs: { ...state.runs, [caseId]: nextRun } };
+            replaceState(saveGame(nextState));
         };
-    }, [isMissionCompetitive, lobbyId, caseId, nav, run?.status]);
 
-    const currentCityImg = useMemo(() => {
-        if (!run) return caseObj?.imgItem || "/reliquiaDesaparecida.png";
+        const confirmarViagem = (transport) => {
+            const destino = transport.customDest || selectedDest;
+            if (!destino) return;
+            const custo = transport.custoBase;
+            const horas = transport.horasBase;
+            if (state.player.dinheiro < custo) {
+                updateRun({
+                    ...run,
+                    jornal: [...run.jornal, { t: new Date().toISOString(), msg: `🚫 Dinheiro insuficiente para viajar de ${transport.nome}.` }],
+                });
+                setViewMode("ACTIONS");
+                return;
+            }
+            let nextState = spendMoney(state, custo, `✈️ Viagem para ${destino.pais} (${transport.nome}): -$${custo}`, caseId);
+            nextState = saveGame(nextState);
+            const nextRun = spendTime(nextState.runs[caseId], horas, `✈️ Você chegou em ${destino.cidade} após ${horas}h de viagem.`);
+            nextRun.localAtual = { flag: destino.flag, pais: destino.pais, city: destino.cidade }; // city -> cidade
+            nextRun.localAtual.cidade = destino.cidade; // Garantir campo correto
+            nextRun.cidadeAnterior = run.localAtual?.cidade;
+            const finalState = saveGame({ ...nextState, runs: { ...nextState.runs, [caseId]: nextRun } });
+            replaceState(finalState);
+            setViewMode("ARRIVAL");
+            let videoPath = null;
+            if (activeScenario?.route) {
+                const destIndexFirst = activeScenario.route.indexOf(destino.cidade);
+                const destIndexLast = activeScenario.route.lastIndexOf(destino.cidade);
+                if (destIndexFirst === 1) videoPath = "/Videos/suspeito.mp4";
+                const isLastStage = destIndexLast === activeScenario.route.length - 1;
+                if (isLastStage && destIndexLast !== 0 && hasMissionProgressed) videoPath = "/Videos/suspeito2.mp4";
+            }
+            if (videoPath) {
+                setActiveVideo(videoPath);
+                setDarkenScreen(true);
+                setTimeout(() => { setShowSuspectVideo(true); setDarkenScreen(false); }, 800);
+            } else {
+                setShowSuspectVideo(false);
+                setActiveVideo(null);
+            }
+        };
 
-        // Se estamos em Campinas (início) ou se a imagem da cidade é default, prioriza a imagem da relíquia/caso
-        const img = getCidadeImagem(run.localAtual.cidade);
-        if (run.localAtual.cidade === "Campinas" || img === "/Paises/default.png") {
-            return caseObj?.imgItem || "/reliquiaDesaparecida.png";
-        }
-        return img;
-    }, [run?.localAtual?.cidade, caseObj?.imgItem]);
+        const abrirLocais = () => { if (run?.status === "IN_PROGRESS") setViewMode("LOCATIONS"); };
 
-    const activeScenario = useMemo(() => {
-        return findScenario(caseId, run?.scenarioId, run?.targetSuspectId);
-    }, [run?.scenarioId, run?.targetSuspectId, caseId]);
-
-    // Centraliza a lógica de progresso da missão (etapa intermediária concluída)
-    const hasMissionProgressed = useMemo(() => {
-        if (!activeScenario?.route) return true;
-        
-        // 🎮 MUDANÇA: Exigimos que o jogador tenha pelo menos 3 pistas. 
-        // Isso prova que ele investigou, mas permite "pular" etapas.
-        const clues = run?.pistasDescobertas || [];
-        return clues.length >= 3;
-    }, [activeScenario, run?.pistasDescobertas]);
-
-    const localInterrogatorios = useMemo(() => {
-        const source = activeScenario?.interrogatorios || run?.interrogatorios || caseObj?.interrogatorios || [];
-        const matches = source.filter(loc => loc.cidade === run?.localAtual?.cidade);
-
-        // 🔥 FIX: Se a cidade aparece múltiplas vezes na rota (ex: Paris no início e no fim do Caso 2),
-        // filtramos para mostrar apenas o conjunto atual baseado no progresso da missão.
-        if (matches.length > 3 && activeScenario?.route) {
-            return hasMissionProgressed ? matches.slice(-3) : matches.slice(0, 3);
-        }
-
-        return matches;
-    }, [run?.localAtual?.cidade, activeScenario, run?.interrogatorios, caseObj?.interrogatorios, hasMissionProgressed]);
-
-    // Opções de viagem filtradas pelo cenário
-    const travelOptions = useMemo(() => {
-        if (!run) return [];
-        const globalOptions = DESTINATION_OPTIONS.filter(d => d.origem === run.localAtual.cidade);
-        if (activeScenario?.travelTable && activeScenario.travelTable[run.localAtual.cidade]) {
-            const forcedCities = activeScenario.travelTable[run.localAtual.cidade];
-            return globalOptions
-                .filter(d => forcedCities.includes(d.cidade))
-                .filter((v, i, a) => a.findIndex(t => t.cidade === v.cidade) === i);
-        }
-        return globalOptions.filter((v, i, a) => a.findIndex(t => t.cidade === v.cidade) === i);
-    }, [run?.localAtual?.cidade, activeScenario]);
-
-    if (!state || !caseObj || !run) return null;
-
-    function updateRun(nextRun) {
-        const nextState = { ...state, runs: { ...state.runs, [caseId]: nextRun } };
-        replaceState(saveGame(nextState));
-    }
-
-    function confirmarViagem(transport) {
-        const destino = transport.customDest || selectedDest;
-        if (!destino) return;
-
-        const custo = transport.custoBase;
-        const horas = transport.horasBase;
-
-        if (state.player.dinheiro < custo) {
-            updateRun({
+        const interrogarNoLocal = (locObj) => {
+            if (!canAct) return;
+            const currentCount = (run.investigationCountByCity?.[locObj.cidade] || 0) + 1;
+            const nextRunCount = {
                 ...run,
-                jornal: [...run.jornal, { t: new Date().toISOString(), msg: `🚫 Dinheiro insuficiente para viajar de ${transport.nome}.` }],
-            });
-            setViewMode("ACTIONS");
-            return;
-        }
+                investigationCountByCity: { ...(run.investigationCountByCity || {}), [locObj.cidade]: currentCount }
+            };
+            const isScenarioFinalCity = activeScenario ? (locObj.cidade === activeScenario.finalCity || (activeScenario.route && locObj.cidade === activeScenario.route[activeScenario.route.length - 1])) : false;
+            const isStaticFinalCity = locObj.cidade === caseObj?.localFinal?.cidade;
+            let isFinalCity = isScenarioFinalCity || isStaticFinalCity;
+            if (isFinalCity && activeScenario?.route && !hasMissionProgressed) isFinalCity = false;
 
-        let nextState = spendMoney(state, custo, `✈️ Viagem para ${destino.pais} (${transport.nome}): -$${custo}`, caseId);
-        nextState = saveGame(nextState);
-        const nextRun = spendTime(nextState.runs[caseId], horas, `✈️ Você chegou em ${destino.cidade} após ${horas}h de viagem.`);
-
-        // Atualiza localização no run
-        nextRun.localAtual = { flag: destino.flag, pais: destino.pais, cidade: destino.cidade };
-        nextRun.cidadeAnterior = run.localAtual.cidade;
-
-        const finalState = saveGame({
-            ...nextState,
-            runs: { ...nextState.runs, [caseId]: nextRun },
-        });
-        replaceState(finalState);
-        setViewMode("ARRIVAL");
-
-        let videoPath = null;
-        if (activeScenario?.route) {
-            // Usa lastIndexOf para detectar a chegada na etapa final se a cidade for a mesma que a inicial (loop)
-            const destIndexFirst = activeScenario.route.indexOf(destino.cidade);
-            const destIndexLast = activeScenario.route.lastIndexOf(destino.cidade);
-            
-            // Etapa de pista inicial (geralmente index 1)
-            if (destIndexFirst === 1) videoPath = "/Videos/suspeito.mp4";
-            
-            // Etapa final (index 4 ou último elemento da rota)
-            // Só dispara se não for a etapa 1 e o destino for o último da rota
-            const isLastStage = destIndexLast === activeScenario.route.length - 1;
-            if (isLastStage && destIndexLast !== 0 && hasMissionProgressed) {
-                videoPath = "/Videos/suspeito2.mp4";
-            }
-        }
-
-        setVideoEnded(false);
-        if (videoPath) {
-            setActiveVideo(videoPath);
-            setDarkenScreen(true);
-            setTimeout(() => {
-                setShowSuspectVideo(true);
-                setDarkenScreen(false);
-            }, 800); // 800ms de suspense
-        } else {
-            setShowSuspectVideo(false);
-            setActiveVideo(null);
-        }
-    }
-
-    function abrirLocais() {
-        if (run.status !== "IN_PROGRESS") return;
-        setViewMode("LOCATIONS");
-    }
-
-    function interrogarNoLocal(locObj) {
-        if (!canAct) return;
-
-        // Incrementa contador da cidade
-        const currentCount = (run.investigationCountByCity?.[locObj.cidade] || 0) + 1;
-        const nextRunCount = {
-            ...run,
-            investigationCountByCity: {
-                ...(run.investigationCountByCity || {}),
-                [locObj.cidade]: currentCount
-            }
-        };
-
-        // Lógica de Captura Final (Dinâmica por Cenário)
-        const isScenarioFinalCity = activeScenario ? (locObj.cidade === activeScenario.finalCity || (activeScenario.route && locObj.cidade === activeScenario.route[activeScenario.route.length - 1])) : false;
-        const isStaticFinalCity = locObj.cidade === caseObj?.localFinal?.cidade;
-        let isFinalCity = isScenarioFinalCity || isStaticFinalCity;
-
-        console.log("[ATLAS] Investigação:", locObj.cidade, "isFinal?", isFinalCity, "Progress?", hasMissionProgressed, "Count:", currentCount);
-
-        // 🔥 REGRA: Só permitimos a captura se o jogador já tiver pistas suficientes
-        if (isFinalCity && activeScenario?.route) {
-            if (!hasMissionProgressed) {
-                console.log("[ATLAS] Captura bloqueada: Poucas pistas descobertas (mínimo 3).");
-                isFinalCity = false;
-            }
-        }
-
-        if (isFinalCity) {
-            // Se for a SEGUNDA investigação na cidade final
-            if (currentCount >= 2) {
+            if (isFinalCity && currentCount >= 2) {
                 const targetId = String(run.targetSuspectId || "008").trim();
                 const warrantIdSelected = String(run.warrantId || "").trim();
                 const isSuccess = run.mandadoEmitido && warrantIdSelected === targetId;
-
-                console.log(`[ATLAS] Captura Final: Target=${targetId}, Warrant=${warrantIdSelected}, Success=${isSuccess}`);
-
                 setDarkenScreen(true);
                 setVideoEnded(false);
                 setTimeout(() => {
@@ -477,519 +390,155 @@ export default function Caso() {
                         suspeitoCapturado: true,
                         jornal: [...run.jornal, { t: new Date().toISOString(), msg: `🎯 MISSÃO CUMPRIDA! O suspeito foi preso em ${locObj.cidade}.` }],
                     };
-
-                    // Sincronização Competitiva: Bloquear Lobby ATOMICAMENTE
                     if (isMissionCompetitive && lobbyId) {
-                        console.log("[ATLAS] Tentando bloquear lobby competitivo como vencedor...");
-                        
-                        // 🔐 Só ganhamos se conseguirmos mudar o status de 'active' para 'finished'
-                        supabase.from("competitive_lobbies")
-                            .update({ status: "finished", winner_id: state.player.supabaseId })
-                            .eq("id", lobbyId)
-                            .eq("status", "active")
-                            .select()
-                            .then(({ data, error }) => {
-                                if (error || !data || data.length === 0) {
-                                    console.log("[ATLAS] Tarde demais! Outro agente já venceu.");
-                                    // Não damos a recompensa e abortamos o fluxo de vitória local
-                                    // O listener Realtime vai cuidar do redirecionamento para o "LOST"
-                                    return;
-                                }
-
-                                // 🏆 Se chegamos aqui, somos o PRIMEIRO vencedor oficial
-                                console.log("[ATLAS] Vitória Confirmada no Servidor!");
-                                
-                                // 📡 Notifica os outros agentes via Broadcast (Imediato)
-                                // Fazemos isso ANTES de mudar o status local para WON, 
-                                // pois mudar o status faria o useEffect de sincronização desmontar.
-                                if (syncChannelRef.current) {
-                                    syncChannelRef.current.send({
-                                        type: "broadcast",
-                                        event: "mission_finished",
-                                        payload: { 
-                                            winnerId: state.player.supabaseId, 
-                                            winnerName: state.player.nome || "um Agente de Elite" 
-                                        }
-                                    });
-                                }
-
-                                // Só agora registramos a captura e damos o dinheiro/XP na state local
-                                const finalState = registerCapture({
-                                    ...state,
-                                    player: { ...state.player, dinheiro: state.player.dinheiro + caseObj.recompensa, xp: state.player.xp + caseObj.xp },
-                                    runs: { ...state.runs, [caseId]: nextRun },
-                                }, run.warrantId);
+                        supabase.from("competitive_lobbies").update({ status: "finished", winner_id: state.player.supabaseId }).eq("id", lobbyId).eq("status", "active").select().then(({ data }) => {
+                            if (data?.length > 0) {
+                                syncChannelRef.current?.send({ type: "broadcast", event: "mission_finished", payload: { winnerId: state.player.supabaseId, winnerName: state.player.nome || "um Agente de Elite" } });
+                                const finalState = registerCapture({ ...state, player: { ...state.player, dinheiro: state.player.dinheiro + caseObj.recompensa, xp: state.player.xp + caseObj.xp }, runs: { ...state.runs, [caseId]: nextRun } }, run.warrantId);
                                 replaceState(saveGame(finalState));
-
                                 supabase.from("competitive_players").update({ status: "won" }).eq("lobby_id", lobbyId).eq("player_id", state.player.supabaseId).then();
-                            });
+                            }
+                        });
                     } else {
-                        // Modo Solo: Comportamento normal
-                        const nextState = registerCapture({
-                            ...state,
-                            player: { ...state.player, dinheiro: state.player.dinheiro + caseObj.recompensa, xp: state.player.xp + caseObj.xp },
-                            runs: { ...state.runs, [caseId]: nextRun },
-                        }, run.warrantId);
+                        const nextState = registerCapture({ ...state, player: { ...state.player, dinheiro: state.player.dinheiro + caseObj.recompensa, xp: state.player.xp + caseObj.xp }, runs: { ...state.runs, [caseId]: nextRun } }, run.warrantId);
                         replaceState(saveGame(nextState));
                     }
                 } else {
-                    const nextRun = {
-                        ...nextRunCount,
-                        status: "LOST",
-                        jornal: [...run.jornal, { t: new Date().toISOString(), msg: `❌ MISSÃO FRACASSADA! O suspeito escapou em ${locObj.cidade}.` }],
-                    };
-                    updateRun(nextRun);
+                    updateRun({ ...nextRunCount, status: "LOST", jornal: [...run.jornal, { t: new Date().toISOString(), msg: `❌ MISSÃO FRACASSADA! O suspeito escapou em ${locObj.cidade}.` }] });
                 }
                 return;
             }
-        }
 
-        const horas = 1;
-        const jaTem = run.pistasDescobertas.some(p => p.idInterrogatorio === locObj.id);
-        let msgPista;
-        let novaPista = null;
+            const jaTem = run.pistasDescobertas?.some(p => p.idInterrogatorio === locObj.id);
+            const nextRun = spendTime(nextRunCount, 1, jaTem ? `🗣️ Você voltou ao ${locObj.local}, nada novo.` : `🗣️ Investigação no ${locObj.local}: pista coletada!`);
+            if (!jaTem) nextRun.pistasDescobertas = [...(run.pistasDescobertas || []), { idInterrogatorio: locObj.id, conteudo: locObj.pista, fonte: locObj.personagem, local: locObj.local, cidade: locObj.cidade }];
+            updateRun(nextRun);
+            setSelectedLocal(locObj);
+            setViewMode("DIALOGUE");
+        };
 
-        if (jaTem) {
-            msgPista = `🗣️ Você voltou ao ${locObj.local}, nada novo.`;
-        } else {
-            msgPista = `🗣️ Investigação no ${locObj.local}: pista coletada!`;
-            novaPista = {
-                idInterrogatorio: locObj.id,
-                conteudo: locObj.pista,
-                fonte: locObj.personagem,
-                local: locObj.local,
-                cidade: locObj.cidade
-            };
-        }
+        const handleVoltar = () => {
+            if (!run?.cidadeAnterior) return;
+            const destObj = DESTINATION_OPTIONS.find(d => d.cidade === run.cidadeAnterior);
+            if (destObj) confirmarViagem({ id: "VOLTA", nome: "Retorno Direto", custoBase: 0, horasBase: 4, customDest: { cidade: destObj.cidade, pais: destObj.pais, flag: destObj.flag } });
+        };
 
-        const nextRun = spendTime(nextRunCount, horas, `🗣️ ${msgPista} (-${horas}h)`);
-        if (novaPista) nextRun.pistasDescobertas = [...run.pistasDescobertas, novaPista];
+        const analisar = () => { if (run?.status === "IN_PROGRESS") { updateRun(spendTime(run, 2, "🔍 Acessando Laboratório de Análise: -2h.")); setViewMode("ANALYZE"); } };
 
-        updateRun(nextRun);
-        setSelectedLocal(locObj);
-        setViewMode("DIALOGUE");
-    }
+        const emitirMandado = () => {
+            if (run?.status !== "IN_PROGRESS" || run?.mandadoEmitido) return;
+            const next = spendTime(run, 2, "🧾 Mandado emitido: -2h.");
+            next.mandadoEmitido = true;
+            updateRun(next);
+        };
 
-    function handleVoltar() {
-        if (!run.cidadeAnterior) return;
-        
-        const prevCity = run.cidadeAnterior;
-        // Tenta achar os dados da cidade anterior em DESTINATION_OPTIONS ou CIDADES
-        const destObj = DESTINATION_OPTIONS.find(d => d.cidade === prevCity);
-        
-        if (destObj) {
-            confirmarViagem({
-                id: "VOLTA",
-                nome: "Retorno Direto",
-                custoBase: 0,
-                horasBase: 4,
-                customDest: { cidade: destObj.cidade, pais: destObj.pais, flag: destObj.flag }
+        const handleAbort = () => {
+            setModalConfig({
+                show: true,
+                message: isMissionCompetitive ? "Deseja realmente ABORTAR esta missão competitiva? Todo o progresso será perdido." : "Deseja realmente ABORTAR esta missão? Todo o progresso atual será perdido.",
+                type: "ERROR",
+                isConfirm: true,
+                onConfirm: () => { replaceState(saveGame(abortRun(state, caseId))); nav("/mural"); }
             });
-        }
-    }
+        };
 
-    function analisar() {
-        if (run.status !== "IN_PROGRESS") return;
-        const horas = 2;
-        updateRun(spendTime(run, horas, `🔍 Acessando Laboratório de Análise: -${2}h.`));
-        setViewMode("ANALYZE");
-    }
+        const canAct = run?.status === "IN_PROGRESS";
 
-    function emitirMandado() {
-        if (run.status !== "IN_PROGRESS") return;
-        if (run.mandadoEmitido) {
-            updateRun({
-                ...run,
-                jornal: [...run.jornal, { t: new Date().toISOString(), msg: "🧾 Mandado já emitido." }],
-            });
-            return;
-        }
-        const horas = 2;
-        const next = spendTime(run, horas, `🧾 Mandado emitido: -${horas}h.`);
-        next.mandadoEmitido = true;
-        updateRun(next);
-    }
-
-    function handleAbort() {
-        const isComp = isMissionCompetitive;
-        setModalConfig({
-            show: true,
-            message: isComp ? "Deseja realmente ABORTAR esta missão competitiva? Todo o progresso será perdido." : "Deseja realmente ABORTAR esta missão? Todo o progresso atual será perdido e o bônus de despesas será descontado.",
-            type: "ERROR",
-            isConfirm: true,
-            onConfirm: () => {
-                const updatedState = abortRun(state, caseId);
-                replaceState(saveGame(updatedState));
-                setModalConfig({ show: false });
-                nav("/mural");
-            }
-        });
-    }
-
-    const canAct = run.status === "IN_PROGRESS";
-
-    return (
-        <div
-            style={{
-                minHeight: "100dvh",
-                width: "100vw",
-                margin: 0,
-                padding: 0,
-                background: "radial-gradient(circle at center, #071a26 0%, #000 70%)",
-                color: "#fff",
-                position: "relative",
-            }}
-        >
-            {/* Overlay de Escurecimento */}
-            <div
-                style={{
-                    position: "fixed",
-                    inset: 0,
-                    background: "#000",
-                    zIndex: 9999,
-                    opacity: darkenScreen ? 1 : 0,
-                    pointerEvents: "none",
-                    transition: "opacity 0.6s ease"
-                }}
-            />
-
-            <style>{`
-        .om-wrap { max-width: 560px; margin: 0 auto; padding: 14px; padding-bottom: 96px; }
-        .om-top { position: sticky; top: 0; z-index: 25; padding: 12px 0; background: linear-gradient(to bottom, #000, transparent); backdrop-filter: blur(8px); }
-        .om-title { font-size: 16px; font-weight: 800; }
-        .om-card { margin-top: 10px; }
-        .om-img-card { width: 100%; border-radius: 20px; border: 1px solid rgba(255,255,255,0.2); overflow: hidden; background: #000; position: relative; }
-        .om-btn { width: 100%; padding: 12px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.16); background: rgba(255,255,255,0.06); color: #fff; cursor: pointer; font-size: 13px; text-transform: uppercase; font-weight: 700; }
-        .om-btn:active { transform: scale(0.98); }
-        .om-btn:disabled { opacity: 0.5; cursor: not-allowed; }
-        .om-btn-primary { background: rgba(120,200,255,0.2); border-color: rgba(120,200,255,0.4); }
-        .om-tabs { position: fixed; bottom: 0; left: 0; right: 0; z-index: 100; padding: 15px; background: linear-gradient(to top, rgba(0,0,0,0.9), transparent); display: flex; justify-content: center; }
-        .om-tabs-inner { width: 100%; max-width: 500px; display: flex; gap: 10px; padding: 8px; border-radius: 20px; background: rgba(255,255,255,0.05); backdrop-filter: blur(15px); border: 1px solid rgba(255,255,255,0.1); }
-        .om-tab { flex: 1; padding: 12px; border-radius: 14px; border: none; background: transparent; color: rgba(255,255,255,0.7); cursor: pointer; text-align: center; font-size: 11px; font-weight: 800; letter-spacing: 0.5px; }
-        .om-tab-active { background: rgba(255,255,255,0.1); color: #fff; }
-
-        .om-scene-box { position: relative; width: 100%; height: 220px; overflow: hidden; background: #000; }
-        .om-scene-bg { width: 100%; height: 100%; object-fit: cover; opacity: 0.6; }
-        .om-scene-char { position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); height: 85%; filter: drop-shadow(0 0 20px rgba(255,255,255,0.2)); }
-        .om-dialog { margin-top: 10px; padding: 5px; font-size: 15px; line-height: 1.6; color: #fff; }
-        .om-journal-list { maxHeight: 250px; overflow-y: auto; padding-right: 5px; }
-        .om-journal-item { padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.08); }
-
-        /* Mapa Tático */
-        .om-map-container { position: relative; width: 100%; height: 200px; background: radial-gradient(ellipse at center, #0d2137 0%, #060e1a 100%); border-radius: 14px; overflow: hidden; border: 1px solid rgba(128,189,255,0.15); }
-        .om-map-container::before { content: ''; position: absolute; inset: 0; background-image: linear-gradient(rgba(128,189,255,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(128,189,255,0.04) 1px, transparent 1px); background-size: 30px 30px; pointer-events: none; }
-        .om-map-container::after { content: ''; position: absolute; inset: 0; background: radial-gradient(circle at 50% 50%, transparent 40%, rgba(0,0,0,0.5) 100%); pointer-events: none; }
-        .om-map-origin { position: absolute; width: 8px; height: 8px; background: #80bdff; border-radius: 50%; z-index: 5; box-shadow: 0 0 8px #80bdff, 0 0 16px rgba(128,189,255,0.4); transform: translate(-50%, -50%); }
-        .om-map-origin::after { content: ''; position: absolute; inset: -4px; border: 1px solid rgba(128,189,255,0.3); border-radius: 50%; animation: ping 2s cubic-bezier(0,0,0.2,1) infinite; }
-        @keyframes ping { 0% { transform: scale(1); opacity: 0.6; } 100% { transform: scale(3); opacity: 0; } }
-        .om-map-dest { position: absolute; width: 10px; height: 10px; background: #ff4d6a; border-radius: 50%; z-index: 5; box-shadow: 0 0 8px #ff4d6a; cursor: pointer; animation: destPulse 2s infinite; transform: translate(-50%, -50%); }
-        @keyframes destPulse { 0%, 100% { box-shadow: 0 0 8px #ff4d6a; } 50% { box-shadow: 0 0 16px #ff4d6a, 0 0 24px rgba(255,77,106,0.3); } }
-        .om-map-dest.selected { background: #ffd700; box-shadow: 0 0 12px #ffd700; animation: none; transform: translate(-50%, -50%); }
-        .om-map-label { position: absolute; font-size: 8px; font-weight: 800; letter-spacing: 1px; z-index: 6; text-shadow: 0 0 8px rgba(0,0,0,0.8); }
-        .om-map-loc-badge { position: absolute; bottom: 0; left: 0; right: 0; padding: 6px 12px; background: linear-gradient(transparent, rgba(6,14,26,0.95)); font-size: 10px; z-index: 10; display: flex; align-items: center; gap: 6px; }
-        .om-map-line { position: absolute; height: 2px; background: rgba(128,189,255,0.3); transform-origin: left center; z-index: 1; pointer-events: none; }
-      `}</style>
-
-            <div style={{ padding: "15px 15px 80px 15px" }}>
-                {/* Header Stats */}
-                {viewMode !== "ANALYZE" && !(viewMode === "PROFILE" && profileTab === "GALERIA") && (
-                    <div className="om-top">
-                        <Panel>
-                            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 4 }}>
-                                <div style={{ fontSize: 10, opacity: 0.6, letterSpacing: 2 }}>MISSÃO ATIVA</div>
-                                <div style={{ fontSize: 10, opacity: 0.6 }}>📍 {run.localAtual.cidade} · {run.localAtual.pais}</div>
-                            </div>
-                            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                                <div className="om-title">{caseObj.titulo}</div>
-                                <div style={{ textAlign: "right", display: "flex", gap: "15px", flexShrink: 0 }}>
-                                    <div>
-                                        <div style={{ fontSize: 14, fontWeight: 900 }}>${state.player.dinheiro}</div>
-                                        <div style={{ fontSize: 10, opacity: 0.6 }}>SALDO</div>
-                                    </div>
-                                    {!isMissionCompetitive && (
-                                        <div>
-                                            <div style={{ fontSize: 14, fontWeight: 900 }}>{fmtHoras(run.tempoRestanteHoras)}</div>
-                                            <div style={{ fontSize: 10, opacity: 0.6 }}>RESTANTES</div>
-                                        </div>
-                                    )}
-                                    {isMissionCompetitive && (
-                                        <div>
-                                            <div style={{ fontSize: 14, fontWeight: 900, color: "#80bdff" }}>PVP</div>
-                                            <div style={{ fontSize: 10, opacity: 0.6 }}>MODO</div>
-                                        </div>
-                                    )}
+        return (
+            <div style={{ minHeight: "100dvh", width: "100vw", background: "radial-gradient(circle at center, #071a26 0%, #000 70%)", color: "#fff", position: "relative" }}>
+                <div style={{ position: "fixed", inset: 0, background: "#000", zIndex: 9999, opacity: darkenScreen ? 1 : 0, pointerEvents: "none", transition: "opacity 0.6s ease" }} />
+                <style>{`
+                    .om-wrap { max-width: 560px; margin: 0 auto; padding: 14px; padding-bottom: 96px; }
+                    .om-top { position: sticky; top: 0; z-index: 25; padding: 12px 0; background: linear-gradient(to bottom, #000, transparent); backdrop-filter: blur(8px); }
+                    .om-title { font-size: 16px; font-weight: 800; }
+                    .om-card { margin-top: 10px; }
+                    .om-img-card { width: 100%; border-radius: 20px; border: 1px solid rgba(255,255,255,0.2); overflow: hidden; background: #000; position: relative; }
+                    .om-btn { width: 100%; padding: 12px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.16); background: rgba(255,255,255,0.06); color: #fff; cursor: pointer; font-size: 13px; text-transform: uppercase; font-weight: 700; }
+                    .om-btn:active { transform: scale(0.98); }
+                    .om-btn-primary { background: rgba(120,200,255,0.2); border-color: rgba(120,200,255,0.4); }
+                    .om-tabs { position: fixed; bottom: 0; left: 0; right: 0; z-index: 100; padding: 15px; background: linear-gradient(to top, rgba(0,0,0,0.9), transparent); display: flex; justify-content: center; }
+                    .om-tabs-inner { width: 100%; max-width: 500px; display: flex; gap: 10px; padding: 8px; border-radius: 20px; background: rgba(255,255,255,0.05); backdrop-filter: blur(15px); border: 1px solid rgba(255,255,255,0.1); }
+                    .om-tab { flex: 1; padding: 12px; border-radius: 14px; border: none; background: transparent; color: rgba(255,255,255,0.7); cursor: pointer; text-align: center; font-size: 11px; font-weight: 800; }
+                    .om-tab-active { background: rgba(255,255,255,0.1); color: #fff; }
+                    .om-scene-box { position: relative; width: 100%; height: 220px; overflow: hidden; background: #000; }
+                    .om-scene-bg { width: 100%; height: 100%; object-fit: cover; opacity: 0.6; }
+                    .om-scene-char { position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); height: 85%; }
+                    .om-journal-list { maxHeight: 250px; overflow-y: auto; }
+                    .om-journal-item { padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.08); }
+                    .om-map-container { position: relative; width: 100%; height: 200px; background: radial-gradient(ellipse at center, #0d2137 0%, #060e1a 100%); border-radius: 14px; overflow: hidden; border: 1px solid rgba(128,189,255,0.15); }
+                    .om-map-origin { position: absolute; width: 8px; height: 8px; background: #80bdff; border-radius: 50%; z-index: 5; transform: translate(-50%, -50%); }
+                    .om-map-dest { position: absolute; width: 10px; height: 10px; background: #ff4d6a; border-radius: 50%; z-index: 5; transform: translate(-50%, -50%); }
+                    .om-map-dest.selected { background: #ffd700; transform: translate(-50%, -50%); }
+                    .om-map-label { position: absolute; font-size: 8px; font-weight: 800; z-index: 6; text-shadow: 0 0 8px #000; }
+                    .om-map-loc-badge { position: absolute; bottom: 0; left: 0; right: 0; padding: 6px 12px; background: linear-gradient(transparent, rgba(6,14,26,0.95)); font-size: 10px; z-index: 10; display: flex; align-items: center; gap: 6px; }
+                `}</style>
+                <div style={{ padding: "15px 15px 80px 15px" }}>
+                    {viewMode !== "ANALYZE" && !(viewMode === "PROFILE" && profileTab === "GALERIA") && (
+                        <div className="om-top">
+                            <Panel>
+                                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 4 }}>
+                                    <div style={{ fontSize: 10, opacity: 0.6 }}>MISSÃO ATIVA</div>
+                                    <div style={{ fontSize: 10, opacity: 0.6 }}>📍 {run.localAtual?.cidade || "..."} · {run.localAtual?.pais || "..."}</div>
                                 </div>
-                            </div>
-                        </Panel>
-                    </div>
-                )}
-
-                {/* CARD 1: Imagem/Cena/Mapa */}
-                {viewMode !== "ANALYZE" && !(viewMode === "PROFILE" && profileTab === "GALERIA") && (
-                    <div className="om-card">
-                        <div className="om-img-card">
-                            {viewMode === "DIALOGUE" && selectedLocal ? (
-                                <div className="om-scene-box">
-                                    <img src={selectedLocal.imgLocal} className="om-scene-bg" alt="Local" />
-                                    <img src={selectedLocal.imgPersonagem} className="om-scene-char" alt="Personagem" />
-                                </div>
-                            ) : activeVideo && (showSuspectVideo || viewMode === "ARRIVAL") ? (
-                                <video
-                                    key={activeVideo}
-                                    src={activeVideo}
-                                    autoPlay
-                                    loop={false}
-                                    onEnded={() => {
-                                        const currentStatus = runStatusRef.current;
-                                        // Busca o status mais atual possível da run
-                                        if (currentStatus === "WON" || currentStatus === "LOST" || run.status === "WON" || run.status === "LOST") {
-                                            console.log("[ATLAS] Vídeo encerrado. Navegando para relatório final...");
-                                            const compQuery = isMissionCompetitive ? "?mode=competitive" : "";
-                                            nav(`/caso-solucionado/${caseId}${compQuery}`);
-                                            return;
-                                        }
-                                        setVideoEnded(true);
-                                        setTimeout(() => {
-                                            setShowSuspectVideo(false);
-                                            setActiveVideo(null);
-                                            setViewMode("ACTIONS");
-                                            setSelectedDest(null);
-                                            setVideoEnded(false);
-                                        }, 300);
-                                    }}
-                                    playsInline
-                                    style={{ width: "100%", height: "220px", objectFit: "cover" }}
-                                />
-                            ) : (viewMode === "TRAVEL_MAP" || viewMode === "TRAVEL_MODES") ? (
-                                <div className="om-map-container">
-                                    {(() => {
-                                        const pts = [];
-                                        const oc = ORIGIN_COORDS[run.localAtual.cidade] || { x: 160, y: 100 };
-                                        pts.push(oc);
-                                        travelOptions.forEach(d => pts.push(d.coords));
-                                        let minX = 400, maxX = 0, minY = 200, maxY = 0;
-                                        pts.forEach(p => {
-                                            if (p.x < minX) minX = p.x;
-                                            if (p.x > maxX) maxX = p.x;
-                                            if (p.y < minY) minY = p.y;
-                                            if (p.y > maxY) maxY = p.y;
-                                        });
-                                        const padding = 40;
-                                        minX = Math.max(0, minX - padding); maxX = Math.min(400, maxX + padding);
-                                        minY = Math.max(0, minY - padding); maxY = Math.min(200, maxY + padding);
-                                        const boxW = maxX - minX; const boxH = maxY - minY;
-                                        const scaleX = 400 / (boxW || 1); const scaleY = 200 / (boxH || 1);
-                                        const scale = Math.min(scaleX, scaleY, 3.5);
-                                        const originX = ((minX + boxW / 2) / 400) * 100;
-                                        const originY = ((minY + boxH / 2) / 200) * 100;
-
-                                        return (
-                                            <div style={{ position: "absolute", inset: 0, transformOrigin: `${originX}% ${originY}%`, transform: `scale(${scale})`, transition: "transform 0.8s ease" }}>
-                                                <div className="om-map-origin" style={{ left: `${(oc.x / 400) * 100}%`, top: `${(oc.y / 200) * 100}%`, transform: `translate(-50%, -50%) scale(${1 / scale})` }} />
-                                                <div className="om-map-label" style={{ left: `${(oc.x / 400) * 100}%`, top: `${(oc.y / 200) * 100}%`, color: "#80bdff", transform: `translate(-50%, 14px) scale(${1 / scale})` }}>{run.localAtual.cidade.toUpperCase()}</div>
-                                                {travelOptions.map(d => (
-                                                    <React.Fragment key={d.id}>
-                                                        <div
-                                                            className={`om-map-dest ${selectedDest?.id === d.id ? "selected" : ""}`}
-                                                            style={{ left: `${(d.coords.x / 400) * 100}%`, top: `${(d.coords.y / 200) * 100}%`, transform: `translate(-50%, -50%) scale(${1 / scale})`, filter: selectedDest && selectedDest.id !== d.id ? "grayscale(1) opacity(0.25)" : "none" }}
-                                                        />
-                                                        {(!selectedDest || selectedDest.id === d.id) && (
-                                                            <div className="om-map-label" style={{ left: `${(d.coords.x / 400) * 100}%`, top: `${(d.coords.y / 200) * 100}%`, color: selectedDest?.id === d.id ? "#ffd700" : "#fff", transform: `translate(-50%, 14px) scale(${1 / scale})` }}>{d.cidade.toUpperCase()}</div>
-                                                        )}
-                                                    </React.Fragment>
-                                                ))}
-                                            </div>
-                                        );
-                                    })()}
-                                    <div className="om-map-loc-badge">
-                                        <span style={{ width: 6, height: 6, borderRadius: 3, background: "#4ade80", display: "inline-block", boxShadow: "0 0 6px #4ade80" }} />
-                                        <span style={{ color: "rgba(255,255,255,0.5)", fontWeight: 700 }}>LOCAL:</span>
-                                        <span style={{ color: "#80bdff", fontWeight: 800 }}>{run.localAtual.cidade}</span>
+                                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                                    <div className="om-title">{caseObj.titulo}</div>
+                                    <div style={{ textAlign: "right", display: "flex", gap: "15px" }}>
+                                        <div><div style={{ fontSize: 14, fontWeight: 900 }}>${state.player.dinheiro}</div><div style={{ fontSize: 10, opacity: 0.6 }}>SALDO</div></div>
+                                        {!isMissionCompetitive ? (<div><div style={{ fontSize: 14, fontWeight: 900 }}>{fmtHoras(run.tempoRestanteHoras)}</div><div style={{ fontSize: 10, opacity: 0.6 }}>RESTANTES</div></div>) : (<div><div style={{ fontSize: 14, fontWeight: 900, color: "#80bdff" }}>PVP</div><div style={{ fontSize: 10, opacity: 0.6 }}>MODO</div></div>)}
                                     </div>
                                 </div>
-                            ) : (
-                                <img src={currentCityImg} style={{ width: "100%", height: "220px", objectFit: "cover" }} alt="Cena" />
-                            )}
+                            </Panel>
                         </div>
-                    </div>
-                )}
-
-                {/* DialogBox views */}
-                {viewMode === "RESUMO" && (() => {
-                    const dias = Math.floor(run.tempoRestanteHoras / 24);
-                    const horas = run.tempoRestanteHoras % 24;
-                    const tempoStr = dias > 0 ? `${dias} dia${dias > 1 ? "s" : ""} e ${horas}h` : `${horas}h`;
-                    return (
-                        <DialogBox
-                            title="MISSÃO ATIVA"
-                            text={isMissionCompetitive ? `Protocolo Fantasma: Colete as pistas, emita o mandado e capture o alvo antes dos outros agentes.\n\n📍 Local Atual: ${run.localAtual.cidade} · ${run.localAtual.pais}` : `Você ainda tem ${tempoStr} restantes para localizar e prender o Suspeito antes que o tempo se esgote.\n\n📍 Local Atual: ${run.localAtual.cidade} · ${run.localAtual.pais}`}
-                            onComplete={() => setViewMode("ACTIONS")}
-                        />
-                    );
-                })()}
-
-                {viewMode === "DIALOGUE" && selectedLocal && (
-                    <DialogBox
-                        title={`${selectedLocal.personagem.toUpperCase()} DIZ:`}
-                        text={selectedLocal.pista}
-                        onComplete={() => setViewMode("ACTIONS")}
-                    />
-                )}
-
-                {/* CARD 2: Menus */}
-                {viewMode !== "ANALYZE" && viewMode !== "RESUMO" && viewMode !== "DIALOGUE" && (
-                    <div className="om-card">
-                        <Panel>
-                            {viewMode === "ACTIONS" && (
-                                <div>
-                                    <div style={{ fontSize: 13, fontWeight: 800, marginBottom: 12, color: "#80bdff" }}>CENTRAL DE OPERAÇÕES</div>
-                                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
-                                        <button className="om-btn" onClick={() => setViewMode("TRAVEL_MAP")} disabled={!canAct}>✈️ VIAJAR</button>
-                                        <button className="om-btn" onClick={abrirLocais} disabled={!canAct}>🔍 INVESTIGAR</button>
-                                        <button className="om-btn" onClick={analisar} disabled={!canAct} style={{ gridColumn: "1 / -1" }}>🧪 ANALISAR</button>
-                                    </div>
-                                </div>
-                            )}
-
-                            {viewMode === "TRAVEL_MAP" && (
-                                <div>
-                                    <div style={{ fontSize: 13, fontWeight: 800, marginBottom: 12, color: "#80bdff" }}>ESCOLHER DESTINO</div>
-                                    <div style={{ display: "grid", gap: 10, maxHeight: 200, overflowY: "auto", paddingRight: 4 }}>
+                    )}
+                    {viewMode !== "ANALYZE" && !(viewMode === "PROFILE" && profileTab === "GALERIA") && (
+                        <div className="om-card">
+                            <div className="om-img-card">
+                                {viewMode === "DIALOGUE" && selectedLocal ? (
+                                    <div className="om-scene-box"><img src={selectedLocal.imgLocal} className="om-scene-bg" alt="" /><img src={selectedLocal.imgPersonagem} className="om-scene-char" alt="" /></div>
+                                ) : activeVideo && (showSuspectVideo || viewMode === "ARRIVAL") ? (
+                                    <video key={activeVideo} src={activeVideo} autoPlay loop={false} onEnded={() => { if (runStatusRef.current === "WON" || runStatusRef.current === "LOST" || run?.status === "WON" || run?.status === "LOST") nav(`/caso-solucionado/${caseId}${isMissionCompetitive ? "?mode=competitive" : ""}`); else { setVideoEnded(true); setTimeout(() => { setShowSuspectVideo(false); setActiveVideo(null); setViewMode("ACTIONS"); setSelectedDest(null); setVideoEnded(false); }, 300); } }} style={{ width: "100%", height: "220px", objectFit: "cover" }} />
+                                ) : (viewMode === "TRAVEL_MAP" || viewMode === "TRAVEL_MODES") ? (
+                                    <div className="om-map-container">
                                         {(() => {
-                                            const hideDetails = caseObj.dificuldade === "DIFICIL" || caseObj.dificuldade === "LENDARIO";
-                                            return travelOptions.map(d => (
-                                                <button key={d.id} className="om-btn" style={{ textAlign: "left", paddingLeft: 15 }} onClick={() => { setSelectedDest(d); setViewMode("TRAVEL_MODES"); }}>
-                                                    {!hideDetails && <>{d.flag} </>}
-                                                    {d.cidade}
-                                                    {!hideDetails && <>, <span style={{ opacity: 0.6 }}>{d.pais}</span></>}
-                                                </button>
-                                            ));
+                                            const pts = []; const oc = ORIGIN_COORDS[run.localAtual?.cidade || "Roma"] || { x: 160, y: 100 };
+                                            pts.push(oc); travelOptions.forEach(d => pts.push(d.coords));
+                                            let minX = 400, maxX = 0, minY = 200, maxY = 0; pts.forEach(p => { if (p.x < minX) minX = p.x; if (p.x > maxX) maxX = p.x; if (p.y < minY) minY = p.y; if (p.y > maxY) maxY = p.y; });
+                                            const scale = Math.min(400/(maxX-minX+80), 200/(maxY-minY+80), 3.5);
+                                            return (<div style={{ position: "absolute", inset: 0, transform: `scale(${scale})`, transformOrigin: "center" }}>
+                                                <div className="om-map-origin" style={{ left: `${(oc.x/400)*100}%`, top: `${(oc.y/200)*100}%` }} />
+                                                <div className="om-map-label" style={{ left: `${(oc.x/400)*100}%`, top: `${(oc.y/200)*100}%`, color: "#80bdff", transform: "translate(-50%, 14px)" }}>{run.localAtual?.cidade?.toUpperCase()}</div>
+                                                {travelOptions.map(d => (<React.Fragment key={d.id}><div className={`om-map-dest ${selectedDest?.id === d.id ? "selected" : ""}`} style={{ left: `${(d.coords.x/400)*100}%`, top: `${(d.coords.y/200)*100}%` }} /><div className="om-map-label" style={{ left: `${(d.coords.x/400)*100}%`, top: `${(d.coords.y/200)*100}%`, color: selectedDest?.id === d.id ? "#ffd700" : "#fff", transform: "translate(-50%, 14px)" }}>{d.cidade.toUpperCase()}</div></React.Fragment>))}
+                                            </div>);
                                         })()}
-                                        {run.localAtual.cidade !== "Campinas" && (
-                                            <button className="om-btn" onClick={handleVoltar} style={{ marginTop: 10, border: "1px solid rgba(128,189,255,0.3)", background: "rgba(128,189,255,0.1)", color: "#80bdff" }}>
-                                                ↩️ VOLTAR
-                                            </button>
-                                        )}
+                                        <div className="om-map-loc-badge"><span>LOCAL:</span><span>{run.localAtual?.cidade}</span></div>
                                     </div>
-                                    <button onClick={() => setViewMode("ACTIONS")} className="om-btn" style={{ marginTop: 15, background: "transparent", border: "none", color: "#80bdff" }}>Cancelar</button>
-                                </div>
-                            )}
-
-                            {viewMode === "TRAVEL_MODES" && selectedDest && (
-                                <div>
-                                    <div style={{ fontSize: 13, fontWeight: 800, marginBottom: 12, color: "#80bdff" }}>VIAJAR PARA {selectedDest.cidade.toUpperCase()}</div>
-                                    <div style={{ display: "grid", gap: 10 }}>
-                                        {TRANSPORT_MODES.map(t => (
-                                            <button key={t.id} className="om-btn" style={{ textAlign: "left", padding: "10px 15px", height: "auto" }} onClick={() => confirmarViagem(t)}>
-                                                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                                                    <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                                                        <span style={{ fontSize: 18 }}>{t.icon}</span>
-                                                        <div><div style={{ fontSize: 13, fontWeight: 700 }}>{t.nome}</div><div style={{ fontSize: 10, opacity: 0.6 }}>{t.desc}</div></div>
-                                                    </div>
-                                                    <div style={{ textAlign: "right" }}><div style={{ fontSize: 12, color: "#ffd700", fontWeight: 700 }}>${t.custoBase}</div><div style={{ fontSize: 10, opacity: 0.6 }}>{t.horasBase}h</div></div>
-                                                </div>
-                                            </button>
-                                        ))}
-                                    </div>
-                                    <button onClick={() => { setViewMode("TRAVEL_MAP"); setSelectedDest(null); }} className="om-btn" style={{ marginTop: 15, background: "transparent", border: "none", color: "#80bdff" }}>Mudar Destino</button>
-                                </div>
-                            )}
-
-                            {viewMode === "ARRIVAL" && (
-                                <div>
-                                    <div style={{ fontSize: 13, fontWeight: 800, marginBottom: 12, color: "#80bdff" }}>{(run.status === "WON" || run.status === "LOST") ? "MISSÃO CONCLUÍDA" : `CHEGADA: ${selectedDest?.cidade.toUpperCase()}`}</div>
-                                    {run.status !== "IN_PROGRESS" ? (
-                                        <div style={{ marginTop: 12, textAlign: "center", transition: "opacity 0.8s", opacity: revealFinalResult ? 1 : 0 }}>
-                                            <div style={{ background: "#ffd700", color: "#000", padding: "12px", borderRadius: "12px", fontWeight: 900, fontSize: 15, boxShadow: "0 8px 25px rgba(255, 215, 0, 0.4)", display: "inline-block", minWidth: "200px" }}>{run.status === "WON" ? "SUSPEITO CAPTURADO!" : "SUSPEITO FUGIU!"}</div>
-                                        </div>
-                                    ) : (
-                                        <>
-                                            {(showSuspectVideo || viewMode === "ARRIVAL") && activeVideo ? (
-                                                <div style={{ marginTop: 12, textAlign: "center" }}>
-                                                    <div style={{ fontSize: 13, fontWeight: 700, fontStyle: "italic", opacity: 0.9, marginBottom: 12, color: "#ffd700" }}>"Sombra detectada: O Suspeito passou por aqui!"</div>
-                                                    {videoEnded && <button onClick={() => { setViewMode("ACTIONS"); setSelectedDest(null); setShowSuspectVideo(false); setActiveVideo(null); setVideoEnded(false); }} className="om-btn om-btn-primary" style={{ marginTop: 10 }}>ENTENDIDO</button>}
-                                                </div>
-                                            ) : (
-                                                <DialogBox text={getCidadeDescricao(selectedDest?.cidade) || selectedDest?.desc || ""} onComplete={() => { setViewMode("ACTIONS"); setSelectedDest(null); }} />
-                                            )}
-                                        </>
-                                    )}
-                                </div>
-                            )}
-
-                            {viewMode === "LOCATIONS" && (
-                                <fieldset style={{ border: "none", padding: 0, margin: 0 }}>
-                                    <legend style={{ fontSize: 13, fontWeight: 800, color: "#80bdff", padding: "0 8px" }}>PONTOS DE INVESTIGAÇÃO</legend>
-                                    <div style={{ display: "grid", gap: 10 }}>
-                                        {localInterrogatorios.length > 0 ? (
-                                            localInterrogatorios.map(loc => (
-                                                <button key={loc.id} className="om-btn" style={{ textAlign: "left", paddingLeft: 15 }} onClick={() => interrogarNoLocal(loc)}>🕵️‍♂️ Ir para <span style={{ fontWeight: 800 }}>{loc.local}</span></button>
-                                            ))
-                                        ) : (
-                                            <>
-                                                {[{ id: "F1", local: "Táxi", personagem: "Taxista", imgLocal: "/NPC/Taxi.png", imgPersonagem: "/NPC/Taxista.png" }, { id: "F2", local: "Banco", personagem: "Banqueiro", imgLocal: "/NPC/Banco.png", imgPersonagem: "/NPC/Banqueiro.png" }, { id: "F3", local: "Restaurante", personagem: "Chef", imgLocal: "/NPC/Hospital.png", imgPersonagem: "/NPC/Chef.png" }].map(loc => (
-                                                    <button key={loc.id} className="om-btn" style={{ textAlign: "left", paddingLeft: 15 }} onClick={() => interrogarNoLocal({ ...loc, pista: "Desculpe, não vi ninguém suspeito por aqui." })}>🕵️‍♂️ Ir para <span style={{ fontWeight: 800 }}>{loc.local}</span></button>
-                                                ))}
-                                            </>
-                                        )}
-                                    </div>
-                                    <button onClick={() => setViewMode("ACTIONS")} className="om-btn" style={{ marginTop: 15, background: "transparent", border: "none", color: "#80bdff" }}>Cancelar</button>
-                                </fieldset>
-                            )}
-
-                            {viewMode === "JOURNAL" && (
-                                <div>
-                                    <div style={{ fontSize: 13, fontWeight: 800, marginBottom: 12, color: "#80bdff" }}>JORNAL A.T.L.A.S.</div>
-                                    <div className="om-journal-list">
-                                        {run.jornal.slice().reverse().map((j, i) => (
-                                            <div key={i} className="om-journal-item">
-                                                <div style={{ opacity: 0.5, fontSize: 10 }}>{new Date(j.t).toLocaleString("pt-BR")}</div>
-                                                <div style={{ marginTop: 4, fontSize: 13 }}>{j.msg}</div>
-                                            </div>
-                                        ))}
-                                    </div>
-                                </div>
-                            )}
-
-                            {viewMode === "PROFILE" && (
-                                <div>
-                                    <div style={{ display: "flex", gap: 8, marginBottom: 15 }}>
-                                        {["PERFIL", "GALERIA"].map(t => (
-                                            <button key={t} onClick={() => setProfileTab(t)} style={{ flex: 1, padding: "8px 0", borderRadius: 10, fontSize: 11, fontWeight: 800, border: "1px solid", borderColor: profileTab === t ? "#80bdff" : "rgba(255,255,255,0.12)", background: profileTab === t ? "rgba(128,189,255,0.15)" : "transparent", color: profileTab === t ? "#80bdff" : "rgba(255,255,255,0.5)" }}>{t === "PERFIL" ? "👤 PERFIL" : "🔍 GALERIA"}</button>
-                                        ))}
-                                    </div>
-                                    {profileTab === "PERFIL" && (
-                                        <>
-                                            <div style={{ display: "flex", alignItems: "center", gap: 15, marginBottom: 20 }}>
-                                                <div style={{ width: 64, height: 64, borderRadius: 32, background: "rgba(255,255,255,0.05)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 28, border: "1px solid rgba(255,255,255,0.15)", overflow: "hidden" }}>{state.player.avatarUrl ? <img src={state.player.avatarUrl} alt="Avatar" style={{ width: "100%", height: "100%", objectFit: "cover" }} /> : "👤"}</div>
-                                                <div><div style={{ fontSize: 18, fontWeight: 800 }}>{state.player.nome}</div><Badge tone="blue">{state.player.classeEmoji || "🟢"} {state.player.nivelTitulo || "Novato"}</Badge></div>
-                                            </div>
-                                            <div style={{ borderTop: "1px solid rgba(255,255,255,0.1)", paddingTop: 15 }}>
-                                                <div style={{ fontSize: 12, fontWeight: 700, marginBottom: 10 }}>MISSÕES EM CURSO</div>
-                                                <div style={{ padding: 12, borderRadius: 12, background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.1)", display: "flex", justifyContent: "space-between", alignItems: "center" }}><div style={{ fontSize: 13 }}>{caseObj.titulo}</div><Badge tone="green">Ativa</Badge></div>
-                                                <button onClick={handleAbort} style={{ width: "100%", marginTop: 20, padding: 12, borderRadius: 12, border: "1px solid rgba(255,70,70,0.3)", background: "rgba(255,70,70,0.1)", color: "#ff8080", fontSize: 11, fontWeight: 800 }}>🚩 ABORTAR MISSÃO</button>
-                                            </div>
-                                        </>
-                                    )}
-                                    {profileTab === "GALERIA" && <SuspectGallery capturedSuspects={state.capturedSuspects || {}} />}
-                                </div>
-                            )}
-                        </Panel>
-                    </div>
-                )}
-
-                {viewMode === "ANALYZE" && <Analisar onBack={() => setViewMode("ACTIONS")} filters={run.filtrosAnalise || {}} setFilters={(f) => { const n = typeof f === 'function' ? f(run.filtrosAnalise) : f; updateRun({ ...run, filtrosAnalise: n }); }} warrantId={run.warrantId} setWarrantId={(id) => updateRun({ ...run, warrantId: id, mandadoEmitido: true })} />}
-            </div>
-
-            <div className="om-tabs">
-                <div className="om-tabs-inner">
-                    <button className={`om-tab ${viewMode === "ACTIONS" || viewMode === "LOCATIONS" || viewMode.startsWith("TRAVEL") ? "om-tab-active" : ""}`} onClick={() => setViewMode("ACTIONS")}>AÇÃO</button>
-                    <button className={`om-tab ${viewMode === "JOURNAL" ? "om-tab-active" : ""}`} onClick={() => setViewMode(viewMode === "JOURNAL" ? "ACTIONS" : "JOURNAL")}>JORNAL</button>
-                    <button className={`om-tab ${viewMode === "PROFILE" ? "om-tab-active" : ""}`} onClick={() => setViewMode(viewMode === "PROFILE" ? "ACTIONS" : "PROFILE")}>CASOS</button>
+                                ) : (<img src={currentCityImg} style={{ width: "100%", height: "220px", objectFit: "cover" }} alt="" />)}
+                            </div>
+                        </div>
+                    )}
+                    {viewMode === "RESUMO" && (<DialogBox title="MISSÃO ATIVA" text={isMissionCompetitive ? `Protocolo Fantasma: Capture o alvo antes dos outros agentes.\n📍 Local: ${run.localAtual?.cidade}` : `Você ainda tem ${fmtHoras(run.tempoRestanteHoras)} para prender o Suspeito.\n📍 Local: ${run.localAtual?.cidade}`} onComplete={() => setViewMode("ACTIONS")} />)}
+                    {viewMode === "DIALOGUE" && selectedLocal && (<DialogBox title={selectedLocal.personagem.toUpperCase()} text={selectedLocal.pista} onComplete={() => setViewMode("ACTIONS")} />)}
+                    {viewMode !== "ANALYZE" && viewMode !== "RESUMO" && viewMode !== "DIALOGUE" && (
+                        <div className="om-card">
+                            <Panel>
+                                {viewMode === "ACTIONS" && (<div><div style={{ fontSize: 13, fontWeight: 800, marginBottom: 12 }}>CENTRAL DE OPERAÇÕES</div><div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}><button className="om-btn" onClick={() => setViewMode("TRAVEL_MAP")}>✈️ VIAJAR</button><button className="om-btn" onClick={abrirLocais}>🔍 INVESTIGAR</button><button className="om-btn" onClick={analisar} style={{ gridColumn: "1/-1" }}>🧪 ANALISAR</button></div></div>)}
+                                {viewMode === "TRAVEL_MAP" && (<div><div style={{ fontSize: 13, fontWeight: 800, marginBottom: 12 }}>DESTINO</div><div style={{ display: "grid", gap: 8 }}>{travelOptions.map(d => (<button key={d.id} className="om-btn" onClick={() => { setSelectedDest(d); setViewMode("TRAVEL_MODES"); }}>{d.flag} {d.cidade}</button>))}{run.localAtual?.cidade !== "Campinas" && <button className="om-btn" onClick={handleVoltar} style={{ border: "1px solid #80bdff" }}>↩️ VOLTAR</button>}</div><button onClick={() => setViewMode("ACTIONS")} style={{ marginTop: 10, background: "transparent", border: "none", color: "#80bdff", width: "100%" }}>Cancelar</button></div>)}
+                                {viewMode === "TRAVEL_MODES" && selectedDest && (<div><div style={{ fontSize: 13, fontWeight: 800, marginBottom: 12 }}>VIAJAR PARA {selectedDest.cidade.toUpperCase()}</div><div style={{ display: "grid", gap: 8 }}>{TRANSPORT_MODES.map(t => (<button key={t.id} className="om-btn" onClick={() => confirmarViagem(t)}>{t.icon} {t.nome} (${t.custoBase})</button>))}</div><button onClick={() => setViewMode("TRAVEL_MAP")} style={{ marginTop: 10, background: "transparent", border: "none", color: "#80bdff", width: "100%" }}>Mudar Destino</button></div>)}
+                                {viewMode === "LOCATIONS" && (<div><div style={{ fontSize: 13, fontWeight: 800, marginBottom: 12 }}>INVESTIGAÇÃO</div><div style={{ display: "grid", gap: 8 }}>{(localInterrogatorios.length > 0 ? localInterrogatorios : [{id:"F1",local:"Taxi",pista:"Nada visto."}]).map(loc => (<button key={loc.id} className="om-btn" onClick={() => interrogarNoLocal(loc)}>🕵️‍♂️ Ir para {loc.local}</button>))}</div><button onClick={() => setViewMode("ACTIONS")} style={{ marginTop: 10, background: "transparent", border: "none", color: "#80bdff", width: "100%" }}>Cancelar</button></div>)}
+                                {viewMode === "JOURNAL" && (<div><div style={{ fontSize: 13, fontWeight: 800, marginBottom: 12 }}>JORNAL</div><div className="om-journal-list">{run.jornal?.slice().reverse().map((j, i) => (<div key={i} className="om-journal-item" style={{ fontSize: 11 }}><div style={{ opacity: 0.5 }}>{new Date(j.t).toLocaleString()}</div><div>{j.msg}</div></div>))}</div></div>)}
+                                {viewMode === "PROFILE" && (<div><div style={{ display: "flex", gap: 8, marginBottom: 15 }}><button onClick={() => setProfileTab("PERFIL")} className="om-btn">PERFIL</button><button onClick={() => setProfileTab("GALERIA")} className="om-btn">GALERIA</button></div>{profileTab === "PERFIL" ? (<div><div style={{ fontSize: 18, fontWeight: 800 }}>{state.player.nome}</div><button onClick={handleAbort} className="om-btn" style={{ marginTop: 20, color: "#ff8080" }}>ABORTAR</button></div>) : <SuspectGallery capturedSuspects={state.capturedSuspects || {}} />}</div>)}
+                            </Panel>
+                        </div>
+                    )}
+                    {viewMode === "PROFILE" && profileTab === "GALERIA" && <div style={{ marginTop: 20 }}><SuspectGallery capturedSuspects={state.capturedSuspects || {}} /><button onClick={() => setViewMode("ACTIONS")} className="om-btn" style={{ marginTop: 20 }}>VOLTAR</button></div>}
+                    {viewMode === "ANALYZE" && <Analisar onBack={() => setViewMode("ACTIONS")} filters={run?.filtrosAnalise || {}} setFilters={(f) => { const n = typeof f === 'function' ? f(run?.filtrosAnalise) : f; updateRun({ ...run, filtrosAnalise: n }); }} warrantId={run?.warrantId} setWarrantId={(id) => updateRun({ ...run, warrantId: id, mandadoEmitido: true })} />}
                 </div>
+                <div className="om-tabs"><div className="om-tabs-inner"><button className="om-tab" onClick={() => setViewMode("ACTIONS")}>AÇÃO</button><button className="om-tab" onClick={() => setViewMode("JOURNAL")}>JORNAL</button><button className="om-tab" onClick={() => setViewMode("PROFILE")}>CASOS</button></div></div>
+                {modalConfig.show && <ModalMsg message={modalConfig.message} type={modalConfig.type} isConfirm={modalConfig.isConfirm} onConfirm={modalConfig.onConfirm} onClose={() => setModalConfig({ ...modalConfig, show: false })} />}
             </div>
-
-            {modalConfig.show && <ModalMsg message={modalConfig.message} type={modalConfig.type} isConfirm={modalConfig.isConfirm} onConfirm={modalConfig.onConfirm} onClose={() => setModalConfig({ ...modalConfig, show: false })} />}
-        </div>
-    );
+        );
+    } catch (err) {
+        console.error("[TEST DEBUG] Render Crash:", err.message, err.stack);
+        return <div>Render Crash: {err.message}</div>;
+    }
 }

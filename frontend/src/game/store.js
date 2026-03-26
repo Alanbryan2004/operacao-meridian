@@ -30,7 +30,7 @@ export function syncCasesWithSeed(state) {
         const run = nextRuns["C002"];
         const seed = casesSeed.find(s => s.id === "C002");
 
-        if (run.status === "IN_PROGRESS" && seed && (run.localAtual.cidade === "São Paulo" || run.localAtual.cidade === "Sao Paulo" || run.localAtual.cidade === "Campinas" || run.tempoRestanteHoras > seed.tempoTotalHoras)) {
+        if (run.status === "IN_PROGRESS" && seed && (run.localAtual?.cidade === "São Paulo" || run.localAtual?.cidade === "Sao Paulo" || run.localAtual?.cidade === "Campinas" || run.tempoRestanteHoras > seed.tempoTotalHoras)) {
             console.log("[ATLAS] Corrigindo inconsistências do Caso 2...");
             nextRuns["C002"] = {
                 ...run,
@@ -160,7 +160,7 @@ export function startRunIfNeeded(state, caseObj, forceReset = false, forcedScena
         pistasDescobertas: [],
         jornal: [
             { t: nowIso(), msg: `Caso iniciado: ${caseObj.titulo} (${caseObj.dificuldade})` },
-            { t: nowIso(), msg: `Local inicial: ${caseObj.localInicial.cidade} - ${caseObj.localInicial.pais}` },
+            { t: nowIso(), msg: `Local inicial: ${caseObj.localInicial?.cidade || "..."} - ${caseObj.localInicial?.pais || "..."}` },
             { t: nowIso(), msg: `Tempo total: ${caseObj.tempoTotalHoras}h` },
             !caseObj.isCompetitive && { t: nowIso(), msg: `Bônus de despesas recebido: R$ 1.000,00` },
         ].filter(Boolean),
