@@ -23,24 +23,24 @@ export const ORIGIN_COORDS = {
     "Buenos Aires": { x: 124, y: 165 },
     "Nova York": { x: 107, y: 61 },
     "Toronto": { x: 101, y: 57 },
-    "Lisboa": { x: 179, y: 64 },
-    "Madrid": { x: 185, y: 62 },
-    "Paris": { x: 192, y: 50 },
-    "Londres": { x: 189, y: 46 },
-    "Roma": { x: 203, y: 59 },
+    "Lisboa": { x: 165, y: 72 },
+    "Madrid": { x: 180, y: 65 },
+    "Paris": { x: 194, y: 56 },
+    "Londres": { x: 184, y: 38 },
+    "Roma": { x: 212, y: 70 },
     "Cairo": { x: 224, y: 76 },
     "Moscou": { x: 231, y: 40 },
     "Dubai": { x: 250, y: 82 },
     "Seul": { x: 330, y: 65 },
     "Tóquio": { x: 344, y: 68 },
-    "Viena": { x: 207, y: 51 },
+    "Viena": { x: 215, y: 52 },
     "Mumbai": { x: 270, y: 91 },
     "Vancouver": { x: 52, y: 49 },
     "Singapura": { x: 304, y: 115 },
     "Sydney": { x: 357, y: 164 },
-    "Berlim": { x: 204, y: 45 },
+    "Berlim": { x: 206, y: 42 },
     "Istambul": { x: 221, y: 61 },
-    "Amsterdã": { x: 194, y: 45 },
+    "Amsterdã": { x: 194, y: 38 },
     "Cidade do Cabo": { x: 209, y: 164 },
     "Bangcoc": { x: 301, y: 98 },
     "Trípoli": { x: 204, y: 72 },
@@ -282,6 +282,11 @@ export default function Caso() {
             return findScenario(caseId, run?.scenarioId, run?.targetSuspectId);
         }, [run?.scenarioId, run?.targetSuspectId, caseId]);
 
+        const currentCityDesc = useMemo(() => {
+            if (!run?.localAtual?.cidade) return "";
+            return getCidadeDescricao(run.localAtual.cidade);
+        }, [run?.localAtual?.cidade]);
+
         const hasMissionProgressed = useMemo(() => {
             if (!activeScenario?.route) return true;
             const clues = run?.pistasDescobertas || [];
@@ -503,11 +508,21 @@ export default function Caso() {
                                             const pts = []; const oc = ORIGIN_COORDS[run.localAtual?.cidade || "Roma"] || { x: 160, y: 100 };
                                             pts.push(oc); travelOptions.forEach(d => pts.push(d.coords));
                                             let minX = 400, maxX = 0, minY = 200, maxY = 0; pts.forEach(p => { if (p.x < minX) minX = p.x; if (p.x > maxX) maxX = p.x; if (p.y < minY) minY = p.y; if (p.y > maxY) maxY = p.y; });
-                                            const scale = Math.min(400/(maxX-minX+80), 200/(maxY-minY+80), 3.5);
-                                            return (<div style={{ position: "absolute", inset: 0, transform: `scale(${scale})`, transformOrigin: "center" }}>
-                                                <div className="om-map-origin" style={{ left: `${(oc.x/400)*100}%`, top: `${(oc.y/200)*100}%` }} />
-                                                <div className="om-map-label" style={{ left: `${(oc.x/400)*100}%`, top: `${(oc.y/200)*100}%`, color: "#80bdff", transform: "translate(-50%, 14px)" }}>{run.localAtual?.cidade?.toUpperCase()}</div>
-                                                {travelOptions.map(d => (<React.Fragment key={d.id}><div className={`om-map-dest ${selectedDest?.id === d.id ? "selected" : ""}`} style={{ left: `${(d.coords.x/400)*100}%`, top: `${(d.coords.y/200)*100}%` }} /><div className="om-map-label" style={{ left: `${(d.coords.x/400)*100}%`, top: `${(d.coords.y/200)*100}%`, color: selectedDest?.id === d.id ? "#ffd700" : "#fff", transform: "translate(-50%, 14px)" }}>{d.cidade.toUpperCase()}</div></React.Fragment>))}
+                                            const midX = (minX + maxX) / 2; const midY = (minY + maxY) / 2;
+                                            const rangeX = maxX - minX; const rangeY = maxY - minY;
+                                            const vScale = Math.min(280 / (rangeX || 1), 120 / (rangeY || 1), 3.0);
+                                            const getPos = (p) => ({ left: `${((p.x - midX) * vScale + 200) / 400 * 100}%`, top: `${((p.y - midY) * vScale + 100) / 200 * 100}%` });
+                                            const op = getPos(oc);
+                                            return (<div style={{ position: "absolute", inset: 0 }}>
+                                                <div className="om-map-origin" style={{ ...op }} />
+                                                <div className="om-map-label" style={{ ...op, color: "#80bdff", transform: "translate(-50%, 14px)" }}>{run.localAtual?.cidade?.toUpperCase()}</div>
+                                                {travelOptions.map(d => {
+                                                    const dp = getPos(d.coords);
+                                                    return (<React.Fragment key={d.id}>
+                                                        <div className={`om-map-dest ${selectedDest?.id === d.id ? "selected" : ""}`} style={{ ...dp }} />
+                                                        <div className="om-map-label" style={{ ...dp, color: selectedDest?.id === d.id ? "#ffd700" : "#fff", transform: "translate(-50%, 14px)" }}>{d.cidade.toUpperCase()}</div>
+                                                    </React.Fragment>);
+                                                })}
                                             </div>);
                                         })()}
                                         <div className="om-map-loc-badge"><span>LOCAL:</span><span>{run.localAtual?.cidade}</span></div>
@@ -517,8 +532,9 @@ export default function Caso() {
                         </div>
                     )}
                     {viewMode === "RESUMO" && (<DialogBox title="MISSÃO ATIVA" text={isMissionCompetitive ? `Protocolo Fantasma: Capture o alvo antes dos outros agentes.\n📍 Local: ${run.localAtual?.cidade}` : `Você ainda tem ${fmtHoras(run.tempoRestanteHoras)} para prender o Suspeito.\n📍 Local: ${run.localAtual?.cidade}`} onComplete={() => setViewMode("ACTIONS")} />)}
+                    {viewMode === "ARRIVAL" && (<DialogBox title={run.localAtual?.cidade?.toUpperCase()} text={currentCityDesc || "Você chegou a um novo destino."} onComplete={() => setViewMode("ACTIONS")} />)}
                     {viewMode === "DIALOGUE" && selectedLocal && (<DialogBox title={selectedLocal.personagem.toUpperCase()} text={selectedLocal.pista} onComplete={() => setViewMode("ACTIONS")} />)}
-                    {viewMode !== "ANALYZE" && viewMode !== "RESUMO" && viewMode !== "DIALOGUE" && (
+                    {viewMode !== "ANALYZE" && viewMode !== "RESUMO" && viewMode !== "DIALOGUE" && viewMode !== "ARRIVAL" && (
                         <div className="om-card">
                             <Panel>
                                 {viewMode === "ACTIONS" && (<div><div style={{ fontSize: 13, fontWeight: 800, marginBottom: 12 }}>CENTRAL DE OPERAÇÕES</div><div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}><button className="om-btn" onClick={() => setViewMode("TRAVEL_MAP")}>✈️ VIAJAR</button><button className="om-btn" onClick={abrirLocais}>🔍 INVESTIGAR</button><button className="om-btn" onClick={analisar} style={{ gridColumn: "1/-1" }}>🧪 ANALISAR</button></div></div>)}
