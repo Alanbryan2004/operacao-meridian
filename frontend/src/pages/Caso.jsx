@@ -55,9 +55,9 @@ export const ORIGIN_COORDS = {
 };
 
 const TRANSPORT_MODES = [
-    { id: "AVIAO", nome: "Avião", icon: "✈️", custoBase: 800, horasBase: 12, desc: "Rápido e caro" },
-    { id: "METRO", nome: "Trem/Metrô", icon: "🚆", custoBase: 300, horasBase: 36, desc: "Econômico e moderado" },
-    { id: "BARCO", nome: "Navio/Barco", icon: "🚢", custoBase: 150, horasBase: 72, desc: "Lento e barato" },
+    { id: "AVIAO", nome: "Avião", icon: "✈️", custoBase: 800, horasBase: 12, desc: "Rápido e caro", animDuration: 2000, animImg: "/transportes/aviao.png" },
+    { id: "METRO", nome: "Trem/Metrô", icon: "🚆", custoBase: 300, horasBase: 36, desc: "Econômico e moderado", animDuration: 5000, animImg: "/transportes/metro.png" },
+    { id: "BARCO", nome: "Navio/Barco", icon: "🚢", custoBase: 150, horasBase: 72, desc: "Lento e barato", animDuration: 8000, animImg: "/transportes/navio.png" },
 ];
 
 function fmtHoras(h) {
@@ -136,6 +136,7 @@ export default function Caso() {
         const [videoEnded, setVideoEnded] = useState(false);
         const [profileTab, setProfileTab] = useState("PERFIL");
         const [revealFinalResult, setRevealFinalResult] = useState(false);
+        const [travelAnimData, setTravelAnimData] = useState(null);
 
         const [modalConfig, setModalConfig] = useState({
             show: false,
@@ -342,7 +343,18 @@ export default function Caso() {
             nextRun.cidadeAnterior = run.localAtual?.cidade;
             const finalState = saveGame({ ...nextState, runs: { ...nextState.runs, [caseId]: nextRun } });
             replaceState(finalState);
-            setViewMode("ARRIVAL");
+
+            const shouldAnim = isMissionCompetitive || caseObj?.dificuldade === "DIFICIL" || caseObj?.dificuldade === "LENDARIO";
+            if (shouldAnim && transport.animDuration) {
+                setTravelAnimData({ ...transport, destCidade: destino.cidade });
+                setViewMode("TRAVEL_ANIMATION");
+                setTimeout(() => {
+                    setTravelAnimData(null);
+                    setViewMode("ARRIVAL");
+                }, transport.animDuration);
+            } else {
+                setViewMode("ARRIVAL");
+            }
             let videoPath = null;
             if (activeScenario?.route) {
                 const destIndexFirst = activeScenario.route.indexOf(destino.cidade);
@@ -526,6 +538,36 @@ export default function Caso() {
                                             </div>);
                                         })()}
                                         <div className="om-map-loc-badge"><span>LOCAL:</span><span>{run.localAtual?.cidade}</span></div>
+                                    </div>
+                                ) : viewMode === "TRAVEL_ANIMATION" && travelAnimData ? (
+                                    <div className="om-map-container" style={{ display: "flex", alignItems: "center", justifyContent: "center", background: "#050c14" }}>
+                                        <div style={{ position: "absolute", inset: 0, opacity: 0.15, background: "url(/Paises/default.png) center/cover" }} />
+                                        <div style={{ zIndex: 2, textAlign: "center" }}>
+                                            <div style={{ fontSize: 10, opacity: 0.6, marginBottom: 8, letterSpacing: 2 }}>VIAJANDO...</div>
+                                            <div style={{ position: "relative", width: 240, height: 40, margin: "0 auto" }}>
+                                                <img 
+                                                    src={travelAnimData.animImg} 
+                                                    alt="" 
+                                                    style={{ 
+                                                        position: "absolute", 
+                                                        left: "-40px", 
+                                                        top: "50%", 
+                                                        transform: "translateY(-50%)", 
+                                                        width: 40,
+                                                        animation: `om-travel-slide ${travelAnimData.animDuration}ms linear forwards`
+                                                    }} 
+                                                />
+                                            </div>
+                                            <div style={{ fontSize: 14, fontWeight: 900, marginTop: 12, color: "#80bdff" }}>{travelAnimData.destCidade?.toUpperCase()}</div>
+                                        </div>
+                                        <style>{`
+                                            @keyframes om-travel-slide {
+                                                0% { left: -40px; opacity: 0; }
+                                                10% { opacity: 1; }
+                                                90% { opacity: 1; }
+                                                100% { left: 100%; opacity: 0; }
+                                            }
+                                        `}</style>
                                     </div>
                                 ) : (<img src={currentCityImg} style={{ width: "100%", height: "220px", objectFit: "cover" }} alt="" />)}
                             </div>
