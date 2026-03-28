@@ -51,13 +51,13 @@ export const ORIGIN_COORDS = {
     "Rio de Janeiro": { x: 141, y: 149 },
     "Nova Delhi": { x: 275, y: 78 },
     "Salvador": { x: 146, y: 135 },
-    "Zurique": { x: 198, y: 52 },
+    "Zurich": { x: 198, y: 52 },
 };
 
 const TRANSPORT_MODES = [
-    { id: "AVIAO", nome: "Avião", icon: "✈️", custoBase: 800, horasBase: 12, desc: "Rápido e caro", animDuration: 2000, animImg: "/transportes/aviao.png" },
-    { id: "METRO", nome: "Trem/Metrô", icon: "🚆", custoBase: 300, horasBase: 36, desc: "Econômico e moderado", animDuration: 5000, animImg: "/transportes/metro.png" },
-    { id: "BARCO", nome: "Navio/Barco", icon: "🚢", custoBase: 150, horasBase: 72, desc: "Lento e barato", animDuration: 8000, animImg: "/transportes/navio.png" },
+    { id: "AVIAO", nome: "Avião", icon: "✈️", custoBase: 800, horasBase: 12, desc: "Rápido e caro", animDuration: 2000, animImg: "/transportes/aviao.png", animImgVolta: "/transportes/aviao_voltando.png" },
+    { id: "METRO", nome: "Trem/Metrô", icon: "🚆", custoBase: 300, horasBase: 36, desc: "Econômico e moderado", animDuration: 5000, animImg: "/transportes/metro.png", animImgVolta: "/transportes/metro_voltando.png" },
+    { id: "BARCO", nome: "Navio/Barco", icon: "🚢", custoBase: 150, horasBase: 72, desc: "Lento e barato", animDuration: 8000, animImg: "/transportes/navio.png", animImgVolta: "/transportes/navio_voltando.png" },
 ];
 
 function fmtHoras(h) {
@@ -197,27 +197,37 @@ export default function Caso() {
         }, [viewMode, run?.status]);
 
         useEffect(() => {
-            if (!isMissionCompetitive || !lobbyId || !run || run?.status !== "IN_PROGRESS") return;
+            if (!isMissionCompetitive || !lobbyId || !run) return;
 
-            async function terminateAsLost(winnerId) {
+            async function terminateAsLost(winnerId, directWinnerName = null) {
                 try {
-                    const { data: winnerProfile } = await supabase
-                        .from("profiles")
-                        .select("nickname")
-                        .eq("supabase_id", winnerId)
-                        .single();
+                    let wName = directWinnerName;
+                    if (!wName || wName === "um Agente de Elite") {
+                        const { data: winnerProfile } = await supabase
+                            .from("profiles")
+                            .select("nickname")
+                            .eq("id", winnerId)
+                            .single();
+                        wName = winnerProfile?.nickname || wName || "um Agente de Elite";
+                    }
                     
-                    const wName = winnerProfile?.nickname || "um Agente de Elite";
                     const nextRun = {
                         ...run,
                         status: "LOST",
                         winnerName: wName,
                         jornal: [...run.jornal, { t: new Date().toISOString(), msg: `📡 ALERTA A.T.L.A.S.: Missão encerrada. O Agente ${wName} realizou a captura primeiro.` }]
                     };
-                    const nextState = { ...state, runs: { ...state.runs, [caseId]: nextRun } };
+
+                    const diff = caseObj?.dificuldade;
+                    let nextPlayer = { ...state.player };
+                    if (diff === "DIFICIL") nextPlayer.hardLosses = (nextPlayer.hardLosses || 0) + 1;
+                    if (diff === "LENDARIO") nextPlayer.legendaryLosses = (nextPlayer.legendaryLosses || 0) + 1;
+
+                    const nextState = { ...state, player: nextPlayer, runs: { ...state.runs, [caseId]: nextRun } };
                     replaceState(saveGame(nextState));
-                    nav(`/caso-solucionado/${caseId}?mode=competitive`);
+                    nav(`/caso-solucionado/${caseId}?mode=competitive&lobbyId=${lobbyId}`);
                 } catch (err) {
+                    console.error("[ competitive ] Erro ao encerrar missão como derrota:", err);
                     nav("/mural");
                 }
             }
@@ -250,15 +260,7 @@ export default function Caso() {
                     const currentPlayerId = state?.player?.supabaseId;
                     const currentStatus = runStatusRef.current;
                     if (payload.winnerId !== currentPlayerId && currentStatus === "IN_PROGRESS") {
-                        const nextRun = {
-                            ...run,
-                            status: "LOST",
-                            winnerName: payload.winnerName,
-                            jornal: [...run.jornal, { t: new Date().toISOString(), msg: `📡 ALERTA A.T.L.A.S.: Missão encerrada. O Agente ${payload.winnerName} realizou a captura primeiro.` }]
-                        };
-                        const nextState = { ...state, runs: { ...state.runs, [caseId]: nextRun } };
-                        replaceState(saveGame(nextState));
-                        nav(`/caso-solucionado/${caseId}?mode=competitive`);
+                        terminateAsLost(payload.winnerId, payload.winnerName);
                     }
                 })
                 .subscribe();
@@ -268,7 +270,7 @@ export default function Caso() {
                 supabase.removeChannel(channel);
                 syncChannelRef.current = null;
             };
-        }, [isMissionCompetitive, lobbyId, caseId, nav, run?.status]);
+        }, [isMissionCompetitive, lobbyId, caseId, nav]);
 
         const currentCityImg = useMemo(() => {
             if (!run) return caseObj?.imgItem || "/reliquiaDesaparecida.png";
@@ -300,6 +302,15 @@ export default function Caso() {
             if (matches.length > 3 && activeScenario?.route) {
                 return hasMissionProgressed ? matches.slice(-3) : matches.slice(0, 3);
             }
+            // Cidade errada (fora da rota): gera 3 NPCs genéricos com todos os campos obrigatórios
+            if (matches.length === 0 && run?.localAtual?.cidade) {
+                const city = run.localAtual.cidade;
+                return [
+                    { id: `FALLBACK_1_${city}`, cidade: city, local: "Táxi", personagem: "Taxista", imgLocal: "/NPC/Taxi.png", imgPersonagem: "/NPC/Taxista.png", pista: "Não vi nenhum suspeito por aqui. Talvez você esteja na cidade errada, Agente." },
+                    { id: `FALLBACK_2_${city}`, cidade: city, local: "Restaurante", personagem: "Garçom", imgLocal: "/NPC/Restaurante.png", imgPersonagem: "/NPC/Garcon.png", pista: "Ninguém estranho passou por aqui recentemente. Tem certeza de que é aqui?" },
+                    { id: `FALLBACK_3_${city}`, cidade: city, local: "Banco", personagem: "Banqueiro", imgLocal: "/NPC/Banco.png", imgPersonagem: "/NPC/Banqueiro.png", pista: "Nenhuma transação suspeita foi registrada. Acho que o suspeito foi para outro lugar." },
+                ];
+            }
             return matches;
         }, [run?.localAtual?.cidade, activeScenario, run?.interrogatorios, caseObj?.interrogatorios, hasMissionProgressed]);
 
@@ -312,8 +323,18 @@ export default function Caso() {
                     .filter(d => forcedCities.includes(d.cidade))
                     .filter((v, i, a) => a.findIndex(t => t.cidade === v.cidade) === i);
             }
+            // Se existe travelTable mas a cidade atual NÃO está nela (cidade errada), limita destinos
+            if (activeScenario?.travelTable && !activeScenario.travelTable[run.localAtual?.cidade]) {
+                // Cidade errada: só mostra a cidade anterior como opção de retorno
+                if (run.cidadeAnterior) {
+                    return globalOptions
+                        .filter(d => d.cidade === run.cidadeAnterior)
+                        .filter((v, i, a) => a.findIndex(t => t.cidade === v.cidade) === i);
+                }
+                return [];
+            }
             return globalOptions.filter((v, i, a) => a.findIndex(t => t.cidade === v.cidade) === i);
-        }, [run?.localAtual?.cidade, activeScenario]);
+        }, [run?.localAtual?.cidade, run?.cidadeAnterior, activeScenario]);
 
         if (!state || !caseObj || !run) return null;
 
@@ -344,32 +365,44 @@ export default function Caso() {
             const finalState = saveGame({ ...nextState, runs: { ...nextState.runs, [caseId]: nextRun } });
             replaceState(finalState);
 
-            const shouldAnim = isMissionCompetitive || caseObj?.dificuldade === "DIFICIL" || caseObj?.dificuldade === "LENDARIO";
-            if (shouldAnim && transport.animDuration) {
-                setTravelAnimData({ ...transport, destCidade: destino.cidade });
-                setViewMode("TRAVEL_ANIMATION");
-                setTimeout(() => {
-                    setTravelAnimData(null);
-                    setViewMode("ARRIVAL");
-                }, transport.animDuration);
-            } else {
-                setViewMode("ARRIVAL");
-            }
+            const shouldAnim = true;
+            
             let videoPath = null;
             if (activeScenario?.route) {
                 const destIndexFirst = activeScenario.route.indexOf(destino.cidade);
                 const destIndexLast = activeScenario.route.lastIndexOf(destino.cidade);
                 if (destIndexFirst === 1) videoPath = "/Videos/suspeito.mp4";
-                const isLastStage = destIndexLast === activeScenario.route.length - 1;
+                const isLastStage = (destIndexLast === activeScenario.route.length - 1);
                 if (isLastStage && destIndexLast !== 0 && hasMissionProgressed) videoPath = "/Videos/suspeito2.mp4";
             }
-            if (videoPath) {
-                setActiveVideo(videoPath);
-                setDarkenScreen(true);
-                setTimeout(() => { setShowSuspectVideo(true); setDarkenScreen(false); }, 800);
+
+            const triggerArrival = () => {
+                if (videoPath) {
+                    setActiveVideo(videoPath);
+                    setDarkenScreen(true);
+                    setTimeout(() => { 
+                        setShowSuspectVideo(true); 
+                        setDarkenScreen(false);
+                        setViewMode("ARRIVAL"); // Show city info WITH the video
+                    }, 800);
+                } else {
+                    setShowSuspectVideo(false);
+                    setActiveVideo(null);
+                    setViewMode("ARRIVAL");
+                }
+            };
+
+            if (shouldAnim && transport.animDuration) {
+                const isReverse = !!transport.isReverse || !!selectedDest?.isReturn;
+                const animImg = isReverse ? (transport.animImgVolta || transport.animImg) : transport.animImg;
+                setTravelAnimData({ ...transport, animImg, destCidade: destino.cidade, isReverse });
+                setViewMode("TRAVEL_ANIMATION");
+                setTimeout(() => {
+                    setTravelAnimData(null);
+                    triggerArrival();
+                }, transport.animDuration);
             } else {
-                setShowSuspectVideo(false);
-                setActiveVideo(null);
+                triggerArrival();
             }
         };
 
@@ -413,15 +446,24 @@ export default function Caso() {
                     if (diff === "DIFICIL") nextPlayer.hardWins = (nextPlayer.hardWins || 0) + 1;
                     if (diff === "LENDARIO") nextPlayer.legendaryWins = (nextPlayer.legendaryWins || 0) + 1;
 
-                    if (isMissionCompetitive && lobbyId) {
-                        supabase.from("competitive_lobbies").update({ status: "finished", winner_id: state.player.supabaseId }).eq("id", lobbyId).eq("status", "active").select().then(({ data }) => {
-                            if (data?.length > 0) {
-                                syncChannelRef.current?.send({ type: "broadcast", event: "mission_finished", payload: { winnerId: state.player.supabaseId, winnerName: state.player.nome || "um Agente de Elite" } });
-                                const finalState = registerCapture({ ...state, player: nextPlayer, runs: { ...state.runs, [caseId]: nextRun } }, run.warrantId);
-                                replaceState(saveGame(finalState));
-                                supabase.from("competitive_players").update({ status: "won" }).eq("lobby_id", lobbyId).eq("player_id", state.player.supabaseId).then();
-                            }
+                    if (isMissionCompetitive && lobbyId && state.player.supabaseId) {
+                        // Envia broadcast IMEDIATAMENTE antes de qualquer atualização de estado que possa interferir
+                        syncChannelRef.current?.send({ 
+                            type: "broadcast", 
+                            event: "mission_finished", 
+                            payload: { 
+                                winnerId: state.player.supabaseId, 
+                                winnerName: state.player.nome || state.player.nickname || "um Agente de Elite" 
+                            } 
                         });
+
+                        // Atualiza o banco de dados em paralelo
+                        supabase.from("competitive_lobbies").update({ status: "finished", winner_id: state.player.supabaseId }).eq("id", lobbyId).select().then();
+                        supabase.from("competitive_players").update({ status: "won" }).eq("lobby_id", lobbyId).eq("player_id", state.player.supabaseId).then();
+
+                        // Atualiza estado local e navega
+                        const finalState = registerCapture({ ...state, player: nextPlayer, runs: { ...state.runs, [caseId]: nextRun } }, run.warrantId);
+                        replaceState(saveGame(finalState));
                     } else {
                         const nextState = registerCapture({ ...state, player: nextPlayer, runs: { ...state.runs, [caseId]: nextRun } }, run.warrantId);
                         replaceState(saveGame(nextState));
@@ -449,7 +491,10 @@ export default function Caso() {
         const handleVoltar = () => {
             if (!run?.cidadeAnterior) return;
             const destObj = DESTINATION_OPTIONS.find(d => d.cidade === run.cidadeAnterior);
-            if (destObj) confirmarViagem({ id: "VOLTA", nome: "Retorno Direto", custoBase: 0, horasBase: 4, customDest: { cidade: destObj.cidade, pais: destObj.pais, flag: destObj.flag } });
+            if (destObj) {
+                setSelectedDest({ ...destObj, isReturn: true });
+                setViewMode("TRAVEL_MODES");
+            }
         };
 
         const analisar = () => { if (run?.status === "IN_PROGRESS") { updateRun(spendTime(run, 2, "🔍 Acessando Laboratório de Análise: -2h.")); setViewMode("ANALYZE"); } };
@@ -524,8 +569,44 @@ export default function Caso() {
                             <div className="om-img-card">
                                 {viewMode === "DIALOGUE" && selectedLocal ? (
                                     <div className="om-scene-box"><img src={selectedLocal.imgLocal} className="om-scene-bg" alt="" /><img src={selectedLocal.imgPersonagem} className="om-scene-char" alt="" /></div>
+                                ) : viewMode === "TRAVEL_ANIMATION" && travelAnimData ? (
+                                    <div className="om-map-container" style={{ display: "flex", alignItems: "center", justifyContent: "center", background: "#050c14" }}>
+                                        <div style={{ position: "absolute", inset: 0, opacity: 0.15, background: "url(/Paises/default.png) center/cover" }} />
+                                        <div style={{ zIndex: 2, textAlign: "center" }}>
+                                            <div style={{ fontSize: 10, opacity: 0.6, marginBottom: 8, letterSpacing: 2 }}>{travelAnimData.isReverse ? "RETORNANDO..." : "VIAJANDO..."}</div>
+                                            <div style={{ position: "relative", width: 240, height: 40, margin: "0 auto" }}>
+                                                <img 
+                                                    src={travelAnimData.animImg} 
+                                                    alt="" 
+                                                    style={{ 
+                                                        position: "absolute", 
+                                                        left: travelAnimData.isReverse ? "100%" : "-40px", 
+                                                        top: "50%", 
+                                                        transform: "translateY(-50%)", 
+                                                        width: 40,
+                                                        animation: `${travelAnimData.isReverse ? 'om-travel-slide-reverse' : 'om-travel-slide'} ${travelAnimData.animDuration}ms linear forwards`
+                                                    }} 
+                                                />
+                                            </div>
+                                            <div style={{ fontSize: 14, fontWeight: 900, marginTop: 12, color: travelAnimData.isReverse ? "#ff9090" : "#80bdff" }}>{travelAnimData.isReverse ? "↩️ " : ""}{travelAnimData.destCidade?.toUpperCase()}</div>
+                                        </div>
+                                        <style>{`
+                                            @keyframes om-travel-slide {
+                                                0% { left: -40px; opacity: 0; }
+                                                10% { opacity: 1; }
+                                                90% { opacity: 1; }
+                                                100% { left: 100%; opacity: 0; }
+                                            }
+                                            @keyframes om-travel-slide-reverse {
+                                                0% { left: 100%; opacity: 0; }
+                                                10% { opacity: 1; }
+                                                90% { opacity: 1; }
+                                                100% { left: -40px; opacity: 0; }
+                                            }
+                                        `}</style>
+                                    </div>
                                 ) : activeVideo && (showSuspectVideo || viewMode === "ARRIVAL") ? (
-                                    <video key={activeVideo} src={activeVideo} autoPlay loop={false} onEnded={() => { if (runStatusRef.current === "WON" || runStatusRef.current === "LOST" || run?.status === "WON" || run?.status === "LOST") nav(`/caso-solucionado/${caseId}${isMissionCompetitive ? "?mode=competitive" : ""}`); else { setVideoEnded(true); setTimeout(() => { setShowSuspectVideo(false); setActiveVideo(null); setViewMode("ACTIONS"); setSelectedDest(null); setVideoEnded(false); }, 300); } }} style={{ width: "100%", height: "220px", objectFit: "cover" }} />
+                                    <video key={activeVideo} src={activeVideo} autoPlay loop={false} onEnded={() => { if (runStatusRef.current === "WON" || runStatusRef.current === "LOST" || run?.status === "WON" || run?.status === "LOST") nav(`/caso-solucionado/${caseId}${isMissionCompetitive ? "?mode=competitive" : ""}`); else { setVideoEnded(true); setTimeout(() => { setShowSuspectVideo(false); setActiveVideo(null); if (viewMode !== "ARRIVAL") setViewMode("ACTIONS"); setSelectedDest(null); setVideoEnded(false); }, 300); } }} style={{ width: "100%", height: "220px", objectFit: "cover" }} />
                                 ) : (viewMode === "TRAVEL_MAP" || viewMode === "TRAVEL_MODES") ? (
                                     <div className="om-map-container">
                                         {(() => {
@@ -551,49 +632,19 @@ export default function Caso() {
                                         })()}
                                         <div className="om-map-loc-badge"><span>LOCAL:</span><span>{run.localAtual?.cidade}</span></div>
                                     </div>
-                                ) : viewMode === "TRAVEL_ANIMATION" && travelAnimData ? (
-                                    <div className="om-map-container" style={{ display: "flex", alignItems: "center", justifyContent: "center", background: "#050c14" }}>
-                                        <div style={{ position: "absolute", inset: 0, opacity: 0.15, background: "url(/Paises/default.png) center/cover" }} />
-                                        <div style={{ zIndex: 2, textAlign: "center" }}>
-                                            <div style={{ fontSize: 10, opacity: 0.6, marginBottom: 8, letterSpacing: 2 }}>VIAJANDO...</div>
-                                            <div style={{ position: "relative", width: 240, height: 40, margin: "0 auto" }}>
-                                                <img 
-                                                    src={travelAnimData.animImg} 
-                                                    alt="" 
-                                                    style={{ 
-                                                        position: "absolute", 
-                                                        left: "-40px", 
-                                                        top: "50%", 
-                                                        transform: "translateY(-50%)", 
-                                                        width: 40,
-                                                        animation: `om-travel-slide ${travelAnimData.animDuration}ms linear forwards`
-                                                    }} 
-                                                />
-                                            </div>
-                                            <div style={{ fontSize: 14, fontWeight: 900, marginTop: 12, color: "#80bdff" }}>{travelAnimData.destCidade?.toUpperCase()}</div>
-                                        </div>
-                                        <style>{`
-                                            @keyframes om-travel-slide {
-                                                0% { left: -40px; opacity: 0; }
-                                                10% { opacity: 1; }
-                                                90% { opacity: 1; }
-                                                100% { left: 100%; opacity: 0; }
-                                            }
-                                        `}</style>
-                                    </div>
                                 ) : (<img src={currentCityImg} style={{ width: "100%", height: "220px", objectFit: "cover" }} alt="" />)}
                             </div>
                         </div>
                     )}
                     {viewMode === "RESUMO" && (<DialogBox title="MISSÃO ATIVA" text={isMissionCompetitive ? `Protocolo Fantasma: Capture o alvo antes dos outros agentes.\n📍 Local: ${run.localAtual?.cidade}` : `Você ainda tem ${fmtHoras(run.tempoRestanteHoras)} para prender o Suspeito.\n📍 Local: ${run.localAtual?.cidade}`} onComplete={() => setViewMode("ACTIONS")} />)}
-                    {viewMode === "ARRIVAL" && (<DialogBox title={run.localAtual?.cidade?.toUpperCase()} text={currentCityDesc || "Você chegou a um novo destino."} onComplete={() => setViewMode("ACTIONS")} />)}
-                    {viewMode === "DIALOGUE" && selectedLocal && (<DialogBox title={selectedLocal.personagem.toUpperCase()} text={selectedLocal.pista} onComplete={() => setViewMode("ACTIONS")} />)}
+                    {viewMode === "ARRIVAL" && !showSuspectVideo && (<DialogBox title={run.localAtual?.cidade?.toUpperCase()} text={currentCityDesc || "Você chegou a um novo destino."} onComplete={() => setViewMode("ACTIONS")} />)}
+                    {viewMode === "DIALOGUE" && selectedLocal && (<DialogBox title={(selectedLocal.personagem || "Desconhecido").toUpperCase()} text={selectedLocal.pista} onComplete={() => setViewMode("ACTIONS")} />)}
                     {viewMode !== "ANALYZE" && viewMode !== "RESUMO" && viewMode !== "DIALOGUE" && viewMode !== "ARRIVAL" && (
                         <div className="om-card">
                             <Panel>
                                 {viewMode === "ACTIONS" && (<div><div style={{ fontSize: 13, fontWeight: 800, marginBottom: 12 }}>CENTRAL DE OPERAÇÕES</div><div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}><button className="om-btn" onClick={() => setViewMode("TRAVEL_MAP")}>✈️ VIAJAR</button><button className="om-btn" onClick={abrirLocais}>🔍 INVESTIGAR</button><button className="om-btn" onClick={analisar} style={{ gridColumn: "1/-1" }}>🧪 ANALISAR</button></div></div>)}
                                 {viewMode === "TRAVEL_MAP" && (<div><div style={{ fontSize: 13, fontWeight: 800, marginBottom: 12 }}>DESTINO</div><div style={{ display: "grid", gap: 8 }}>{travelOptions.map(d => (<button key={d.id} className="om-btn" onClick={() => { setSelectedDest(d); setViewMode("TRAVEL_MODES"); }}>{d.flag} {d.cidade}</button>))}{run.localAtual?.cidade !== "Campinas" && <button className="om-btn" onClick={handleVoltar} style={{ border: "1px solid #80bdff" }}>↩️ VOLTAR</button>}</div><button onClick={() => setViewMode("ACTIONS")} style={{ marginTop: 10, background: "transparent", border: "none", color: "#80bdff", width: "100%" }}>Cancelar</button></div>)}
-                                {viewMode === "TRAVEL_MODES" && selectedDest && (<div><div style={{ fontSize: 13, fontWeight: 800, marginBottom: 12 }}>VIAJAR PARA {selectedDest.cidade.toUpperCase()}</div><div style={{ display: "grid", gap: 8 }}>{TRANSPORT_MODES.map(t => (<button key={t.id} className="om-btn" onClick={() => confirmarViagem(t)}>{t.icon} {t.nome} (${t.custoBase})</button>))}</div><button onClick={() => setViewMode("TRAVEL_MAP")} style={{ marginTop: 10, background: "transparent", border: "none", color: "#80bdff", width: "100%" }}>Mudar Destino</button></div>)}
+                                {viewMode === "TRAVEL_MODES" && selectedDest && (<div><div style={{ fontSize: 13, fontWeight: 800, marginBottom: 12 }}>{selectedDest.isReturn ? "↩️ RETORNAR PARA" : "VIAJAR PARA"} {selectedDest.cidade.toUpperCase()}</div><div style={{ display: "grid", gap: 8 }}>{TRANSPORT_MODES.map(t => (<button key={t.id} className="om-btn" onClick={() => confirmarViagem(t)}>{t.icon} {t.nome} (${t.custoBase})</button>))}</div><button onClick={() => setViewMode(selectedDest.isReturn ? "ACTIONS" : "TRAVEL_MAP")} style={{ marginTop: 10, background: "transparent", border: "none", color: "#80bdff", width: "100%" }}>{selectedDest.isReturn ? "Cancelar" : "Mudar Destino"}</button></div>)}
                                 {viewMode === "LOCATIONS" && (<div><div style={{ fontSize: 13, fontWeight: 800, marginBottom: 12 }}>INVESTIGAÇÃO</div><div style={{ display: "grid", gap: 8 }}>{(localInterrogatorios.length > 0 ? localInterrogatorios : [{id:"F1",local:"Taxi",pista:"Nada visto."}]).map(loc => (<button key={loc.id} className="om-btn" onClick={() => interrogarNoLocal(loc)}>🕵️‍♂️ Ir para {loc.local}</button>))}</div><button onClick={() => setViewMode("ACTIONS")} style={{ marginTop: 10, background: "transparent", border: "none", color: "#80bdff", width: "100%" }}>Cancelar</button></div>)}
                                 {viewMode === "JOURNAL" && (<div><div style={{ fontSize: 13, fontWeight: 800, marginBottom: 12 }}>JORNAL</div><div className="om-journal-list">{run.jornal?.slice().reverse().map((j, i) => (<div key={i} className="om-journal-item" style={{ fontSize: 11 }}><div style={{ opacity: 0.5 }}>{new Date(j.t).toLocaleString()}</div><div>{j.msg}</div></div>))}</div></div>)}
                                 {viewMode === "PROFILE" && (<div><div style={{ display: "flex", gap: 8, marginBottom: 15 }}><button onClick={() => setProfileTab("PERFIL")} className="om-btn">PERFIL</button><button onClick={() => setProfileTab("GALERIA")} className="om-btn">GALERIA</button></div>{profileTab === "PERFIL" ? (<div><div style={{ fontSize: 18, fontWeight: 800 }}>{state.player.nome}</div><button onClick={handleAbort} className="om-btn" style={{ marginTop: 20, color: "#ff8080" }}>ABORTAR</button></div>) : <SuspectGallery capturedSuspects={state.capturedSuspects || {}} />}</div>)}

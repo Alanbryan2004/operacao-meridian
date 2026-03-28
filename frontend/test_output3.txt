@@ -1,0 +1,306 @@
+
+[1m[46m RUN [49m[22m [36mv4.0.18 [39m[90mC:/Users/alanb/Projetos/operacao-meridian/frontend[39m
+
+ [31m❯[39m src/test/WrongCityValidation.test.jsx [2m([22m[2m272 tests[22m[2m | [22m[31m1 failed[39m[2m)[22m[32m 159[2mms[22m[39m
+       [32m✓[39m cada cidade da rota deve ter pelo menos 3 NPCs com todos os campos obrigatórios[32m 4[2mms[22m[39m
+       [32m✓[39m NPCs de cada cidade da rota devem ter personagem definido (prevenir crash toUpperCase)[32m 1[2mms[22m[39m
+       [32m✓[39m cada cidade da rota deve ter pelo menos 3 NPCs com todos os campos obrigatórios[32m 2[2mms[22m[39m
+       [32m✓[39m NPCs de cada cidade da rota devem ter personagem definido (prevenir crash toUpperCase)[32m 1[2mms[22m[39m
+       [32m✓[39m cada cidade da rota deve ter pelo menos 3 NPCs com todos os campos obrigatórios[32m 2[2mms[22m[39m
+       [32m✓[39m NPCs de cada cidade da rota devem ter personagem definido (prevenir crash toUpperCase)[32m 0[2mms[22m[39m
+       [32m✓[39m cada cidade da rota deve ter pelo menos 3 NPCs com todos os campos obrigatórios[32m 2[2mms[22m[39m
+       [32m✓[39m NPCs de cada cidade da rota devem ter personagem definido (prevenir crash toUpperCase)[32m 0[2mms[22m[39m
+       [32m✓[39m cada cidade da rota deve ter pelo menos 3 NPCs com todos os campos obrigatórios[32m 2[2mms[22m[39m
+       [32m✓[39m NPCs de cada cidade da rota devem ter personagem definido (prevenir crash toUpperCase)[32m 1[2mms[22m[39m
+       [32m✓[39m cada cidade da rota deve ter pelo menos 3 NPCs com todos os campos obrigatórios[32m 2[2mms[22m[39m
+       [32m✓[39m NPCs de cada cidade da rota devem ter personagem definido (prevenir crash toUpperCase)[32m 1[2mms[22m[39m
+       [32m✓[39m cada cidade da rota deve ter pelo menos 3 NPCs com todos os campos obrigatórios[32m 2[2mms[22m[39m
+       [32m✓[39m NPCs de cada cidade da rota devem ter personagem definido (prevenir crash toUpperCase)[32m 1[2mms[22m[39m
+       [32m✓[39m cada cidade da rota deve ter pelo menos 3 NPCs com todos os campos obrigatórios[32m 2[2mms[22m[39m
+       [32m✓[39m NPCs de cada cidade da rota devem ter personagem definido (prevenir crash toUpperCase)[32m 1[2mms[22m[39m
+       [32m✓[39m cada cidade da rota deve ter pelo menos 3 NPCs com todos os campos obrigatórios[32m 2[2mms[22m[39m
+       [32m✓[39m NPCs de cada cidade da rota devem ter personagem definido (prevenir crash toUpperCase)[32m 1[2mms[22m[39m
+       [32m✓[39m cada cidade da rota deve ter pelo menos 3 NPCs com todos os campos obrigatórios[32m 2[2mms[22m[39m
+       [32m✓[39m NPCs de cada cidade da rota devem ter personagem definido (prevenir crash toUpperCase)[32m 1[2mms[22m[39m
+       [32m✓[39m cada cidade da rota deve ter pelo menos 3 NPCs com todos os campos obrigatórios[32m 4[2mms[22m[39m
+       [32m✓[39m NPCs de cada cidade da rota devem ter personagem definido (prevenir crash toUpperCase)[32m 1[2mms[22m[39m
+       [32m✓[39m cada cidade da rota deve ter pelo menos 3 NPCs com todos os campos obrigatórios[32m 2[2mms[22m[39m
+       [32m✓[39m NPCs de cada cidade da rota devem ter personagem definido (prevenir crash toUpperCase)[32m 1[2mms[22m[39m
+       [32m✓[39m cada cidade da rota deve ter pelo menos 3 NPCs com todos os campos obrigatórios[32m 2[2mms[22m[39m
+       [32m✓[39m NPCs de cada cidade da rota devem ter personagem definido (prevenir crash toUpperCase)[32m 1[2mms[22m[39m
+       [32m✓[39m cada cidade da rota deve ter pelo menos 3 NPCs com todos os campos obrigatórios[32m 3[2mms[22m[39m
+       [32m✓[39m NPCs de cada cidade da rota devem ter personagem definido (prevenir crash toUpperCase)[32m 1[2mms[22m[39m
+       [32m✓[39m cada cidade da rota deve ter pelo menos 3 NPCs com todos os campos obrigatórios[32m 2[2mms[22m[39m
+       [32m✓[39m NPCs de cada cidade da rota devem ter personagem definido (prevenir crash toUpperCase)[32m 1[2mms[22m[39m
+       [32m✓[39m cada cidade da rota deve ter pelo menos 3 NPCs com todos os campos obrigatórios[32m 3[2mms[22m[39m
+       [32m✓[39m NPCs de cada cidade da rota devem ter personagem definido (prevenir crash toUpperCase)[32m 1[2mms[22m[39m
+       [32m✓[39m cada cidade da rota deve ter pelo menos 3 NPCs com todos os campos obrigatórios[32m 2[2mms[22m[39m
+       [32m✓[39m NPCs de cada cidade da rota devem ter personagem definido (prevenir crash toUpperCase)[32m 1[2mms[22m[39m
+       [32m✓[39m cada cidade da rota deve ter pelo menos 3 NPCs com todos os campos obrigatórios[32m 2[2mms[22m[39m
+       [32m✓[39m NPCs de cada cidade da rota devem ter personagem definido (prevenir crash toUpperCase)[32m 1[2mms[22m[39m
+       [32m✓[39m cada cidade da rota deve ter pelo menos 3 NPCs com todos os campos obrigatórios[32m 3[2mms[22m[39m
+       [32m✓[39m NPCs de cada cidade da rota devem ter personagem definido (prevenir crash toUpperCase)[32m 1[2mms[22m[39m
+       [32m✓[39m cada cidade da rota deve ter pelo menos 3 NPCs com todos os campos obrigatórios[32m 3[2mms[22m[39m
+       [32m✓[39m NPCs de cada cidade da rota devem ter personagem definido (prevenir crash toUpperCase)[32m 1[2mms[22m[39m
+       [32m✓[39m cada cidade da rota deve ter pelo menos 3 NPCs com todos os campos obrigatórios[32m 3[2mms[22m[39m
+       [32m✓[39m NPCs de cada cidade da rota devem ter personagem definido (prevenir crash toUpperCase)[32m 0[2mms[22m[39m
+       [32m✓[39m cada cidade da rota deve ter pelo menos 3 NPCs com todos os campos obrigatórios[32m 2[2mms[22m[39m
+       [32m✓[39m NPCs de cada cidade da rota devem ter personagem definido (prevenir crash toUpperCase)[32m 1[2mms[22m[39m
+       [32m✓[39m cada cidade da rota deve ter pelo menos 3 NPCs com todos os campos obrigatórios[32m 2[2mms[22m[39m
+       [32m✓[39m NPCs de cada cidade da rota devem ter personagem definido (prevenir crash toUpperCase)[32m 0[2mms[22m[39m
+       [32m✓[39m cada cidade da rota deve ter pelo menos 3 NPCs com todos os campos obrigatórios[32m 2[2mms[22m[39m
+       [32m✓[39m NPCs de cada cidade da rota devem ter personagem definido (prevenir crash toUpperCase)[32m 0[2mms[22m[39m
+       [32m✓[39m cada cidade da rota deve ter pelo menos 3 NPCs com todos os campos obrigatórios[32m 2[2mms[22m[39m
+       [32m✓[39m NPCs de cada cidade da rota devem ter personagem definido (prevenir crash toUpperCase)[32m 1[2mms[22m[39m
+       [32m✓[39m cada cidade da rota deve ter pelo menos 3 NPCs com todos os campos obrigatórios[32m 5[2mms[22m[39m
+       [32m✓[39m NPCs de cada cidade da rota devem ter personagem definido (prevenir crash toUpperCase)[32m 0[2mms[22m[39m
+       [32m✓[39m cada cidade da rota deve ter pelo menos 3 NPCs com todos os campos obrigatórios[32m 2[2mms[22m[39m
+       [32m✓[39m NPCs de cada cidade da rota devem ter personagem definido (prevenir crash toUpperCase)[32m 0[2mms[22m[39m
+       [32m✓[39m cada cidade da rota deve ter pelo menos 3 NPCs com todos os campos obrigatórios[32m 1[2mms[22m[39m
+       [32m✓[39m NPCs de cada cidade da rota devem ter personagem definido (prevenir crash toUpperCase)[32m 0[2mms[22m[39m
+       [32m✓[39m cada cidade da rota deve ter pelo menos 3 NPCs com todos os campos obrigatórios[32m 2[2mms[22m[39m
+       [32m✓[39m NPCs de cada cidade da rota devem ter personagem definido (prevenir crash toUpperCase)[32m 1[2mms[22m[39m
+       [32m✓[39m cada cidade da rota deve ter pelo menos 3 NPCs com todos os campos obrigatórios[32m 2[2mms[22m[39m
+       [32m✓[39m NPCs de cada cidade da rota devem ter personagem definido (prevenir crash toUpperCase)[32m 0[2mms[22m[39m
+       [32m✓[39m cada cidade da rota deve ter pelo menos 3 NPCs com todos os campos obrigatórios[32m 2[2mms[22m[39m
+       [32m✓[39m NPCs de cada cidade da rota devem ter personagem definido (prevenir crash toUpperCase)[32m 0[2mms[22m[39m
+       [32m✓[39m cada cidade da rota deve ter pelo menos 3 NPCs com todos os campos obrigatórios[32m 2[2mms[22m[39m
+       [32m✓[39m NPCs de cada cidade da rota devem ter personagem definido (prevenir crash toUpperCase)[32m 0[2mms[22m[39m
+       [32m✓[39m cada cidade da rota deve ter pelo menos 3 NPCs com todos os campos obrigatórios[32m 2[2mms[22m[39m
+       [32m✓[39m NPCs de cada cidade da rota devem ter personagem definido (prevenir crash toUpperCase)[32m 0[2mms[22m[39m
+       [32m✓[39m cada cidade da rota deve ter pelo menos 3 NPCs com todos os campos obrigatórios[32m 2[2mms[22m[39m
+       [32m✓[39m NPCs de cada cidade da rota devem ter personagem definido (prevenir crash toUpperCase)[32m 1[2mms[22m[39m
+       [32m✓[39m cada cidade da rota deve ter pelo menos 3 NPCs com todos os campos obrigatórios[32m 2[2mms[22m[39m
+       [32m✓[39m NPCs de cada cidade da rota devem ter personagem definido (prevenir crash toUpperCase)[32m 1[2mms[22m[39m
+       [32m✓[39m cada cidade da rota deve ter pelo menos 3 NPCs com todos os campos obrigatórios[32m 2[2mms[22m[39m
+       [32m✓[39m NPCs de cada cidade da rota devem ter personagem definido (prevenir crash toUpperCase)[32m 0[2mms[22m[39m
+       [32m✓[39m cada cidade da rota deve ter pelo menos 3 NPCs com todos os campos obrigatórios[32m 2[2mms[22m[39m
+       [32m✓[39m NPCs de cada cidade da rota devem ter personagem definido (prevenir crash toUpperCase)[32m 0[2mms[22m[39m
+       [32m✓[39m cada cidade da rota deve ter pelo menos 3 NPCs com todos os campos obrigatórios[32m 2[2mms[22m[39m
+       [32m✓[39m NPCs de cada cidade da rota devem ter personagem definido (prevenir crash toUpperCase)[32m 0[2mms[22m[39m
+       [32m✓[39m cada cidade da rota deve ter pelo menos 3 NPCs com todos os campos obrigatórios[32m 2[2mms[22m[39m
+       [32m✓[39m NPCs de cada cidade da rota devem ter personagem definido (prevenir crash toUpperCase)[32m 0[2mms[22m[39m
+       [32m✓[39m cada cidade da rota deve ter pelo menos 3 NPCs com todos os campos obrigatórios[32m 2[2mms[22m[39m
+       [32m✓[39m NPCs de cada cidade da rota devem ter personagem definido (prevenir crash toUpperCase)[32m 0[2mms[22m[39m
+       [32m✓[39m cada cidade da rota deve ter pelo menos 3 NPCs com todos os campos obrigatórios[32m 3[2mms[22m[39m
+       [32m✓[39m NPCs de cada cidade da rota devem ter personagem definido (prevenir crash toUpperCase)[32m 1[2mms[22m[39m
+       [32m✓[39m cada cidade da rota deve ter pelo menos 3 NPCs com todos os campos obrigatórios[32m 3[2mms[22m[39m
+       [32m✓[39m NPCs de cada cidade da rota devem ter personagem definido (prevenir crash toUpperCase)[32m 1[2mms[22m[39m
+       [32m✓[39m cada cidade da rota deve ter pelo menos 3 NPCs com todos os campos obrigatórios[32m 3[2mms[22m[39m
+       [32m✓[39m NPCs de cada cidade da rota devem ter personagem definido (prevenir crash toUpperCase)[32m 1[2mms[22m[39m
+       [32m✓[39m cada cidade da rota deve ter pelo menos 3 NPCs com todos os campos obrigatórios[32m 4[2mms[22m[39m
+       [32m✓[39m NPCs de cada cidade da rota devem ter personagem definido (prevenir crash toUpperCase)[32m 1[2mms[22m[39m
+       [32m✓[39m cada cidade da rota deve ter pelo menos 3 NPCs com todos os campos obrigatórios[32m 3[2mms[22m[39m
+       [32m✓[39m NPCs de cada cidade da rota devem ter personagem definido (prevenir crash toUpperCase)[32m 1[2mms[22m[39m
+       [32m✓[39m cada cidade da rota (exceto a última) deve ter exatamente 3 destinos na travelTable[32m 0[2mms[22m[39m
+       [32m✓[39m a próxima cidade da rota deve estar entre os destinos de viagem[32m 0[2mms[22m[39m
+       [32m✓[39m cidades erradas (fora do travelTable) NÃO devem ter entrada na travelTable[32m 0[2mms[22m[39m
+       [32m✓[39m todos os destinos na travelTable devem ser cidades válidas do jogo[32m 0[2mms[22m[39m
+       [32m✓[39m cada cidade da rota (exceto a última) deve ter exatamente 3 destinos na travelTable[32m 0[2mms[22m[39m
+       [32m✓[39m a próxima cidade da rota deve estar entre os destinos de viagem[32m 0[2mms[22m[39m
+       [32m✓[39m cidades erradas (fora do travelTable) NÃO devem ter entrada na travelTable[32m 0[2mms[22m[39m
+       [32m✓[39m todos os destinos na travelTable devem ser cidades válidas do jogo[32m 0[2mms[22m[39m
+       [32m✓[39m cada cidade da rota (exceto a última) deve ter exatamente 3 destinos na travelTable[32m 0[2mms[22m[39m
+       [32m✓[39m a próxima cidade da rota deve estar entre os destinos de viagem[32m 0[2mms[22m[39m
+       [32m✓[39m cidades erradas (fora do travelTable) NÃO devem ter entrada na travelTable[32m 0[2mms[22m[39m
+       [32m✓[39m todos os destinos na travelTable devem ser cidades válidas do jogo[32m 0[2mms[22m[39m
+       [32m✓[39m cada cidade da rota (exceto a última) deve ter exatamente 3 destinos na travelTable[32m 0[2mms[22m[39m
+       [32m✓[39m a próxima cidade da rota deve estar entre os destinos de viagem[32m 0[2mms[22m[39m
+       [32m✓[39m cidades erradas (fora do travelTable) NÃO devem ter entrada na travelTable[32m 0[2mms[22m[39m
+       [32m✓[39m todos os destinos na travelTable devem ser cidades válidas do jogo[32m 0[2mms[22m[39m
+       [32m✓[39m cada cidade da rota (exceto a última) deve ter exatamente 3 destinos na travelTable[32m 0[2mms[22m[39m
+       [32m✓[39m a próxima cidade da rota deve estar entre os destinos de viagem[32m 0[2mms[22m[39m
+       [32m✓[39m cidades erradas (fora do travelTable) NÃO devem ter entrada na travelTable[32m 0[2mms[22m[39m
+       [32m✓[39m todos os destinos na travelTable devem ser cidades válidas do jogo[32m 0[2mms[22m[39m
+       [32m✓[39m cada cidade da rota (exceto a última) deve ter exatamente 3 destinos na travelTable[32m 0[2mms[22m[39m
+       [32m✓[39m a próxima cidade da rota deve estar entre os destinos de viagem[32m 0[2mms[22m[39m
+       [32m✓[39m cidades erradas (fora do travelTable) NÃO devem ter entrada na travelTable[32m 0[2mms[22m[39m
+       [32m✓[39m todos os destinos na travelTable devem ser cidades válidas do jogo[32m 0[2mms[22m[39m
+       [32m✓[39m cada cidade da rota (exceto a última) deve ter exatamente 3 destinos na travelTable[32m 0[2mms[22m[39m
+       [32m✓[39m a próxima cidade da rota deve estar entre os destinos de viagem[32m 0[2mms[22m[39m
+       [32m✓[39m cidades erradas (fora do travelTable) NÃO devem ter entrada na travelTable[32m 0[2mms[22m[39m
+       [32m✓[39m todos os destinos na travelTable devem ser cidades válidas do jogo[32m 0[2mms[22m[39m
+       [32m✓[39m cada cidade da rota (exceto a última) deve ter exatamente 3 destinos na travelTable[32m 0[2mms[22m[39m
+       [32m✓[39m a próxima cidade da rota deve estar entre os destinos de viagem[32m 0[2mms[22m[39m
+       [32m✓[39m cidades erradas (fora do travelTable) NÃO devem ter entrada na travelTable[32m 0[2mms[22m[39m
+       [32m✓[39m todos os destinos na travelTable devem ser cidades válidas do jogo[32m 0[2mms[22m[39m
+       [32m✓[39m cada cidade da rota (exceto a última) deve ter exatamente 3 destinos na travelTable[32m 0[2mms[22m[39m
+       [32m✓[39m a próxima cidade da rota deve estar entre os destinos de viagem[32m 0[2mms[22m[39m
+       [32m✓[39m cidades erradas (fora do travelTable) NÃO devem ter entrada na travelTable[32m 0[2mms[22m[39m
+[31m       [31m×[31m todos os destinos na travelTable devem ser cidades válidas do jogo[39m[32m 4[2mms[22m[39m
+       [32m✓[39m cada cidade da rota (exceto a última) deve ter exatamente 3 destinos na travelTable[32m 0[2mms[22m[39m
+       [32m✓[39m a próxima cidade da rota deve estar entre os destinos de viagem[32m 0[2mms[22m[39m
+       [32m✓[39m cidades erradas (fora do travelTable) NÃO devem ter entrada na travelTable[32m 0[2mms[22m[39m
+       [32m✓[39m todos os destinos na travelTable devem ser cidades válidas do jogo[32m 0[2mms[22m[39m
+       [32m✓[39m cada cidade da rota (exceto a última) deve ter exatamente 3 destinos na travelTable[32m 0[2mms[22m[39m
+       [32m✓[39m a próxima cidade da rota deve estar entre os destinos de viagem[32m 0[2mms[22m[39m
+       [32m✓[39m cidades erradas (fora do travelTable) NÃO devem ter entrada na travelTable[32m 0[2mms[22m[39m
+       [32m✓[39m todos os destinos na travelTable devem ser cidades válidas do jogo[32m 0[2mms[22m[39m
+       [32m✓[39m cada cidade da rota (exceto a última) deve ter exatamente 3 destinos na travelTable[32m 0[2mms[22m[39m
+       [32m✓[39m a próxima cidade da rota deve estar entre os destinos de viagem[32m 0[2mms[22m[39m
+       [32m✓[39m cidades erradas (fora do travelTable) NÃO devem ter entrada na travelTable[32m 0[2mms[22m[39m
+       [32m✓[39m todos os destinos na travelTable devem ser cidades válidas do jogo[32m 0[2mms[22m[39m
+       [32m✓[39m cada cidade da rota (exceto a última) deve ter exatamente 3 destinos na travelTable[32m 0[2mms[22m[39m
+       [32m✓[39m a próxima cidade da rota deve estar entre os destinos de viagem[32m 0[2mms[22m[39m
+       [32m✓[39m cidades erradas (fora do travelTable) NÃO devem ter entrada na travelTable[32m 0[2mms[22m[39m
+       [32m✓[39m todos os destinos na travelTable devem ser cidades válidas do jogo[32m 0[2mms[22m[39m
+       [32m✓[39m cada cidade da rota (exceto a última) deve ter exatamente 3 destinos na travelTable[32m 0[2mms[22m[39m
+       [32m✓[39m a próxima cidade da rota deve estar entre os destinos de viagem[32m 0[2mms[22m[39m
+       [32m✓[39m cidades erradas (fora do travelTable) NÃO devem ter entrada na travelTable[32m 0[2mms[22m[39m
+       [32m✓[39m todos os destinos na travelTable devem ser cidades válidas do jogo[32m 0[2mms[22m[39m
+       [32m✓[39m cada cidade da rota (exceto a última) deve ter exatamente 3 destinos na travelTable[32m 0[2mms[22m[39m
+       [32m✓[39m a próxima cidade da rota deve estar entre os destinos de viagem[32m 0[2mms[22m[39m
+       [32m✓[39m cidades erradas (fora do travelTable) NÃO devem ter entrada na travelTable[32m 0[2mms[22m[39m
+       [32m✓[39m todos os destinos na travelTable devem ser cidades válidas do jogo[32m 0[2mms[22m[39m
+       [32m✓[39m cada cidade da rota (exceto a última) deve ter exatamente 3 destinos na travelTable[32m 0[2mms[22m[39m
+       [32m✓[39m a próxima cidade da rota deve estar entre os destinos de viagem[32m 0[2mms[22m[39m
+       [32m✓[39m cidades erradas (fora do travelTable) NÃO devem ter entrada na travelTable[32m 0[2mms[22m[39m
+       [32m✓[39m todos os destinos na travelTable devem ser cidades válidas do jogo[32m 0[2mms[22m[39m
+       [32m✓[39m cada cidade da rota (exceto a última) deve ter exatamente 3 destinos na travelTable[32m 0[2mms[22m[39m
+       [32m✓[39m a próxima cidade da rota deve estar entre os destinos de viagem[32m 0[2mms[22m[39m
+       [32m✓[39m cidades erradas (fora do travelTable) NÃO devem ter entrada na travelTable[32m 0[2mms[22m[39m
+       [32m✓[39m todos os destinos na travelTable devem ser cidades válidas do jogo[32m 0[2mms[22m[39m
+       [32m✓[39m cada cidade da rota (exceto a última) deve ter exatamente 3 destinos na travelTable[32m 0[2mms[22m[39m
+       [32m✓[39m a próxima cidade da rota deve estar entre os destinos de viagem[32m 0[2mms[22m[39m
+       [32m✓[39m cidades erradas (fora do travelTable) NÃO devem ter entrada na travelTable[32m 0[2mms[22m[39m
+       [32m✓[39m todos os destinos na travelTable devem ser cidades válidas do jogo[32m 0[2mms[22m[39m
+       [32m✓[39m cada cidade da rota (exceto a última) deve ter exatamente 3 destinos na travelTable[32m 0[2mms[22m[39m
+       [32m✓[39m a próxima cidade da rota deve estar entre os destinos de viagem[32m 0[2mms[22m[39m
+       [32m✓[39m cidades erradas (fora do travelTable) NÃO devem ter entrada na travelTable[32m 0[2mms[22m[39m
+       [32m✓[39m todos os destinos na travelTable devem ser cidades válidas do jogo[32m 0[2mms[22m[39m
+       [32m✓[39m cada cidade da rota (exceto a última) deve ter exatamente 3 destinos na travelTable[32m 0[2mms[22m[39m
+       [32m✓[39m a próxima cidade da rota deve estar entre os destinos de viagem[32m 0[2mms[22m[39m
+       [32m✓[39m cidades erradas (fora do travelTable) NÃO devem ter entrada na travelTable[32m 0[2mms[22m[39m
+       [32m✓[39m todos os destinos na travelTable devem ser cidades válidas do jogo[32m 0[2mms[22m[39m
+       [32m✓[39m cada cidade da rota (exceto a última) deve ter exatamente 3 destinos na travelTable[32m 0[2mms[22m[39m
+       [32m✓[39m a próxima cidade da rota deve estar entre os destinos de viagem[32m 0[2mms[22m[39m
+       [32m✓[39m cidades erradas (fora do travelTable) NÃO devem ter entrada na travelTable[32m 0[2mms[22m[39m
+       [32m✓[39m todos os destinos na travelTable devem ser cidades válidas do jogo[32m 0[2mms[22m[39m
+       [32m✓[39m cada cidade da rota (exceto a última) deve ter exatamente 3 destinos na travelTable[32m 0[2mms[22m[39m
+       [32m✓[39m a próxima cidade da rota deve estar entre os destinos de viagem[32m 0[2mms[22m[39m
+       [32m✓[39m cidades erradas (fora do travelTable) NÃO devem ter entrada na travelTable[32m 0[2mms[22m[39m
+       [32m✓[39m todos os destinos na travelTable devem ser cidades válidas do jogo[32m 0[2mms[22m[39m
+       [32m✓[39m cada cidade da rota (exceto a última) deve ter exatamente 3 destinos na travelTable[32m 0[2mms[22m[39m
+       [32m✓[39m a próxima cidade da rota deve estar entre os destinos de viagem[32m 0[2mms[22m[39m
+       [32m✓[39m cidades erradas (fora do travelTable) NÃO devem ter entrada na travelTable[32m 0[2mms[22m[39m
+       [32m✓[39m todos os destinos na travelTable devem ser cidades válidas do jogo[32m 0[2mms[22m[39m
+       [32m✓[39m cada cidade da rota (exceto a última) deve ter exatamente 3 destinos na travelTable[32m 0[2mms[22m[39m
+       [32m✓[39m a próxima cidade da rota deve estar entre os destinos de viagem[32m 0[2mms[22m[39m
+       [32m✓[39m cidades erradas (fora do travelTable) NÃO devem ter entrada na travelTable[32m 0[2mms[22m[39m
+       [32m✓[39m todos os destinos na travelTable devem ser cidades válidas do jogo[32m 0[2mms[22m[39m
+       [32m✓[39m cada cidade da rota (exceto a última) deve ter exatamente 3 destinos na travelTable[32m 0[2mms[22m[39m
+       [32m✓[39m a próxima cidade da rota deve estar entre os destinos de viagem[32m 0[2mms[22m[39m
+       [32m✓[39m cidades erradas (fora do travelTable) NÃO devem ter entrada na travelTable[32m 0[2mms[22m[39m
+       [32m✓[39m todos os destinos na travelTable devem ser cidades válidas do jogo[32m 0[2mms[22m[39m
+       [32m✓[39m cada cidade da rota (exceto a última) deve ter exatamente 3 destinos na travelTable[32m 0[2mms[22m[39m
+       [32m✓[39m a próxima cidade da rota deve estar entre os destinos de viagem[32m 0[2mms[22m[39m
+       [32m✓[39m cidades erradas (fora do travelTable) NÃO devem ter entrada na travelTable[32m 0[2mms[22m[39m
+       [32m✓[39m todos os destinos na travelTable devem ser cidades válidas do jogo[32m 0[2mms[22m[39m
+       [32m✓[39m cada cidade da rota (exceto a última) deve ter exatamente 3 destinos na travelTable[32m 0[2mms[22m[39m
+       [32m✓[39m a próxima cidade da rota deve estar entre os destinos de viagem[32m 0[2mms[22m[39m
+       [32m✓[39m cidades erradas (fora do travelTable) NÃO devem ter entrada na travelTable[32m 0[2mms[22m[39m
+       [32m✓[39m todos os destinos na travelTable devem ser cidades válidas do jogo[32m 0[2mms[22m[39m
+       [32m✓[39m cada cidade da rota (exceto a última) deve ter exatamente 3 destinos na travelTable[32m 0[2mms[22m[39m
+       [32m✓[39m a próxima cidade da rota deve estar entre os destinos de viagem[32m 0[2mms[22m[39m
+       [32m✓[39m cidades erradas (fora do travelTable) NÃO devem ter entrada na travelTable[32m 0[2mms[22m[39m
+       [32m✓[39m todos os destinos na travelTable devem ser cidades válidas do jogo[32m 0[2mms[22m[39m
+       [32m✓[39m cada cidade da rota (exceto a última) deve ter exatamente 3 destinos na travelTable[32m 0[2mms[22m[39m
+       [32m✓[39m a próxima cidade da rota deve estar entre os destinos de viagem[32m 0[2mms[22m[39m
+       [32m✓[39m cidades erradas (fora do travelTable) NÃO devem ter entrada na travelTable[32m 0[2mms[22m[39m
+       [32m✓[39m todos os destinos na travelTable devem ser cidades válidas do jogo[32m 0[2mms[22m[39m
+       [32m✓[39m cada cidade da rota (exceto a última) deve ter exatamente 3 destinos na travelTable[32m 0[2mms[22m[39m
+       [32m✓[39m a próxima cidade da rota deve estar entre os destinos de viagem[32m 0[2mms[22m[39m
+       [32m✓[39m cidades erradas (fora do travelTable) NÃO devem ter entrada na travelTable[32m 0[2mms[22m[39m
+       [32m✓[39m todos os destinos na travelTable devem ser cidades válidas do jogo[32m 0[2mms[22m[39m
+       [32m✓[39m cada cidade da rota (exceto a última) deve ter exatamente 3 destinos na travelTable[32m 0[2mms[22m[39m
+       [32m✓[39m a próxima cidade da rota deve estar entre os destinos de viagem[32m 0[2mms[22m[39m
+       [32m✓[39m cidades erradas (fora do travelTable) NÃO devem ter entrada na travelTable[32m 0[2mms[22m[39m
+       [32m✓[39m todos os destinos na travelTable devem ser cidades válidas do jogo[32m 0[2mms[22m[39m
+       [32m✓[39m cada cidade da rota (exceto a última) deve ter exatamente 3 destinos na travelTable[32m 0[2mms[22m[39m
+       [32m✓[39m a próxima cidade da rota deve estar entre os destinos de viagem[32m 0[2mms[22m[39m
+       [32m✓[39m cidades erradas (fora do travelTable) NÃO devem ter entrada na travelTable[32m 0[2mms[22m[39m
+       [32m✓[39m todos os destinos na travelTable devem ser cidades válidas do jogo[32m 0[2mms[22m[39m
+       [32m✓[39m cada cidade da rota (exceto a última) deve ter exatamente 3 destinos na travelTable[32m 0[2mms[22m[39m
+       [32m✓[39m a próxima cidade da rota deve estar entre os destinos de viagem[32m 0[2mms[22m[39m
+       [32m✓[39m cidades erradas (fora do travelTable) NÃO devem ter entrada na travelTable[32m 0[2mms[22m[39m
+       [32m✓[39m todos os destinos na travelTable devem ser cidades válidas do jogo[32m 0[2mms[22m[39m
+       [32m✓[39m cada cidade da rota (exceto a última) deve ter exatamente 3 destinos na travelTable[32m 0[2mms[22m[39m
+       [32m✓[39m a próxima cidade da rota deve estar entre os destinos de viagem[32m 0[2mms[22m[39m
+       [32m✓[39m cidades erradas (fora do travelTable) NÃO devem ter entrada na travelTable[32m 0[2mms[22m[39m
+       [32m✓[39m todos os destinos na travelTable devem ser cidades válidas do jogo[32m 0[2mms[22m[39m
+       [32m✓[39m cada cidade da rota (exceto a última) deve ter exatamente 3 destinos na travelTable[32m 0[2mms[22m[39m
+       [32m✓[39m a próxima cidade da rota deve estar entre os destinos de viagem[32m 0[2mms[22m[39m
+       [32m✓[39m cidades erradas (fora do travelTable) NÃO devem ter entrada na travelTable[32m 0[2mms[22m[39m
+       [32m✓[39m todos os destinos na travelTable devem ser cidades válidas do jogo[32m 0[2mms[22m[39m
+       [32m✓[39m cada cidade da rota (exceto a última) deve ter exatamente 3 destinos na travelTable[32m 0[2mms[22m[39m
+       [32m✓[39m a próxima cidade da rota deve estar entre os destinos de viagem[32m 0[2mms[22m[39m
+       [32m✓[39m cidades erradas (fora do travelTable) NÃO devem ter entrada na travelTable[32m 0[2mms[22m[39m
+       [32m✓[39m todos os destinos na travelTable devem ser cidades válidas do jogo[32m 0[2mms[22m[39m
+       [32m✓[39m cada cidade da rota (exceto a última) deve ter exatamente 3 destinos na travelTable[32m 0[2mms[22m[39m
+       [32m✓[39m a próxima cidade da rota deve estar entre os destinos de viagem[32m 0[2mms[22m[39m
+       [32m✓[39m cidades erradas (fora do travelTable) NÃO devem ter entrada na travelTable[32m 0[2mms[22m[39m
+       [32m✓[39m todos os destinos na travelTable devem ser cidades válidas do jogo[32m 0[2mms[22m[39m
+       [32m✓[39m cada cidade da rota (exceto a última) deve ter exatamente 3 destinos na travelTable[32m 0[2mms[22m[39m
+       [32m✓[39m a próxima cidade da rota deve estar entre os destinos de viagem[32m 0[2mms[22m[39m
+       [32m✓[39m cidades erradas (fora do travelTable) NÃO devem ter entrada na travelTable[32m 0[2mms[22m[39m
+       [32m✓[39m todos os destinos na travelTable devem ser cidades válidas do jogo[32m 0[2mms[22m[39m
+       [32m✓[39m cada cidade da rota (exceto a última) deve ter exatamente 3 destinos na travelTable[32m 0[2mms[22m[39m
+       [32m✓[39m a próxima cidade da rota deve estar entre os destinos de viagem[32m 0[2mms[22m[39m
+       [32m✓[39m cidades erradas (fora do travelTable) NÃO devem ter entrada na travelTable[32m 0[2mms[22m[39m
+       [32m✓[39m todos os destinos na travelTable devem ser cidades válidas do jogo[32m 0[2mms[22m[39m
+       [32m✓[39m cada cidade da rota (exceto a última) deve ter exatamente 3 destinos na travelTable[32m 0[2mms[22m[39m
+       [32m✓[39m a próxima cidade da rota deve estar entre os destinos de viagem[32m 0[2mms[22m[39m
+       [32m✓[39m cidades erradas (fora do travelTable) NÃO devem ter entrada na travelTable[32m 0[2mms[22m[39m
+       [32m✓[39m todos os destinos na travelTable devem ser cidades válidas do jogo[32m 0[2mms[22m[39m
+       [32m✓[39m cada cidade da rota (exceto a última) deve ter exatamente 3 destinos na travelTable[32m 0[2mms[22m[39m
+       [32m✓[39m a próxima cidade da rota deve estar entre os destinos de viagem[32m 0[2mms[22m[39m
+       [32m✓[39m cidades erradas (fora do travelTable) NÃO devem ter entrada na travelTable[32m 0[2mms[22m[39m
+       [32m✓[39m todos os destinos na travelTable devem ser cidades válidas do jogo[32m 0[2mms[22m[39m
+       [32m✓[39m cada cidade da rota (exceto a última) deve ter exatamente 3 destinos na travelTable[32m 0[2mms[22m[39m
+       [32m✓[39m a próxima cidade da rota deve estar entre os destinos de viagem[32m 0[2mms[22m[39m
+       [32m✓[39m cidades erradas (fora do travelTable) NÃO devem ter entrada na travelTable[32m 0[2mms[22m[39m
+       [32m✓[39m todos os destinos na travelTable devem ser cidades válidas do jogo[32m 0[2mms[22m[39m
+       [32m✓[39m cada cidade da rota (exceto a última) deve ter exatamente 3 destinos na travelTable[32m 0[2mms[22m[39m
+       [32m✓[39m a próxima cidade da rota deve estar entre os destinos de viagem[32m 0[2mms[22m[39m
+       [32m✓[39m cidades erradas (fora do travelTable) NÃO devem ter entrada na travelTable[32m 0[2mms[22m[39m
+       [32m✓[39m todos os destinos na travelTable devem ser cidades válidas do jogo[32m 0[2mms[22m[39m
+       [32m✓[39m cada cidade da rota (exceto a última) deve ter exatamente 3 destinos na travelTable[32m 0[2mms[22m[39m
+       [32m✓[39m a próxima cidade da rota deve estar entre os destinos de viagem[32m 0[2mms[22m[39m
+       [32m✓[39m cidades erradas (fora do travelTable) NÃO devem ter entrada na travelTable[32m 0[2mms[22m[39m
+       [32m✓[39m todos os destinos na travelTable devem ser cidades válidas do jogo[32m 0[2mms[22m[39m
+       [32m✓[39m cada cidade da rota (exceto a última) deve ter exatamente 3 destinos na travelTable[32m 0[2mms[22m[39m
+       [32m✓[39m a próxima cidade da rota deve estar entre os destinos de viagem[32m 0[2mms[22m[39m
+       [32m✓[39m cidades erradas (fora do travelTable) NÃO devem ter entrada na travelTable[32m 0[2mms[22m[39m
+       [32m✓[39m todos os destinos na travelTable devem ser cidades válidas do jogo[32m 0[2mms[22m[39m
+     [32m✓[39m deve gerar exatamente 3 NPCs genéricos para cidades fora da rota[32m 2[2mms[22m[39m
+     [32m✓[39m cidades da rota devem ter NPCs reais (não fallback)[32m 0[2mms[22m[39m
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m1 failed[39m[22m[2m | [22m[1m[32m271 passed[39m[22m[90m (272)[39m
+[2m   Start at [22m 16:40:14
+[2m   Duration [22m 1.14s[2m (transform 138ms, setup 87ms, import 144ms, tests 159ms, environment 604ms)[22m
+
+\n
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 1 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m src/test/WrongCityValidation.test.jsx[2m > [22mValidação de Opções de Viagem (travelTable)[2m > [22mCenário C002_S4[2m > [22mtodos os destinos na travelTable devem ser cidades válidas do jogo
+[31m[1mAssertionError[22m: Destino "Sydney" do "Tóquio" no cenário C002_S4 NÃO é uma cidade válida: expected false to be true // Object.is equality[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- true[39m
+[31m+ false[39m
+
+[36m [2m❯[22m src/test/WrongCityValidation.test.jsx:[2m149:27[22m[39m
+    [90m147| [39m                            [33mALL_CITIES[39m[33m.[39m[34mincludes[39m(dest)[33m,[39m
+    [90m148| [39m                            `Destino "${dest}" do "${origin}" no cenár…
+    [90m149| [39m                        )[33m.[39m[34mtoBe[39m([35mtrue[39m)[33m;[39m
+    [90m   | [39m                          [31m^[39m
+    [90m150| [39m                    })[33m;[39m
+    [90m151| [39m                })[33m;[39m
+[90m [2m❯[22m src/test/WrongCityValidation.test.jsx:[2m145:34[22m[39m
+[90m [2m❯[22m src/test/WrongCityValidation.test.jsx:[2m144:45[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯[22m[39m
+

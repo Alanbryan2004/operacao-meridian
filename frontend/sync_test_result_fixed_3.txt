@@ -1,0 +1,1085 @@
+
+[1m[46m RUN [49m[22m [36mv4.0.18 [39m[90mC:/Users/alanb/Projetos/operacao-meridian/frontend[39m
+
+ [31m??[39m src/test/CompetitiveSync.test.jsx[2m > [22mCaso Competitive Sync[2m > [22mdeve renderizar o componente e iniciar a miss??o[32m 206[2mms[22m[39m
+[31m   ??? Found multiple elements with the text: /Protocolo Fantasma/i
+
+Here are the matching elements:
+
+Ignored nodes: comments, script, style
+[36m<div[31m
+  [33mclass[31m=[32m"om-title"[31m
+[36m>[31m
+  [0mProtocolo Fantasma[0m
+[36m</div>[31m
+
+Ignored nodes: comments, script, style
+[36m<p>[31m
+  [0mProtocolo Fantasma: Capture o alvo antes dos outros agentes.
+???? Local: Roma[0m
+[36m</p>[31m
+
+(If this is intentional, then use the `*AllBy*` variant of the query (like `queryAllByText`, `getAllByText`, or `findAllByText`)).
+
+Ignored nodes: comments, script, style
+[36m<body>[31m
+  [36m<div>[31m
+    [36m<div[31m
+      [33mstyle[31m=[32m"min-height: 100dvh; width: 100vw; background: radial-gradient(circle, rgb(7, 26, 38) 0%, rgb(0, 0, 0) 70%); color: rgb(255, 255, 255); position: relative;"[31m
+    [36m>[31m
+      [36m<div[31m
+        [33mstyle[31m=[32m"position: fixed; inset: 0px; background: rgb(0, 0, 0); z-index: 9999; opacity: 0; pointer-events: none; transition: opacity 0.6s ease;"[31m
+      [36m/>[31m
+      [36m<div[31m
+        [33mstyle[31m=[32m"padding: 15px 15px 80px;"[31m
+      [36m>[31m
+        [36m<div[31m
+          [33mclass[31m=[32m"om-top"[31m
+        [36m>[31m
+          [36m<div[31m
+            [33mstyle[31m=[32m"border-radius: 18px; border: 1px solid rgba(255, 255, 255, 0.14); background: rgba(255, 255, 255, 0.06); backdrop-filter: blur(10px); box-shadow: 0 18px 45px rgba(0,0,0,.55); padding: 14px;"[31m
+          [36m>[31m
+            [36m<div[31m
+              [33mstyle[31m=[32m"display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;"[31m
+            [36m>[31m
+              [36m<div[31m
+                [33mstyle[31m=[32m"font-size: 10px; opacity: 0.6;"[31m
+              [36m>[31m
+                [0mMISS??O ATIVA[0m
+              [36m</div>[31m
+              [36m<div[31m
+                [33mstyle[31m=[32m"font-size: 10px; opacity: 0.6;"[31m
+              [36m>[31m
+                [0m???? [0m
+                [0mRoma[0m
+                [0m ?? [0m
+                [0mIt??lia[0m
+              [36m</div>[31m
+            [36m</div>[31m
+            [36m<div[31m
+              [33mstyle[31m=[32m"display: flex; justify-content: space-between; align-items: center;"[31m
+            [36m>[31m
+              [36m<div[31m
+                [33mclass[31m=[32m"om-title"[31m
+              [36m>[31m
+                [0mProtocolo Fantasma[0m
+              [36m</div>[31m
+              [36m<div[31m
+                [33mstyle[31m=[32m"text-align: right; display: flex; gap: 15px;"[31m
+              [36m>[31m
+                [36m<div>[31m
+                  [36m<div[31m
+                    [33mstyle[31m=[32m"font-size: 14px; font-weight: 900;"[31m
+                  [36m>[31m
+                    [0m$[0m
+                    [0m1000[0m
+                  [36m</div>[31m
+                  [36m<div[31m
+                    [33mstyle[31m=[32m"font-size: 10px; opacity: 0.6;"[31m
+                  [36m>[31m
+                    [0mSALDO[0m
+                  [36m</div>[31m
+                [36m</div>[31m
+                [36m<div>[31m
+                  [36m<div[31m
+                    [33mstyle[31m=[32m"font-size: 14px; font-weight: 900; color: rgb(128, 189, 255);"[31m
+                  [36m>[31m
+                    [0mPVP[0m
+                  [36m</div>[31m
+                  [36m<div[31m
+                    [33mstyle[31m=[32m"font-size: 10px; opacity: 0.6;"[31m
+                  [36m>[31m
+                    [0mMODO[0m
+                  [36m</div>[31m
+                [36m</div>[31m
+              [36m</div>[31m
+            [36m</div>[31m
+          [36m</div>[31m
+        [36m</div>[31m
+        [36m<div[31m
+          [33mclass[31m=[32m"om-card"[31m
+        [36m>[31m
+          [36m<div[31m
+            [33mclass[31m=[32m"om-img-card"[31m
+          [36m>[31m
+            [36m<img[31m
+              [33malt[31m=[32m""[31m
+              [33msrc[31m=[32m"/Paises/Roma.png"[31m
+              [33mstyle[31m=[32m"width: 100%; height: 220px; object-fit: cover;"[31m
+            [36m/>[31m
+          [36m</div>[31m
+        [36m</div>[31m
+        [36m<div[31m
+          [33mdata-testid[31m=[32m"dialog-box"[31m
+        [36m>[31m
+          [36m<p>[31m
+            [0mProtocolo Fantasma: Capture o alvo antes dos outros agentes.
+???? Local: Roma[0m
+          [36m</p>[31m
+          [36m<button>[31m
+            [0mENTENDIDO ???[0m
+          [36m</button>[31m
+        [36m</div>[31m
+      [36m</div>[31m
+      [36m<div[31m
+        [33mclass[31m=[32m"om-tabs"[31m
+      [36m>[31m
+        [36m<div[31m
+          [33mclass[31m=[32m"om-tabs-inner"[31m
+        [36m>[31m
+          [36m<button[31m
+            [33mclass[31m=[32m"om-tab"[31m
+          [36m>[31m
+            [0mA????O[0m
+          [36m</button>[31m
+          [36m<button[31m
+            [33mclass[31m=[32m"om-tab"[31m
+          [36m>[31m
+            [0mJORNAL[0m
+          [36m</button>[31m
+          [36m<button[31m
+            [33mclass[31m=[32m"om-tab"[31m
+          [36m>[31m
+            [0mCASOS[0m
+          [36m</button>[31m
+        [36m</div>[31m
+      [36m</div>[31m
+    [36m</div>[31m
+  [36m</div>[31m
+[36m</body>[31m[39m
+ [32m???[39m src/test/CompetitiveSync.test.jsx[2m > [22mCaso Competitive Sync[2m > [22mdeve encerrar a miss??o e INCREMENTAR DERROTAS quando recebe broadcast de vit??ria externo[32m 40[2mms[22m[39m
+ [31m??[39m src/test/CompetitiveSync.test.jsx[2m > [22mCaso Competitive Sync[2m > [22mdeve enviar broadcast ao capturar corretamente no NPC final[33m 1049[2mms[22m[39m
+[31m   ??? expected "vi.fn()" to be called with arguments: [ ObjectContaining{???} ][90m
+
+Number of calls: [1m0[22m
+[31m
+
+Ignored nodes: comments, script, style
+[36m<html>[31m
+  [36m<head />[31m
+  [36m<body>[31m
+    [36m<div>[31m
+      [36m<div[31m
+        [33mstyle[31m=[32m"min-height: 100dvh; width: 100vw; background: radial-gradient(circle, rgb(7, 26, 38) 0%, rgb(0, 0, 0) 70%); color: rgb(255, 255, 255); position: relative;"[31m
+      [36m>[31m
+        [36m<div[31m
+          [33mstyle[31m=[32m"position: fixed; inset: 0px; background: rgb(0, 0, 0); z-index: 9999; opacity: 0; pointer-events: none; transition: opacity 0.6s ease;"[31m
+        [36m/>[31m
+        [36m<div[31m
+          [33mstyle[31m=[32m"padding: 15px 15px 80px;"[31m
+        [36m>[31m
+          [36m<div[31m
+            [33mclass[31m=[32m"om-top"[31m
+          [36m>[31m
+            [36m<div[31m
+              [33mstyle[31m=[32m"border-radius: 18px; border: 1px solid rgba(255, 255, 255, 0.14); background: rgba(255, 255, 255, 0.06); backdrop-filter: blur(10px); box-shadow: 0 18px 45px rgba(0,0,0,.55); padding: 14px;"[31m
+            [36m>[31m
+              [36m<div[31m
+                [33mstyle[31m=[32m"display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;"[31m
+              [36m>[31m
+                [36m<div[31m
+                  [33mstyle[31m=[32m"font-size: 10px; opacity: 0.6;"[31m
+                [36m>[31m
+                  [0mMISS??O ATIVA[0m
+                [36m</div>[31m
+                [36m<div[31m
+                  [33mstyle[31m=[32m"font-size: 10px; opacity: 0.6;"[31m
+                [36m>[31m
+                  [0m???? [0m
+                  [0mZurich[0m
+                  [0m ?? [0m
+                  [0mSu????a[0m
+                [36m</div>[31m
+              [36m</div>[31m
+              [36m<div[31m
+                [33mstyle[31m=[32m"display: flex; justify-content: space-between; align-items: center;"[31m
+              [36m>[31m
+                [36m<div[31m
+                  [33mclass[31m=[32m"om-title"[31m
+                [36m>[31m
+                  [0mProtocolo Fantasma[0m
+                [36m</div>[31m
+                [36m<div[31m
+                  [33mstyle[31m=[32m"text-align: right; display: flex; gap: 15px;"[31m
+                [36m>[31m
+                  [36m<div>[31m
+                    [36m<div[31m
+                      [33mstyle[31m=[32m"font-size: 14px; font-weight: 900;"[31m
+                    [36m>[31m
+                      [0m$[0m
+                      [0m1000[0m
+                    [36m</div>[31m
+                    [36m<div[31m
+                      [33mstyle[31m=[32m"font-size: 10px; opacity: 0.6;"[31m
+                    [36m>[31m
+                      [0mSALDO[0m
+                    [36m</div>[31m
+                  [36m</div>[31m
+                  [36m<div>[31m
+                    [36m<div[31m
+                      [33mstyle[31m=[32m"font-size: 14px; font-weight: 900; color: rgb(128, 189, 255);"[31m
+                    [36m>[31m
+                      [0mPVP[0m
+                    [36m</div>[31m
+                    [36m<div[31m
+                      [33mstyle[31m=[32m"font-size: 10px; opacity: 0.6;"[31m
+                    [36m>[31m
+                      [0mMODO[0m
+                    [36m</div>[31m
+                  [36m</div>[31m
+                [36m</div>[31m
+              [36m</div>[31m
+            [36m</div>[31m
+          [36m</div>[31m
+          [36m<div[31m
+            [33mclass[31m=[32m"om-card"[31m
+          [36m>[31m
+            [36m<div[31m
+              [33mclass[31m=[32m"om-img-card"[31m
+            [36m>[31m
+              [36m<div[31m
+                [33mclass[31m=[32m"om-scene-box"[31m
+              [36m>[31m
+                [36m<img[31m
+                  [33malt[31m=[32m""[31m
+                  [33mclass[31m=[32m"om-scene-bg"[31m
+                  [33msrc[31m=[32m"/NPC/Banco.png"[31m
+                [36m/>[31m
+                [36m<img[31m
+                  [33malt[31m=[32m""[31m
+                  [33mclass[31m=[32m"om-scene-char"[31m
+                  [33msrc[31m=[32m"/NPC/Banqueiro.png"[31m
+                [36m/>[31m
+              [36m</div>[31m
+            [36m</div>[31m
+          [36m</div>[31m
+          [36m<div[31m
+            [33mdata-testid[31m=[32m"dialog-box"[31m
+          [36m>[31m
+            [36m<p>[31m
+              [0mSim??? ele passou por aqui hoje.[0m
+            [36m</p>[31m
+            [36m<button>[31m
+              [0mENTENDIDO ???[0m
+            [36m</button>[31m
+          [36m</div>[31m
+        [36m</div>[31m
+        [36m<div[31m
+          [33mclass[31m=[32m"om-tabs"[31m
+        [36m>[31m
+          [36m<div[31m
+            [33mclass[31m=[32m"om-tabs-inner"[31m
+          [36m>[31m
+            [36m<button[31m
+              [33mclass[31m=[32m"om-tab"[31m
+            [36m>[31m
+              [0mA????O[0m
+            [36m</button>[31m
+            [36m<button[31m
+              [33mclass[31m=[32m"om-tab"[31m
+            [36m>[31m
+              [0mJORNAL[0m
+            [36m</button>[31m
+            [36m<button[31m
+              [33mclass[31m=[32m"om-tab"[31m
+            [36m>[31m
+              [0mCASOS[0m
+            [36m</button>[31m
+          [36m</div>[31m
+        [36m</div>[31m
+      [36m</div>[31m
+    [36m</div>[31m
+  [36m</body>[31m
+[36m</html>[31m[39m
+ [32m???[39m src/test/CompetitiveSync.test.jsx[2m > [22mCaso Competitive Sync[2m > [22mN??O deve enviar broadcast se o mandado for ERRADO[32m 43[2mms[22m[39m
+node.exe : 
+No linha:1 caractere:1
++ & "C:\Program 
+Files\nodejs/node.exe" 
+"C:\Program 
+Files\nodejs/node_mo 
+...
++ ~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~
+~~
+    + CategoryInfo     
+         : NotSpecifi  
+  ed: (:String) [],    
+ RemoteException
+    + FullyQualifiedEr 
+   rorId : NativeComm  
+  andError
+ 
+[31m??????????????????
+???[39m[1m[41m 
+Failed Tests 2 [49m[2
+2m[31m????????????????
+?????[39m
+
+[41m[1m FAIL 
+[22m[49m src/test/Com
+petitiveSync.test.jsx[
+2m > [22mCaso 
+Competitive Sync[2m > 
+[22mdeve renderizar o 
+componente e iniciar a 
+miss??o
+[31m[1mTestingLibrary
+ElementError[22m[39m:
+ Found multiple 
+elements with the 
+text: /Protocolo 
+Fantasma/i
+
+Here are the matching 
+elements:
+
+Ignored nodes: 
+comments, script, style
+[36m<div[39m
+  [33mclass[39m=[32m
+"om-title"[39m
+[36m>[39m
+  [0mProtocolo 
+Fantasma[0m
+[36m</div>[39m
+
+Ignored nodes: 
+comments, script, style
+[36m<p>[39m
+  [0mProtocolo 
+Fantasma: Capture o 
+alvo antes dos outros 
+agentes.
+???? Local: Roma[0m
+[36m</p>[39m
+
+(If this is 
+intentional, then use 
+the `*AllBy*` variant 
+of the query (like 
+`queryAllByText`, 
+`getAllByText`, or 
+`findAllByText`)).
+
+Ignored nodes: 
+comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mstyle[39m=
+[32m"min-height: 
+100dvh; width: 100vw; 
+background: radial-grad
+ient(circle, rgb(7, 
+26, 38) 0%, rgb(0, 0, 
+0) 70%); color: 
+rgb(255, 255, 255); 
+position: 
+relative;"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mstyle[39m
+=[32m"position: 
+fixed; inset: 0px; 
+background: rgb(0, 0, 
+0); z-index: 9999; 
+opacity: 0; 
+pointer-events: none; 
+transition: opacity 
+0.6s ease;"[39m
+      [36m/>[39m
+      [36m<div[39m
+        [33mstyle[39m
+=[32m"padding: 15px 
+15px 80px;"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[3
+9m=[32m"om-top"[39m
+        [36m>[39m
+          
+[36m<div[39m
+            [33mstyle
+[39m=[32m"border-radiu
+s: 18px; border: 1px 
+solid rgba(255, 255, 
+255, 0.14); 
+background: rgba(255, 
+255, 255, 0.06); 
+backdrop-filter: 
+blur(10px); 
+box-shadow: 0 18px 
+45px rgba(0,0,0,.55); 
+padding: 14px;"[39m
+          [36m>[39m
+            
+[36m<div[39m
+              [33mstyl
+e[39m=[32m"display: 
+flex; justify-content: 
+space-between; 
+align-items: center; 
+margin-bottom: 
+4px;"[39m
+            [36m>[39m
+              
+[36m<div[39m
+                [33mst
+yle[39m=[32m"font-siz
+e: 10px; opacity: 
+0.6;"[39m
+              
+[36m>[39m
+                
+[0mMISS??O ATIVA[0m
+              
+[36m</div>[39m
+              
+[36m<div[39m
+                [33mst
+yle[39m=[32m"font-siz
+e: 10px; opacity: 
+0.6;"[39m
+              
+[36m>[39m
+                [0m
+??? [0m
+                
+[0mRoma[0m
+                [0m 
+?? [0m
+                
+[0mIt??lia[0m
+              
+[36m</div>[39m
+            
+[36m</div>[39m
+            
+[36m<div[39m
+              [33mstyl
+e[39m=[32m"display: 
+flex; justify-content: 
+space-between; 
+align-items: 
+center;"[39m
+            [36m>[39m
+              
+[36m<div[39m
+                [33mcl
+ass[39m=[32m"om-title
+"[39m
+              
+[36m>[39m
+                
+[0mProtocolo 
+Fantasma[0m
+              
+[36m</div>[39m
+              
+[36m<div[39m
+                [33mst
+yle[39m=[32m"text-ali
+gn: right; display: 
+flex; gap: 15px;"[39m
+              
+[36m>[39m
+                
+[36m<div>[39m
+                  
+[36m<div[39m
+                    [3
+3mstyle[39m=[32m"font
+-size: 14px; 
+font-weight: 900;"[39m
+                  
+[36m>[39m
+                    
+[0m$[0m
+                    
+[0m1000[0m
+                  
+[36m</div>[39m
+                  
+[36m<div[39m
+                    [3
+3mstyle[39m=[32m"font
+-size: 10px; opacity: 
+0.6;"[39m
+                  
+[36m>[39m
+                    
+[0mSALDO[0m
+                  
+[36m</div>[39m
+                
+[36m</div>[39m
+                
+[36m<div>[39m
+                  
+[36m<div[39m
+                    [3
+3mstyle[39m=[32m"font
+-size: 14px; 
+font-weight: 900; 
+color: rgb(128, 189, 
+255);"[39m
+                  
+[36m>[39m
+                    
+[0mPVP[0m
+                  
+[36m</div>[39m
+                  
+[36m<div[39m
+                    [3
+3mstyle[39m=[32m"font
+-size: 10px; opacity: 
+0.6;"[39m
+                  
+[36m>[39m
+                    
+[0mMODO[0m
+                  
+[36m</div>[39m
+                
+[36m</div>[39m
+              
+[36m</div>[39m
+            
+[36m</div>[39m
+          
+[36m</div>[39m
+        
+[36m</div>[39m
+        [36m<div[39m
+          [33mclass[3
+9m=[32m"om-card"[39m
+        [36m>[39m
+          
+[36m<div[39m
+            [33mclass
+[39m=[32m"om-img-card"
+[39m
+          [36m>[39m
+            
+[36m<img[39m
+              [33malt
+[39m=[32m""[39m
+              [33msrc
+[39m=[32m"/Paises/Roma
+.png"[39m
+              [33mstyl
+e[39m=[32m"width: 
+100%; height: 220px; 
+object-fit: 
+cover;"[39m
+            
+[36m/>[39m
+          
+[36m</div>[39m
+        
+[36m</div>[39m
+        [36m<div[39m
+          [33mdata-tes
+tid[39m=[32m"dialog-b
+ox"[39m
+        [36m>[39m
+          [36m<p>[39m
+            
+[0mProtocolo 
+Fantasma: Capture o 
+alvo antes dos outros 
+agentes.
+???? Local: Roma[0m
+          
+[36m</p>[39m
+          
+[36m<button>[39m
+            
+[0mENTENDIDO ???[0m
+          
+[36m</button>[39m
+        
+[36m</div>[39m
+      [36m</div>[39m
+      [36m<div[39m
+        [33mclass[39m
+=[32m"om-tabs"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[3
+9m=[32m"om-tabs-inner"
+[39m
+        [36m>[39m
+          
+[36m<button[39m
+            [33mclass
+[39m=[32m"om-tab"[39m
+          [36m>[39m
+            
+[0mA????O[0m
+          
+[36m</button>[39m
+          
+[36m<button[39m
+            [33mclass
+[39m=[32m"om-tab"[39m
+          [36m>[39m
+            
+[0mJORNAL[0m
+          
+[36m</button>[39m
+          
+[36m<button[39m
+            [33mclass
+[39m=[32m"om-tab"[39m
+          [36m>[39m
+            
+[0mCASOS[0m
+          
+[36m</button>[39m
+        
+[36m</div>[39m
+      [36m</div>[39m
+    [36m</div>[39m
+  [36m</div>[39m
+[36m</body>[39m
+[90m [2m???[22m 
+Object.getElementError 
+node_modules/@testing-l
+ibrary/dom/dist/config.
+js:[2m37:19[22m[39m
+[90m [2m???[22m 
+getElementError node_mo
+dules/@testing-library/
+dom/dist/query-helpers.
+js:[2m20:35[22m[39m
+[90m [2m???[22m getM
+ultipleElementsFoundErr
+or node_modules/@testin
+g-library/dom/dist/quer
+y-helpers.js:[2m23:10
+[22m[39m
+[90m [2m???[22m node
+_modules/@testing-libra
+ry/dom/dist/query-helpe
+rs.js:[2m55:13[22m[3
+9m
+[90m [2m???[22m node
+_modules/@testing-libra
+ry/dom/dist/query-helpe
+rs.js:[2m95:19[22m[3
+9m
+[36m [2m???[22m src/
+test/CompetitiveSync.te
+st.jsx:[2m133:19[22m
+[39m
+    [90m131| [39m    
+)[33m;[39m
+    [90m132| [39m
+    [90m133| [39m    
+expect(screen.getByText
+(/Protocolo Fantasma/i)
+).toBeInTheDocument(???
+    [90m   | [39m    
+              
+[31m^[39m
+    [90m134| [39m  
+})[33m;[39m
+    [90m135| [39m
+
+[31m[2m??????????????
+???????????????????????
+???????????????????????
+????????????[1/2]???[2
+2m[39m
+
+[41m[1m FAIL 
+[22m[49m src/test/Com
+petitiveSync.test.jsx[
+2m > [22mCaso 
+Competitive Sync[2m > 
+[22mdeve enviar 
+broadcast ao capturar 
+corretamente no NPC 
+final
+[31m[1mAssertionError
+[22m[39m: expected 
+"vi.fn()" to be called 
+with arguments: [ 
+ObjectContaining{???} 
+][90m
+
+Number of calls: 
+[1m0[22m
+[39m
+
+Ignored nodes: 
+comments, script, style
+[36m<html>[39m
+  [36m<head />[39m
+  [36m<body>[39m
+    [36m<div>[39m
+      [36m<div[39m
+        [33mstyle[39m
+=[32m"min-height: 
+100dvh; width: 100vw; 
+background: radial-grad
+ient(circle, rgb(7, 
+26, 38) 0%, rgb(0, 0, 
+0) 70%); color: 
+rgb(255, 255, 255); 
+position: 
+relative;"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mstyle[3
+9m=[32m"position: 
+fixed; inset: 0px; 
+background: rgb(0, 0, 
+0); z-index: 9999; 
+opacity: 0; 
+pointer-events: none; 
+transition: opacity 
+0.6s ease;"[39m
+        [36m/>[39m
+        [36m<div[39m
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m2 failed[39m[22m[2m | [22m[1m[32m2 passed[39m[22m[90m (4)[39m
+[2m   Start at [22m 12:27:58
+[2m   Duration [22m 2.83s[2m (transform 303ms, setup 110ms, import 416ms, tests 1.34s, environment 793ms)[22m
+
+          [33mstyle[3
+9m=[32m"padding: 15px 
+15px 80px;"[39m
+        [36m>[39m
+          
+[36m<div[39m
+            [33mclass
+[39m=[32m"om-top"[39m
+          [36m>[39m
+            
+[36m<div[39m
+              [33mstyl
+e[39m=[32m"border-rad
+ius: 18px; border: 1px 
+solid rgba(255, 255, 
+255, 0.14); 
+background: rgba(255, 
+255, 255, 0.06); 
+backdrop-filter: 
+blur(10px); 
+box-shadow: 0 18px 
+45px rgba(0,0,0,.55); 
+padding: 14px;"[39m
+            [36m>[39m
+              
+[36m<div[39m
+                [33mst
+yle[39m=[32m"display:
+ flex; 
+justify-content: 
+space-between; 
+align-items: center; 
+margin-bottom: 
+4px;"[39m
+              
+[36m>[39m
+                
+[36m<div[39m
+                  [33m
+style[39m=[32m"font-s
+ize: 10px; opacity: 
+0.6;"[39m
+                
+[36m>[39m
+                  
+[0mMISS??O ATIVA[0m
+                
+[36m</div>[39m
+                
+[36m<div[39m
+                  [33m
+style[39m=[32m"font-s
+ize: 10px; opacity: 
+0.6;"[39m
+                
+[36m>[39m
+                  [0m-
+??? [0m
+                  
+[0mZurich[0m
+                  [0m 
+?? [0m
+                  
+[0mSu????a[0m
+                
+[36m</div>[39m
+              
+[36m</div>[39m
+              
+[36m<div[39m
+                [33mst
+yle[39m=[32m"display:
+ flex; 
+justify-content: 
+space-between; 
+align-items: 
+center;"[39m
+              
+[36m>[39m
+                
+[36m<div[39m
+                  [33m
+class[39m=[32m"om-tit
+le"[39m
+                
+[36m>[39m
+                  
+[0mProtocolo 
+Fantasma[0m
+                
+[36m</div>[39m
+                
+[36m<div[39m
+                  [33m
+style[39m=[32m"text-a
+lign: right; display: 
+flex; gap: 15px;"[39m
+                
+[36m>[39m
+                  
+[36m<div>[39m
+                    
+[36m<div[39m
+                      
+[33mstyle[39m=[32m"fo
+nt-size: 14px; 
+font-weight: 900;"[39m
+                    
+[36m>[39m
+                      
+[0m$[0m
+                      
+[0m1000[0m
+                    
+[36m</div>[39m
+                    
+[36m<div[39m
+                      
+[33mstyle[39m=[32m"fo
+nt-size: 10px; 
+opacity: 0.6;"[39m
+                    
+[36m>[39m
+                      
+[0mSALDO[0m
+                    
+[36m</div>[39m
+                  
+[36m</div>[39m
+                  
+[36m<div>[39m
+                    
+[36m<div[39m
+                      
+[33mstyle[39m=[32m"fo
+nt-size: 14px; 
+font-weight: 900; 
+color: rgb(128, 189, 
+255);"[39m
+                    
+[36m>[39m
+                      
+[0mPVP[0m
+                    
+[36m</div>[39m
+                    
+[36m<div[39m
+                      
+[33mstyle[39m=[32m"fo
+nt-size: 10px; 
+opacity: 0.6;"[39m
+                    
+[36m>[39m
+                      
+[0mMODO[0m
+                    
+[36m</div>[39m
+                  
+[36m</div>[39m
+                
+[36m</div>[39m
+              
+[36m</div>[39m
+            
+[36m</div>[39m
+          
+[36m</div>[39m
+          
+[36m<div[39m
+            [33mclass
+[39m=[32m"om-card"[39
+m
+          [36m>[39m
+            
+[36m<div[39m
+              [33mclas
+s[39m=[32m"om-img-car
+d"[39m
+            [36m>[39m
+              
+[36m<div[39m
+                [33mcl
+ass[39m=[32m"om-scene
+-box"[39m
+              
+[36m>[39m
+                
+[36m<img[39m
+                  [33m
+alt[39m=[32m""[39m
+                  [33m
+class[39m=[32m"om-sce
+ne-bg"[39m
+                  [33m
+src[39m=[32m"/NPC/Ban
+co.png"[39m
+                
+[36m/>[39m
+                
+[36m<img[39m
+                  [33m
+alt[39m=[32m""[39m
+                  [33m
+class[39m=[32m"om-sce
+ne-char"[39m
+                  [33m
+src[39m=[32m"/NPC/Ban
+queiro.png"[39m
+                
+[36m/>[39m
+              
+[36m</div>[39m
+            
+[36m</div>[39m
+          
+[36m</div>[39m
+          
+[36m<div[39m
+            [33mdata-t
+estid[39m=[32m"dialog
+-box"[39m
+          [36m>[39m
+            
+[36m<p>[39m
+              
+[0mSim??? ele passou 
+por aqui hoje.[0m
+            
+[36m</p>[39m
+            
+[36m<button>[39m
+              
+[0mENTENDIDO ???[0m
+            
+[36m</button>[39m
+          
+[36m</div>[39m
+        
+[36m</div>[39m
+        [36m<div[39m
+          [33mclass[3
+9m=[32m"om-tabs"[39m
+        [36m>[39m
+          
+[36m<div[39m
+            [33mclass
+[39m=[32m"om-tabs-inne
+r"[39m
+          [36m>[39m
+            
+[36m<button[39m
+              [33mclas
+s[39m=[32m"om-tab"[3
+9m
+            [36m>[39m
+              
+[0mA????O[0m
+            
+[36m</button>[39m
+            
+[36m<button[39m
+              [33mclas
+s[39m=[32m"om-tab"[3
+9m
+            [36m>[39m
+              
+[0mJORNAL[0m
+            
+[36m</button>[39m
+            
+[36m<button[39m
+              [33mclas
+s[39m=[32m"om-tab"[3
+9m
+            [36m>[39m
+              
+[0mCASOS[0m
+            
+[36m</button>[39m
+          
+[36m</div>[39m
+        
+[36m</div>[39m
+      [36m</div>[39m
+    [36m</div>[39m
+  [36m</body>[39m
+[36m</html>[39m
+[36m [2m???[22m src/
+test/CompetitiveSync.te
+st.jsx:[2m180:34[22m
+[39m
+    [90m178| [39m
+    [90m179| [39m    
+[35mawait[39m 
+[34mwaitFor[39m(() 
+[33m=>[39m {
+    [90m180| [39m    
+    expect(mockChannel.
+send).toHaveBeenCalledW
+ith(expect.objectCon???
+    [90m   | [39m    
+                       
+      [31m^[39m
+    [90m181| [39m    
+})[33m;[39m
+    [90m182| [39m  
+})[33m;[39m
+[90m [2m???[22m runW
+ithExpensiveErrorDiagno
+sticsDisabled node_modu
+les/@testing-library/do
+m/dist/config.js:[2m47
+:12[22m[39m
+[90m [2m???[22m 
+checkCallback node_modu
+les/@testing-library/do
+m/dist/wait-for.js:[2m
+124:77[22m[39m
+[90m [2m???[22m Time
+out.checkRealTimersCall
+back node_modules/@test
+ing-library/dom/dist/wa
+it-for.js:[2m118:16[2
+2m[39m
+
+[31m[2m??????????????
+???????????????????????
+???????????????????????
+????????????[2/2]???[2
+2m[39m
+

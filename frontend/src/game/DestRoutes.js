@@ -424,7 +424,7 @@ export const DESTINATION_OPTIONS = [
     { id: "C9_25", pais: "Portugal", cidade: "Lisboa", origem: "Rio de Janeiro", coords: { x: 179, y: 64 }, flag: "🇵🇹" },
     { id: "C9_26", pais: "EUA", cidade: "Nova York", origem: "Rio de Janeiro", coords: { x: 107, y: 61 }, flag: "🇺🇸" },
     
-    { id: "C9_27", pais: "Suíça", cidade: "Zurique", origem: "Viena", coords: { x: 198, y: 52 }, flag: "🇨🇭" },
+    { id: "C9_27", pais: "Suíça", cidade: "Zurich", origem: "Viena", coords: { x: 198, y: 52 }, flag: "🇨🇭" },
     { id: "C9_28", pais: "Turquia", cidade: "Istambul", origem: "Toronto", coords: { x: 221, y: 61 }, flag: "🇹🇷" },
     { id: "C9_29", pais: "Coreia do Sul", cidade: "Seul", origem: "Tóquio", coords: { x: 330, y: 65 }, flag: "🇰🇷" },
     { id: "C9_30", pais: "Itália", cidade: "Roma", origem: "Amsterdã", coords: { x: 203, y: 59 }, flag: "🇮🇹" },

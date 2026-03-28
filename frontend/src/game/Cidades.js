@@ -103,7 +103,7 @@ export const CIDADES = [
         descricao: "Capital da Bahia, Salvador é rica em cultura afro-brasileira. Seu centro histórico, o Pelourinho, preserva arquitetura colonial e tradições únicas.",
     },
     {
-        cidade: "Sidney",
+        cidade: "Sydney",
         pais: "Austrália",
         continente: "Oceania",
         imagem: "/Paises/Sidney.png",

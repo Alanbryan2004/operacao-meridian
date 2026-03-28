@@ -2,14 +2,14 @@ import React, { useMemo, useState, useEffect } from "react";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { useGame } from "../game/GameProvider";
 import { getCargoByXp, getProximoCargo } from "../game/Cargos";
-import { suspectsSeed } from "../game/store";
+import { suspectsSeed, saveGame } from "../game/store";
 import { supabase } from "../lib/supabase";
 import DialogBox from "../components/DialogBox";
 
 export default function CasoSolucionado() {
     const { caseId } = useParams();
     const nav = useNavigate();
-    const { state } = useGame();
+    const { state, replaceState } = useGame();
 
     const caseObj = useMemo(() => state?.cases?.find(c => String(c.id) === String(caseId)), [state, caseId]);
     const run = useMemo(() => state?.runs?.[caseId], [state, caseId]);
@@ -41,7 +41,7 @@ export default function CasoSolucionado() {
                         const { data: profile } = await supabase
                             .from("profiles")
                             .select("nickname")
-                            .eq("supabase_id", data.winner_id)
+                            .eq("id", data.winner_id)
                             .maybeSingle();
                         
                         if (profile?.nickname) {
@@ -66,10 +66,10 @@ export default function CasoSolucionado() {
         if (isCompetitive) {
             if (isWon) {
                 return `Parabéns pelo excelente desempenho e pela rapidez na conclusão do caso! sua eficiência foi absoluta, deixando os demais agentes para trás.\n\nA Agência A.T.L.A.S. reconhece sua superioridade tática nesta operação.\n\n🌍 Caso Encerrado.\n\n🏆 RECOMPENSA: +R$${caseObj.recompensa} | +${caseObj.xp} XP`;
-            } else if (run.winnerName) {
+            } else if (isCompetitive && (caseObj.dificuldade === "DIFICIL" || caseObj.dificuldade === "LENDARIO")) {
                 return `Infelizmente, você falhou. O Agente "${winnerName}" fez um excelente trabalho completando a missão antes de você.\n\nÉ necessário melhorar suas táticas e evoluir para não ser superado novamente nas próximas operações.\n\n🌍 Caso Encerrado.`;
             } else {
-                // Caso o jogador tenha falhado por conta própria (Mandado errado / Target fugiu)
+                // Para Casos Fácil/Médio ou falha por mandado errado em modo solo
                 return `Infelizmente, você falhou. O suspeito escapou da captura porque o mandado de prisão emitido não correspondia à identidade do alvo.\n\nA Agência A.T.L.A.S. espera mais precisão em operações de alto risco. Verifique as pistas com mais atenção da próxima vez.\n\n🌍 Caso Encerrado.`;
             }
         }
@@ -80,6 +80,14 @@ export default function CasoSolucionado() {
     }, [isWon, isCompetitive, winnerName, player.nome, player.nivelTitulo, caseObj.recompensa, caseObj.xp, realCriminal, warrantSuspect]);
 
     function handleEncerrar() {
+        // Para missões perdidas: limpa o run do estado para que o Mural não mostre "EM ANDAMENTO"
+        if (!isWon && state?.runs?.[caseId]) {
+            const nextRuns = { ...state.runs };
+            delete nextRuns[caseId];
+            const nextState = { ...state, runs: nextRuns };
+            replaceState(saveGame(nextState));
+        }
+
         if (isWon) {
             // O cargo que o XP atual permitiria ter
             const cargoPermitido = getCargoByXp(player.xp);

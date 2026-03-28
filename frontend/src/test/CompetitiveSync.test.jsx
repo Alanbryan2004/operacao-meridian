@@ -130,10 +130,14 @@ describe('Caso Competitive Sync', () => {
       </MemoryRouter>
     );
 
-    expect(screen.getByText(/Protocolo Fantasma/i)).toBeInTheDocument();
+    expect(screen.getAllByText(/Protocolo Fantasma/i).length).toBeGreaterThan(0);
   });
 
-  it('deve encerrar a missão quando recebe broadcast de vitória externo', async () => {
+  it('deve encerrar a missão e INCREMENTAR DERROTAS quando recebe broadcast de vitória externo', async () => {
+    // Configura como difícil para testar hardLosses
+    mockState.cases[0].dificuldade = "DIFICIL";
+    mockState.player.hardLosses = 2;
+
     render(
       <MemoryRouter initialEntries={['/caso/C009']}>
         <Routes><Route path="/caso/:caseId" element={<Caso />} /></Routes>
@@ -147,12 +151,19 @@ describe('Caso Competitive Sync', () => {
       cb({ payload: { winnerId: 'p2', winnerName: 'Agente 2' } });
     });
 
-    await waitFor(() => expect(mockNavigate).toHaveBeenCalled());
+    // Verificamos se replaceState foi chamado com hardLosses = 3 em algum momento
+    await waitFor(() => {
+        expect(mockReplaceState).toHaveBeenCalled();
+        const found = mockReplaceState.mock.calls.some(call => call[0].player?.hardLosses === 3);
+        expect(found).toBe(true);
+        expect(mockNavigate).toHaveBeenCalled();
+    });
   });
 
   it('deve enviar broadcast ao capturar corretamente no NPC final', async () => {
     mockState.runs.C009.localAtual = { cidade: 'Zurich', pais: 'Suíça' };
-    mockState.runs.C009.investigationCountByCity = { 'Zurich': 1 };
+    mockState.runs.C009.investigationCountByCity = { 'Zurich': 2 };
+    mockState.runs.C009.pistasDescobertas = [1, 2, 3]; // Necessário para hasMissionProgressed
 
     render(
       <MemoryRouter initialEntries={['/caso/C009']}>
