@@ -17,7 +17,7 @@ export default function HallDaFama() {
                 // Ensure we select 'avatar', 'frase' AND 'avatar_key'
                 const { data, error } = await supabase
                     .from("profiles")
-                    .select("id, nickname, rank, total_capturas, level, avatar, frase, avatar_key")
+                    .select("id, nickname, rank, total_capturas, level, avatar, frase, avatar_key, hard_wins, hard_losses, legendary_wins, legendary_losses")
                     .order("total_capturas", { ascending: false })
                     .limit(20);
 
@@ -109,6 +109,10 @@ export default function HallDaFama() {
                     color: #fff; font-size: 13px; font-weight: 600; cursor: pointer;
                     width: 100%; text-align: center; letter-spacing: 1px; transition: background 0.2s;
                 }
+                .hf-d-stat {
+                    background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06);
+                    padding: 15px 10px; border-radius: 16px; flex: 1;
+                }
             `}</style>
 
             <div className="hf-container">
@@ -176,9 +180,30 @@ export default function HallDaFama() {
                         <div className="hf-d-role">
                             {selectedAgent.rank || "Agente"} · Nível {selectedAgent.level || 1}
                         </div>
-                        <div style={{ marginTop: 10, color: '#64748b', fontSize: 11, fontWeight: 800 }}>
-                             {selectedAgent.total_capturas || 0} CRIMINOSOS CAPTURADOS
-                        </div>
+                         <div style={{ marginTop: 10, color: '#64748b', fontSize: 11, fontWeight: 800 }}>
+                              {selectedAgent.total_capturas || 0} CRIMINOSOS CAPTURADOS
+                         </div>
+
+                         <div style={{ display: "flex", gap: 12, width: "100%", marginTop: 25 }}>
+                             <div className="hf-d-stat">
+                                 <img src="/icones/emblema_dificil.png" alt="" style={{ width: 40, height: 40, marginBottom: 6, filter: "drop-shadow(0 0 8px rgba(255,0,0,0.3))" }} />
+                                 <div style={{ fontSize: 9, opacity: 0.5, letterSpacing: 1, fontWeight: 800, textTransform: "uppercase" }}>Caso Difícil</div>
+                                 <div style={{ fontSize: 15, fontWeight: 900, marginTop: 4 }}>
+                                     {selectedAgent.hard_wins || 0} <span style={{ color: '#00ffa0', fontSize: 10 }}>VIT</span>
+                                     <span style={{ opacity: 0.2, margin: "0 6px" }}>|</span>
+                                     {selectedAgent.hard_losses || 0} <span style={{ color: '#ff4b4b', fontSize: 10 }}>DER</span>
+                                 </div>
+                             </div>
+                             <div className="hf-d-stat">
+                                 <img src="/icones/emblema_lendario.png" alt="" style={{ width: 40, height: 40, marginBottom: 6, filter: "drop-shadow(0 0 8px rgba(255,215,0,0.2))" }} />
+                                 <div style={{ fontSize: 9, opacity: 0.5, letterSpacing: 1, fontWeight: 800, textTransform: "uppercase" }}>Caso Lendário</div>
+                                 <div style={{ fontSize: 15, fontWeight: 900, marginTop: 4 }}>
+                                     {selectedAgent.legendary_wins || 0} <span style={{ color: '#00ffa0', fontSize: 10 }}>VIT</span>
+                                     <span style={{ opacity: 0.2, margin: "0 6px" }}>|</span>
+                                     {selectedAgent.legendary_losses || 0} <span style={{ color: '#ff4b4b', fontSize: 10 }}>DER</span>
+                                 </div>
+                             </div>
+                         </div>
                         
                         {selectedAgent.frase ? (
                             <div className="hf-d-phrase">

@@ -262,6 +262,10 @@ export const initialPlayer = {
     dinheiro: 1000,
     especializacao: null,
     avatar: null,
+    hardWins: 0,
+    hardLosses: 0,
+    legendaryWins: 0,
+    legendaryLosses: 0,
     settings: {
         musicEnabled: true,
         clickSoundEnabled: true

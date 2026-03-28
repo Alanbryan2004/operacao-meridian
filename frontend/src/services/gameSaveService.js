@@ -59,6 +59,10 @@ export async function saveGameState(state, slot = 0) {
                 xp: player.xp || 0,
                 level: player.nivel || 1,
                 total_capturas: totalCapturas,
+                hard_wins: player.hardWins || 0,
+                hard_losses: player.hardLosses || 0,
+                legendary_wins: player.legendaryWins || 0,
+                legendary_losses: player.legendaryLosses || 0,
                 avatar: player.avatar, // Salva o objeto completo {gender, id, frase}
                 frase: player.avatar?.frase || "",
                 updated_at: new Date().toISOString(),

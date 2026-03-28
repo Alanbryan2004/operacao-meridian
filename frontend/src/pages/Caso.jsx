@@ -407,21 +407,33 @@ export default function Caso() {
                         suspeitoCapturado: true,
                         jornal: [...run.jornal, { t: new Date().toISOString(), msg: `🎯 MISSÃO CUMPRIDA! O suspeito foi preso em ${locObj.cidade}.` }],
                     };
+                    
+                    const diff = caseObj?.dificuldade;
+                    let nextPlayer = { ...state.player, dinheiro: state.player.dinheiro + caseObj.recompensa, xp: state.player.xp + caseObj.xp };
+                    if (diff === "DIFICIL") nextPlayer.hardWins = (nextPlayer.hardWins || 0) + 1;
+                    if (diff === "LENDARIO") nextPlayer.legendaryWins = (nextPlayer.legendaryWins || 0) + 1;
+
                     if (isMissionCompetitive && lobbyId) {
                         supabase.from("competitive_lobbies").update({ status: "finished", winner_id: state.player.supabaseId }).eq("id", lobbyId).eq("status", "active").select().then(({ data }) => {
                             if (data?.length > 0) {
                                 syncChannelRef.current?.send({ type: "broadcast", event: "mission_finished", payload: { winnerId: state.player.supabaseId, winnerName: state.player.nome || "um Agente de Elite" } });
-                                const finalState = registerCapture({ ...state, player: { ...state.player, dinheiro: state.player.dinheiro + caseObj.recompensa, xp: state.player.xp + caseObj.xp }, runs: { ...state.runs, [caseId]: nextRun } }, run.warrantId);
+                                const finalState = registerCapture({ ...state, player: nextPlayer, runs: { ...state.runs, [caseId]: nextRun } }, run.warrantId);
                                 replaceState(saveGame(finalState));
                                 supabase.from("competitive_players").update({ status: "won" }).eq("lobby_id", lobbyId).eq("player_id", state.player.supabaseId).then();
                             }
                         });
                     } else {
-                        const nextState = registerCapture({ ...state, player: { ...state.player, dinheiro: state.player.dinheiro + caseObj.recompensa, xp: state.player.xp + caseObj.xp }, runs: { ...state.runs, [caseId]: nextRun } }, run.warrantId);
+                        const nextState = registerCapture({ ...state, player: nextPlayer, runs: { ...state.runs, [caseId]: nextRun } }, run.warrantId);
                         replaceState(saveGame(nextState));
                     }
                 } else {
-                    updateRun({ ...nextRunCount, status: "LOST", jornal: [...run.jornal, { t: new Date().toISOString(), msg: `❌ MISSÃO FRACASSADA! O suspeito escapou em ${locObj.cidade}.` }] });
+                    const diff = caseObj?.dificuldade;
+                    let nextPlayer = { ...state.player };
+                    if (diff === "DIFICIL") nextPlayer.hardLosses = (nextPlayer.hardLosses || 0) + 1;
+                    if (diff === "LENDARIO") nextPlayer.legendaryLosses = (nextPlayer.legendaryLosses || 0) + 1;
+
+                    const nextRun = { ...nextRunCount, status: "LOST", jornal: [...run.jornal, { t: new Date().toISOString(), msg: `❌ MISSÃO FRACASSADA! O suspeito escapou em ${locObj.cidade}.` }] };
+                    replaceState(saveGame({ ...state, player: nextPlayer, runs: { ...state.runs, [caseId]: nextRun } }));
                 }
                 return;
             }
