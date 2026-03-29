@@ -3,7 +3,8 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useGame } from '../game/GameProvider';
 import AvatarDisplay from '../components/AvatarDisplay';
 
-const AVATAR_IDS = ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12"];
+const MALE_AVATAR_IDS = ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12", "13", "14", "15", "16"];
+const FEMALE_AVATAR_IDS = ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12"];
 
 export default function AvatarCreator() {
   const { state, dispatch } = useGame();
@@ -36,6 +37,13 @@ export default function AvatarCreator() {
     if (gender === selectedGender) return;
     setAnimating(true);
     setSelectedGender(gender);
+    
+    // Bounds check to prevent keeping an invalid ID when switching genders
+    const validIds = gender === 'M' ? MALE_AVATAR_IDS : FEMALE_AVATAR_IDS;
+    if (!validIds.includes(selectedId)) {
+        setSelectedId("01");
+    }
+
     setTimeout(() => setAnimating(false), 300);
   };
 
@@ -306,7 +314,7 @@ export default function AvatarCreator() {
               </div>
 
               <div className="av-grid">
-                {AVATAR_IDS.map(id => (
+                {(selectedGender === 'M' ? MALE_AVATAR_IDS : FEMALE_AVATAR_IDS).map(id => (
                   <div 
                     key={id}
                     className={`av-item ${selectedId === id ? 'active' : ''}`}
