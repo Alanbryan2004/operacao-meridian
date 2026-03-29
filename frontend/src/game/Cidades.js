@@ -268,7 +268,97 @@ export const CIDADES = [
         imagem: "/Paises/HongKong.png",
         descricao: "Hong Kong é uma metrópole vibrante que mistura tradição chinesa e modernidade, com arranha-céus, porto icônico e forte centro financeiro global.",
     },
-
+    {
+        cidade: "Praga",
+        pais: "República Tcheca",
+        continente: "Europa",
+        imagem: "/Paises/Praga.png",
+        descricao: "Praga capital da República Tcheca, é uma cidade histórica com arquitetura medieval, pontes icônicas e atmosfera misteriosa, perfeita para histórias e investigações envolventes.",
+    },
+    {
+        cidade: "Budapeste",
+        pais: "Hungria",
+        continente: "Europa",
+        imagem: "/Paises/Budapeste.png",
+        descricao: "Budapeste é a capital da Hungria, famosa por suas pontes sobre o Danúbio, arquitetura histórica e vibrante vida cultural europeia.",
+    },
+    {
+        cidade: "Dublin",
+        pais: "Irlanda",
+        continente: "Europa",
+        imagem: "/Paises/Dublin.png",
+        descricao: "Dublin é a capital da Irlanda, conhecida por seus pubs históricos, cultura literária rica e atmosfera acolhedora às margens do rio Liffey.",
+    },
+    {
+        cidade: "Atenas",
+        pais: "Grécia",
+        continente: "Europa",
+        imagem: "/Paises/Atenas.png",
+        descricao: "Atenas é a capital da Grécia, berço da democracia, com ruínas icônicas como a Acrópole e uma rica herança histórica milenar.",
+    },
+    {
+        cidade: "Bogotá",
+        pais: "Colômbia",
+        continente: "América do Sul",
+        imagem: "/Paises/Bogota.png",
+        descricao: "Bogotá é a capital da Colômbia, situada nos Andes, com cultura vibrante, museus renomados e uma mistura de tradição e modernidade.",
+    },
+    {
+        cidade: "Lima",
+        pais: "Peru",
+        continente: "América do Sul",
+        imagem: "/Paises/Lima.png",
+        descricao: "Lima é a capital do Peru, famosa por sua gastronomia premiada, costa no Pacífico e centro histórico com influência colonial espanhola.",
+    },
+    {
+        cidade: "Marrakech",
+        pais: "Marrocos",
+        continente: "África",
+        imagem: "/Paises/Marrakech.png",
+        descricao: "Marrakech é uma cidade vibrante do Marrocos, famosa por seus mercados coloridos, arquitetura histórica e atmosfera exótica cheia de cultura e mistério.",
+    },
+    {
+        cidade: "Nairóbi",
+        pais: "Kenia",
+        continente: "África",
+        imagem: "/Paises/Nairobi.png",
+        descricao: "Nairóbi é a capital do Quênia, conhecida por safáris próximos à cidade, vida selvagem única e um centro urbano dinâmico em crescimento.",
+    },
+    {
+        cidade: "Lagos",
+        pais: "Nigeria",
+        continente: "África",
+        imagem: "/Paises/Lagos.png",
+        descricao: "Lagos é a maior cidade da Nigéria, vibrante e movimentada, conhecida por sua economia forte, cultura intensa e vida urbana dinâmica à beira do Atlântico.",
+    },
+    {
+        cidade: "Casablanca",
+        pais: "Marrocos",
+        continente: "África",
+        imagem: "/Paises/Casablanca.png",
+        descricao: "Casablanca é a maior cidade do Marrocos, conhecida pela Mesquita Hassan II, arquitetura moderna e atmosfera que mistura tradição e urbanização.",
+    },
+    {
+        cidade: "Auckland",
+        pais: "Nova Zelandia",
+        continente: "Oceania",
+        imagem: "/Paises/Auckland.png",
+        descricao: "Auckland é a maior cidade da Nova Zelândia, cercada por vulcões e mar, famosa por paisagens naturais e estilo de vida ao ar livre.",
+    },
+    {
+        cidade: "Suva",
+        pais: "Fiji",
+        continente: "Oceania",
+        imagem: "/Paises/Suva.png",
+        descricao: "Suva é a capital de Fiji, conhecida por clima tropical, cultura do Pacífico e porto movimentado cercado por natureza exuberante.",
+    },
+    {
+        cidade: "Port Moresby",
+        pais: "Papua-Nova Guiné",
+        continente: "Oceania",
+        imagem: "/Paises/PortMoresby.png",
+        descricao: "Port Moresby é a capital de Papua-Nova Guiné, com cultura diversa, paisagens tropicais e papel importante no comércio do Pacífico Sul.",
+    }
 ];
 
 /**
