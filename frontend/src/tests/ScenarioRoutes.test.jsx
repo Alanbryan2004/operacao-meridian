@@ -1,11 +1,17 @@
 import { expect, test, describe } from 'vitest';
 import { Caso9Scenarios } from '../game/Caso9Scenarios';
+import { Caso10Scenarios } from '../game/Caso10Scenarios';
 import { DESTINATION_OPTIONS } from '../game/DestRoutes';
 import { ORIGIN_COORDS } from '../pages/Caso';
 
-describe('Case 9 Scenario Routes Consistency', () => {
-  Caso9Scenarios.forEach((scenario, sIdx) => {
-    describe(`Scenario ${sIdx + 1}: ${scenario.id}`, () => {
+const allScenarios = [
+  ...Caso9Scenarios.map(s => ({ ...s, caseId: "C009" })),
+  ...Caso10Scenarios.map(s => ({ ...s, caseId: "C010" }))
+];
+
+describe('Global Scenario Routes Consistency', () => {
+  allScenarios.forEach((scenario, sIdx) => {
+    describe(`Scenario ${scenario.caseId} - ${scenario.id}`, () => {
       Object.entries(scenario.travelTable).forEach(([origin, destinations]) => {
         test(`Origin "${origin}" has valid connections and coordinates`, () => {
           // 1. Check if origin has coordinates (required for travel line)

@@ -249,6 +249,23 @@ export const casesSeed = [
         waitTimeout: 180,
         replayable: true,
         interrogatorios: [],
+    },
+    {
+        id: "C010",
+        titulo: "O Cofre que Nunca Foi Aberto",
+        dificuldade: "DIFICIL",
+        recompensa: 10000,
+        xp: 500,
+        tempoTotalHoras: 999, // Sem prazo fixo no UI, apenas competitivo
+        localInicial: { pais: "Reino Unido", cidade: "Londres" },
+        resumo: "🪙 O COFRE QUE NUNCA FOI ABERTO\n\nUm cofre ultra seguro, localizado em uma instituição financeira internacional… foi violado. Não há sinais de arrombamento. Nenhum sistema acusou acesso. Nenhuma chave foi usada.\n\nDentro dele havia documentos classificados, registros financeiros secretos e identidades protegidas. A A.T.L.A.S suspeita que isso não foi um roubo comum…\n\nA Agência convoca todos Agentes Disponíveis.\n\nRegras de Engajamento:\n1. Sem Fundo de Reserva ($ 0,00 iniciais).\n2. 10 Etapas Críticas.\n3. Vitória única para o primeiro a recuperar os documentos. 🕵️‍♂️⚡",
+        imgItem: "/reliquiaDesaparecida.png", // Imagem padrão
+        isCompetitive: true,
+        maxPlayers: 10,
+        minPlayers: 2,
+        waitTimeout: 180,
+        replayable: true,
+        interrogatorios: [],
     }
 ];
 

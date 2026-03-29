@@ -158,6 +158,13 @@ export const CIDADES = [
         imagem: "/Paises/Seul.png",
         descricao: "Capital da Coreia do Sul, Seul é uma metrópole vibrante onde a tecnologia de ponta convive com templos antigos e mercados tradicionais.",
     },
+    {
+        cidade: "Santiago",
+        pais: "Chile",
+        continente: "América do Sul",
+        imagem: "/Paises/default.png",
+        descricao: "Capital do Chile, encravada em um vale cercado pela Cordilheira dos Andes. Uma cidade moderna, rica em cultura e gastronomia no coração da América do Sul.",
+    },
 
     {
         cidade: "Viena",

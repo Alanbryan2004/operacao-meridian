@@ -1,0 +1,78 @@
+Global Scenario Routes Consistency > Scenario C010 - C010_S2 > Origin "Madrid" has valid connections and coordinates
+AssertionError: Destination city "São Paulo" missing in ORIGIN_COORDS: expected undefined to be defined
+    at C:/Users/alanb/Projetos/operacao-meridian/frontend/src/tests/ScenarioRoutes.test.jsx:31:96
+    at Array.forEach (<anonymous>)
+    at C:/Users/alanb/Projetos/operacao-meridian/frontend/src/tests/ScenarioRoutes.test.jsx:23:24
+    at file:///C:/Users/alanb/Projetos/operacao-meridian/frontend/node_modules/@vitest/runner/dist/index.js:145:11
+    at file:///C:/Users/alanb/Projetos/operacao-meridian/frontend/node_modules/@vitest/runner/dist/index.js:915:26
+    at file:///C:/Users/alanb/Projetos/operacao-meridian/frontend/node_modules/@vitest/runner/dist/index.js:1243:20
+    at new Promise (<anonymous>)
+    at runWithTimeout (file:///C:/Users/alanb/Projetos/operacao-meridian/frontend/node_modules/@vitest/runner/dist/index.js:1209:10)
+    at file:///C:/Users/alanb/Projetos/operacao-meridian/frontend/node_modules/@vitest/runner/dist/index.js:1653:37
+    at Traces.$ (file:///C:/Users/alanb/Projetos/operacao-meridian/frontend/node_modules/vitest/dist/chunks/traces.CCmnQaNT.js:142:27)
+
+Global Scenario Routes Consistency > Scenario C010 - C010_S2 > Origin "São Paulo" has valid connections and coordinates
+AssertionError: City "São Paulo" missing in ORIGIN_COORDS: expected undefined to be defined
+    at C:/Users/alanb/Projetos/operacao-meridian/frontend/src/tests/ScenarioRoutes.test.jsx:19:89
+    at file:///C:/Users/alanb/Projetos/operacao-meridian/frontend/node_modules/@vitest/runner/dist/index.js:145:11
+    at file:///C:/Users/alanb/Projetos/operacao-meridian/frontend/node_modules/@vitest/runner/dist/index.js:915:26
+    at file:///C:/Users/alanb/Projetos/operacao-meridian/frontend/node_modules/@vitest/runner/dist/index.js:1243:20
+    at new Promise (<anonymous>)
+    at runWithTimeout (file:///C:/Users/alanb/Projetos/operacao-meridian/frontend/node_modules/@vitest/runner/dist/index.js:1209:10)
+    at file:///C:/Users/alanb/Projetos/operacao-meridian/frontend/node_modules/@vitest/runner/dist/index.js:1653:37
+    at Traces.$ (file:///C:/Users/alanb/Projetos/operacao-meridian/frontend/node_modules/vitest/dist/chunks/traces.CCmnQaNT.js:142:27)
+    at trace (file:///C:/Users/alanb/Projetos/operacao-meridian/frontend/node_modules/vitest/dist/chunks/test.B8ej_ZHS.js:239:21)
+    at runTest (file:///C:/Users/alanb/Projetos/operacao-meridian/frontend/node_modules/@vitest/runner/dist/index.js:1653:12)
+
+Global Scenario Routes Consistency > Scenario C010 - C010_S4 > Origin "Lisboa" has valid connections and coordinates
+AssertionError: Destination city "São Paulo" missing in ORIGIN_COORDS: expected undefined to be defined
+    at C:/Users/alanb/Projetos/operacao-meridian/frontend/src/tests/ScenarioRoutes.test.jsx:31:96
+    at Array.forEach (<anonymous>)
+    at C:/Users/alanb/Projetos/operacao-meridian/frontend/src/tests/ScenarioRoutes.test.jsx:23:24
+    at file:///C:/Users/alanb/Projetos/operacao-meridian/frontend/node_modules/@vitest/runner/dist/index.js:145:11
+    at file:///C:/Users/alanb/Projetos/operacao-meridian/frontend/node_modules/@vitest/runner/dist/index.js:915:26
+    at file:///C:/Users/alanb/Projetos/operacao-meridian/frontend/node_modules/@vitest/runner/dist/index.js:1243:20
+    at new Promise (<anonymous>)
+    at runWithTimeout (file:///C:/Users/alanb/Projetos/operacao-meridian/frontend/node_modules/@vitest/runner/dist/index.js:1209:10)
+    at file:///C:/Users/alanb/Projetos/operacao-meridian/frontend/node_modules/@vitest/runner/dist/index.js:1653:37
+    at Traces.$ (file:///C:/Users/alanb/Projetos/operacao-meridian/frontend/node_modules/vitest/dist/chunks/traces.CCmnQaNT.js:142:27)
+
+Global Scenario Routes Consistency > Scenario C010 - C010_S4 > Origin "Rio de Janeiro" has valid connections and coordinates
+AssertionError: Destination city "São Paulo" missing in ORIGIN_COORDS: expected undefined to be defined
+    at C:/Users/alanb/Projetos/operacao-meridian/frontend/src/tests/ScenarioRoutes.test.jsx:31:96
+    at Array.forEach (<anonymous>)
+    at C:/Users/alanb/Projetos/operacao-meridian/frontend/src/tests/ScenarioRoutes.test.jsx:23:24
+    at file:///C:/Users/alanb/Projetos/operacao-meridian/frontend/node_modules/@vitest/runner/dist/index.js:145:11
+    at file:///C:/Users/alanb/Projetos/operacao-meridian/frontend/node_modules/@vitest/runner/dist/index.js:915:26
+    at file:///C:/Users/alanb/Projetos/operacao-meridian/frontend/node_modules/@vitest/runner/dist/index.js:1243:20
+    at new Promise (<anonymous>)
+    at runWithTimeout (file:///C:/Users/alanb/Projetos/operacao-meridian/frontend/node_modules/@vitest/runner/dist/index.js:1209:10)
+    at file:///C:/Users/alanb/Projetos/operacao-meridian/frontend/node_modules/@vitest/runner/dist/index.js:1653:37
+    at Traces.$ (file:///C:/Users/alanb/Projetos/operacao-meridian/frontend/node_modules/vitest/dist/chunks/traces.CCmnQaNT.js:142:27)
+
+Global Scenario Routes Consistency > Scenario C010 - C010_S4 > Origin "Roma" has valid connections and coordinates
+AssertionError: Destination city "São Paulo" missing in ORIGIN_COORDS: expected undefined to be defined
+    at C:/Users/alanb/Projetos/operacao-meridian/frontend/src/tests/ScenarioRoutes.test.jsx:31:96
+    at Array.forEach (<anonymous>)
+    at C:/Users/alanb/Projetos/operacao-meridian/frontend/src/tests/ScenarioRoutes.test.jsx:23:24
+    at file:///C:/Users/alanb/Projetos/operacao-meridian/frontend/node_modules/@vitest/runner/dist/index.js:145:11
+    at file:///C:/Users/alanb/Projetos/operacao-meridian/frontend/node_modules/@vitest/runner/dist/index.js:915:26
+    at file:///C:/Users/alanb/Projetos/operacao-meridian/frontend/node_modules/@vitest/runner/dist/index.js:1243:20
+    at new Promise (<anonymous>)
+    at runWithTimeout (file:///C:/Users/alanb/Projetos/operacao-meridian/frontend/node_modules/@vitest/runner/dist/index.js:1209:10)
+    at file:///C:/Users/alanb/Projetos/operacao-meridian/frontend/node_modules/@vitest/runner/dist/index.js:1653:37
+    at Traces.$ (file:///C:/Users/alanb/Projetos/operacao-meridian/frontend/node_modules/vitest/dist/chunks/traces.CCmnQaNT.js:142:27)
+
+Global Scenario Routes Consistency > Scenario C010 - C010_S4 > Origin "São Paulo" has valid connections and coordinates
+AssertionError: City "São Paulo" missing in ORIGIN_COORDS: expected undefined to be defined
+    at C:/Users/alanb/Projetos/operacao-meridian/frontend/src/tests/ScenarioRoutes.test.jsx:19:89
+    at file:///C:/Users/alanb/Projetos/operacao-meridian/frontend/node_modules/@vitest/runner/dist/index.js:145:11
+    at file:///C:/Users/alanb/Projetos/operacao-meridian/frontend/node_modules/@vitest/runner/dist/index.js:915:26
+    at file:///C:/Users/alanb/Projetos/operacao-meridian/frontend/node_modules/@vitest/runner/dist/index.js:1243:20
+    at new Promise (<anonymous>)
+    at runWithTimeout (file:///C:/Users/alanb/Projetos/operacao-meridian/frontend/node_modules/@vitest/runner/dist/index.js:1209:10)
+    at file:///C:/Users/alanb/Projetos/operacao-meridian/frontend/node_modules/@vitest/runner/dist/index.js:1653:37
+    at Traces.$ (file:///C:/Users/alanb/Projetos/operacao-meridian/frontend/node_modules/vitest/dist/chunks/traces.CCmnQaNT.js:142:27)
+    at trace (file:///C:/Users/alanb/Projetos/operacao-meridian/frontend/node_modules/vitest/dist/chunks/test.B8ej_ZHS.js:239:21)
+    at runTest (file:///C:/Users/alanb/Projetos/operacao-meridian/frontend/node_modules/@vitest/runner/dist/index.js:1653:12)
+

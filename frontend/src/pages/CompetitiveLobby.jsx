@@ -3,7 +3,7 @@ import { useState, useEffect, useCallback } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useGame } from "../game/GameProvider";
 import { supabase } from "../lib/supabase";
-import { Caso9Scenarios } from "../game/Caso9Scenarios";
+import { CASOS_SCENARIOS } from "../game/CasosScenarios";
 import { useRef } from "react";
 
 function Badge({ children, tone = "gray" }) {
@@ -215,7 +215,8 @@ export default function CompetitiveLobby() {
             console.log("[ATLAS] Tempo esgotado com jogadores suficientes. Tentando ativar lobby...");
             
             // Sorteamos o cenário localmente (o primeiro que gravar no Supabase vence)
-            const randomScenario = Caso9Scenarios[Math.floor(Math.random() * Caso9Scenarios.length)];
+            const scenariosForCase = CASOS_SCENARIOS[caseId] || CASOS_SCENARIOS["C009"]; // Fallback de segurança
+            const randomScenario = scenariosForCase[Math.floor(Math.random() * scenariosForCase.length)];
             
             setStatus("Iniciando Missão: Sincronizando cenário...");
 

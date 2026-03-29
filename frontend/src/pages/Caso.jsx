@@ -48,10 +48,13 @@ export const ORIGIN_COORDS = {
     "Pequim": { x: 318, y: 62 },
     "Thimphu": { x: 288, y: 79 },
     "Sao Paulo": { x: 137, y: 150 },
+    "São Paulo": { x: 137, y: 150 },
     "Rio de Janeiro": { x: 141, y: 149 },
+    "Santiago": { x: 110, y: 160 },
     "Nova Delhi": { x: 275, y: 78 },
     "Salvador": { x: 146, y: 135 },
     "Zurich": { x: 198, y: 52 },
+    "Hong Kong": { x: 315, y: 80 },
 };
 
 const TRANSPORT_MODES = [

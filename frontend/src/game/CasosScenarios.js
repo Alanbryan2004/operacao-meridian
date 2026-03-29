@@ -19,7 +19,7 @@ import { Caso6Scenarios } from "./Caso6Scenarios";
 import { Caso7Scenarios } from "./Caso7Scenarios";
 import { Caso8Scenarios } from "./Caso8Scenarios";
 import { Caso9Scenarios } from "./Caso9Scenarios";
-
+import { Caso10Scenarios } from "./Caso10Scenarios";
 
 export const CASOS_SCENARIOS = {
     "C001": CASO_1_SCENARIOS,
@@ -31,6 +31,7 @@ export const CASOS_SCENARIOS = {
     "C007": Caso7Scenarios,
     "C008": Caso8Scenarios,
     "C009": Caso9Scenarios,
+    "C010": Caso10Scenarios,
 };
 
 export const CASOS_CONFIG = {
@@ -71,6 +72,12 @@ export const CASOS_CONFIG = {
         isCompetitive: true,
         title: "Caso Especial: Protocolo Fantasma",
         description: "Um artefato de inteligência da A.T.L.A.S. foi fragmentado e espalhado pelo submundo digital. Vários agentes foram mobilizados para a recuperação. Apenas o mais rápido garantirá a integridade do sistema."
+    },
+    "C010": {
+        hasIntroVideo: false,
+        isCompetitive: true,
+        title: "Caso Especial: O Cofre que Nunca Foi Aberto",
+        description: "Um cofre ultra seguro internacional foi violado sem deixar rastros. Apenas o melhor e mais rápido agente poderá recuperar os documentos classificados antes dos concorrentes."
     }
 };
 
