@@ -97,6 +97,14 @@ export default function Login() {
                 { onConflict: "id" }
             );
 
+        // Verificação de Auto-Login:
+        // Se o jogador retornando já possui um avatar configurado, pula a tela de "ENTRAR".
+        const currentSavedState = loadGame();
+        if (currentSavedState?.player?.avatar) {
+            nav("/mural");
+            return;
+        }
+
         setNome(googleName);
         setShowNamePrompt(true);
     }
