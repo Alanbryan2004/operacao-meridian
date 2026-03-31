@@ -1,10 +1,12 @@
 import { expect, test, describe } from 'vitest';
+import { Caso0Scenarios } from '../game/Caso0Scenarios';
 import { Caso9Scenarios } from '../game/Caso9Scenarios';
 import { Caso10Scenarios } from '../game/Caso10Scenarios';
 import { DESTINATION_OPTIONS } from '../game/DestRoutes';
 import { ORIGIN_COORDS } from '../pages/Caso';
 
 const allScenarios = [
+  ...Caso0Scenarios.map(s => ({ ...s, caseId: "C000" })),
   ...Caso9Scenarios.map(s => ({ ...s, caseId: "C009" })),
   ...Caso10Scenarios.map(s => ({ ...s, caseId: "C010" }))
 ];

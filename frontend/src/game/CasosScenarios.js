@@ -10,6 +10,7 @@
  * - interrogatorios: pistas em cada cidade da rota
  */
 
+import { Caso0Scenarios } from "./Caso0Scenarios";
 import { CASO_1_SCENARIOS } from "./Caso1Scenarios";
 import { CASO_2_SCENARIOS } from "./Caso2Scenarios";
 import { CASO_3_SCENARIOS } from "./Caso3Scenarios";
@@ -22,6 +23,7 @@ import { Caso9Scenarios } from "./Caso9Scenarios";
 import { Caso10Scenarios } from "./Caso10Scenarios";
 
 export const CASOS_SCENARIOS = {
+    "C000": Caso0Scenarios,
     "C001": CASO_1_SCENARIOS,
     "C002": CASO_2_SCENARIOS,
     "C003": CASO_3_SCENARIOS,
@@ -35,6 +37,10 @@ export const CASOS_SCENARIOS = {
 };
 
 export const CASOS_CONFIG = {
+    "C000": {
+        hasIntroVideo: true,
+        introVideo: "/Videos/Caso0_Relogio_roubado.mp4"
+    },
     "C001": {
         hasIntroVideo: true,
         introVideo: "/Videos/reliquiadesaparecida.mp4"

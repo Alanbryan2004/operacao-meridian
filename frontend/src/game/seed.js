@@ -2,6 +2,20 @@ export const DIAS_PARA_HORAS = 24;
 
 export const casesSeed = [
     {
+        id: "C000",
+        titulo: "O Roubo do Relógio Antigo",
+        dificuldade: "FACIL",
+        recompensa: 500,
+        xp: 50,
+        tempoTotalHoras: DIAS_PARA_HORAS * 365, // effectively unlimited
+        localInicial: { pais: "Inglaterra", cidade: "Londres" },
+        resumo: "CASO 0 (TUTORIAL) — O Roubo do Relógio Antigo\n📍 Local do Roubo: Museu Histórico em Londres, Inglaterra 🇬🇧\n\nEste é o seu primeiro caso na A.T.L.A.S. Siga as instruções do sistema para aprender a investigar, viajar e analisar as pistas no Laboratório para emitir um mandado de prisão.",
+        imgItem: "/reliquiaDesaparecida.png",
+        videoIntro: "/Videos/Caso0_Relogio_roubado.mp4",
+        replayable: true,
+        interrogatorios: [],
+    },
+    {
         id: "C001",
         titulo: "Relíquia desaparecida no centro histórico",
         dificuldade: "FACIL",

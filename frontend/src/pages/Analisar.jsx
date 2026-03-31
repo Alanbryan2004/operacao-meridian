@@ -18,7 +18,7 @@ function Panel({ children, style = {} }) {
     );
 }
 
-export default function Analisar({ onBack, filters, setFilters, warrantId, setWarrantId }) {
+export default function Analisar({ onBack, filters, setFilters, warrantId, setWarrantId, tutorialHint }) {
     const toggleFilter = (key, val) => {
         setFilters(prev => {
             const current = prev[key];
@@ -120,6 +120,8 @@ export default function Analisar({ onBack, filters, setFilters, warrantId, setWa
                 .om-detail-value { font-size: 11px; opacity: 0.95; line-height: 1.2; }
                 .om-badge-list { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 3px; }
                 .om-badge-mini { padding: 2px 6px; border-radius: 4px; background: rgba(255,255,255,0.1); font-size: 9px; }
+                .tut-chip-highlight { animation: om-tut-pulse 1.5s infinite alternate; border-color: #ffd700 !important; color: #ffd700 !important; background: rgba(255,215,0,0.25) !important; }
+                @keyframes om-tut-pulse { 0% { box-shadow: 0 0 5px rgba(255,215,0,0.4); transform: scale(1); } 100% { box-shadow: 0 0 20px rgba(255,215,0,1); transform: scale(1.05); } }
             `}</style>
 
             <Panel style={{ marginBottom: "15px", maxHeight: "220px", overflowY: "auto" }}>
@@ -145,10 +147,18 @@ export default function Analisar({ onBack, filters, setFilters, warrantId, setWa
                             <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
                                 {(options[key] || []).map(opt => {
                                     const isSelected = filters[key].includes(opt);
+                                    // Tutorial highlight: if tutorialHint tells us to select a specific filter chip
+                                    const tutTarget = tutorialHint?.expectedAnalise === key;
+                                    const isTutChip = tutTarget && (
+                                        (key === "sexo" && opt === "Feminino") ||
+                                        (key === "corCabelo" && opt === "Preto") ||
+                                        (key === "esporte" && opt === "Ginástica Olímpica")
+                                    );
                                     return (
                                         <button
                                             key={opt}
                                             onClick={() => toggleFilter(key, opt)}
+                                            className={isTutChip && !isSelected ? "tut-chip-highlight" : ""}
                                             style={{
                                                 padding: "4px 10px",
                                                 borderRadius: "6px",
@@ -175,7 +185,7 @@ export default function Analisar({ onBack, filters, setFilters, warrantId, setWa
                 {paginatedSuspects.map(s => (
                     <div
                         key={s.id}
-                        className={`om-suspect-card ${selectedId === s.id ? "selected" : ""}`}
+                        className={`om-suspect-card ${selectedId === s.id ? "selected" : ""} ${tutorialHint?.expectedWarrant && s.id === "006" ? "tut-chip-highlight" : ""}`}
                         onClick={() => setSelectedId(s.id)}
                         onDoubleClick={() => setSelectedSuspect(s)}
                     >
@@ -224,7 +234,7 @@ export default function Analisar({ onBack, filters, setFilters, warrantId, setWa
                     VOLTAR
                 </button>
                 <button
-                    className="om-btn om-btn-primary"
+                    className={`om-btn om-btn-primary ${tutorialHint?.expectedWarrant && selectedId === "006" ? "tut-chip-highlight" : ""}`}
                     style={{ flex: 1.5, background: selectedId ? "#ff3b3b" : "rgba(255,255,255,0.1)", borderColor: selectedId ? "#ff3b3b" : "rgba(255,255,255,0.1)" }}
                     disabled={!selectedId}
                     onClick={() => {

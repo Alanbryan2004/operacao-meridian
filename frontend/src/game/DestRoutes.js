@@ -449,6 +449,19 @@ export const DESTINATION_OPTIONS = [
     { id: "C9_49", pais: "Tailândia", cidade: "Bangcoc", origem: "Pequim", coords: { x: 301, y: 98 }, flag: "🇹🇭" },
     { id: "C9_50", pais: "China", cidade: "Pequim", origem: "Mumbai", coords: { x: 318, y: 62 }, flag: "🇨🇳" },
 
+    // --- AUTO-GENERATED ROUTES FOR CASE 0 (TUTORIAL) ---
+    { id: "C0_LON_PAR", pais: "França", cidade: "Paris", origem: "Londres", coords: { x: 180, y: 70 }, flag: "🇫🇷" },
+    { id: "C0_LON_ROM", pais: "Itália", cidade: "Roma", origem: "Londres", coords: { x: 195, y: 80 }, flag: "🇮🇹" },
+    { id: "C0_LON_MAD", pais: "Espanha", cidade: "Madrid", origem: "Londres", coords: { x: 175, y: 85 }, flag: "🇪🇸" },
+
+    { id: "C0_PAR_TOQ", pais: "Japão", cidade: "Tóquio", origem: "Paris", coords: { x: 350, y: 55 }, flag: "🇯🇵" },
+    { id: "C0_PAR_SEUL", pais: "Coréia do Sul", cidade: "Seul", origem: "Paris", coords: { x: 340, y: 56 }, flag: "🇰🇷" },
+    { id: "C0_PAR_PEQ", pais: "China", cidade: "Pequim", origem: "Paris", coords: { x: 318, y: 62 }, flag: "🇨🇳" },
+
+    { id: "C0_TOQ_SEUL", pais: "Coréia do Sul", cidade: "Seul", origem: "Tóquio", coords: { x: 340, y: 56 }, flag: "🇰🇷" },
+    { id: "C0_TOQ_BAN", pais: "Tailândia", cidade: "Bangcoc", origem: "Tóquio", coords: { x: 310, y: 92 }, flag: "🇹🇭" },
+    { id: "C0_TOQ_PEQ", pais: "China", cidade: "Pequim", origem: "Tóquio", coords: { x: 318, y: 62 }, flag: "🇨🇳" },
+
     // --- AUTO-GENERATED ROUTES FOR CASE 10 ---
     { id: "C10_PAR_VIE", pais: "Áustria", cidade: "Viena", origem: "Paris", coords: { x: 215, y: 56 }, flag: "🇦🇹" },
     { id: "C10_ROM_TOR", pais: "Canadá", cidade: "Toronto", origem: "Roma", coords: { x: 101, y: 57 }, flag: "🇨🇦" },

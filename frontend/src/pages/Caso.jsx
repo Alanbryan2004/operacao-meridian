@@ -164,7 +164,8 @@ export default function Caso() {
             const scenarioMismatch = forcedScenarioId && currentRun?.scenarioId !== forcedScenarioId;
             const lobbyMismatch = lobbyId && currentRun?.lobbyId !== lobbyId;
             const noRun = !currentRun;
-            const needsReset = isMissionCompetitive && (noRun || lobbyMismatch || scenarioMismatch);
+            const tutorialCompleted = caseId === "C000" && currentRun && (currentRun.status === "WON" || currentRun.status === "LOST");
+            const needsReset = tutorialCompleted || (isMissionCompetitive && (noRun || lobbyMismatch || scenarioMismatch));
             
             const next = startRunIfNeeded(state, { ...caseObj, isCompetitive: isMissionCompetitive }, needsReset, forcedScenarioId, lobbyId);
             
@@ -274,6 +275,61 @@ export default function Caso() {
                 syncChannelRef.current = null;
             };
         }, [isMissionCompetitive, lobbyId, caseId, nav]);
+
+        // ==========================
+        // MÁQUINA DE ESTADO DO TUTORIAL (CASO 0)
+        // ==========================
+        const tutState = useMemo(() => {
+            if (caseId !== "C000" || !run) return null;
+            const psts = run.pistasDescobertas || [];
+            const has = (id) => psts.some(p => p.idInterrogatorio === id);
+            const city = run.localAtual?.cidade || "Londres";
+            const fil = run.filtrosAnalise || {};
+
+            let allowInvestigate = false;
+            let allowAnalysis = false;
+            let allowTravel = false;
+            let expectedLocId = null;
+            let expectedDest = null;
+            let expectedAnalise = null;
+            let expectedWarrant = false;
+
+            // fil uses arrays: { sexo: ["Feminino"], corCabelo: ["Preto"], esporte: ["Ginástica Olímpica"] }
+            const hasFil = (key, val) => Array.isArray(fil[key]) && fil[key].includes(val);
+
+            if (city === "Londres") {
+                if (!has("C0_1")) { allowInvestigate = true; expectedLocId = "C0_1"; }
+                else if (!has("C0_2")) { allowInvestigate = true; expectedLocId = "C0_2"; }
+                else if (!has("C0_3")) { allowInvestigate = true; expectedLocId = "C0_3"; }
+                else if (!hasFil("sexo", "Feminino")) { allowAnalysis = true; expectedAnalise = "sexo"; }
+                else { allowTravel = true; expectedDest = "Paris"; }
+            }
+            else if (city === "Paris") {
+                if (!has("C0_4")) { allowInvestigate = true; expectedLocId = "C0_4"; }
+                else if (!has("C0_5")) { allowInvestigate = true; expectedLocId = "C0_5"; }
+                else if (!has("C0_6")) { allowInvestigate = true; expectedLocId = "C0_6"; }
+                else if (!hasFil("corCabelo", "Preto")) { allowAnalysis = true; expectedAnalise = "corCabelo"; }
+                else { allowTravel = true; expectedDest = "Tóquio"; }
+            }
+            else if (city === "Tóquio") {
+                if (!has("C0_7")) { allowInvestigate = true; expectedLocId = "C0_7"; }
+                else if (!has("C0_8")) { allowInvestigate = true; expectedLocId = "C0_8"; }
+                else if (!has("C0_9")) { allowInvestigate = true; expectedLocId = "C0_9"; }
+                else if (!hasFil("esporte", "Ginástica Olímpica")) { allowAnalysis = true; expectedAnalise = "esporte"; }
+                else if (run.warrantId !== "006") { expectedWarrant = true; allowAnalysis = true; }
+                else { allowTravel = true; expectedDest = "Seul"; }
+            }
+            else if (city === "Seul") {
+                if (!has("C0_10")) { allowInvestigate = true; expectedLocId = "C0_10"; }
+                else if (!has("C0_11")) { allowInvestigate = true; expectedLocId = "C0_11"; }
+                else if (!has("C0_12")) { allowInvestigate = true; expectedLocId = "C0_12"; }
+            }
+
+            return {
+                allowInvestigate, allowAnalysis, allowTravel,
+                expectedLocId, expectedDest, expectedAnalise, expectedWarrant
+            };
+        }, [run, caseId]);
 
         const currentCityImg = useMemo(() => {
             if (!run) return caseObj?.imgItem || "/reliquiaDesaparecida.png";
@@ -547,6 +603,8 @@ export default function Caso() {
                     .om-map-dest { position: absolute; width: 10px; height: 10px; background: #ff4d6a; border-radius: 50%; z-index: 5; transform: translate(-50%, -50%); }
                     .om-map-dest.selected { background: #ffd700; transform: translate(-50%, -50%); }
                     .om-map-label { position: absolute; font-size: 8px; font-weight: 800; z-index: 6; text-shadow: 0 0 8px #000; }
+                    .tutorial-highlight { animation: om-tut-pulse 1.5s infinite alternate; border-color: #ffd700 !important; font-weight: 900 !important; color: #ffd700 !important; }
+                    @keyframes om-tut-pulse { 0% { box-shadow: 0 0 5px rgba(255,215,0,0.4); transform: scale(1); } 100% { box-shadow: 0 0 20px rgba(255,215,0,1); transform: scale(1.02); } }
                     .om-map-loc-badge { position: absolute; bottom: 0; left: 0; right: 0; padding: 6px 12px; background: linear-gradient(transparent, rgba(6,14,26,0.95)); font-size: 10px; z-index: 10; display: flex; align-items: center; gap: 6px; }
                 `}</style>
                 <div style={{ padding: "15px 15px 80px 15px" }}>
@@ -645,17 +703,17 @@ export default function Caso() {
                     {viewMode !== "ANALYZE" && viewMode !== "RESUMO" && viewMode !== "DIALOGUE" && viewMode !== "ARRIVAL" && (
                         <div className="om-card">
                             <Panel>
-                                {viewMode === "ACTIONS" && (<div><div style={{ fontSize: 13, fontWeight: 800, marginBottom: 12 }}>CENTRAL DE OPERAÇÕES</div><div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}><button className="om-btn" onClick={() => setViewMode("TRAVEL_MAP")}>✈️ VIAJAR</button><button className="om-btn" onClick={abrirLocais}>🔍 INVESTIGAR</button><button className="om-btn" onClick={analisar} style={{ gridColumn: "1/-1" }}>🧪 ANALISAR</button></div></div>)}
-                                {viewMode === "TRAVEL_MAP" && (<div><div style={{ fontSize: 13, fontWeight: 800, marginBottom: 12 }}>DESTINO</div><div style={{ display: "grid", gap: 8 }}>{travelOptions.map(d => (<button key={d.id} className="om-btn" onClick={() => { setSelectedDest(d); setViewMode("TRAVEL_MODES"); }}>{caseObj?.dificuldade === "DIFICIL" || caseObj?.dificuldade === "LENDARIO" ? "📍" : d.flag} {d.cidade}</button>))}{run.localAtual?.cidade !== "Campinas" && <button className="om-btn" onClick={handleVoltar} style={{ border: "1px solid #80bdff" }}>↩️ VOLTAR</button>}</div><button onClick={() => setViewMode("ACTIONS")} style={{ marginTop: 10, background: "transparent", border: "none", color: "#80bdff", width: "100%" }}>Cancelar</button></div>)}
+                                {viewMode === "ACTIONS" && (<div><div style={{ fontSize: 13, fontWeight: 800, marginBottom: 12 }}>CENTRAL DE OPERAÇÕES</div>{tutState && <div style={{ background: "rgba(255,215,0,0.12)", border: "1px solid rgba(255,215,0,0.4)", borderRadius: 10, padding: "8px 12px", marginBottom: 12, fontSize: 11, color: "#ffd700", textAlign: "center", fontWeight: 700 }}>📌 {tutState.allowInvestigate ? "Clique em INVESTIGAR para coletar pistas" : tutState.allowAnalysis ? "Clique em ANALISAR para filtrar o perfil do suspeito" : tutState.allowTravel ? `Clique em VIAJAR para seguir para ${tutState.expectedDest}` : "Siga as instruções"}</div>}<div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}><button className={`om-btn ${tutState?.allowTravel ? "tutorial-highlight" : ""}`} disabled={!!tutState && !tutState.allowTravel} onClick={() => setViewMode("TRAVEL_MAP")}>✈️ VIAJAR</button><button className={`om-btn ${tutState?.allowInvestigate ? "tutorial-highlight" : ""}`} disabled={!!tutState && !tutState.allowInvestigate} onClick={abrirLocais}>🔍 INVESTIGAR</button><button className={`om-btn ${tutState?.allowAnalysis ? "tutorial-highlight" : ""}`} disabled={!!tutState && !tutState.allowAnalysis} onClick={analisar} style={{ gridColumn: "1/-1" }}>🧪 ANALISAR</button></div></div>)}
+                                {viewMode === "TRAVEL_MAP" && (<div><div style={{ fontSize: 13, fontWeight: 800, marginBottom: 12 }}>DESTINO</div>{tutState && <div style={{ background: "rgba(255,215,0,0.12)", border: "1px solid rgba(255,215,0,0.4)", borderRadius: 10, padding: "8px 12px", marginBottom: 12, fontSize: 11, color: "#ffd700", textAlign: "center", fontWeight: 700 }}>📌 Selecione {tutState.expectedDest} como destino</div>}<div style={{ display: "grid", gap: 8 }}>{travelOptions.map(d => {const isTutTarget = tutState && d.cidade === tutState.expectedDest; return (<button key={d.id} className={`om-btn ${isTutTarget ? "tutorial-highlight" : ""}`} disabled={!!tutState && !isTutTarget} onClick={() => { setSelectedDest(d); setViewMode("TRAVEL_MODES"); }}>{caseObj?.dificuldade === "DIFICIL" || caseObj?.dificuldade === "LENDARIO" ? "📍" : d.flag} {d.cidade}</button>);})}{!tutState && run.localAtual?.cidade !== "Campinas" && <button className="om-btn" onClick={handleVoltar} style={{ border: "1px solid #80bdff" }}>↩️ VOLTAR</button>}</div><button onClick={() => setViewMode("ACTIONS")} style={{ marginTop: 10, background: "transparent", border: "none", color: "#80bdff", width: "100%" }}>Cancelar</button></div>)}
                                 {viewMode === "TRAVEL_MODES" && selectedDest && (<div><div style={{ fontSize: 13, fontWeight: 800, marginBottom: 12 }}>{selectedDest.isReturn ? "↩️ RETORNAR PARA" : "VIAJAR PARA"} {selectedDest.cidade.toUpperCase()}</div><div style={{ display: "grid", gap: 8 }}>{TRANSPORT_MODES.map(t => (<button key={t.id} className="om-btn" onClick={() => confirmarViagem(t)}>{t.icon} {t.nome} (${t.custoBase})</button>))}</div><button onClick={() => setViewMode(selectedDest.isReturn ? "ACTIONS" : "TRAVEL_MAP")} style={{ marginTop: 10, background: "transparent", border: "none", color: "#80bdff", width: "100%" }}>{selectedDest.isReturn ? "Cancelar" : "Mudar Destino"}</button></div>)}
-                                {viewMode === "LOCATIONS" && (<div><div style={{ fontSize: 13, fontWeight: 800, marginBottom: 12 }}>INVESTIGAÇÃO</div><div style={{ display: "grid", gap: 8 }}>{(localInterrogatorios.length > 0 ? localInterrogatorios : [{id:"F1",local:"Taxi",pista:"Nada visto."}]).map(loc => (<button key={loc.id} className="om-btn" onClick={() => interrogarNoLocal(loc)}>🕵️‍♂️ Ir para {loc.local}</button>))}</div><button onClick={() => setViewMode("ACTIONS")} style={{ marginTop: 10, background: "transparent", border: "none", color: "#80bdff", width: "100%" }}>Cancelar</button></div>)}
+                                {viewMode === "LOCATIONS" && (<div><div style={{ fontSize: 13, fontWeight: 800, marginBottom: 12 }}>INVESTIGAÇÃO</div>{tutState && <div style={{ background: "rgba(255,215,0,0.12)", border: "1px solid rgba(255,215,0,0.4)", borderRadius: 10, padding: "8px 12px", marginBottom: 12, fontSize: 11, color: "#ffd700", textAlign: "center", fontWeight: 700 }}>📌 {(() => { const expectedLoc = localInterrogatorios.find(l => l.id === tutState.expectedLocId); return expectedLoc ? `Clique em "${expectedLoc.local}" para investigar` : "Investigue o local indicado"; })()}</div>}<div style={{ display: "grid", gap: 8 }}>{(localInterrogatorios.length > 0 ? localInterrogatorios : [{id:"F1",local:"Taxi",pista:"Nada visto."}]).map(loc => {const isTutTarget = tutState && loc.id === tutState.expectedLocId; return (<button key={loc.id} className={`om-btn ${isTutTarget ? "tutorial-highlight" : ""}`} disabled={!!tutState && !isTutTarget} onClick={() => interrogarNoLocal(loc)}>🕵️‍♂️ Ir para {loc.local}</button>);})}</div><button onClick={() => setViewMode("ACTIONS")} style={{ marginTop: 10, background: "transparent", border: "none", color: "#80bdff", width: "100%" }}>Cancelar</button></div>)}
                                 {viewMode === "JOURNAL" && (<div><div style={{ fontSize: 13, fontWeight: 800, marginBottom: 12 }}>JORNAL</div><div className="om-journal-list">{run.jornal?.slice().reverse().map((j, i) => (<div key={i} className="om-journal-item" style={{ fontSize: 11 }}><div style={{ opacity: 0.5 }}>{new Date(j.t).toLocaleString()}</div><div>{j.msg}</div></div>))}</div></div>)}
                                 {viewMode === "PROFILE" && (<div><div style={{ display: "flex", gap: 8, marginBottom: 15 }}><button onClick={() => setProfileTab("PERFIL")} className="om-btn">PERFIL</button><button onClick={() => setProfileTab("GALERIA")} className="om-btn">GALERIA</button></div>{profileTab === "PERFIL" ? (<div><div style={{ fontSize: 18, fontWeight: 800 }}>{state.player.nome}</div><button onClick={handleAbort} className="om-btn" style={{ marginTop: 20, color: "#ff8080" }}>ABORTAR</button></div>) : <SuspectGallery capturedSuspects={state.capturedSuspects || {}} />}</div>)}
                             </Panel>
                         </div>
                     )}
                     {viewMode === "PROFILE" && profileTab === "GALERIA" && <div style={{ marginTop: 20 }}><SuspectGallery capturedSuspects={state.capturedSuspects || {}} /><button onClick={() => setViewMode("ACTIONS")} className="om-btn" style={{ marginTop: 20 }}>VOLTAR</button></div>}
-                    {viewMode === "ANALYZE" && <Analisar onBack={() => setViewMode("ACTIONS")} filters={run?.filtrosAnalise || {}} setFilters={(f) => { const n = typeof f === 'function' ? f(run?.filtrosAnalise) : f; updateRun({ ...run, filtrosAnalise: n }); }} warrantId={run?.warrantId} setWarrantId={(id) => updateRun({ ...run, warrantId: id, mandadoEmitido: true })} />}
+                    {viewMode === "ANALYZE" && <>{tutState && <div style={{ background: "rgba(255,215,0,0.12)", border: "1px solid rgba(255,215,0,0.4)", borderRadius: 10, padding: "8px 12px", marginBottom: 12, fontSize: 11, color: "#ffd700", textAlign: "center", fontWeight: 700 }}>📌 {tutState.expectedWarrant ? "Selecione Kite Needle e clique em MANDADO para emitir o mandado de prisão" : tutState.expectedAnalise === "sexo" ? "Selecione \"Feminino\" nos filtros de Sexo" : tutState.expectedAnalise === "corCabelo" ? "Selecione \"Preto\" nos filtros de Cor do Cabelo" : tutState.expectedAnalise === "esporte" ? "Selecione \"Ginástica Olímpica\" nos filtros de Esporte" : "Analise o perfil do suspeito"}</div>}<Analisar onBack={() => setViewMode("ACTIONS")} filters={run?.filtrosAnalise || {}} setFilters={(f) => { const n = typeof f === 'function' ? f(run?.filtrosAnalise) : f; updateRun({ ...run, filtrosAnalise: n }); }} warrantId={run?.warrantId} setWarrantId={(id) => updateRun({ ...run, warrantId: id, mandadoEmitido: true })} tutorialHint={tutState} /></>}
                 </div>
                 <div className="om-tabs"><div className="om-tabs-inner"><button className="om-tab" onClick={() => setViewMode("ACTIONS")}>AÇÃO</button><button className="om-tab" onClick={() => setViewMode("JOURNAL")}>JORNAL</button><button className="om-tab" onClick={() => setViewMode("PROFILE")}>CASOS</button></div></div>
                 {modalConfig.show && <ModalMsg message={modalConfig.message} type={modalConfig.type} isConfirm={modalConfig.isConfirm} onConfirm={modalConfig.onConfirm} onClose={() => setModalConfig({ ...modalConfig, show: false })} />}
