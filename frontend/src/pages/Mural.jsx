@@ -187,7 +187,14 @@ export default function Mural() {
 
                 {/* Lista de casos */}
                 <div className="om-grid">
-                    {cases.map((c) => {
+                    {cases.filter(c => {
+                        // Caso 0 (Tutorial): esconde do mural se já foi concluído
+                        if (c.id === "C000") {
+                            const tutRun = state.runs["C000"];
+                            if (tutRun?.status === "WON") return false;
+                        }
+                        return true;
+                    }).map((c) => {
                         const run = state.runs[c.id];
                         const isOtherActive = Object.values(state.runs).some(r => r.caseId !== c.id && r.status === "IN_PROGRESS");
                         const isActive = run?.status === "IN_PROGRESS";

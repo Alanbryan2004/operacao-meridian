@@ -51,7 +51,7 @@ export default function AvatarCreator() {
     const finalNome = (nome || "").trim() || "Recruta";
     dispatch({ type: 'UPDATE_PLAYER', payload: { nome: finalNome, avatar: tempAvatar } });
     if (isOnboarding) {
-      nav('/missao-intro/C001');
+      nav('/missao-intro/C000');
     } else {
       nav('/perfil');
     }

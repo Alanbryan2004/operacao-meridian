@@ -164,8 +164,7 @@ export default function Caso() {
             const scenarioMismatch = forcedScenarioId && currentRun?.scenarioId !== forcedScenarioId;
             const lobbyMismatch = lobbyId && currentRun?.lobbyId !== lobbyId;
             const noRun = !currentRun;
-            const tutorialCompleted = caseId === "C000" && currentRun && (currentRun.status === "WON" || currentRun.status === "LOST");
-            const needsReset = tutorialCompleted || (isMissionCompetitive && (noRun || lobbyMismatch || scenarioMismatch));
+            const needsReset = isMissionCompetitive && (noRun || lobbyMismatch || scenarioMismatch);
             
             const next = startRunIfNeeded(state, { ...caseObj, isCompetitive: isMissionCompetitive }, needsReset, forcedScenarioId, lobbyId);
             

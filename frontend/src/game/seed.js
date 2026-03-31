@@ -12,7 +12,7 @@ export const casesSeed = [
         resumo: "CASO 0 (TUTORIAL) — O Roubo do Relógio Antigo\n📍 Local do Roubo: Museu Histórico em Londres, Inglaterra 🇬🇧\n\nEste é o seu primeiro caso na A.T.L.A.S. Siga as instruções do sistema para aprender a investigar, viajar e analisar as pistas no Laboratório para emitir um mandado de prisão.",
         imgItem: "/reliquiaDesaparecida.png",
         videoIntro: "/Videos/Caso0_Relogio_roubado.mp4",
-        replayable: true,
+        replayable: false,
         interrogatorios: [],
     },
     {
