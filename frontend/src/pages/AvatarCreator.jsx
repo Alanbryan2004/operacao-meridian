@@ -1,10 +1,25 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, lazy, Suspense } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useGame } from '../game/GameProvider';
 import AvatarDisplay from '../components/AvatarDisplay';
 
+const AvatarViewer3D = lazy(() => import('../components/AvatarViewer3D'));
+
 const MALE_AVATAR_IDS = ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12", "13", "14", "15", "16"];
 const FEMALE_AVATAR_IDS = ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12"];
+
+const AVATAR_3D_IDS = [
+    { id: "Avatar01", label: "Agente Alpha" },
+    { id: "Avatar02", label: "Agente Bravo" },
+];
+
+const ROUPAS = [
+    { id: null, label: "Sem Roupa", icon: "🩳" },
+    { id: "roupa_cadete", label: "Cadete", icon: "👮" },
+    { id: "Roupa_Cadete2", label: "Cadete II", icon: "🎖️" },
+    { id: "roupa_detetive2", label: "Detetive", icon: "🕵️" },
+    { id: "RoupaTatica", label: "Tática", icon: "🦺" },
+];
 
 export default function AvatarCreator() {
   const { state, dispatch } = useGame();
@@ -18,6 +33,9 @@ export default function AvatarCreator() {
   const [selectedId, setSelectedId] = useState(state.player.avatar?.id || "01");
   const [catchphrase, setCatchphrase] = useState(state.player.avatar?.frase || "");
   const [animating, setAnimating] = useState(false);
+  const [avatarMode, setAvatarMode] = useState('2D'); // '2D' or '3D'
+  const [selected3DAvatar, setSelected3DAvatar] = useState(state.player.avatar3D?.avatarId || 'Avatar01');
+  const [selectedRoupa, setSelectedRoupa] = useState(state.player.avatar3D?.roupaId || null);
 
   // Derived config for the preview
   const tempAvatar = useMemo(() => ({
@@ -47,9 +65,30 @@ export default function AvatarCreator() {
     setTimeout(() => setAnimating(false), 300);
   };
 
+  const handleSlide = (direction) => {
+    const ids = selectedGender === 'M' ? MALE_AVATAR_IDS : FEMALE_AVATAR_IDS;
+    const currentIndex = ids.indexOf(selectedId);
+    let nextIndex;
+
+    if (direction === 'next') {
+      nextIndex = (currentIndex + 1) % ids.length;
+    } else {
+      nextIndex = (currentIndex - 1 + ids.length) % ids.length;
+    }
+
+    console.log(`[AvatarCreator] Navigating ${direction}: ${selectedId} -> ${ids[nextIndex]}`);
+    handleSelect(ids[nextIndex]);
+  };
+
   const handleSave = () => {
     const finalNome = (nome || "").trim() || "Recruta";
-    dispatch({ type: 'UPDATE_PLAYER', payload: { nome: finalNome, avatar: tempAvatar } });
+    const payload = {
+      nome: finalNome,
+      avatar: tempAvatar,
+      avatar3D: avatarMode === '3D' ? { avatarId: selected3DAvatar, roupaId: selectedRoupa } : state.player.avatar3D || null,
+      avatarMode: avatarMode,
+    };
+    dispatch({ type: 'UPDATE_PLAYER', payload });
     if (isOnboarding) {
       nav('/missao-intro/C000');
     } else {
@@ -136,13 +175,43 @@ export default function AvatarCreator() {
           position: sticky;
           top: 20px;
           box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-          overflow: hidden;
         }
 
         .av-preview-container {
           position: relative;
           transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.2s;
+          pointer-events: none; /* Let clicks pass through to arrows underneath if overlapping */
         }
+        .av-nav-arrow {
+            position: absolute;
+            top: 180px; /* Aligned with avatar center in the card */
+            transform: translateY(-50%);
+            background: rgba(30, 41, 59, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: white;
+            width: 54px;
+            height: 54px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 999;
+            backdrop-filter: blur(12px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            pointer-events: auto; /* Ensure buttons ARE clickable */
+        }
+        .av-nav-arrow:hover {
+            background: #3b82f6;
+            transform: translateY(-50%) scale(1.1);
+            border-color: rgba(255, 255, 255, 0.3);
+            box-shadow: 0 0 25px rgba(59, 130, 246, 0.4);
+        }
+        .av-nav-arrow:active { transform: translateY(-50%) scale(0.95); }
+        .av-nav-arrow.left { left: 20px; }
+        .av-nav-arrow.right { right: 20px; }
+
         .av-preview-container.jumping {
           transform: scale(0.9) translateY(10px);
           opacity: 0.5;
@@ -252,6 +321,61 @@ export default function AvatarCreator() {
 
         .av-next-btn { max-width: 300px; margin: 0 auto; }
 
+        /* ── 2D/3D Toggle ── */
+        .av-mode-toggle {
+          display: flex; gap: 8px; margin-bottom: 20px;
+          background: rgba(0,0,0,0.3); padding: 6px; border-radius: 16px;
+          border: 1px solid rgba(255,255,255,0.05); max-width: 260px; margin: 0 auto 20px auto;
+        }
+        .av-mode-btn {
+          flex: 1; padding: 10px 16px; border: none; background: transparent;
+          color: #64748b; font-weight: 800; cursor: pointer; border-radius: 12px;
+          transition: all 0.3s; font-size: 14px; letter-spacing: 0.5px;
+        }
+        .av-mode-btn.active {
+          background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+          color: #fff; box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4);
+        }
+
+        /* ── 3D Layout ── */
+        .av-3d-layout { display: flex; flex-direction: column; gap: 20px; animation: fadeIn 0.4s ease-out; }
+        .av-3d-section {
+          background: rgba(15, 23, 42, 0.6); border-radius: 20px;
+          border: 1px solid rgba(255,255,255,0.05); padding: 16px;
+        }
+        .av-3d-label {
+          font-size: 10px; font-weight: 900; color: #8b5cf6; letter-spacing: 2px;
+          margin-bottom: 12px; text-transform: uppercase;
+        }
+
+        .av-3d-avatar-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .av-3d-avatar-btn {
+          padding: 16px; border-radius: 16px; border: 2px solid rgba(255,255,255,0.08);
+          background: rgba(255,255,255,0.03); cursor: pointer; transition: all 0.2s;
+          display: flex; flex-direction: column; align-items: center; gap: 8px; color: #94a3b8;
+        }
+        .av-3d-avatar-btn:hover { background: rgba(255,255,255,0.06); transform: translateY(-2px); }
+        .av-3d-avatar-btn.active {
+          border-color: #8b5cf6; background: rgba(139, 92, 246, 0.12);
+          color: #c4b5fd; box-shadow: 0 0 20px rgba(139, 92, 246, 0.2);
+        }
+        .av-3d-avatar-icon { font-size: 32px; }
+        .av-3d-avatar-name { font-size: 11px; font-weight: 800; letter-spacing: 0.5px; }
+
+        .av-3d-roupa-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(80px, 1fr)); gap: 10px; }
+        .av-3d-roupa-btn {
+          padding: 12px 8px; border-radius: 14px; border: 2px solid rgba(255,255,255,0.08);
+          background: rgba(255,255,255,0.03); cursor: pointer; transition: all 0.2s;
+          display: flex; flex-direction: column; align-items: center; gap: 6px; color: #94a3b8;
+        }
+        .av-3d-roupa-btn:hover { background: rgba(255,255,255,0.06); transform: translateY(-2px); }
+        .av-3d-roupa-btn.active {
+          border-color: #3b82f6; background: rgba(59, 130, 246, 0.12);
+          color: #93c5fd; box-shadow: 0 0 15px rgba(59, 130, 246, 0.2);
+        }
+        .av-3d-roupa-icon { font-size: 24px; }
+        .av-3d-roupa-name { font-size: 9px; font-weight: 800; letter-spacing: 0.5px; text-transform: uppercase; }
+
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
       `}</style>
 
@@ -264,71 +388,126 @@ export default function AvatarCreator() {
         {step === 1 ? (
            renderStep1()
         ) : (
-          <div className="av-main-layout">
-            {/* Lado Esquerdo: Preview */}
-            <div className="av-preview-card">
-              <div className={`av-preview-container ${animating ? 'jumping' : ''}`}>
-                <AvatarDisplay config={tempAvatar} size={280} />
-              </div>
-              <div className="av-id-badge">
-                AGENTE {selectedGender === 'M' ? 'M' : 'F'} #{selectedId}
-              </div>
-              
-              <div className="av-footer" style={{ width: '100%' }}>
-                <button className="av-btn av-btn-cancel" onClick={() => isOnboarding ? setStep(1) : nav('/perfil')}>
-                  {isOnboarding ? 'VOLTAR' : 'CANCELAR'}
-                </button>
-                <button className="av-btn av-btn-save" onClick={handleSave}>
-                  {isOnboarding ? 'INICIAR CARREIRA' : 'CONFIRMAR'}
-                </button>
-              </div>
+          <>
+            {/* 2D / 3D Toggle (Hidden for now as requested)
+            <div className="av-mode-toggle">
+              <button
+                className={`av-mode-btn ${avatarMode === '2D' ? 'active' : ''}`}
+                onClick={() => setAvatarMode('2D')}
+              >
+                🖼️ 2D
+              </button>
+              <button
+                className={`av-mode-btn ${avatarMode === '3D' ? 'active' : ''}`}
+                onClick={() => setAvatarMode('3D')}
+              >
+                🎮 3D
+              </button>
             </div>
+            */}
 
-            {/* Lado Direito: Seleção */}
-            <div className="av-selector-panel">
-              <div className="av-gender-tabs">
-                <button 
-                  className={`av-g-tab ${selectedGender === 'M' ? 'active' : ''}`}
-                  onClick={() => handleGenderChange('M')}
-                >
-                  ♂ MASCULINO
-                </button>
-                <button 
-                  className={`av-g-tab ${selectedGender === 'F' ? 'active' : ''}`}
-                  onClick={() => handleGenderChange('F')}
-                >
-                  ♀ FEMININO
-                </button>
-              </div>
+            {avatarMode === '2D' ? (
+              /* ── Modo 2D (existente) ── */
+              <div className="av-main-layout">
+                <div className="av-preview-card">
+                  <button className="av-nav-arrow left" onClick={() => handleSlide('prev')} aria-label="Anterior">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+                  </button>
 
-              <div className="av-phrase-box">
-                <label>FRASE DE EFEITO (MAX 70)</label>
-                <input 
-                  type="text" 
-                  maxLength={70}
-                  value={catchphrase}
-                  onChange={(e) => setCatchphrase(e.target.value)}
-                  placeholder="Ex: No rastro da verdade..."
-                />
-                <div className="av-char-count">{catchphrase.length}/70</div>
-              </div>
-
-              <div className="av-grid">
-                {(selectedGender === 'M' ? MALE_AVATAR_IDS : FEMALE_AVATAR_IDS).map(id => (
-                  <div 
-                    key={id}
-                    className={`av-item ${selectedId === id ? 'active' : ''}`}
-                    onClick={() => handleSelect(id)}
-                  >
-                    <img 
-                      src={`/Avatar/${selectedGender === 'M' ? 'Masculino' : 'Feminino'}/${id}.png`} 
-                      alt={`Opção ${id}`}
-                    />
+                  <div className={`av-preview-container ${animating ? 'jumping' : ''}`}>
+                    <AvatarDisplay config={tempAvatar} size={280} />
                   </div>
-                ))}
+
+                  <button className="av-nav-arrow right" onClick={() => handleSlide('next')} aria-label="Próximo">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+                  </button>
+
+                  <div className="av-id-badge">AGENTE {selectedGender === 'M' ? 'M' : 'F'} #{selectedId}</div>
+                  <div className="av-footer" style={{ width: '100%' }}>
+                    <button className="av-btn av-btn-cancel" onClick={() => isOnboarding ? setStep(1) : nav('/perfil')}>
+                      {isOnboarding ? 'VOLTAR' : 'CANCELAR'}
+                    </button>
+                    <button className="av-btn av-btn-save" onClick={handleSave}>
+                      {isOnboarding ? 'INICIAR CARREIRA' : 'CONFIRMAR'}
+                    </button>
+                  </div>
+                </div>
+
+                <div className="av-selector-panel">
+                  <div className="av-gender-tabs">
+                    <button className={`av-g-tab ${selectedGender === 'M' ? 'active' : ''}`} onClick={() => handleGenderChange('M')}>♂ MASCULINO</button>
+                    <button className={`av-g-tab ${selectedGender === 'F' ? 'active' : ''}`} onClick={() => handleGenderChange('F')}>♀ FEMININO</button>
+                  </div>
+
+                  <div className="av-phrase-box">
+                    <label>FRASE DE EFEITO (MAX 70)</label>
+                    <input type="text" maxLength={70} value={catchphrase} onChange={(e) => setCatchphrase(e.target.value)} placeholder="Ex: No rastro da verdade..." />
+                    <div className="av-char-count">{catchphrase.length}/70</div>
+                  </div>
+
+                  <div className="av-grid">
+                    {(selectedGender === 'M' ? MALE_AVATAR_IDS : FEMALE_AVATAR_IDS).map(id => (
+                      <div key={id} className={`av-item ${selectedId === id ? 'active' : ''}`} onClick={() => handleSelect(id)}>
+                        <img src={`/Avatar/${selectedGender === 'M' ? 'Masculino' : 'Feminino'}/${id}.png`} alt={`Opção ${id}`} />
+                      </div>
+                    ))}
+                  </div>
+                </div>
               </div>
-            </div>
-          </div>
+            ) : (
+              /* ── Modo 3D ── */
+              <div className="av-3d-layout">
+                {/* Viewer 3D */}
+                <Suspense fallback={<div style={{ height: 450, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#64748b' }}>Carregando 3D...</div>}>
+                  <AvatarViewer3D avatarId={selected3DAvatar} roupaId={selectedRoupa} height={450} />
+                </Suspense>
+
+                {/* Avatar Selector */}
+                <div className="av-3d-section">
+                  <div className="av-3d-label">SELECIONE O AGENTE</div>
+                  <div className="av-3d-avatar-grid">
+                    {AVATAR_3D_IDS.map(a => (
+                      <button
+                        key={a.id}
+                        className={`av-3d-avatar-btn ${selected3DAvatar === a.id ? 'active' : ''}`}
+                        onClick={() => setSelected3DAvatar(a.id)}
+                      >
+                        <div className="av-3d-avatar-icon">🧑‍✈️</div>
+                        <div className="av-3d-avatar-name">{a.label}</div>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Clothing Selector */}
+                <div className="av-3d-section">
+                  <div className="av-3d-label">SELECIONE O UNIFORME</div>
+                  <div className="av-3d-roupa-grid">
+                    {ROUPAS.map(r => (
+                      <button
+                        key={r.id || 'none'}
+                        className={`av-3d-roupa-btn ${selectedRoupa === r.id ? 'active' : ''}`}
+                        onClick={() => setSelectedRoupa(r.id)}
+                      >
+                        <div className="av-3d-roupa-icon">{r.icon}</div>
+                        <div className="av-3d-roupa-name">{r.label}</div>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Save/Cancel */}
+                <div className="av-footer" style={{ padding: '0 0 20px 0' }}>
+                  <button className="av-btn av-btn-cancel" onClick={() => isOnboarding ? setStep(1) : nav('/perfil')}>
+                    {isOnboarding ? 'VOLTAR' : 'CANCELAR'}
+                  </button>
+                  <button className="av-btn av-btn-save" onClick={handleSave}>
+                    {isOnboarding ? 'INICIAR CARREIRA' : 'CONFIRMAR'}
+                  </button>
+                </div>
+              </div>
+            )}
+          </>
         )}
       </div>
     </div>
