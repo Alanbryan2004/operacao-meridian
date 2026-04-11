@@ -1,5 +1,5 @@
 // src/pages/Mural.jsx
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { useGame } from "../game/GameProvider";
 import ModalMsg from "../components/ModalMsg";
@@ -93,6 +93,34 @@ export default function Mural() {
     if (!state) return null;
     const { player, cases } = state;
 
+    // Sorteia missões apenas no mount ou quando o pool de disponíveis mudar
+    const dailyMissions = useMemo(() => {
+        if (loadingMissions) return [];
+
+        const available = cases.filter(c => {
+            if (c.id === "C000") {
+                if (state.runs["C000"]?.status === "WON" || completedIds.includes("C000")) return false;
+            }
+            if (c.dificuldade === "LENDARIO") return false;
+            if (completedIds.includes(c.id)) return false;
+            if (state.runs[c.id]?.status === "WON") return false;
+            return true;
+        });
+
+        const selected = [];
+        const difficulties = ["FACIL", "MEDIO", "DIFICIL"];
+        
+        difficulties.forEach(diff => {
+            const pool = available.filter(c => c.dificuldade === diff);
+            if (pool.length > 0) {
+                const randomIndex = Math.floor(Math.random() * pool.length);
+                selected.push(pool[randomIndex]);
+            }
+        });
+
+        return selected;
+    }, [loadingMissions, cases, state.runs, completedIds]);
+
     return (
         <div style={{ minHeight: "100dvh", width: "100vw", background: "radial-gradient(circle at center, #071a26 0%, #000 70%)", color: "#fff" }}>
             <style>{`
@@ -140,27 +168,10 @@ export default function Mural() {
                 </div>
 
                 <div className="om-grid">
-                    {(() => {
-                        if (loadingMissions) return <div style={{ textAlign: "center", opacity: 0.5, padding: 20 }}>Sincronizando casos...</div>;
-
-                        const available = cases.filter(c => {
-                            if (c.id === "C000") {
-                                if (state.runs["C000"]?.status === "WON" || completedIds.includes("C000")) return false;
-                            }
-                            if (c.dificuldade === "LENDARIO") return false;
-                            if (completedIds.includes(c.id)) return false;
-                            if (state.runs[c.id]?.status === "WON") return false;
-                            return true;
-                        });
-
-                        const filtered = [];
-                        const difficulties = ["FACIL", "MEDIO", "DIFICIL"];
-                        difficulties.forEach(diff => {
-                            const found = available.find(c => c.dificuldade === diff);
-                            if (found) filtered.push(found);
-                        });
-
-                        return filtered.map(c => {
+                    {loadingMissions ? (
+                        <div style={{ textAlign: "center", opacity: 0.5, padding: 20 }}>Sincronizando casos...</div>
+                    ) : (
+                        dailyMissions.map(c => {
                             const run = state.runs[c.id];
                             const isOtherActive = Object.values(state.runs).some(r => r.caseId !== c.id && r.status === "IN_PROGRESS");
                             const isActive = run?.status === "IN_PROGRESS";
@@ -182,8 +193,8 @@ export default function Mural() {
                                     )}
                                 </div>
                             );
-                        });
-                    })()}
+                        })
+                    )}
                 </div>
             </div>
 
