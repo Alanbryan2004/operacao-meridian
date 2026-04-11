@@ -988,6 +988,66 @@ export const CIDADES = [
             { id: "049-09", texto: "A cidade parecia distante, exótica e estratégica no Pacífico." },
             { id: "049-10", texto: "Tudo apontava para Port Moresby." }
         ]
+    },
+    {
+        id: "050",
+        cidade: "Barcelona",
+        pais: "Espanha",
+        continente: "Europa",
+        imagem: "/Paises/Barcelona.png",
+        descricao: "Barcelona é uma vibrante cidade costeira da Espanha, famosa por sua arquitetura única, praias mediterrâneas e forte identidade cultural catalã.",
+        dicas: [
+            { id: "050-01", texto: "A pessoa mencionou uma bandeira com listras vermelhas e amarelas." },
+            { id: "050-02", texto: "Ouvi alguém falando sobre uma moeda chamada euro." },
+            { id: "050-03", texto: "A pista citava uma igreja gigantesca que ainda está em construção há décadas." },
+            { id: "050-04", texto: "A testemunha comentou que ouviu espanhol sendo falado, mas com um sotaque diferente." },
+            { id: "050-05", texto: "Disseram que o destino era conhecido por um famoso time de futebol." },
+            { id: "050-06", texto: "Falaram sobre uma avenida movimentada cheia de artistas de rua." },
+            { id: "050-07", texto: "Mencionaram um arquiteto muito famoso com obras bem diferentes." },
+            { id: "050-08", texto: "Ouvi referência a uma cidade com praias dentro da própria área urbana." },
+            { id: "050-09", texto: "A pessoa comentou sobre mosaicos coloridos e construções únicas." },
+            { id: "050-10", texto: "O destino parecia ser uma cidade europeia com forte identidade cultural própria." }
+        ]
+    },
+    {
+        id: "051",
+        cidade: "Roterdã",
+        pais: "Países Baixos",
+        continente: "Europa",
+        imagem: "/Paises/Rotterdam.png",
+        descricao: "Roterdã é uma importante cidade portuária dos Países Baixos, conhecida por sua arquitetura moderna, canais e um dos maiores portos do mundo.",
+        dicas: [
+            { id: "051-01", texto: "A pessoa mencionou uma bandeira com três faixas horizontais: vermelho, branco e azul." },
+            { id: "051-02", texto: "Ouvi alguém falando sobre uma moeda chamada euro." },
+            { id: "051-03", texto: "A pista citava um dos maiores portos marítimos do mundo." },
+            { id: "051-04", texto: "A testemunha comentou que ouviu um idioma europeu difícil de entender." },
+            { id: "051-05", texto: "Disseram que o destino era conhecido por sua arquitetura moderna." },
+            { id: "051-06", texto: "Falaram sobre muitos canais e pontes pela cidade." },
+            { id: "051-07", texto: "Mencionaram construções com formatos bem diferentes do comum." },
+            { id: "051-08", texto: "Ouvi referência a uma cidade que foi reconstruída após uma grande guerra." },
+            { id: "051-09", texto: "A pessoa comentou sobre transporte intenso de cargas e navios." },
+            { id: "051-10", texto: "O destino parecia ser uma cidade europeia altamente ligada ao comércio internacional." }
+        ]
+    },
+    {
+        id: "052",
+        cidade: "Genebra",
+        pais: "Suíça",
+        continente: "Europa",
+        imagem: "/Paises/Genebra.png",
+        descricao: "Genebra é uma cidade suíça conhecida por sua diplomacia internacional, bancos e organizações globais, situada às margens de um grande lago e cercada pelos Alpes.",
+        dicas: [
+            { id: "052-01", texto: "A pessoa mencionou uma bandeira vermelha com uma cruz branca no centro." },
+            { id: "052-02", texto: "Ouvi alguém falando sobre uma moeda diferente do euro, chamada franco." },
+            { id: "052-03", texto: "A pista citava uma cidade famosa por organizações internacionais." },
+            { id: "052-04", texto: "A testemunha comentou que ouviu francês sendo falado ao telefone." },
+            { id: "052-05", texto: "Disseram que o destino era conhecido por bancos e cofres altamente seguros." },
+            { id: "052-06", texto: "Falaram sobre um grande lago cercado por montanhas." },
+            { id: "052-07", texto: "Mencionaram relógios de altíssima precisão." },
+            { id: "052-08", texto: "Ouvi referência a uma cidade ligada a acordos e diplomacia mundial." },
+            { id: "052-09", texto: "A pessoa comentou sobre um jato de água muito alto em um lago." },
+            { id: "052-10", texto: "O destino parecia ser uma cidade europeia extremamente organizada e segura." }
+        ]
     }
 ];
 /**
