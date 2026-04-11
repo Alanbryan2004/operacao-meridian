@@ -117,7 +117,7 @@ export function startRunIfNeeded(state, caseObj, forceReset = false, forcedScena
         // E o lobby/cenário forem os mesmos. Se o lobby mudou, é uma nova partida!
         const existing = state.runs?.[caseObj.id];
         const isSameMatch = existing && existing.lobbyId === lobbyId && (forcedScenarioId ? existing.scenarioId === forcedScenarioId : true);
-        
+
         if (isSameMatch && (existing.status === "WON" || existing.status === "LOST")) {
             console.log("[ATLAS] Reset bloqueado: Partida já concluída.");
             return state;
@@ -135,7 +135,7 @@ export function startRunIfNeeded(state, caseObj, forceReset = false, forcedScena
         if (forcedScenarioId) {
             scenario = scenarios.find(s => s.id === forcedScenarioId);
         }
-        
+
         // Fallback para aleatório se não encontrou ou não foi forçado
         if (!scenario) {
             scenario = scenarios[Math.floor(Math.random() * scenarios.length)];
@@ -315,7 +315,39 @@ export const suspectsSeed = [
             "Pode se passar por colecionador(a) de arte",
             "Cartão de visita perfeito e verificável"
         ],
-        relacaoMeridian: "Executor(a) usado(a) quando é preciso apagar rastros."
+        relacaoMeridian: "Executor(a) usado(a) quando é preciso apagar rastros.",
+
+        dicas: {
+            sexo: [
+                { id: "001_SEXO_01", texto: "A testemunha disse que a pessoa não parecia se encaixar nas descrições tradicionais de homem ou mulher." },
+                { id: "001_SEXO_02", texto: "Quem passou por aqui tinha uma presença ambígua, difícil de classificar à primeira vista." }
+            ],
+            origem: [
+                { id: "001_ORIGEM_01", texto: "O jeito de falar lembrava alguém vindo da Europa." },
+                { id: "001_ORIGEM_02", texto: "A testemunha comentou que a pessoa parecia ser da Europa." }
+            ],
+            cabelo: [
+                { id: "001_CABELO_01", texto: "O cabelo chamava atenção pelo tom platinado." },
+                { id: "001_CABELO_02", texto: "A testemunha reparou em cabelos platinados." }
+            ],
+            olhos: [
+                { id: "001_OLHOS_01", texto: "Os olhos eram castanhos e bem marcantes." },
+                { id: "001_OLHOS_02", texto: "A única coisa que a testemunha lembra com certeza é que os olhos eram castanhos." }
+            ],
+            esporte: [
+                { id: "001_ESPORTE_01", texto: "A pessoa comentou com naturalidade que praticava xadrez." },
+                { id: "001_ESPORTE_02", texto: "Ouvi uma menção casual a xadrez, como se fosse parte da rotina." }
+            ],
+            comida: [
+                { id: "001_COMIDA_01", texto: "A testemunha ouviu a pessoa elogiar comida francesa." },
+                { id: "001_COMIDA_02", texto: "Ela parecia ter preferência por culinária francesa." }
+            ],
+            caracteristica: [
+                { id: "001_CARACTERISTICA_01", texto: "O que mais chamou atenção foi o jeito elegante." },
+                { id: "001_CARACTERISTICA_02", texto: "A pessoa parecia extremamente discreta." }
+            ]
+        }
+
     },
 
     {
@@ -350,7 +382,40 @@ export const suspectsSeed = [
             "Parecia saber minha rotina."
         ],
         falsosPositivos: ["Se apresenta como suporte técnico ou atendimento"],
-        relacaoMeridian: "Abre portas humanas: convencimento e manipulação."
+        relacaoMeridian: "Abre portas humanas: convencimento e manipulação.",
+
+        dicas: {
+            sexo: [
+                { id: "002_SEXO_01", texto: "A testemunha afirmou que era uma mulher." },
+                { id: "002_SEXO_02", texto: "A presença feminina era evidente pela voz e postura." }
+            ],
+            origem: [
+                { id: "002_ORIGEM_01", texto: "O jeito de falar lembrava alguém vindo da Ásia." },
+                { id: "002_ORIGEM_02", texto: "A testemunha comentou que o sotaque era asiático." }
+            ],
+            cabelo: [
+                { id: "002_CABELO_01", texto: "O cabelo era preto e bem alinhado." },
+                { id: "002_CABELO_02", texto: "A testemunha reparou em cabelos pretos." }
+            ],
+            olhos: [
+                { id: "002_OLHOS_01", texto: "Os olhos eram escuros e atentos." },
+                { id: "002_OLHOS_02", texto: "O olhar parecia observar tudo com precisão." }
+            ],
+            esporte: [
+                { id: "002_ESPORTE_01", texto: "Comentou sobre tênis como hábito frequente." },
+                { id: "002_ESPORTE_02", texto: "Parecia alguém com rotina esportiva ativa." }
+            ],
+            comida: [
+                { id: "002_COMIDA_01", texto: "Falou sobre culinária asiática com familiaridade." },
+                { id: "002_COMIDA_02", texto: "Parecia ter preferência por comida asiática." }
+            ],
+            caracteristica: [
+                { id: "002_CARACTERISTICA_01", texto: "O comportamento era extremamente discreto." },
+                { id: "002_CARACTERISTICA_02", texto: "A movimentação era leve e atlética." }
+            ]
+        }
+
+
     },
 
     {
@@ -387,7 +452,38 @@ export const suspectsSeed = [
             "Deixou uma moeda antiga no balcão."
         ],
         falsosPositivos: ["Pode se passar por despachante/armador"],
-        relacaoMeridian: "Faz item sumir do mapa físico."
+        relacaoMeridian: "Faz item sumir do mapa físico.",
+
+        dicas: {
+            sexo: [
+                { id: "003_SEXO_01", texto: "A testemunha disse que era um homem." },
+                { id: "003_SEXO_02", texto: "A presença masculina era evidente." }
+            ],
+            origem: [
+                { id: "003_ORIGEM_01", texto: "O jeito de falar lembrava alguém vindo da Europa." },
+                { id: "003_ORIGEM_02", texto: "A testemunha comentou que parecia europeu." }
+            ],
+            cabelo: [
+                { id: "003_CABELO_01", texto: "O cabelo era castanho." },
+                { id: "003_CABELO_02", texto: "A testemunha reparou em cabelos castanhos." }
+            ],
+            olhos: [
+                { id: "003_OLHOS_01", texto: "Os olhos eram castanhos e atentos." },
+                { id: "003_OLHOS_02", texto: "O olhar parecia experiente." }
+            ],
+            esporte: [
+                { id: "003_ESPORTE_01", texto: "Comentou sobre remo." },
+                { id: "003_ESPORTE_02", texto: "Parecia acostumado com atividades marítimas." }
+            ],
+            comida: [
+                { id: "003_COMIDA_01", texto: "Falou de comida italiana." },
+                { id: "003_COMIDA_02", texto: "Parecia gostar de culinária italiana." }
+            ],
+            caracteristica: [
+                { id: "003_CARACTERISTICA_01", texto: "O corpo era robusto." },
+                { id: "003_CARACTERISTICA_02", texto: "O comportamento era casual e seguro." }
+            ]
+        }
     },
 
     {
@@ -422,7 +518,38 @@ export const suspectsSeed = [
             "Os fios dourados estavam presos na maçaneta."
         ],
         falsosPositivos: ["Representante de boutique / colecionadora de joias"],
-        relacaoMeridian: "Roubos onde nada parece ter sido tocado."
+        relacaoMeridian: "Roubos onde nada parece ter sido tocado.",
+
+        dicas: {
+            sexo: [
+                { id: "004_SEXO_01", texto: "A testemunha disse que era uma mulher." },
+                { id: "004_SEXO_02", texto: "A presença feminina era marcante." }
+            ],
+            origem: [
+                { id: "004_ORIGEM_01", texto: "O jeito de falar lembrava alguém vindo da Ásia." },
+                { id: "004_ORIGEM_02", texto: "A testemunha comentou que parecia asiática." }
+            ],
+            cabelo: [
+                { id: "004_CABELO_01", texto: "O cabelo era castanho." },
+                { id: "004_CABELO_02", texto: "A testemunha reparou em cabelos castanhos." }
+            ],
+            olhos: [
+                { id: "004_OLHOS_01", texto: "Os olhos eram escuros." },
+                { id: "004_OLHOS_02", texto: "O olhar era discreto e atento." }
+            ],
+            esporte: [
+                { id: "004_ESPORTE_01", texto: "Comentou sobre yoga." },
+                { id: "004_ESPORTE_02", texto: "Parecia ter movimentos controlados e leves." }
+            ],
+            comida: [
+                { id: "004_COMIDA_01", texto: "Falou de comida apimentada." },
+                { id: "004_COMIDA_02", texto: "Parecia gostar de pratos fortes e especiados." }
+            ],
+            caracteristica: [
+                { id: "004_CARACTERISTICA_01", texto: "O comportamento era elegante." },
+                { id: "004_CARACTERISTICA_02", texto: "A movimentação era discreta." }
+            ]
+        }
     },
 
     {
@@ -456,7 +583,38 @@ export const suspectsSeed = [
             "Tinha uma peça de xadrez no chão."
         ],
         falsosPositivos: ["Diplomata / empresário"],
-        relacaoMeridian: "Resolve quando a missão exige controle, não correria."
+        relacaoMeridian: "Resolve quando a missão exige controle, não correria.",
+
+        dicas: {
+            sexo: [
+                { id: "005_SEXO_01", texto: "A testemunha disse que era um homem." },
+                { id: "005_SEXO_02", texto: "A presença masculina era dominante." }
+            ],
+            origem: [
+                { id: "005_ORIGEM_01", texto: "O jeito de falar lembrava alguém vindo da Europa." },
+                { id: "005_ORIGEM_02", texto: "A testemunha comentou que parecia europeu." }
+            ],
+            cabelo: [
+                { id: "005_CABELO_01", texto: "O cabelo era loiro." },
+                { id: "005_CABELO_02", texto: "A testemunha reparou em cabelos claros." }
+            ],
+            olhos: [
+                { id: "005_OLHOS_01", texto: "Os olhos eram azuis e frios." },
+                { id: "005_OLHOS_02", texto: "O olhar parecia calculista." }
+            ],
+            esporte: [
+                { id: "005_ESPORTE_01", texto: "Comentou sobre xadrez." },
+                { id: "005_ESPORTE_02", texto: "Falava como alguém acostumado a estratégia." }
+            ],
+            comida: [
+                { id: "005_COMIDA_01", texto: "Falou de comida francesa." },
+                { id: "005_COMIDA_02", texto: "Parecia apreciar culinária refinada." }
+            ],
+            caracteristica: [
+                { id: "005_CARACTERISTICA_01", texto: "O comportamento era elegante." },
+                { id: "005_CARACTERISTICA_02", texto: "A postura era dominante e segura." }
+            ]
+        }
     },
 
     {
@@ -490,7 +648,38 @@ export const suspectsSeed = [
             "Havia linha clara presa no bolso de um jaleco."
         ],
         falsosPositivos: ["Funcionária terceirizada / estagiária"],
-        relacaoMeridian: "Ideal para lugares controlados (museu, evento, laboratório)."
+        relacaoMeridian: "Ideal para lugares controlados (museu, evento, laboratório).",
+
+        dicas: {
+            sexo: [
+                { id: "006_SEXO_01", texto: "A testemunha disse que era uma mulher." },
+                { id: "006_SEXO_02", texto: "A presença feminina era discreta, mas perceptível." }
+            ],
+            origem: [
+                { id: "006_ORIGEM_01", texto: "O jeito de falar lembrava alguém vindo da Ásia." },
+                { id: "006_ORIGEM_02", texto: "A testemunha comentou que parecia asiática." }
+            ],
+            cabelo: [
+                { id: "006_CABELO_01", texto: "O cabelo era preto e bem alinhado." },
+                { id: "006_CABELO_02", texto: "A testemunha reparou em cabelos pretos." }
+            ],
+            olhos: [
+                { id: "006_OLHOS_01", texto: "Os olhos eram escuros e atentos." },
+                { id: "006_OLHOS_02", texto: "O olhar parecia observar tudo rapidamente." }
+            ],
+            esporte: [
+                { id: "006_ESPORTE_01", texto: "Comentou sobre ginástica olímpica." },
+                { id: "006_ESPORTE_02", texto: "Parecia extremamente ágil fisicamente." }
+            ],
+            comida: [
+                { id: "006_COMIDA_01", texto: "Falou de comida asiática." },
+                { id: "006_COMIDA_02", texto: "Parecia gostar de pratos asiáticos." }
+            ],
+            caracteristica: [
+                { id: "006_CARACTERISTICA_01", texto: "A movimentação era atlética." },
+                { id: "006_CARACTERISTICA_02", texto: "O comportamento era discreto." }
+            ]
+        }
     },
 
     {
@@ -521,7 +710,38 @@ export const suspectsSeed = [
             "Falava como curadora, mas evitava nomes."
         ],
         falsosPositivos: ["Curadora / crítica / leiloeira"],
-        relacaoMeridian: "Ponte entre roubo e lavagem cultural."
+        relacaoMeridian: "Ponte entre roubo e lavagem cultural.",
+
+        dicas: {
+            sexo: [
+                { id: "007_SEXO_01", texto: "A testemunha disse que era uma mulher." },
+                { id: "007_SEXO_02", texto: "A presença feminina era elegante e marcante." }
+            ],
+            origem: [
+                { id: "007_ORIGEM_01", texto: "O jeito de falar lembrava alguém vindo da Europa." },
+                { id: "007_ORIGEM_02", texto: "A testemunha comentou que parecia europeia." }
+            ],
+            cabelo: [
+                { id: "007_CABELO_01", texto: "O cabelo chamava atenção pelo tom platinado." },
+                { id: "007_CABELO_02", texto: "A testemunha reparou em cabelos claros e bem cuidados." }
+            ],
+            olhos: [
+                { id: "007_OLHOS_01", texto: "Os olhos eram verdes e expressivos." },
+                { id: "007_OLHOS_02", texto: "O olhar era intenso e observador." }
+            ],
+            esporte: [
+                { id: "007_ESPORTE_01", texto: "Comentou sobre esgrima." },
+                { id: "007_ESPORTE_02", texto: "Parecia ter movimentos precisos e controlados." }
+            ],
+            comida: [
+                { id: "007_COMIDA_01", texto: "Falou de comida francesa." },
+                { id: "007_COMIDA_02", texto: "Parecia ter gosto refinado na alimentação." }
+            ],
+            caracteristica: [
+                { id: "007_CARACTERISTICA_01", texto: "O comportamento era elegante." },
+                { id: "007_CARACTERISTICA_02", texto: "A presença era extremamente discreta." }
+            ]
+        }
     },
 
     {
@@ -553,7 +773,38 @@ export const suspectsSeed = [
             "Usava luvas mesmo no calor."
         ],
         falsosPositivos: ["Guia cultural / professor / colecionador"],
-        relacaoMeridian: "Aparece quando o item tem valor histórico proibido."
+        relacaoMeridian: "Aparece quando o item tem valor histórico proibido.",
+
+        dicas: {
+            sexo: [
+                { id: "008_SEXO_01", texto: "A testemunha disse que era um homem." },
+                { id: "008_SEXO_02", texto: "A presença masculina era forte e segura." }
+            ],
+            origem: [
+                { id: "008_ORIGEM_01", texto: "O jeito de falar lembrava alguém vindo do Oriente Médio." },
+                { id: "008_ORIGEM_02", texto: "A testemunha comentou que parecia do Oriente Médio." }
+            ],
+            cabelo: [
+                { id: "008_CABELO_01", texto: "O cabelo era preto." },
+                { id: "008_CABELO_02", texto: "A testemunha reparou em cabelos escuros." }
+            ],
+            olhos: [
+                { id: "008_OLHOS_01", texto: "Os olhos eram castanhos." },
+                { id: "008_OLHOS_02", texto: "O olhar era firme e atento." }
+            ],
+            esporte: [
+                { id: "008_ESPORTE_01", texto: "Comentou sobre polo." },
+                { id: "008_ESPORTE_02", texto: "Parecia acostumado com esportes tradicionais." }
+            ],
+            comida: [
+                { id: "008_COMIDA_01", texto: "Falou de comida árabe." },
+                { id: "008_COMIDA_02", texto: "Parecia ter preferência por culinária árabe." }
+            ],
+            caracteristica: [
+                { id: "008_CARACTERISTICA_01", texto: "O corpo era robusto." },
+                { id: "008_CARACTERISTICA_02", texto: "A postura era elegante." }
+            ]
+        }
     },
 
     {
@@ -584,7 +835,38 @@ export const suspectsSeed = [
             "Tinha um parafuso pequeno perto da porta."
         ],
         falsosPositivos: ["Técnica de TI / instaladora / fotógrafa de evento"],
-        relacaoMeridian: "Abre caminho em locais com sensores."
+        relacaoMeridian: "Abre caminho em locais com sensores.",
+
+        dicas: {
+            sexo: [
+                { id: "009_SEXO_01", texto: "A testemunha disse que era uma mulher." },
+                { id: "009_SEXO_02", texto: "A presença feminina era energética e marcante." }
+            ],
+            origem: [
+                { id: "009_ORIGEM_01", texto: "O jeito de falar lembrava alguém vindo da América Latina." },
+                { id: "009_ORIGEM_02", texto: "A testemunha comentou que parecia latina." }
+            ],
+            cabelo: [
+                { id: "009_CABELO_01", texto: "O cabelo chamava atenção pelo tom ruivo." },
+                { id: "009_CABELO_02", texto: "A testemunha reparou em cabelos avermelhados." }
+            ],
+            olhos: [
+                { id: "009_OLHOS_01", texto: "Os olhos eram verdes." },
+                { id: "009_OLHOS_02", texto: "O olhar era rápido e atento." }
+            ],
+            esporte: [
+                { id: "009_ESPORTE_01", texto: "Comentou sobre skate." },
+                { id: "009_ESPORTE_02", texto: "Parecia acostumada com movimentos rápidos." }
+            ],
+            comida: [
+                { id: "009_COMIDA_01", texto: "Falou de comida apimentada." },
+                { id: "009_COMIDA_02", texto: "Parecia gostar de pratos fortes." }
+            ],
+            caracteristica: [
+                { id: "009_CARACTERISTICA_01", texto: "O comportamento era casual." },
+                { id: "009_CARACTERISTICA_02", texto: "A movimentação era atlética." }
+            ]
+        }
     },
 
     {
@@ -615,7 +897,38 @@ export const suspectsSeed = [
             "Tinha um caderno com anotações perfeitas."
         ],
         falsosPositivos: ["Pesquisador(a) / consultor(a) / auditor(a)"],
-        relacaoMeridian: "Crimes elite com foco em ciência e tecnologia."
+        relacaoMeridian: "Crimes elite com foco em ciência e tecnologia.",
+
+        dicas: {
+            sexo: [
+                { id: "010_SEXO_01", texto: "A testemunha disse que era um homem." },
+                { id: "010_SEXO_02", texto: "A presença masculina era evidente." }
+            ],
+            origem: [
+                { id: "010_ORIGEM_01", texto: "O jeito de falar lembrava alguém vindo da Europa." },
+                { id: "010_ORIGEM_02", texto: "A testemunha comentou que parecia europeu." }
+            ],
+            cabelo: [
+                { id: "010_CABELO_01", texto: "O cabelo era platinado." },
+                { id: "010_CABELO_02", texto: "A testemunha reparou em cabelos claros." }
+            ],
+            olhos: [
+                { id: "010_OLHOS_01", texto: "Os olhos eram azuis." },
+                { id: "010_OLHOS_02", texto: "O olhar era frio e analítico." }
+            ],
+            esporte: [
+                { id: "010_ESPORTE_01", texto: "Comentou sobre golfe." },
+                { id: "010_ESPORTE_02", texto: "Parecia alguém de hábitos refinados." }
+            ],
+            comida: [
+                { id: "010_COMIDA_01", texto: "Falou de grelhados." },
+                { id: "010_COMIDA_02", texto: "Parecia ter gosto simples, mas preciso." }
+            ],
+            caracteristica: [
+                { id: "010_CARACTERISTICA_01", texto: "O comportamento era extremamente elegante." },
+                { id: "010_CARACTERISTICA_02", texto: "A postura era discreta e controlada." }
+            ]
+        }
     },
 
     {
@@ -646,7 +959,38 @@ export const suspectsSeed = [
             "Vestia preto dos pés à cabeça."
         ],
         falsosPositivos: ["Consultor financeiro tech"],
-        relacaoMeridian: "Move dinheiro sem deixar rastro."
+        relacaoMeridian: "Move dinheiro sem deixar rastro.",
+
+        dicas: {
+            sexo: [
+                { id: "011_SEXO_01", texto: "A testemunha disse que era um homem." },
+                { id: "011_SEXO_02", texto: "Quem passou por aqui tinha presença claramente masculina." }
+            ],
+            origem: [
+                { id: "011_ORIGEM_01", texto: "O jeito de falar lembrava alguém vindo da Europa." },
+                { id: "011_ORIGEM_02", texto: "A testemunha comentou que a pessoa parecia ser da Europa." }
+            ],
+            cabelo: [
+                { id: "011_CABELO_01", texto: "O cabelo chamava atenção pelo tom preto." },
+                { id: "011_CABELO_02", texto: "A testemunha reparou em cabelos pretos." }
+            ],
+            olhos: [
+                { id: "011_OLHOS_01", texto: "Os olhos eram verdes e bem marcantes." },
+                { id: "011_OLHOS_02", texto: "A única coisa que a testemunha lembra com certeza é que os olhos eram verdes." }
+            ],
+            esporte: [
+                { id: "011_ESPORTE_01", texto: "A pessoa comentou com naturalidade que praticava tênis." },
+                { id: "011_ESPORTE_02", texto: "Ouvi uma menção casual a tênis, como se fosse parte da rotina." }
+            ],
+            comida: [
+                { id: "011_COMIDA_01", texto: "A testemunha ouviu a pessoa elogiar comida asiática." },
+                { id: "011_COMIDA_02", texto: "Ela parecia ter preferência por culinária asiática." }
+            ],
+            caracteristica: [
+                { id: "011_CARACTERISTICA_01", texto: "O que mais chamou atenção foi o jeito discreto." },
+                { id: "011_CARACTERISTICA_02", texto: "A pessoa parecia extremamente casual." }
+            ]
+        }
     },
 
     {
@@ -676,7 +1020,38 @@ export const suspectsSeed = [
             "Nunca alterou o tom de voz."
         ],
         falsosPositivos: ["Diplomata"],
-        relacaoMeridian: "Negocia quando a missão exige calma."
+        relacaoMeridian: "Negocia quando a missão exige calma.",
+
+        dicas: {
+            sexo: [
+                { id: "012_SEXO_01", texto: "A testemunha disse que era uma mulher." },
+                { id: "012_SEXO_02", texto: "Quem passou por aqui tinha presença claramente feminina." }
+            ],
+            origem: [
+                { id: "012_ORIGEM_01", texto: "O jeito de falar lembrava alguém vindo da Europa." },
+                { id: "012_ORIGEM_02", texto: "A testemunha comentou que a pessoa parecia ser da Europa." }
+            ],
+            cabelo: [
+                { id: "012_CABELO_01", texto: "O cabelo chamava atenção pelo tom platinado." },
+                { id: "012_CABELO_02", texto: "A testemunha reparou em cabelos platinados." }
+            ],
+            olhos: [
+                { id: "012_OLHOS_01", texto: "Os olhos eram azuis e bem marcantes." },
+                { id: "012_OLHOS_02", texto: "A única coisa que a testemunha lembra com certeza é que os olhos eram azuis." }
+            ],
+            esporte: [
+                { id: "012_ESPORTE_01", texto: "A pessoa comentou com naturalidade que praticava xadrez." },
+                { id: "012_ESPORTE_02", texto: "Ouvi uma menção casual a xadrez, como se fosse parte da rotina." }
+            ],
+            comida: [
+                { id: "012_COMIDA_01", texto: "A testemunha ouviu a pessoa elogiar comida francesa." },
+                { id: "012_COMIDA_02", texto: "Ela parecia ter preferência por culinária francesa." }
+            ],
+            caracteristica: [
+                { id: "012_CARACTERISTICA_01", texto: "O que mais chamou atenção foi o jeito elegante." },
+                { id: "012_CARACTERISTICA_02", texto: "A pessoa parecia extremamente discreta." }
+            ]
+        }
     },
 
     {
@@ -706,7 +1081,38 @@ export const suspectsSeed = [
             "Deixou uma moeda antiga no balcão."
         ],
         falsosPositivos: ["Transportador"],
-        relacaoMeridian: "Resolve o que precisa cruzar fronteira."
+        relacaoMeridian: "Resolve o que precisa cruzar fronteira.",
+
+        dicas: {
+            sexo: [
+                { id: "013_SEXO_01", texto: "A testemunha disse que era um homem." },
+                { id: "013_SEXO_02", texto: "Quem passou por aqui tinha presença claramente masculina." }
+            ],
+            origem: [
+                { id: "013_ORIGEM_01", texto: "O jeito de falar lembrava alguém vindo da América Latina." },
+                { id: "013_ORIGEM_02", texto: "A testemunha comentou que a pessoa parecia ser da América Latina." }
+            ],
+            cabelo: [
+                { id: "013_CABELO_01", texto: "O cabelo chamava atenção pelo tom castanho." },
+                { id: "013_CABELO_02", texto: "A testemunha reparou em cabelos castanhos." }
+            ],
+            olhos: [
+                { id: "013_OLHOS_01", texto: "Os olhos eram castanhos e bem marcantes." },
+                { id: "013_OLHOS_02", texto: "A única coisa que a testemunha lembra com certeza é que os olhos eram castanhos." }
+            ],
+            esporte: [
+                { id: "013_ESPORTE_01", texto: "A pessoa comentou com naturalidade que praticava surfe." },
+                { id: "013_ESPORTE_02", texto: "Ouvi uma menção casual a surfe, como se fosse parte da rotina." }
+            ],
+            comida: [
+                { id: "013_COMIDA_01", texto: "A testemunha ouviu a pessoa elogiar comida apimentada." },
+                { id: "013_COMIDA_02", texto: "Ela parecia ter preferência por pratos fortes e apimentados." }
+            ],
+            caracteristica: [
+                { id: "013_CARACTERISTICA_01", texto: "O que mais chamou atenção foi o jeito robusto." },
+                { id: "013_CARACTERISTICA_02", texto: "A pessoa parecia extremamente casual." }
+            ]
+        }
     },
 
     {
@@ -736,7 +1142,38 @@ export const suspectsSeed = [
             "Saiu de skate."
         ],
         falsosPositivos: ["Técnica de TI"],
-        relacaoMeridian: "Especialista em acesso rápido."
+        relacaoMeridian: "Especialista em acesso rápido.",
+
+        dicas: {
+            sexo: [
+                { id: "014_SEXO_01", texto: "A testemunha disse que era uma mulher." },
+                { id: "014_SEXO_02", texto: "Quem passou por aqui tinha presença claramente feminina." }
+            ],
+            origem: [
+                { id: "014_ORIGEM_01", texto: "O jeito de falar lembrava alguém vindo da América Latina." },
+                { id: "014_ORIGEM_02", texto: "A testemunha comentou que a pessoa parecia ser da América Latina." }
+            ],
+            cabelo: [
+                { id: "014_CABELO_01", texto: "O cabelo chamava atenção pelo tom ruivo." },
+                { id: "014_CABELO_02", texto: "A testemunha reparou em cabelos avermelhados." }
+            ],
+            olhos: [
+                { id: "014_OLHOS_01", texto: "Os olhos eram castanhos e bem marcantes." },
+                { id: "014_OLHOS_02", texto: "A única coisa que a testemunha lembra com certeza é que os olhos eram castanhos." }
+            ],
+            esporte: [
+                { id: "014_ESPORTE_01", texto: "A pessoa comentou com naturalidade que praticava skate." },
+                { id: "014_ESPORTE_02", texto: "Ouvi uma menção casual a skate, como se fosse parte da rotina." }
+            ],
+            comida: [
+                { id: "014_COMIDA_01", texto: "A testemunha ouviu a pessoa elogiar comida apimentada." },
+                { id: "014_COMIDA_02", texto: "Ela parecia ter preferência por pratos fortes e apimentados." }
+            ],
+            caracteristica: [
+                { id: "014_CARACTERISTICA_01", texto: "O que mais chamou atenção foi o jeito casual." },
+                { id: "014_CARACTERISTICA_02", texto: "A pessoa parecia extremamente atlética." }
+            ]
+        }
     },
 
     {
@@ -767,7 +1204,38 @@ export const suspectsSeed = [
             "Tinha um caderno perfeito."
         ],
         falsosPositivos: ["Consultor médico"],
-        relacaoMeridian: "Atua quando ciência vira alvo."
+        relacaoMeridian: "Atua quando ciência vira alvo.",
+
+        dicas: {
+            sexo: [
+                { id: "015_SEXO_01", texto: "A testemunha disse que era um homem." },
+                { id: "015_SEXO_02", texto: "Quem passou por aqui tinha presença claramente masculina." }
+            ],
+            origem: [
+                { id: "015_ORIGEM_01", texto: "O jeito de falar lembrava alguém vindo da Europa." },
+                { id: "015_ORIGEM_02", texto: "A testemunha comentou que a pessoa parecia ser da Europa." }
+            ],
+            cabelo: [
+                { id: "015_CABELO_01", texto: "O cabelo chamava atenção pelo tom platinado." },
+                { id: "015_CABELO_02", texto: "A testemunha reparou em cabelos platinados." }
+            ],
+            olhos: [
+                { id: "015_OLHOS_01", texto: "Os olhos eram azuis e bem marcantes." },
+                { id: "015_OLHOS_02", texto: "A única coisa que a testemunha lembra com certeza é que os olhos eram azuis." }
+            ],
+            esporte: [
+                { id: "015_ESPORTE_01", texto: "A pessoa comentou com naturalidade que praticava xadrez." },
+                { id: "015_ESPORTE_02", texto: "Ouvi uma menção casual a xadrez, como se fosse parte da rotina." }
+            ],
+            comida: [
+                { id: "015_COMIDA_01", texto: "A testemunha ouviu a pessoa elogiar grelhados." },
+                { id: "015_COMIDA_02", texto: "Ela parecia ter preferência por carnes e pratos grelhados." }
+            ],
+            caracteristica: [
+                { id: "015_CARACTERISTICA_01", texto: "O que mais chamou atenção foi o jeito elegante." },
+                { id: "015_CARACTERISTICA_02", texto: "A pessoa parecia extremamente discreta." }
+            ]
+        }
     },
 
     {
@@ -797,7 +1265,38 @@ export const suspectsSeed = [
             "Perfume quente e suave."
         ],
         falsosPositivos: ["Importadora têxtil"],
-        relacaoMeridian: "Confunde com Saffron Wisp."
+        relacaoMeridian: "Confunde com Saffron Wisp.",
+
+        dicas: {
+            sexo: [
+                { id: "016_SEXO_01", texto: "A testemunha disse que era uma mulher." },
+                { id: "016_SEXO_02", texto: "Quem passou por aqui tinha presença claramente feminina." }
+            ],
+            origem: [
+                { id: "016_ORIGEM_01", texto: "O jeito de falar lembrava alguém vindo da Ásia." },
+                { id: "016_ORIGEM_02", texto: "A testemunha comentou que a pessoa parecia ser da Ásia." }
+            ],
+            cabelo: [
+                { id: "016_CABELO_01", texto: "O cabelo chamava atenção pelo tom preto." },
+                { id: "016_CABELO_02", texto: "A testemunha reparou em cabelos pretos." }
+            ],
+            olhos: [
+                { id: "016_OLHOS_01", texto: "Os olhos eram escuros e bem marcantes." },
+                { id: "016_OLHOS_02", texto: "A única coisa que a testemunha lembra com certeza é que os olhos eram muito escuros." }
+            ],
+            esporte: [
+                { id: "016_ESPORTE_01", texto: "A pessoa comentou com naturalidade que praticava yoga." },
+                { id: "016_ESPORTE_02", texto: "Ouvi uma menção casual a yoga, como se fosse parte da rotina." }
+            ],
+            comida: [
+                { id: "016_COMIDA_01", texto: "A testemunha ouviu a pessoa elogiar comida apimentada." },
+                { id: "016_COMIDA_02", texto: "Ela parecia ter preferência por pratos fortes e apimentados." }
+            ],
+            caracteristica: [
+                { id: "016_CARACTERISTICA_01", texto: "O que mais chamou atenção foi o jeito elegante." },
+                { id: "016_CARACTERISTICA_02", texto: "A pessoa parecia extremamente discreta." }
+            ]
+        }
     },
 
     {
@@ -826,7 +1325,38 @@ export const suspectsSeed = [
             "Usava luvas leves."
         ],
         falsosPositivos: ["Professor de história"],
-        relacaoMeridian: "Alternativa ao Sand Helix."
+        relacaoMeridian: "Alternativa ao Sand Helix.",
+
+        dicas: {
+            sexo: [
+                { id: "017_SEXO_01", texto: "A testemunha disse que era um homem." },
+                { id: "017_SEXO_02", texto: "Quem passou por aqui tinha presença claramente masculina." }
+            ],
+            origem: [
+                { id: "017_ORIGEM_01", texto: "O jeito de falar lembrava alguém vindo da América Latina." },
+                { id: "017_ORIGEM_02", texto: "A testemunha comentou que a pessoa parecia ser da América Latina." }
+            ],
+            cabelo: [
+                { id: "017_CABELO_01", texto: "O cabelo chamava atenção pelo tom preto." },
+                { id: "017_CABELO_02", texto: "A testemunha reparou em cabelos pretos." }
+            ],
+            olhos: [
+                { id: "017_OLHOS_01", texto: "Os olhos eram castanhos e bem marcantes." },
+                { id: "017_OLHOS_02", texto: "A única coisa que a testemunha lembra com certeza é que os olhos eram castanhos." }
+            ],
+            esporte: [
+                { id: "017_ESPORTE_01", texto: "A pessoa comentou com naturalidade que praticava tênis." },
+                { id: "017_ESPORTE_02", texto: "Ouvi uma menção casual a tênis, como se fosse parte da rotina." }
+            ],
+            comida: [
+                { id: "017_COMIDA_01", texto: "A testemunha ouviu a pessoa elogiar comida árabe." },
+                { id: "017_COMIDA_02", texto: "Ela parecia ter preferência por culinária árabe." }
+            ],
+            caracteristica: [
+                { id: "017_CARACTERISTICA_01", texto: "O que mais chamou atenção foi o jeito robusto." },
+                { id: "017_CARACTERISTICA_02", texto: "A pessoa parecia extremamente elegante." }
+            ]
+        }
     },
 
     {
@@ -856,7 +1386,38 @@ export const suspectsSeed = [
             "Nunca tocou no copo."
         ],
         falsosPositivos: ["Auditora"],
-        relacaoMeridian: "Espelho de Vanta Quill."
+        relacaoMeridian: "Espelho de Vanta Quill.",
+
+        dicas: {
+            sexo: [
+                { id: "018_SEXO_01", texto: "A testemunha disse que era uma mulher." },
+                { id: "018_SEXO_02", texto: "Quem passou por aqui tinha presença claramente feminina." }
+            ],
+            origem: [
+                { id: "018_ORIGEM_01", texto: "O jeito de falar lembrava alguém vindo da Europa." },
+                { id: "018_ORIGEM_02", texto: "A testemunha comentou que a pessoa parecia ser da Europa." }
+            ],
+            cabelo: [
+                { id: "018_CABELO_01", texto: "O cabelo chamava atenção pelo tom platinado." },
+                { id: "018_CABELO_02", texto: "A testemunha reparou em cabelos platinados." }
+            ],
+            olhos: [
+                { id: "018_OLHOS_01", texto: "Os olhos eram verdes e bem marcantes." },
+                { id: "018_OLHOS_02", texto: "A única coisa que a testemunha lembra com certeza é que os olhos eram verdes." }
+            ],
+            esporte: [
+                { id: "018_ESPORTE_01", texto: "A pessoa comentou com naturalidade que praticava xadrez." },
+                { id: "018_ESPORTE_02", texto: "Ouvi uma menção casual a xadrez, como se fosse parte da rotina." }
+            ],
+            comida: [
+                { id: "018_COMIDA_01", texto: "A testemunha ouviu a pessoa elogiar comida francesa." },
+                { id: "018_COMIDA_02", texto: "Ela parecia ter preferência por culinária francesa." }
+            ],
+            caracteristica: [
+                { id: "018_CARACTERISTICA_01", texto: "O que mais chamou atenção foi o jeito elegante." },
+                { id: "018_CARACTERISTICA_02", texto: "A pessoa parecia extremamente discreta." }
+            ]
+        }
     },
 
     {
@@ -886,7 +1447,38 @@ export const suspectsSeed = [
             "Falava como curadora."
         ],
         falsosPositivos: ["Galerista"],
-        relacaoMeridian: "Possível elo com Nacre Fox."
+        relacaoMeridian: "Possível elo com Nacre Fox.",
+
+        dicas: {
+            sexo: [
+                { id: "019_SEXO_01", texto: "A testemunha disse que era uma mulher." },
+                { id: "019_SEXO_02", texto: "Quem passou por aqui tinha presença claramente feminina." }
+            ],
+            origem: [
+                { id: "019_ORIGEM_01", texto: "O jeito de falar lembrava alguém vindo da Europa." },
+                { id: "019_ORIGEM_02", texto: "A testemunha comentou que a pessoa parecia ser da Europa." }
+            ],
+            cabelo: [
+                { id: "019_CABELO_01", texto: "O cabelo chamava atenção pelo tom castanho." },
+                { id: "019_CABELO_02", texto: "A testemunha reparou em cabelos castanhos." }
+            ],
+            olhos: [
+                { id: "019_OLHOS_01", texto: "Os olhos eram azuis e bem marcantes." },
+                { id: "019_OLHOS_02", texto: "A única coisa que a testemunha lembra com certeza é que os olhos eram azuis." }
+            ],
+            esporte: [
+                { id: "019_ESPORTE_01", texto: "A pessoa comentou com naturalidade que praticava esgrima." },
+                { id: "019_ESPORTE_02", texto: "Ouvi uma menção casual a esgrima, como se fosse parte da rotina." }
+            ],
+            comida: [
+                { id: "019_COMIDA_01", texto: "A testemunha ouviu a pessoa elogiar comida francesa." },
+                { id: "019_COMIDA_02", texto: "Ela parecia ter preferência por culinária francesa." }
+            ],
+            caracteristica: [
+                { id: "019_CARACTERISTICA_01", texto: "O que mais chamou atenção foi o jeito elegante." },
+                { id: "019_CARACTERISTICA_02", texto: "A pessoa parecia extremamente discreta." }
+            ]
+        }
     },
 
     {
@@ -916,7 +1508,38 @@ export const suspectsSeed = [
             "Linha presa no uniforme."
         ],
         falsosPositivos: ["Estagiário"],
-        relacaoMeridian: "Lembra muito Kite Needle."
+        relacaoMeridian: "Lembra muito Kite Needle.",
+
+        dicas: {
+            sexo: [
+                { id: "020_SEXO_01", texto: "A testemunha disse que era um homem." },
+                { id: "020_SEXO_02", texto: "Quem passou por aqui tinha presença claramente masculina." }
+            ],
+            origem: [
+                { id: "020_ORIGEM_01", texto: "O jeito de falar lembrava alguém vindo da Ásia." },
+                { id: "020_ORIGEM_02", texto: "A testemunha comentou que a pessoa parecia ser da Ásia." }
+            ],
+            cabelo: [
+                { id: "020_CABELO_01", texto: "O cabelo chamava atenção pelo tom preto." },
+                { id: "020_CABELO_02", texto: "A testemunha reparou em cabelos pretos." }
+            ],
+            olhos: [
+                { id: "020_OLHOS_01", texto: "Os olhos eram escuros e bem marcantes." },
+                { id: "020_OLHOS_02", texto: "A única coisa que a testemunha lembra com certeza é que os olhos eram muito escuros." }
+            ],
+            esporte: [
+                { id: "020_ESPORTE_01", texto: "A pessoa comentou com naturalidade que praticava ginástica olímpica." },
+                { id: "020_ESPORTE_02", texto: "Ouvi uma menção casual a ginástica olímpica, como se fosse parte da rotina." }
+            ],
+            comida: [
+                { id: "020_COMIDA_01", texto: "A testemunha ouviu a pessoa elogiar comida asiática." },
+                { id: "020_COMIDA_02", texto: "Ela parecia ter preferência por culinária asiática." }
+            ],
+            caracteristica: [
+                { id: "020_CARACTERISTICA_01", texto: "O que mais chamou atenção foi o jeito atlético." },
+                { id: "020_CARACTERISTICA_02", texto: "A pessoa parecia extremamente discreta." }
+            ]
+        }
     },
 
     {
@@ -946,7 +1569,38 @@ export const suspectsSeed = [
             "Usava um colar com dente de tubarão."
         ],
         falsosPositivos: ["Instrutor de surfe"],
-        relacaoMeridian: "Especialista em rotas costeiras."
+        relacaoMeridian: "Especialista em rotas costeiras.",
+
+        dicas: {
+            sexo: [
+                { id: "021_SEXO_01", texto: "A testemunha disse que era um homem." },
+                { id: "021_SEXO_02", texto: "Quem passou por aqui tinha presença claramente masculina." }
+            ],
+            origem: [
+                { id: "021_ORIGEM_01", texto: "O jeito de falar lembrava alguém vindo do Brasil." },
+                { id: "021_ORIGEM_02", texto: "A testemunha comentou que a pessoa parecia ser do Brasil." }
+            ],
+            cabelo: [
+                { id: "021_CABELO_01", texto: "O cabelo chamava atenção pelo tom loiro." },
+                { id: "021_CABELO_02", texto: "A testemunha reparou em cabelos claros." }
+            ],
+            olhos: [
+                { id: "021_OLHOS_01", texto: "Os olhos eram castanhos e bem marcantes." },
+                { id: "021_OLHOS_02", texto: "A única coisa que a testemunha lembra com certeza é que os olhos eram castanhos." }
+            ],
+            esporte: [
+                { id: "021_ESPORTE_01", texto: "A pessoa comentou com naturalidade que praticava surfe." },
+                { id: "021_ESPORTE_02", texto: "Ouvi uma menção casual a surfe, como se fosse parte da rotina." }
+            ],
+            comida: [
+                { id: "021_COMIDA_01", texto: "A testemunha ouviu a pessoa elogiar frutos do mar." },
+                { id: "021_COMIDA_02", texto: "Ela parecia ter preferência por pratos do mar." }
+            ],
+            caracteristica: [
+                { id: "021_CARACTERISTICA_01", texto: "O que mais chamou atenção foi o jeito atlético." },
+                { id: "021_CARACTERISTICA_02", texto: "A pessoa parecia extremamente casual." }
+            ]
+        }
     },
 
     {
@@ -976,7 +1630,38 @@ export const suspectsSeed = [
             "Falava com muita calma."
         ],
         falsosPositivos: ["Empresário"],
-        relacaoMeridian: "Infiltração em ambientes de elite."
+        relacaoMeridian: "Infiltração em ambientes de elite.",
+
+        dicas: {
+            sexo: [
+                { id: "022_SEXO_01", texto: "A testemunha disse que era um homem." },
+                { id: "022_SEXO_02", texto: "Quem passou por aqui tinha presença claramente masculina." }
+            ],
+            origem: [
+                { id: "022_ORIGEM_01", texto: "O jeito de falar lembrava alguém vindo do Brasil." },
+                { id: "022_ORIGEM_02", texto: "A testemunha comentou que a pessoa parecia ser do Brasil." }
+            ],
+            cabelo: [
+                { id: "022_CABELO_01", texto: "O cabelo chamava atenção pelo tom loiro." },
+                { id: "022_CABELO_02", texto: "A testemunha reparou em cabelos claros." }
+            ],
+            olhos: [
+                { id: "022_OLHOS_01", texto: "Os olhos eram verdes e bem marcantes." },
+                { id: "022_OLHOS_02", texto: "A única coisa que a testemunha lembra com certeza é que os olhos eram verdes." }
+            ],
+            esporte: [
+                { id: "022_ESPORTE_01", texto: "A pessoa comentou com naturalidade que praticava esgrima." },
+                { id: "022_ESPORTE_02", texto: "Ouvi uma menção casual a esgrima, como se fosse parte da rotina." }
+            ],
+            comida: [
+                { id: "022_COMIDA_01", texto: "A testemunha ouviu a pessoa elogiar comida mediterrânea." },
+                { id: "022_COMIDA_02", texto: "Ela parecia ter preferência por culinária mediterrânea." }
+            ],
+            caracteristica: [
+                { id: "022_CARACTERISTICA_01", texto: "O que mais chamou atenção foi o jeito elegante." },
+                { id: "022_CARACTERISTICA_02", texto: "A pessoa parecia extremamente discreta." }
+            ]
+        }
     },
 
     {
@@ -1005,7 +1690,38 @@ export const suspectsSeed = [
             "Parecia desaparecer nos telhados."
         ],
         falsosPositivos: ["Atleta urbano"],
-        relacaoMeridian: "Especialista em fuga."
+        relacaoMeridian: "Especialista em fuga.",
+
+        dicas: {
+            sexo: [
+                { id: "023_SEXO_01", texto: "A testemunha disse que não conseguiu identificar se era homem ou mulher." },
+                { id: "023_SEXO_02", texto: "Quem passou por aqui tinha uma presença ambígua, impossível de classificar com certeza." }
+            ],
+            origem: [
+                { id: "023_ORIGEM_01", texto: "O jeito de falar lembrava alguém vindo do Brasil." },
+                { id: "023_ORIGEM_02", texto: "A testemunha comentou que a pessoa parecia ser do Brasil." }
+            ],
+            cabelo: [
+                { id: "023_CABELO_01", texto: "O cabelo chamava atenção pelo tom preto." },
+                { id: "023_CABELO_02", texto: "A testemunha reparou em cabelos pretos." }
+            ],
+            olhos: [
+                { id: "023_OLHOS_01", texto: "Os olhos eram verdes e bem marcantes." },
+                { id: "023_OLHOS_02", texto: "A única coisa que a testemunha lembra com certeza é que os olhos eram verdes." }
+            ],
+            esporte: [
+                { id: "023_ESPORTE_01", texto: "A pessoa comentou com naturalidade que praticava parkour." },
+                { id: "023_ESPORTE_02", texto: "Ouvi uma menção casual a parkour, como se fosse parte da rotina." }
+            ],
+            comida: [
+                { id: "023_COMIDA_01", texto: "A testemunha ouviu a pessoa elogiar comida vegana." },
+                { id: "023_COMIDA_02", texto: "Ela parecia ter preferência por alimentação vegana." }
+            ],
+            caracteristica: [
+                { id: "023_CARACTERISTICA_01", texto: "O que mais chamou atenção foi o jeito atlético." },
+                { id: "023_CARACTERISTICA_02", texto: "A pessoa parecia extremamente discreta." }
+            ]
+        }
     },
 
     {
@@ -1034,7 +1750,38 @@ export const suspectsSeed = [
             "Parecia acostumado a brigas."
         ],
         falsosPositivos: ["Segurança"],
-        relacaoMeridian: "Cobrança de dívidas clandestinas."
+        relacaoMeridian: "Cobrança de dívidas clandestinas.",
+
+        dicas: {
+            sexo: [
+                { id: "024_SEXO_01", texto: "A testemunha disse que era um homem." },
+                { id: "024_SEXO_02", texto: "Quem passou por aqui tinha presença claramente masculina." }
+            ],
+            origem: [
+                { id: "024_ORIGEM_01", texto: "O jeito de falar lembrava alguém vindo do Brasil." },
+                { id: "024_ORIGEM_02", texto: "A testemunha comentou que a pessoa parecia ser do Brasil." }
+            ],
+            cabelo: [
+                { id: "024_CABELO_01", texto: "O cabelo chamava atenção pelo tom ruivo." },
+                { id: "024_CABELO_02", texto: "A testemunha reparou em cabelos avermelhados." }
+            ],
+            olhos: [
+                { id: "024_OLHOS_01", texto: "Os olhos eram castanhos e bem marcantes." },
+                { id: "024_OLHOS_02", texto: "A única coisa que a testemunha lembra com certeza é que os olhos eram castanhos." }
+            ],
+            esporte: [
+                { id: "024_ESPORTE_01", texto: "A pessoa comentou com naturalidade que praticava boxe." },
+                { id: "024_ESPORTE_02", texto: "Ouvi uma menção casual a boxe, como se fosse parte da rotina." }
+            ],
+            comida: [
+                { id: "024_COMIDA_01", texto: "A testemunha ouviu a pessoa elogiar churrasco." },
+                { id: "024_COMIDA_02", texto: "Ela parecia ter preferência por carne assada e churrasco." }
+            ],
+            caracteristica: [
+                { id: "024_CARACTERISTICA_01", texto: "O que mais chamou atenção foi o jeito robusto." },
+                { id: "024_CARACTERISTICA_02", texto: "A pessoa parecia extremamente casual." }
+            ]
+        }
     },
 
     {
@@ -1063,7 +1810,38 @@ export const suspectsSeed = [
             "Parecia um mensageiro."
         ],
         falsosPositivos: ["Entregador"],
-        relacaoMeridian: "Mensageiro entre células."
+        relacaoMeridian: "Mensageiro entre células.",
+
+        dicas: {
+            sexo: [
+                { id: "025_SEXO_01", texto: "A testemunha disse que era um homem." },
+                { id: "025_SEXO_02", texto: "Quem passou por aqui tinha presença claramente masculina." }
+            ],
+            origem: [
+                { id: "025_ORIGEM_01", texto: "O jeito de falar lembrava alguém vindo de Portugal." },
+                { id: "025_ORIGEM_02", texto: "A testemunha comentou que a pessoa parecia ser de Portugal." }
+            ],
+            cabelo: [
+                { id: "025_CABELO_01", texto: "O cabelo chamava atenção pelo tom ruivo." },
+                { id: "025_CABELO_02", texto: "A testemunha reparou em cabelos avermelhados." }
+            ],
+            olhos: [
+                { id: "025_OLHOS_01", texto: "Os olhos eram azuis e bem marcantes." },
+                { id: "025_OLHOS_02", texto: "A única coisa que a testemunha lembra com certeza é que os olhos eram azuis." }
+            ],
+            esporte: [
+                { id: "025_ESPORTE_01", texto: "A pessoa comentou com naturalidade que praticava ciclismo." },
+                { id: "025_ESPORTE_02", texto: "Ouvi uma menção casual a ciclismo, como se fosse parte da rotina." }
+            ],
+            comida: [
+                { id: "025_COMIDA_01", texto: "A testemunha ouviu a pessoa elogiar comida mexicana." },
+                { id: "025_COMIDA_02", texto: "Ela parecia ter preferência por culinária mexicana." }
+            ],
+            caracteristica: [
+                { id: "025_CARACTERISTICA_01", texto: "O que mais chamou atenção foi o jeito atlético." },
+                { id: "025_CARACTERISTICA_02", texto: "A pessoa parecia extremamente casual." }
+            ]
+        }
     },
 
     {
@@ -1092,7 +1870,38 @@ export const suspectsSeed = [
             "Parecia ex-militar."
         ],
         falsosPositivos: ["Instrutor de tiro"],
-        relacaoMeridian: "Atirador de elite."
+        relacaoMeridian: "Atirador de elite.",
+
+        dicas: {
+            sexo: [
+                { id: "026_SEXO_01", texto: "A testemunha disse que era um homem." },
+                { id: "026_SEXO_02", texto: "Quem passou por aqui tinha presença claramente masculina." }
+            ],
+            origem: [
+                { id: "026_ORIGEM_01", texto: "O jeito de falar lembrava alguém vindo de Portugal." },
+                { id: "026_ORIGEM_02", texto: "A testemunha comentou que a pessoa parecia ser de Portugal." }
+            ],
+            cabelo: [
+                { id: "026_CABELO_01", texto: "O cabelo chamava atenção pelo tom platinado." },
+                { id: "026_CABELO_02", texto: "A testemunha reparou em cabelos platinados." }
+            ],
+            olhos: [
+                { id: "026_OLHOS_01", texto: "Os olhos eram castanhos e bem marcantes." },
+                { id: "026_OLHOS_02", texto: "A única coisa que a testemunha lembra com certeza é que os olhos eram castanhos." }
+            ],
+            esporte: [
+                { id: "026_ESPORTE_01", texto: "A pessoa comentou com naturalidade que praticava tiro esportivo." },
+                { id: "026_ESPORTE_02", texto: "Ouvi uma menção casual a tiro esportivo, como se fosse parte da rotina." }
+            ],
+            comida: [
+                { id: "026_COMIDA_01", texto: "A testemunha ouviu a pessoa elogiar comida japonesa." },
+                { id: "026_COMIDA_02", texto: "Ela parecia ter preferência por culinária japonesa." }
+            ],
+            caracteristica: [
+                { id: "026_CARACTERISTICA_01", texto: "O que mais chamou atenção foi o jeito frio." },
+                { id: "026_CARACTERISTICA_02", texto: "A pessoa parecia extremamente discreta." }
+            ]
+        }
     }
     ,
 ];
