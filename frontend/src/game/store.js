@@ -1,5 +1,6 @@
 import { casesSeed, initialPlayer } from "./seed";
 import { CASOS_SCENARIOS } from "./CasosScenarios";
+import { generateProceduralScenario } from "./ProceduralGenerator";
 
 const KEY = "operacao_meridian__mvp_state_v1";
 
@@ -128,8 +129,20 @@ export function startRunIfNeeded(state, caseObj, forceReset = false, forcedScena
     let scenario = null;
     let interrogatoriosOverride = caseObj.interrogatorios;
     let targetSuspectId = null;
+    let proceduralScenario = null;
 
-    if (CASOS_SCENARIOS[caseObj.id]) {
+    if (caseObj.procedural) {
+        // === CASO PROCEDURAL ===
+        proceduralScenario = generateProceduralScenario(caseObj);
+        if (proceduralScenario) {
+            scenario = proceduralScenario;
+            interrogatoriosOverride = proceduralScenario.interrogatorios;
+            targetSuspectId = proceduralScenario.suspectId;
+            console.log(`[ATLAS] Cenário PROCEDURAL gerado para ${caseObj.id}: ${proceduralScenario.id} (Suspeito: ${targetSuspectId})`);
+        } else {
+            console.error(`[ATLAS] Falha ao gerar cenário procedural para ${caseObj.id}`);
+        }
+    } else if (CASOS_SCENARIOS[caseObj.id]) {
         const scenarios = CASOS_SCENARIOS[caseObj.id];
         // 🔥 FIX: Se um cenário específico foi forçado (ex: via URL no competitivo), usamos ele.
         if (forcedScenarioId) {
@@ -165,6 +178,7 @@ export function startRunIfNeeded(state, caseObj, forceReset = false, forcedScena
             !caseObj.isCompetitive && { t: nowIso(), msg: `Bônus de despesas recebido: R$ 1.000,00` },
         ].filter(Boolean),
         cidadeAnterior: null,
+        proceduralScenario: proceduralScenario || null,
         mandadoEmitido: false,
         warrantId: null,
         suspeitoCapturado: false,

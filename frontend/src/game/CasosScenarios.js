@@ -84,7 +84,18 @@ export const CASOS_CONFIG = {
         isCompetitive: true,
         title: "Caso Especial: O Cofre que Nunca Foi Aberto",
         description: "Um cofre ultra seguro internacional foi violado sem deixar rastros. Apenas o melhor e mais rápido agente poderá recuperar os documentos classificados antes dos concorrentes."
-    }
+    },
+    // Casos Procedurais (C011+)
+    "C011": { hasIntroVideo: false, procedural: true },
+    "C012": { hasIntroVideo: false, procedural: true },
+    "C013": { hasIntroVideo: false, procedural: true },
+    "C014": { hasIntroVideo: false, procedural: true },
+    "C015": { hasIntroVideo: false, procedural: true, isCompetitive: true },
+    "C016": { hasIntroVideo: false, procedural: true, isCompetitive: true },
+    "C017": { hasIntroVideo: false, procedural: true, isCompetitive: true },
+    "C018": { hasIntroVideo: false, procedural: true, isCompetitive: true },
+    "C019": { hasIntroVideo: false, procedural: true, isCompetitive: true },
+    "C020": { hasIntroVideo: false, procedural: true, isCompetitive: true },
 };
 
 /**

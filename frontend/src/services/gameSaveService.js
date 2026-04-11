@@ -87,3 +87,52 @@ export async function loadGameState(slot = 0) {
     if (error) throw error;
     return data?.state ?? null;
 }
+
+/** Salva uma missão concluída na tabela completed_missions */
+export async function saveCompletedMission(missionData) {
+    const { data: { user }, error: userErr } = await supabase.auth.getUser();
+    if (userErr) throw userErr;
+    if (!user) throw new Error("Not authenticated");
+
+    const payload = {
+        user_id: user.id,
+        case_id: missionData.caseId,
+        titulo: missionData.titulo || "",
+        dificuldade: missionData.dificuldade || "",
+        resultado: missionData.resultado || "WON",
+        xp_ganho: missionData.xpGanho || 0,
+        recompensa_ganha: missionData.recompensaGanha || 0,
+        suspect_captured: missionData.suspectCaptured || null,
+    };
+
+    const { error } = await supabase
+        .from("completed_missions")
+        .insert(payload);
+
+    if (error) {
+        console.warn("[gameSaveService] Erro ao salvar missão concluída:", error.message);
+        throw error;
+    }
+
+    console.log(`[gameSaveService] Missão ${missionData.caseId} salva com sucesso.`);
+}
+
+/** Carrega todas as missões concluídas do jogador */
+export async function loadCompletedMissions() {
+    const { data: { user }, error: userErr } = await supabase.auth.getUser();
+    if (userErr) throw userErr;
+    if (!user) return [];
+
+    const { data, error } = await supabase
+        .from("completed_missions")
+        .select("*")
+        .eq("user_id", user.id)
+        .order("completed_at", { ascending: false });
+
+    if (error) {
+        console.warn("[gameSaveService] Erro ao carregar missões:", error.message);
+        return [];
+    }
+
+    return data || [];
+}

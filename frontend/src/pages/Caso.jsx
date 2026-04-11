@@ -9,6 +9,7 @@ import {
     registerCapture,
     abortRun,
 } from "../game/store";
+import { saveCompletedMission } from "../services/gameSaveService";
 import { useGame } from "../game/GameProvider";
 import { getCidadeImagem, getCidadeDescricao } from "../game/Cidades";
 import { CASOS_SCENARIOS, findScenario } from "../game/CasosScenarios";
@@ -55,6 +56,9 @@ export const ORIGIN_COORDS = {
     "Salvador": { x: 146, y: 135 },
     "Zurich": { x: 198, y: 52 },
     "Hong Kong": { x: 315, y: 80 },
+    "Barcelona": { x: 190, y: 60 },
+    "Roterdã": { x: 192, y: 44 },
+    "Genebra": { x: 196, y: 54 },
 };
 
 const TRANSPORT_MODES = [
@@ -340,8 +344,10 @@ export default function Caso() {
         }, [run?.localAtual?.cidade, caseObj?.imgItem]);
 
         const activeScenario = useMemo(() => {
+            // For procedural cases, use the scenario stored in run
+            if (run?.proceduralScenario) return run.proceduralScenario;
             return findScenario(caseId, run?.scenarioId, run?.targetSuspectId);
-        }, [run?.scenarioId, run?.targetSuspectId, caseId]);
+        }, [run?.scenarioId, run?.targetSuspectId, run?.proceduralScenario, caseId]);
 
         const currentCityDesc = useMemo(() => {
             if (!run?.localAtual?.cidade) return "";
@@ -479,6 +485,10 @@ export default function Caso() {
             if (isFinalCity && activeScenario?.route && !hasMissionProgressed) isFinalCity = false;
 
             if (isFinalCity && currentCount >= 2) {
+                // For procedural cases, check if this is the specific arrest NPC
+                const isProcedural = !!activeScenario?.procedural;
+                const arrestNpcIdx = activeScenario?.arrestNpcIndex;
+
                 const targetId = String(run.targetSuspectId || "008").trim();
                 const warrantIdSelected = String(run.warrantId || "").trim();
                 const isSuccess = run.mandadoEmitido && warrantIdSelected === targetId;
@@ -505,7 +515,7 @@ export default function Caso() {
                     if (diff === "LENDARIO") nextPlayer.legendaryWins = (nextPlayer.legendaryWins || 0) + 1;
 
                     if (isMissionCompetitive && lobbyId && state.player.supabaseId) {
-                        // Envia broadcast IMEDIATAMENTE antes de qualquer atualização de estado que possa interferir
+                        // ... existing competitive logic ...
                         syncChannelRef.current?.send({ 
                             type: "broadcast", 
                             event: "mission_finished", 
@@ -515,17 +525,26 @@ export default function Caso() {
                             } 
                         });
 
-                        // Atualiza o banco de dados em paralelo
                         supabase.from("competitive_lobbies").update({ status: "finished", winner_id: state.player.supabaseId }).eq("id", lobbyId).select().then();
                         supabase.from("competitive_players").update({ status: "won" }).eq("lobby_id", lobbyId).eq("player_id", state.player.supabaseId).then();
 
-                        // Atualiza estado local e navega
                         const finalState = registerCapture({ ...state, player: nextPlayer, runs: { ...state.runs, [caseId]: nextRun } }, run.warrantId);
                         replaceState(saveGame(finalState));
                     } else {
                         const nextState = registerCapture({ ...state, player: nextPlayer, runs: { ...state.runs, [caseId]: nextRun } }, run.warrantId);
                         replaceState(saveGame(nextState));
                     }
+
+                    // 🔥 Salva no Banco de Dados (Persistência Permanente)
+                    saveCompletedMission({
+                        caseId,
+                        titulo: caseObj.titulo,
+                        dificuldade: caseObj.dificuldade,
+                        resultado: "WON",
+                        xpGanho: caseObj.xp,
+                        recompensaGanha: caseObj.recompensa,
+                        suspectCaptured: run.targetSuspectId
+                    }).catch(err => console.error("Falha ao persistir missão concluída:", err));
                 } else {
                     const diff = caseObj?.dificuldade;
                     let nextPlayer = { ...state.player };
@@ -534,6 +553,17 @@ export default function Caso() {
 
                     const nextRun = { ...nextRunCount, status: "LOST", jornal: [...run.jornal, { t: new Date().toISOString(), msg: `❌ MISSÃO FRACASSADA! O suspeito escapou em ${locObj.cidade}.` }] };
                     replaceState(saveGame({ ...state, player: nextPlayer, runs: { ...state.runs, [caseId]: nextRun } }));
+
+                    // 🔥 Salva no Banco de Dados (Persistência Permanente)
+                    saveCompletedMission({
+                        caseId,
+                        titulo: caseObj.titulo,
+                        dificuldade: caseObj.dificuldade,
+                        resultado: "LOST",
+                        xpGanho: 0,
+                        recompensaGanha: 0,
+                        suspectCaptured: null
+                    }).catch(err => console.error("Falha ao persistir missão fracassada:", err));
                 }
                 return;
             }

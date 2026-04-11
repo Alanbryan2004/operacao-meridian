@@ -1,7 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useGame } from "../game/GameProvider";
 import { supabase } from "../lib/supabase";
+import { loadCompletedMissions } from "../services/gameSaveService";
 import SuspectGallery from "../components/SuspectGallery";
 import AvatarDisplay from "../components/AvatarDisplay";
 
@@ -25,15 +26,23 @@ export default function Perfil() {
     const nav = useNavigate();
     const { state } = useGame();
     const [tab, setTab] = useState("PERFIL");
+    const [doneMissions, setDoneMissions] = useState([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        // Carrega o histórico permanente do Banco de Dados
+        loadCompletedMissions()
+            .then(data => setDoneMissions(data))
+            .finally(() => setLoading(false));
+    }, []);
 
     if (!state) return null;
     const { player } = state;
 
-    // Conta missões
-    const totalMissoes = state.cases?.length || 0;
-    const missoesVencidas = Object.values(state.runs || {}).filter(r => r.status === "WON").length;
-    const missoesAtivas = Object.values(state.runs || {}).filter(r => r.status === "IN_PROGRESS").length;
-    const totalCapturas = Object.values(state.capturedSuspects || {}).reduce((acc, v) => acc + v, 0);
+    // Conta missões usando o Banco de Dados como fonte da verdade (permanente)
+    const missoesVencidas = doneMissions.filter(m => m.resultado === "WON").length;
+    const totalCapturas = doneMissions.filter(m => m.resultado === "WON").length; // No momento 1 captura = 1 missão vencida
+    const totalMissoesAtivas = Object.values(state.runs || {}).filter(r => r.status === "IN_PROGRESS").length;
 
     return (
         <div style={{
@@ -160,11 +169,11 @@ export default function Perfil() {
                                     <div style={{ fontSize: 9, opacity: 0.5, marginTop: 4, letterSpacing: 1 }}>XP TOTAL</div>
                                 </div>
                                 <div style={{ background: "rgba(255,255,255,0.03)", borderRadius: 12, padding: "12px", border: "1px solid rgba(255,255,255,0.08)", textAlign: "center" }}>
-                                    <div style={{ fontSize: 20, fontWeight: 900, color: "#3cffA0" }}>{missoesVencidas}</div>
+                                    <div style={{ fontSize: 20, fontWeight: 900, color: "#3cffA0" }}>{loading ? "..." : missoesVencidas}</div>
                                     <div style={{ fontSize: 9, opacity: 0.5, marginTop: 4, letterSpacing: 1 }}>MISSÕES COMPLETAS</div>
                                 </div>
                                 <div style={{ background: "rgba(255,255,255,0.03)", borderRadius: 12, padding: "12px", border: "1px solid rgba(255,255,255,0.08)", textAlign: "center" }}>
-                                    <div style={{ fontSize: 20, fontWeight: 900, color: "#ff6b6b" }}>{totalCapturas}</div>
+                                    <div style={{ fontSize: 20, fontWeight: 900, color: "#ff6b6b" }}>{loading ? "..." : totalCapturas}</div>
                                     <div style={{ fontSize: 9, opacity: 0.5, marginTop: 4, letterSpacing: 1 }}>CAPTURAS TOTAIS</div>
                                 </div>
                             </div>
@@ -172,15 +181,21 @@ export default function Perfil() {
 
                         {/* Missões */}
                         <div className="pf-panel">
-                            <div style={{ fontSize: 12, fontWeight: 700, marginBottom: 12, color: "#80bdff", letterSpacing: 1 }}>MISSÕES</div>
-                            {state.cases.map(c => {
-                                const run = state.runs?.[c.id];
-                                const status = run?.status;
-                                const statusLabel = status === "WON" ? "✅ Completa" : status === "LOST" ? "❌ Fracassada" : status === "IN_PROGRESS" ? "🔵 Em curso" : "⬜ Não iniciada";
-                                const statusColor = status === "WON" ? "#3cffA0" : status === "LOST" ? "#ff6b6b" : status === "IN_PROGRESS" ? "#80bdff" : "rgba(255,255,255,0.4)";
+                            <div style={{ fontSize: 12, fontWeight: 700, marginBottom: 12, color: "#80bdff", letterSpacing: 1 }}>MISSÕES RECENTES</div>
+                            
+                            {loading && <div style={{ fontSize: 12, opacity: 0.5, textAlign: "center", padding: 10 }}>Carregando histórico...</div>}
+                            
+                            {!loading && doneMissions.length === 0 && (
+                                <div style={{ fontSize: 12, opacity: 0.5, textAlign: "center", padding: 10 }}>Nenhuma missão concluída ainda.</div>
+                            )}
+
+                            {doneMissions.map(m => {
+                                const statusLabel = m.resultado === "WON" ? "✅ Completa" : "❌ Fracassada";
+                                const statusColor = m.resultado === "WON" ? "#3cffA0" : "#ff6b6b";
+                                const dateStr = m.completed_at ? new Date(m.completed_at).toLocaleDateString("pt-BR") : "";
 
                                 return (
-                                    <div key={c.id} style={{
+                                    <div key={m.id} style={{
                                         padding: "10px 12px",
                                         borderRadius: 12,
                                         background: "rgba(255,255,255,0.03)",
@@ -190,7 +205,10 @@ export default function Perfil() {
                                         alignItems: "center",
                                         marginBottom: 8,
                                     }}>
-                                        <div style={{ fontSize: 13 }}>{c.titulo}</div>
+                                        <div>
+                                            <div style={{ fontSize: 13 }}>{m.titulo}</div>
+                                            <div style={{ fontSize: 9, opacity: 0.4, marginTop: 2 }}>{dateStr} · {m.dificuldade}</div>
+                                        </div>
                                         <div style={{ fontSize: 10, fontWeight: 800, color: statusColor }}>{statusLabel}</div>
                                     </div>
                                 );

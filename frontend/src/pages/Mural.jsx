@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useGame } from "../game/GameProvider";
 import ModalMsg from "../components/ModalMsg";
+import { loadCompletedMissions } from "../services/gameSaveService";
 
 function Badge({ children, tone = "gray" }) {
     const map = {
@@ -13,24 +14,9 @@ function Badge({ children, tone = "gray" }) {
         amber: { bg: "rgba(255,190,90,0.12)", bd: "rgba(255,190,90,0.22)", tx: "rgba(255,240,215,0.95)" },
         red: { bg: "rgba(255,90,90,0.10)", bd: "rgba(255,90,90,0.22)", tx: "rgba(255,225,225,0.95)" },
     };
-
     const s = map[tone] || map.gray;
-
     return (
-        <span
-            style={{
-                fontSize: 11,
-                padding: "6px 10px",
-                borderRadius: 999,
-                background: s.bg,
-                border: `1px solid ${s.bd}`,
-                color: s.tx,
-                display: "inline-flex",
-                alignItems: "center",
-                gap: 6,
-                whiteSpace: "nowrap",
-            }}
-        >
+        <span style={{ fontSize: 11, padding: "6px 10px", borderRadius: 999, background: s.bg, border: `1px solid ${s.bd}`, color: s.tx, display: "inline-flex", alignItems: "center", gap: 6, whiteSpace: "nowrap" }}>
             {children}
         </span>
     );
@@ -42,9 +28,7 @@ function CaseCard({ c, onOpen, status }) {
             c.dificuldade === "MEDIO" ? "blue" :
                 c.dificuldade === "DIFICIL" ? "amber" :
                     "purple";
-
     const isActive = status === "IN_PROGRESS";
-
     return (
         <button
             onClick={onOpen}
@@ -71,10 +55,8 @@ function CaseCard({ c, onOpen, status }) {
                         Início: {c.localInicial.cidade} · {c.localInicial.pais}
                     </div>
                 </div>
-
                 <Badge tone={diffTone}>{c.dificuldade}</Badge>
             </div>
-
             <div style={{ marginTop: 10, display: "flex", gap: 8, flexWrap: "wrap", alignItems: "center" }}>
                 <Badge tone="gray">💰 ${c.recompensa}</Badge>
                 <Badge tone="blue">🧠 XP {c.xp}</Badge>
@@ -89,67 +71,46 @@ export default function Mural() {
     const nav = useNavigate();
     const { state } = useGame();
     const [modal, setModal] = useState({ show: false, message: "" });
+    const [completedIds, setCompletedIds] = useState([]);
+    const [loadingMissions, setLoadingMissions] = useState(true);
 
     useEffect(() => {
-        // tenta tocar (se já liberou no splash/login)
-        window.dispatchEvent(new CustomEvent("meridian-play-audio", { detail: true }));
+        loadCompletedMissions()
+            .then(data => {
+                const ids = data.filter(m => m.resultado === "WON").map(m => m.case_id);
+                setCompletedIds(ids);
+            })
+            .finally(() => setLoadingMissions(false));
+    }, []);
 
-        // Segurança: se o jogador não tem avatar, manda para o criador
+    useEffect(() => {
+        window.dispatchEvent(new CustomEvent("meridian-play-audio", { detail: true }));
         if (state && !state.player?.avatar) {
             nav("/avatar-creator?onboarding=true");
         }
     }, [state, nav]);
 
     if (!state) return null;
-
     const { player, cases } = state;
 
     return (
-        <div
-            style={{
-                minHeight: "100dvh",
-                width: "100vw",
-                margin: 0,
-                padding: 0,
-                background: "radial-gradient(circle at center, #071a26 0%, #000 70%)",
-                color: "#fff",
-            }}
-        >
+        <div style={{ minHeight: "100dvh", width: "100vw", background: "radial-gradient(circle at center, #071a26 0%, #000 70%)", color: "#fff" }}>
             <style>{`
-        .om-wrap { max-width: 520px; margin: 0 auto; padding: 14px; padding-bottom: 26px; }
-        .om-sticky { position: sticky; top: 0; z-index: 20; padding-top: 12px; padding-bottom: 12px; background: linear-gradient(to bottom, rgba(0,0,0,.85), rgba(0,0,0,0)); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); }
-        .om-panel {
-          border-radius: 18px;
-          border: 1px solid rgba(255,255,255,.14);
-          background: rgba(255,255,255,0.06);
-          backdrop-filter: blur(10px);
-          -webkit-backdrop-filter: blur(10px);
-          box-shadow: 0 18px 45px rgba(0,0,0,.55);
-          padding: 14px;
-        }
-        .om-h1 { font-size: 16px; font-weight: 800; letter-spacing: .3px; }
-        .om-muted { font-size: 12px; opacity: .75; margin-top: 4px; line-height: 1.35; }
-        .om-grid { display: grid; gap: 10px; margin-top: 12px; }
-        .om-toprow { display:flex; align-items:flex-start; justify-content:space-between; gap: 12px; flex-wrap: wrap; }
-        .om-kpi { font-size: 12px; opacity: .72; }
-        .om-kpiValue { font-size: 16px; font-weight: 800; margin-top: 2px; }
-        .om-actions { display:flex; gap: 10px; margin-top: 10px; }
-        .om-miniBtn {
-          flex: 1;
-          padding: 10px 12px;
-          border-radius: 14px;
-          border: 1px solid rgba(255,255,255,.16);
-          background: rgba(255,255,255,0.06);
-          color: rgba(255,255,255,.92);
-          font-size: 12px;
-          letter-spacing: 1px;
-          cursor: pointer;
-        }
-        .om-miniBtn:active { transform: scale(0.99); }
-      `}</style>
+                .om-wrap { max-width: 520px; margin: 0 auto; padding: 14px; padding-bottom: 26px; }
+                .om-sticky { position: sticky; top: 0; z-index: 20; padding-top: 12px; padding-bottom: 12px; background: linear-gradient(to bottom, rgba(0,0,0,.85), rgba(0,0,0,0)); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); }
+                .om-panel { border-radius: 18px; border: 1px solid rgba(255,255,255,.14); background: rgba(255,255,255,0.06); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); box-shadow: 0 18px 45px rgba(0,0,0,.55); padding: 14px; }
+                .om-h1 { font-size: 16px; font-weight: 800; letter-spacing: .3px; }
+                .om-muted { font-size: 12px; opacity: .75; margin-top: 4px; line-height: 1.35; }
+                .om-grid { display: grid; gap: 10px; margin-top: 12px; }
+                .om-toprow { display:flex; align-items:flex-start; justify-content:space-between; gap: 12px; flex-wrap: wrap; }
+                .om-kpi { font-size: 12px; opacity: .72; }
+                .om-kpiValue { font-size: 16px; font-weight: 800; margin-top: 2px; }
+                .om-actions { display:flex; gap: 10px; margin-top: 10px; }
+                .om-miniBtn { flex: 1; padding: 10px 12px; border-radius: 14px; border: 1px solid rgba(255,255,255,.16); background: rgba(255,255,255,0.06); color: rgba(255,255,255,.92); font-size: 12px; letter-spacing: 1px; cursor: pointer; }
+                .om-miniBtn:active { transform: scale(0.99); }
+            `}</style>
 
             <div className="om-wrap">
-                {/* Header sticky premium */}
                 <div className="om-sticky">
                     <div className="om-panel">
                         <div className="om-toprow">
@@ -158,7 +119,6 @@ export default function Mural() {
                                 <div className="om-h1">Mural de Casos</div>
                                 <div className="om-muted">Escolha um caso e comece a investigação.</div>
                             </div>
-
                             <div style={{ textAlign: "right" }}>
                                 <div className="om-kpi">Agente</div>
                                 <div className="om-kpiValue">{player.nome}</div>
@@ -167,69 +127,68 @@ export default function Mural() {
                                 </div>
                             </div>
                         </div>
-
                         <div style={{ marginTop: 10, display: "flex", gap: 8, flexWrap: "wrap" }}>
                             <Badge tone="blue">{player.classeEmoji || "🟢"} {player.nivelTitulo || "Novato"}</Badge>
                             <Badge tone="green">XP {player.xp}</Badge>
                             <Badge tone="purple">Temporadas: em breve</Badge>
                         </div>
-
                         <div className="om-actions">
-                            <button className="om-miniBtn" onClick={() => nav("/perfil")}>
-                                PERFIL
-                            </button>
-                            <button className="om-miniBtn" onClick={() => nav("/hall-da-fama")}>
-                                HALL DA FAMA
-                            </button>
+                            <button className="om-miniBtn" onClick={() => nav("/perfil")}>PERFIL</button>
+                            <button className="om-miniBtn" onClick={() => nav("/hall-da-fama")}>HALL DA FAMA</button>
                         </div>
                     </div>
                 </div>
 
-                {/* Lista de casos */}
                 <div className="om-grid">
-                    {cases.filter(c => {
-                        // Caso 0 (Tutorial): esconde do mural se já foi concluído
-                        if (c.id === "C000") {
-                            const tutRun = state.runs["C000"];
-                            if (tutRun?.status === "WON") return false;
-                        }
-                        return true;
-                    }).map((c) => {
-                        const run = state.runs[c.id];
-                        const isOtherActive = Object.values(state.runs).some(r => r.caseId !== c.id && r.status === "IN_PROGRESS");
-                        const isActive = run?.status === "IN_PROGRESS";
+                    {(() => {
+                        if (loadingMissions) return <div style={{ textAlign: "center", opacity: 0.5, padding: 20 }}>Sincronizando casos...</div>;
 
-                        return (
-                            <div key={c.id} style={{ opacity: isOtherActive ? 0.5 : 1, pointerEvents: isOtherActive ? "none" : "auto" }}>
-                                <CaseCard
-                                    c={c}
-                                    status={run?.status}
-                                    onOpen={() => {
-                                        if (isActive) {
-                                            nav(`/caso/${c.id}`);
-                                        } else if (c.isCompetitive) {
-                                            nav(`/competitive-lobby/${c.id}`);
-                                        } else {
-                                            nav(`/missao-intro/${c.id}`);
-                                        }
-                                    }}
-                                />
-                                {isOtherActive && (
-                                    <div style={{ fontSize: 10, color: "#ff9090", textAlign: "center", marginTop: 4, fontWeight: 700 }}>
-                                        FINALIZE A MISSÃO ATIVA PRIMEIRO
-                                    </div>
-                                )}
-                            </div>
-                        );
-                    })}
+                        const available = cases.filter(c => {
+                            if (c.id === "C000") {
+                                if (state.runs["C000"]?.status === "WON" || completedIds.includes("C000")) return false;
+                            }
+                            if (c.dificuldade === "LENDARIO") return false;
+                            if (completedIds.includes(c.id)) return false;
+                            if (state.runs[c.id]?.status === "WON") return false;
+                            return true;
+                        });
+
+                        const filtered = [];
+                        const difficulties = ["FACIL", "MEDIO", "DIFICIL"];
+                        difficulties.forEach(diff => {
+                            const found = available.find(c => c.dificuldade === diff);
+                            if (found) filtered.push(found);
+                        });
+
+                        return filtered.map(c => {
+                            const run = state.runs[c.id];
+                            const isOtherActive = Object.values(state.runs).some(r => r.caseId !== c.id && r.status === "IN_PROGRESS");
+                            const isActive = run?.status === "IN_PROGRESS";
+                            return (
+                                <div key={c.id} style={{ opacity: isOtherActive ? 0.5 : 1, pointerEvents: isOtherActive ? "none" : "auto" }}>
+                                    <CaseCard
+                                        c={c}
+                                        status={run?.status}
+                                        onOpen={() => {
+                                            if (isActive) nav(`/caso/${c.id}`);
+                                            else if (c.isCompetitive) nav(`/competitive-lobby/${c.id}`);
+                                            else nav(`/missao-intro/${c.id}`);
+                                        }}
+                                    />
+                                    {isOtherActive && (
+                                        <div style={{ fontSize: 10, color: "#ff9090", textAlign: "center", marginTop: 4, fontWeight: 700 }}>
+                                            FINALIZE A MISSÃO ATIVA PRIMEIRO
+                                        </div>
+                                    )}
+                                </div>
+                            );
+                        });
+                    })()}
                 </div>
             </div>
 
             {modal.show && (
-                <ModalMsg
-                    message={modal.message}
-                    onClose={() => setModal({ show: false, message: "" })}
-                />
+                <ModalMsg message={modal.message} onClose={() => setModal({ show: false, message: "" })} />
             )}
         </div>
     );

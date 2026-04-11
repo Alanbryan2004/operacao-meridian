@@ -531,4 +531,47 @@ export const DESTINATION_OPTIONS = [
     { id: "C10_ZUR_ROM", pais: "Itália", cidade: "Roma", origem: "Zurich", coords: { x: 203, y: 59 }, flag: "🇮🇹" },
     { id: "C10_ZUR_VIE", pais: "Austria", cidade: "Viena", origem: "Zurich", coords: { x: 207, y: 51 }, flag: "🇦🇹" },
     { id: "C10_ZUR_PAR", pais: "França", cidade: "Paris", origem: "Zurich", coords: { x: 192, y: 50 }, flag: "🇫🇷" },
+
+    // ============ ROTAS PARA CIDADES PROCEDURAIS ============
+    // De Barcelona
+    { id: "BAR_FR", pais: "França", cidade: "Paris", origem: "Barcelona", coords: { x: 192, y: 50 }, flag: "🇫🇷" },
+    { id: "BAR_ES", pais: "Espanha", cidade: "Madrid", origem: "Barcelona", coords: { x: 185, y: 62 }, flag: "🇪🇸" },
+    { id: "BAR_IT", pais: "Itália", cidade: "Roma", origem: "Barcelona", coords: { x: 203, y: 59 }, flag: "🇮🇹" },
+    { id: "BAR_PT", pais: "Portugal", cidade: "Lisboa", origem: "Barcelona", coords: { x: 179, y: 64 }, flag: "🇵🇹" },
+    { id: "BAR_GB", pais: "Reino Unido", cidade: "Londres", origem: "Barcelona", coords: { x: 189, y: 46 }, flag: "🇬🇧" },
+    { id: "BAR_DE", pais: "Alemanha", cidade: "Berlim", origem: "Barcelona", coords: { x: 204, y: 45 }, flag: "🇩🇪" },
+
+    // Para Barcelona
+    { id: "MAD_BAR", pais: "Espanha", cidade: "Barcelona", origem: "Madrid", coords: { x: 190, y: 60 }, flag: "🇪🇸" },
+    { id: "PAR_BAR", pais: "Espanha", cidade: "Barcelona", origem: "Paris", coords: { x: 190, y: 60 }, flag: "🇪🇸" },
+    { id: "ROM_BAR", pais: "Espanha", cidade: "Barcelona", origem: "Roma", coords: { x: 190, y: 60 }, flag: "🇪🇸" },
+    { id: "LIS_BAR", pais: "Espanha", cidade: "Barcelona", origem: "Lisboa", coords: { x: 190, y: 60 }, flag: "🇪🇸" },
+
+    // De Roterdã
+    { id: "ROT_DE", pais: "Alemanha", cidade: "Berlim", origem: "Roterdã", coords: { x: 204, y: 45 }, flag: "🇩🇪" },
+    { id: "ROT_GB", pais: "Reino Unido", cidade: "Londres", origem: "Roterdã", coords: { x: 189, y: 46 }, flag: "🇬🇧" },
+    { id: "ROT_FR", pais: "França", cidade: "Paris", origem: "Roterdã", coords: { x: 192, y: 50 }, flag: "🇫🇷" },
+    { id: "ROT_NL", pais: "Holanda", cidade: "Amsterdã", origem: "Roterdã", coords: { x: 194, y: 45 }, flag: "🇳🇱" },
+    { id: "ROT_PT", pais: "Portugal", cidade: "Lisboa", origem: "Roterdã", coords: { x: 179, y: 64 }, flag: "🇵🇹" },
+    { id: "ROT_ES", pais: "Espanha", cidade: "Madrid", origem: "Roterdã", coords: { x: 185, y: 62 }, flag: "🇪🇸" },
+
+    // Para Roterdã
+    { id: "AMS_ROT", pais: "Países Baixos", cidade: "Roterdã", origem: "Amsterdã", coords: { x: 192, y: 44 }, flag: "🇳🇱" },
+    { id: "BER_ROT", pais: "Países Baixos", cidade: "Roterdã", origem: "Berlim", coords: { x: 192, y: 44 }, flag: "🇳🇱" },
+    { id: "LON_ROT", pais: "Países Baixos", cidade: "Roterdã", origem: "Londres", coords: { x: 192, y: 44 }, flag: "🇳🇱" },
+    { id: "PAR_ROT", pais: "Países Baixos", cidade: "Roterdã", origem: "Paris", coords: { x: 192, y: 44 }, flag: "🇳🇱" },
+
+    // De Genebra
+    { id: "GEN_FR", pais: "França", cidade: "Paris", origem: "Genebra", coords: { x: 192, y: 50 }, flag: "🇫🇷" },
+    { id: "GEN_IT", pais: "Itália", cidade: "Roma", origem: "Genebra", coords: { x: 203, y: 59 }, flag: "🇮🇹" },
+    { id: "GEN_DE", pais: "Alemanha", cidade: "Berlim", origem: "Genebra", coords: { x: 204, y: 45 }, flag: "🇩🇪" },
+    { id: "GEN_GB", pais: "Reino Unido", cidade: "Londres", origem: "Genebra", coords: { x: 189, y: 46 }, flag: "🇬🇧" },
+    { id: "GEN_AT", pais: "Áustria", cidade: "Viena", origem: "Genebra", coords: { x: 207, y: 51 }, flag: "🇦🇹" },
+    { id: "GEN_CH", pais: "Suíça", cidade: "Zurich", origem: "Genebra", coords: { x: 198, y: 52 }, flag: "🇨🇭" },
+
+    // Para Genebra
+    { id: "PAR_GEN", pais: "Suíça", cidade: "Genebra", origem: "Paris", coords: { x: 196, y: 54 }, flag: "🇨🇭" },
+    { id: "ROM_GEN", pais: "Suíça", cidade: "Genebra", origem: "Roma", coords: { x: 196, y: 54 }, flag: "🇨🇭" },
+    { id: "ZUR_GEN", pais: "Suíça", cidade: "Genebra", origem: "Zurich", coords: { x: 196, y: 54 }, flag: "🇨🇭" },
+    { id: "BER_GEN", pais: "Suíça", cidade: "Genebra", origem: "Berlim", coords: { x: 196, y: 54 }, flag: "🇨🇭" },
 ];
