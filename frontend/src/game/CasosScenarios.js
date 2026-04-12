@@ -96,6 +96,17 @@ export const CASOS_CONFIG = {
     "C018": { hasIntroVideo: false, procedural: true, isCompetitive: true },
     "C019": { hasIntroVideo: false, procedural: true, isCompetitive: true },
     "C020": { hasIntroVideo: false, procedural: true, isCompetitive: true },
+    "C021": { hasIntroVideo: false, procedural: true },
+    "C022": { hasIntroVideo: false, procedural: true },
+    "C023": { hasIntroVideo: false, procedural: true },
+    "C024": { hasIntroVideo: false, procedural: true },
+    "C025": { hasIntroVideo: false, procedural: true },
+    "C026": { hasIntroVideo: false, procedural: true },
+    "C027": { hasIntroVideo: false, procedural: true, isCompetitive: true },
+    "C028": { hasIntroVideo: false, procedural: true, isCompetitive: true },
+    "C029": { hasIntroVideo: false, procedural: true, isCompetitive: true },
+    "C030": { hasIntroVideo: false, procedural: true, isCompetitive: true },
+
 };
 
 /**
