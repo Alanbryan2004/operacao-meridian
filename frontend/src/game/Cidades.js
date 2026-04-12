@@ -1048,7 +1048,27 @@ export const CIDADES = [
             { id: "052-09", texto: "A pessoa comentou sobre um jato de água muito alto em um lago." },
             { id: "052-10", texto: "O destino parecia ser uma cidade europeia extremamente organizada e segura." }
         ]
-    }
+    },
+    {
+        id: "041",
+        cidade: "Munique",
+        pais: "Alemanha",
+        continente: "Europa",
+        imagem: "/Paises/default.png",
+        descricao: "Munique é a capital da Baviera, famosa por sua arquitetura clássica, museus de classe mundial e a tradicional Oktoberfest. Uma metrópole vibrante que combina tradição alpina com inovação tecnológica.",
+        dicas: [
+            { id: "041-01", texto: "A bandeira do país tem faixas preta, vermelha e dourada." },
+            { id: "041-02", texto: "A moeda usada ali é o euro." },
+            { id: "041-03", texto: "Ouvi pessoas falando alemão com sotaque bávaro." },
+            { id: "041-04", texto: "Comentaram sobre uma cidade famosa por grandes festivais de cerveja." },
+            { id: "041-05", texto: "A pista citava uma capital regional no sul da Alemanha." },
+            { id: "041-06", texto: "Falaram de arquitetura gótica e jardins imensos." },
+            { id: "041-07", texto: "Mencionaram uma cidade próxima aos Alpes." },
+            { id: "041-08", texto: "Ouvi referência a um importante polo automobilístico e tecnológico." },
+            { id: "041-09", texto: "A cidade parece misturar modernidade e tradições medievais." },
+            { id: "041-10", texto: "Tudo indicava Munique." }
+        ]
+    },
 ];
 /**
  * Busca uma cidade pelo nome (case-insensitive, aceita acentos).

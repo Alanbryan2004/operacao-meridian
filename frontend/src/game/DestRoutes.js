@@ -574,4 +574,12 @@ export const DESTINATION_OPTIONS = [
     { id: "ROM_GEN", pais: "Suíça", cidade: "Genebra", origem: "Roma", coords: { x: 196, y: 54 }, flag: "🇨🇭" },
     { id: "ZUR_GEN", pais: "Suíça", cidade: "Genebra", origem: "Zurich", coords: { x: 196, y: 54 }, flag: "🇨🇭" },
     { id: "BER_GEN", pais: "Suíça", cidade: "Genebra", origem: "Berlim", coords: { x: 196, y: 54 }, flag: "🇨🇭" },
+    { id: "BER_MUN", pais: "Alemanha", cidade: "Munique", origem: "Berlim", coords: { x: 210, y: 56 }, flag: "🇩🇪" },
+
+    // De Munique
+    { id: "MUN_BER", pais: "Alemanha", cidade: "Berlim", origem: "Munique", coords: { x: 204, y: 45 }, flag: "🇩🇪" },
+    { id: "MUN_VIE", pais: "Áustria", cidade: "Viena", origem: "Munique", coords: { x: 215, y: 56 }, flag: "🇦🇹" },
+    { id: "MUN_ZUR", pais: "Suíça", cidade: "Zurich", origem: "Munique", coords: { x: 198, y: 52 }, flag: "🇨🇭" },
+    { id: "MUN_PRA", pais: "República Tcheca", cidade: "Praga", origem: "Munique", coords: { x: 217, y: 48 }, flag: "🇨🇿" },
+    { id: "MUN_PAR", pais: "França", cidade: "Paris", origem: "Munique", coords: { x: 192, y: 50 }, flag: "🇫🇷" },
 ];

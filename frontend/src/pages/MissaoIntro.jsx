@@ -219,7 +219,7 @@ export default function MissaoIntro() {
                 textAlign: "center", padding: "20px", color: "#fff",
                 boxSizing: "border-box", overflowX: "hidden"
             }}
-            onClick={() => nav(`/caso/${caseId}`)}
+            onClick={() => nav(`/caso/${caseId}?setup=true`)}
         >
             <div style={{ maxWidth: "420px", width: "100%", padding: "0 8px", boxSizing: "border-box" }}>
                 <div style={{ color: "#80bdff", fontSize: "14px", letterSpacing: "4px", marginBottom: "30px", opacity: 0.8 }}>

@@ -108,7 +108,7 @@ export function startRunIfNeeded(state, caseObj, forceReset = false, forcedScena
     if (!forceReset) {
         const existing = state.runs?.[caseObj.id];
         // Se já existe uma run (em progresso ou já concluída), não inicia outra automaticamente
-        if (existing && (existing.status === "IN_PROGRESS" || existing.status === "WON" || existing.status === "LOST")) return state;
+        if (existing && (existing.status === "IN_PROGRESS" || existing.status === "WON" || existing.status === "LOST" || existing.status === "ABORTED")) return state;
 
         // Bloqueia se já houver OUTRA missão em progresso
         const hasActiveMission = Object.values(state.runs || {}).some(r => r.status === "IN_PROGRESS");

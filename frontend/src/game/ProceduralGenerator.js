@@ -16,10 +16,14 @@ const NPC_POOL = [
     { local: "Banco", personagem: "Banqueiro", imgLocal: "/NPC/Banco.png", imgPersonagem: "/NPC/Banqueiro.png" },
     { local: "Floricultura", personagem: "Florista", imgLocal: "/NPC/Floricultura.png", imgPersonagem: "/NPC/Florista.png" },
     { local: "Hospital", personagem: "Médica", imgLocal: "/NPC/Hospital.png", imgPersonagem: "/NPC/Medica.png" },
-    { local: "Hospital", personagem: "Camareira", imgLocal: "/NPC/Hospital.png", imgPersonagem: "/NPC/Camareira.png" },
-    { local: "Hospital", personagem: "Dançarina", imgLocal: "/NPC/Hospital.png", imgPersonagem: "/NPC/Dancarina.png" },
+    { local: "Hotel", personagem: "Camareira", imgLocal: "/NPC/Hotel.png", imgPersonagem: "/NPC/Camareira.png" },
+    { local: "Casa de Show", personagem: "Dançarina", imgLocal: "/NPC/CasadeShow.png", imgPersonagem: "/NPC/Dancarina.png" },
     { local: "Centro da Cidade", personagem: "Morador de Rua", imgLocal: "/NPC/CentrodaCidade.png", imgPersonagem: "/NPC/moradorderua.png" },
-    { local: "Porto", personagem: "Pescador", imgLocal: "/NPC/Restaurante.png", imgPersonagem: "/NPC/Pescador.png" },
+    { local: "Porto", personagem: "Barqueiro", imgLocal: "/NPC/Restaurante.png", imgPersonagem: "/NPC/Barqueiro.png" },
+    { local: "Biblioteca", personagem: "Bibliotecária", imgLocal: "/NPC/Biblioteca.png", imgPersonagem: "/NPC/Bibliotecaria.png" },
+    { local: "Faculdade", personagem: "Professor", imgLocal: "/NPC/Faculdade.png", imgPersonagem: "/NPC/Professor.png" },
+    { local: "Antiquário", personagem: "Antiquário", imgLocal: "/NPC/Antiguidade.png", imgPersonagem: "/NPC/Antiquario.png" },
+    { local: "Feira de Vendas", personagem: "Mercador", imgLocal: "/NPC/FeiraVendas.png", imgPersonagem: "/NPC/Mercador.png" },
 ];
 
 // ── Helpers ──────────────────────────────────────────────────
@@ -250,7 +254,19 @@ function selectCityTips(cityName, count, usedTipIds) {
 // ── NPC Assembly ─────────────────────────────────────────────
 
 function pick3Npcs() {
-    return pickNRandom(NPC_POOL, 3);
+    const shuffled = shuffle(NPC_POOL);
+    const selected = [];
+    const usedLocs = new Set();
+
+    for (const npc of shuffled) {
+        if (!usedLocs.has(npc.local)) {
+            selected.push(npc);
+            usedLocs.add(npc.local);
+        }
+        if (selected.length === 3) break;
+    }
+
+    return selected;
 }
 
 // ── Main Generator ───────────────────────────────────────────

@@ -59,6 +59,7 @@ export const ORIGIN_COORDS = {
     "Barcelona": { x: 190, y: 60 },
     "Roterdã": { x: 192, y: 44 },
     "Genebra": { x: 196, y: 54 },
+    "Munique": { x: 210, y: 56 },
 };
 
 const TRANSPORT_MODES = [
@@ -174,8 +175,8 @@ export default function Caso() {
             const currentRun = state.runs?.[caseId];
             const scenarioMismatch = forcedScenarioId && currentRun?.scenarioId !== forcedScenarioId;
             const lobbyMismatch = lobbyId && currentRun?.lobbyId !== lobbyId;
-            const noRun = !currentRun;
-            const needsReset = isMissionCompetitive && (noRun || lobbyMismatch || scenarioMismatch);
+            const isSetup = searchParams.get("setup") === "true";
+            const needsReset = isSetup || (isMissionCompetitive && (noRun || lobbyMismatch || scenarioMismatch));
             
             const next = startRunIfNeeded(state, { ...caseObj, isCompetitive: isMissionCompetitive }, needsReset, forcedScenarioId, lobbyId);
             

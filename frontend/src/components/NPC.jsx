@@ -41,7 +41,7 @@ const NPC_LIST = [
     {
         nome: "Dançarina",
         img: "/NPC/Dancarina.png",
-        fundoPadrao: "/NPC/Hospital.png",
+        fundoPadrao: "/NPC/CasadeShow.png",
     },
     {
         nome: "Agente de Trânsito",
@@ -56,12 +56,12 @@ const NPC_LIST = [
     {
         nome: "Camareira",
         img: "/NPC/Camareira.png",
-        fundoPadrao: "/NPC/Hospital.png",
+        fundoPadrao: "/NPC/Hotel.png",
     },
     {
         nome: "Pescador",
         img: "/NPC/Pescador.png",
-        fundoPadrao: "/NPC/Restaurante.png",
+        fundoPadrao: "/NPC/Porto.png",
     },
     {
         nome: "Morador de Rua",
