@@ -107,10 +107,9 @@ export default function SuspectGallery({ capturedSuspects = {} }) {
                                 {isUnlocked ? (
                                     <img src={`/Suspeitos/${s.id}.png`} alt={s.codinome} />
                                 ) : (
-                                    <div className="sg-locked-overlay">
-                                        <span className="sg-question">?</span>
-                                    </div>
+                                    <img src="/Suspeitos/NaoIdentificado.png" alt="Não Identificado" />
                                 )}
+
                             </div>
                             <div className={`sg-name ${isUnlocked ? "unlocked" : ""}`}>
                                 {isUnlocked ? s.codinome : "???"}

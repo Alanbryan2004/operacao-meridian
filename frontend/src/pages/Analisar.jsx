@@ -1,5 +1,7 @@
 import React, { useState, useMemo } from "react";
 import { suspectsSeed } from "../game/store";
+import { useGame } from "../game/GameProvider";
+
 
 function Panel({ children, style = {} }) {
     return (
@@ -19,7 +21,11 @@ function Panel({ children, style = {} }) {
 }
 
 export default function Analisar({ onBack, filters, setFilters, warrantId, setWarrantId, tutorialHint }) {
+    const { state } = useGame();
+    const capturedSuspects = state?.capturedSuspects || {};
+
     const toggleFilter = (key, val) => {
+
         setFilters(prev => {
             const current = prev[key];
             if (current.includes(val)) {
@@ -189,8 +195,13 @@ export default function Analisar({ onBack, filters, setFilters, warrantId, setWa
                         onClick={() => setSelectedId(s.id)}
                         onDoubleClick={() => setSelectedSuspect(s)}
                     >
-                        <img src={`/Suspeitos/${s.id}.png`} className="om-suspect-img" alt={s.codinome} />
+                        <img 
+                            src={capturedSuspects[s.id] > 0 ? `/Suspeitos/${s.id}.png` : `/Suspeitos/NaoIdentificado.png`} 
+                            className="om-suspect-img" 
+                            alt={s.codinome} 
+                        />
                         <div className="om-suspect-name">{s.codinome}</div>
+
                         <div className={`om-selection-badge ${selectedId === s.id ? "active" : ""}`}>
                             {selectedId === s.id ? "✓" : ""}
                         </div>
@@ -253,10 +264,11 @@ export default function Analisar({ onBack, filters, setFilters, warrantId, setWa
                         {/* Foto de Fundo (Sempre visível) */}
                         <div style={{ height: "100%", width: "100%", position: "relative" }}>
                             <img
-                                src={`/Suspeitos/${selectedSuspect.id}.png`}
+                                src={capturedSuspects[selectedSuspect.id] > 0 ? `/Suspeitos/${selectedSuspect.id}.png` : `/Suspeitos/NaoIdentificado.png`}
                                 style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "top" }}
                                 alt={selectedSuspect.codinome}
                             />
+
                             <button
                                 onClick={() => { setSelectedSuspect(null); setIsDossierExpanded(false); }}
                                 style={{ position: "absolute", top: 10, right: 10, background: "rgba(0,0,0,0.5)", border: "none", color: "#fff", width: 32, height: 32, borderRadius: 16, fontSize: 20, display: "flex", alignItems: "center", justifyContent: "center", zIndex: 10 }}
