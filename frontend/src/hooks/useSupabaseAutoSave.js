@@ -48,9 +48,16 @@ export function useSupabaseAutoSave(gameState, canSave = false, slot = 0, deboun
         }, debounceMs);
 
         return () => {
-            if (tRef.current) clearTimeout(tRef.current);
+            if (tRef.current) {
+                clearTimeout(tRef.current);
+                // 🔥 Flush imediato se houver algo pendente ao desmontar
+                if (canSave && !savingRef.current) {
+                    saveGameState(gameState, slot).catch(e => console.warn("Erro no flush ao desmontar:", e));
+                }
+            }
         };
     }, [gameState, canSave, slot, debounceMs]);
+
 
     // flush quando usuário sai / troca aba / mobile minimiza
     useEffect(() => {

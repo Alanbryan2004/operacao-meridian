@@ -111,10 +111,17 @@ export default function Mural() {
         const difficulties = ["FACIL", "MEDIO", "DIFICIL"];
         
         difficulties.forEach(diff => {
-            const pool = available.filter(c => c.dificuldade === diff);
-            if (pool.length > 0) {
-                const randomIndex = Math.floor(Math.random() * pool.length);
-                selected.push(pool[randomIndex]);
+            // Prioriza a missão que já está em andamento para esta dificuldade
+            const activeInDiff = available.find(c => state.runs[c.id]?.status === "IN_PROGRESS" && c.dificuldade === diff);
+
+            if (activeInDiff) {
+                selected.push(activeInDiff);
+            } else {
+                const pool = available.filter(c => c.dificuldade === diff);
+                if (pool.length > 0) {
+                    const randomIndex = Math.floor(Math.random() * pool.length);
+                    selected.push(pool[randomIndex]);
+                }
             }
         });
 

@@ -126,7 +126,7 @@ export default function Caso() {
     try {
         const nav = useNavigate();
         const { caseId } = useParams();
-        const { state, replaceState } = useGame();
+        const { state, replaceState, hydrated } = useGame();
         const [searchParams] = useSearchParams();
         
         const isMissionCompetitive = useMemo(() => {
@@ -144,6 +144,8 @@ export default function Caso() {
         const [profileTab, setProfileTab] = useState("PERFIL");
         const [revealFinalResult, setRevealFinalResult] = useState(false);
         const [travelAnimData, setTravelAnimData] = useState(null);
+        const [animatedTime, setAnimatedTime] = useState(null);
+
 
         const [modalConfig, setModalConfig] = useState({
             show: false,
@@ -156,8 +158,13 @@ export default function Caso() {
         const lobbyId = searchParams.get("lobbyId");
         const forcedScenarioId = searchParams.get("scenario");
 
+        const initRef = useRef(null);
+
         useEffect(() => {
-            if (!state) return;
+            if (!state || !hydrated) return;
+            // Evita rodar múltiplas vezes para o mesmo caseId no mesmo mount
+            if (initRef.current === caseId) return;
+            
             const caseObj = state.cases.find((x) => x.id === caseId);
             if (!caseObj) {
                 nav("/mural");
@@ -175,8 +182,10 @@ export default function Caso() {
             if (next !== state) {
                 replaceState(saveGame(next));
             }
+            initRef.current = caseId;
             window.dispatchEvent(new CustomEvent("meridian-play-audio", { detail: true }));
-        }, [caseId, isMissionCompetitive, forcedScenarioId, nav, replaceState, state]);
+        }, [caseId, isMissionCompetitive, forcedScenarioId, nav, replaceState, hydrated]); // state removido das deps para evitar loop de abort
+
 
         const caseObj = useMemo(
             () => state?.cases?.find((x) => x.id === caseId),
@@ -461,11 +470,31 @@ export default function Caso() {
                 const animImg = isReverse ? (transport.animImgVolta || transport.animImg) : transport.animImg;
                 setTravelAnimData({ ...transport, animImg, destCidade: destino.cidade, isReverse });
                 setViewMode("TRAVEL_ANIMATION");
+
+                // --- Efeito de Countdown Visual ---
+                const oldTime = run.tempoRestanteHoras;
+                const totalHoursToDeduct = transport.horasBase;
+                let currentVisual = oldTime;
+                
+                setAnimatedTime(oldTime);
+                const stepMs = transport.animDuration / totalHoursToDeduct;
+                const interval = setInterval(() => {
+                    currentVisual--;
+                    if (currentVisual >= oldTime - totalHoursToDeduct) {
+                        setAnimatedTime(currentVisual);
+                    } else {
+                        clearInterval(interval);
+                    }
+                }, stepMs);
+
                 setTimeout(() => {
+                    clearInterval(interval);
+                    setAnimatedTime(null);
                     setTravelAnimData(null);
                     triggerArrival();
                 }, transport.animDuration);
             } else {
+
                 triggerArrival();
             }
         };
@@ -648,8 +677,18 @@ export default function Caso() {
                                     <div className="om-title">{caseObj.titulo}</div>
                                     <div style={{ textAlign: "right", display: "flex", gap: "15px" }}>
                                         <div><div style={{ fontSize: 14, fontWeight: 900 }}>${state.player.dinheiro}</div><div style={{ fontSize: 10, opacity: 0.6 }}>SALDO</div></div>
-                                        {!isMissionCompetitive ? (<div><div style={{ fontSize: 14, fontWeight: 900 }}>{fmtHoras(run.tempoRestanteHoras)}</div><div style={{ fontSize: 10, opacity: 0.6 }}>RESTANTES</div></div>) : (<div><div style={{ fontSize: 14, fontWeight: 900, color: "#80bdff" }}>PVP</div><div style={{ fontSize: 10, opacity: 0.6 }}>MODO</div></div>)}
+                                        {!isMissionCompetitive ? (
+                                            <div>
+                                                <div style={{ fontSize: 14, fontWeight: 900, color: animatedTime !== null ? "#3cff9c" : "#fff", transition: "color 0.3s" }}>
+                                                    {fmtHoras(animatedTime !== null ? animatedTime : run.tempoRestanteHoras)}
+                                                </div>
+                                                <div style={{ fontSize: 10, opacity: 0.6 }}>RESTANTES</div>
+                                            </div>
+                                        ) : (
+                                            <div><div style={{ fontSize: 14, fontWeight: 900, color: "#80bdff" }}>PVP</div><div style={{ fontSize: 10, opacity: 0.6 }}>MODO</div></div>
+                                        )}
                                     </div>
+
                                 </div>
                             </Panel>
                         </div>
