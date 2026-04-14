@@ -482,9 +482,10 @@ export default function Caso() {
                 }
             };
 
-            if (shouldAnim && transport.animDuration) {
+            if (shouldAnim && (transport.animDuration || 0) > 0) {
                 const isReverse = !!transport.isReverse || !!selectedDest?.isReturn;
                 const animImg = isReverse ? (transport.animImgVolta || transport.animImg) : transport.animImg;
+                
                 setTravelAnimData({ ...transport, animImg, destCidade: destino.cidade, isReverse });
                 setViewMode("TRAVEL_ANIMATION");
 
@@ -494,7 +495,10 @@ export default function Caso() {
                 let currentVisual = oldTime;
                 
                 setAnimatedTime(oldTime);
-                const stepMs = transport.animDuration / totalHoursToDeduct;
+                // Calcula stepMs garantindo que seja um número válido
+                const duration = transport.animDuration || 2000;
+                const stepMs = duration / (totalHoursToDeduct || 1);
+                
                 const interval = setInterval(() => {
                     currentVisual--;
                     if (currentVisual >= oldTime - totalHoursToDeduct) {
@@ -509,9 +513,10 @@ export default function Caso() {
                     setAnimatedTime(null);
                     setTravelAnimData(null);
                     triggerArrival();
-                }, transport.animDuration);
+                }, duration);
             } else {
-
+                setTravelAnimData(null);
+                setAnimatedTime(null);
                 triggerArrival();
             }
         };
@@ -624,10 +629,20 @@ export default function Caso() {
 
         const handleVoltar = () => {
             if (!run?.cidadeAnterior) return;
+            // Busca um objeto de destino válido para a cidade anterior
             let destObj = DESTINATION_OPTIONS.find(d => d.cidade === run.cidadeAnterior);
-            if (!destObj && run.cidadeAnterior === caseObj.localInicial?.cidade) {
-                destObj = { ...caseObj.localInicial, coords: ORIGIN_COORDS[caseObj.localInicial.cidade] || { x: 160, y: 100 } };
+            
+            // Se não encontrou nas rotas globais ou se é a cidade inicial, reconstrói o objeto
+            if (!destObj || run.cidadeAnterior === caseObj.localInicial?.cidade) {
+                const isStart = run.cidadeAnterior === caseObj.localInicial?.cidade;
+                destObj = {
+                    ...(isStart ? caseObj.localInicial : { cidade: run.cidadeAnterior, pais: "Desconhecido" }),
+                    coords: ORIGIN_COORDS[run.cidadeAnterior] || { x: 160, y: 100 },
+                    flag: "📍", // Fallback de bandeira
+                    origem: run.localAtual?.cidade // Define a origem correta
+                };
             }
+            
             if (destObj) {
                 setSelectedDest({ ...destObj, isReturn: true });
                 setViewMode("TRAVEL_MODES");
@@ -755,7 +770,29 @@ export default function Caso() {
                                         `}</style>
                                     </div>
                                 ) : activeVideo && (showSuspectVideo || viewMode === "ARRIVAL") ? (
-                                    <video key={activeVideo} src={activeVideo} autoPlay loop={false} onEnded={() => { if (runStatusRef.current === "WON" || runStatusRef.current === "LOST" || run?.status === "WON" || run?.status === "LOST") nav(`/caso-solucionado/${caseId}${isMissionCompetitive ? "?mode=competitive" : ""}`); else { setVideoEnded(true); setTimeout(() => { setShowSuspectVideo(false); setActiveVideo(null); if (viewMode !== "ARRIVAL") setViewMode("ACTIONS"); setSelectedDest(null); setVideoEnded(false); }, 300); } }} style={{ width: "100%", height: "220px", objectFit: "cover" }} />
+                                    <video
+                                        key={activeVideo}
+                                        src={activeVideo}
+                                        autoPlay
+                                        loop={false}
+                                        onEnded={() => {
+                                            if (runStatusRef.current === "WON" || runStatusRef.current === "LOST" || run?.status === "WON" || run?.status === "LOST") {
+                                                nav(`/caso-solucionado/${caseId}${isMissionCompetitive ? "?mode=competitive" : ""}`);
+                                            } else {
+                                                setVideoEnded(true);
+                                                setTimeout(() => {
+                                                    setShowSuspectVideo(false);
+                                                    setActiveVideo(null);
+                                                    // Sempre volta para ACTIONS após o vídeo terminar
+                                                    // O DialogBox de ARRIVAL já terá sido exibido antes do vídeo
+                                                    setViewMode("ACTIONS");
+                                                    setSelectedDest(null);
+                                                    setVideoEnded(false);
+                                                }, 300);
+                                            }
+                                        }}
+                                        style={{ width: "100%", height: "220px", objectFit: "cover" }}
+                                    />
                                 ) : (viewMode === "TRAVEL_MAP" || viewMode === "TRAVEL_MODES") ? (
                                     <div className="om-map-container">
                                         {(() => {
@@ -803,7 +840,7 @@ export default function Caso() {
                     {viewMode === "PROFILE" && profileTab === "GALERIA" && <div style={{ marginTop: 20 }}><SuspectGallery capturedSuspects={state.capturedSuspects || {}} /><button onClick={() => setViewMode("ACTIONS")} className="om-btn" style={{ marginTop: 20 }}>VOLTAR</button></div>}
                     {viewMode === "ANALYZE" && <>{tutState && <div style={{ background: "rgba(255,215,0,0.12)", border: "1px solid rgba(255,215,0,0.4)", borderRadius: 10, padding: "8px 12px", marginBottom: 12, fontSize: 11, color: "#ffd700", textAlign: "center", fontWeight: 700 }}>📌 {tutState.expectedWarrant ? "Selecione Kite Needle e clique em MANDADO para emitir o mandado de prisão" : tutState.expectedAnalise === "sexo" ? "Selecione \"Feminino\" nos filtros de Sexo" : tutState.expectedAnalise === "corCabelo" ? "Selecione \"Preto\" nos filtros de Cor do Cabelo" : tutState.expectedAnalise === "esporte" ? "Selecione \"Ginástica Olímpica\" nos filtros de Esporte" : "Analise o perfil do suspeito"}</div>}<Analisar onBack={() => { setViewMode("ACTIONS"); }} filters={run?.filtrosAnalise || {}} setFilters={(f) => { const n = typeof f === 'function' ? f(run?.filtrosAnalise) : f; updateRun({ ...run, filtrosAnalise: n }); }} warrantId={run?.warrantId} setWarrantId={setPendingWarrant} tutorialHint={tutState} /></>}
                 </div>
-                <div className="om-tabs"><div className="om-tabs-inner"><button className="om-tab" onClick={() => setViewMode("ACTIONS")}>AÇÃO</button><button className="om-tab" onClick={() => setViewMode("JOURNAL")}>JORNAL</button><button className="om-tab" onClick={() => setViewMode("PROFILE")}>CASOS</button></div></div>
+                <div className="om-tabs"><div className="om-tabs-inner"><button className={`om-tab ${viewMode === "ACTIONS" ? "om-tab-active" : ""}`} onClick={() => setViewMode("ACTIONS")}>AÇÃO</button><button className={`om-tab ${viewMode === "JOURNAL" ? "om-tab-active" : ""}`} onClick={() => setViewMode("JOURNAL")}>JORNAL</button><button className={`om-tab ${viewMode === "PROFILE" ? "om-tab-active" : ""}`} onClick={() => setViewMode("PROFILE")}>CASOS</button></div></div>
                 {modalConfig.show && <ModalMsg message={modalConfig.message} type={modalConfig.type} isConfirm={modalConfig.isConfirm} onConfirm={modalConfig.onConfirm} onClose={() => setModalConfig({ ...modalConfig, show: false })} />}
                 {pendingWarrant && (
                     <ModalMsg 
