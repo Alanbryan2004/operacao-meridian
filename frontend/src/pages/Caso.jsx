@@ -18,6 +18,8 @@ import Analisar from "./Analisar";
 import SuspectGallery from "../components/SuspectGallery";
 import DialogBox from "../components/DialogBox";
 import ModalMsg from "../components/ModalMsg";
+import { suspectsSeed } from "../game/store";
+import { casesSeed } from "../game/seed";
 
 export const ORIGIN_COORDS = {
     "Campinas": { x: 137, y: 149 },
@@ -146,15 +148,8 @@ export default function Caso() {
         const [revealFinalResult, setRevealFinalResult] = useState(false);
         const [travelAnimData, setTravelAnimData] = useState(null);
         const [animatedTime, setAnimatedTime] = useState(null);
-
-
-        const [modalConfig, setModalConfig] = useState({
-            show: false,
-            message: "",
-            type: "SUCCESS",
-            onConfirm: null,
-            isConfirm: false
-        });
+        const [modalConfig, setModalConfig] = useState({ show: false, message: "", type: "INFO", isConfirm: false, onConfirm: null });
+        const [pendingWarrant, setPendingWarrant] = useState(null);
 
         const lobbyId = searchParams.get("lobbyId");
         const forcedScenarioId = searchParams.get("scenario");
@@ -782,10 +777,33 @@ export default function Caso() {
                         </div>
                     )}
                     {viewMode === "PROFILE" && profileTab === "GALERIA" && <div style={{ marginTop: 20 }}><SuspectGallery capturedSuspects={state.capturedSuspects || {}} /><button onClick={() => setViewMode("ACTIONS")} className="om-btn" style={{ marginTop: 20 }}>VOLTAR</button></div>}
-                    {viewMode === "ANALYZE" && <>{tutState && <div style={{ background: "rgba(255,215,0,0.12)", border: "1px solid rgba(255,215,0,0.4)", borderRadius: 10, padding: "8px 12px", marginBottom: 12, fontSize: 11, color: "#ffd700", textAlign: "center", fontWeight: 700 }}>📌 {tutState.expectedWarrant ? "Selecione Kite Needle e clique em MANDADO para emitir o mandado de prisão" : tutState.expectedAnalise === "sexo" ? "Selecione \"Feminino\" nos filtros de Sexo" : tutState.expectedAnalise === "corCabelo" ? "Selecione \"Preto\" nos filtros de Cor do Cabelo" : tutState.expectedAnalise === "esporte" ? "Selecione \"Ginástica Olímpica\" nos filtros de Esporte" : "Analise o perfil do suspeito"}</div>}<Analisar onBack={() => setViewMode("ACTIONS")} filters={run?.filtrosAnalise || {}} setFilters={(f) => { const n = typeof f === 'function' ? f(run?.filtrosAnalise) : f; updateRun({ ...run, filtrosAnalise: n }); }} warrantId={run?.warrantId} setWarrantId={(id) => updateRun({ ...run, warrantId: id, mandadoEmitido: true })} tutorialHint={tutState} /></>}
+                    {viewMode === "ANALYZE" && <>{tutState && <div style={{ background: "rgba(255,215,0,0.12)", border: "1px solid rgba(255,215,0,0.4)", borderRadius: 10, padding: "8px 12px", marginBottom: 12, fontSize: 11, color: "#ffd700", textAlign: "center", fontWeight: 700 }}>📌 {tutState.expectedWarrant ? "Selecione Kite Needle e clique em MANDADO para emitir o mandado de prisão" : tutState.expectedAnalise === "sexo" ? "Selecione \"Feminino\" nos filtros de Sexo" : tutState.expectedAnalise === "corCabelo" ? "Selecione \"Preto\" nos filtros de Cor do Cabelo" : tutState.expectedAnalise === "esporte" ? "Selecione \"Ginástica Olímpica\" nos filtros de Esporte" : "Analise o perfil do suspeito"}</div>}<Analisar onBack={() => { setViewMode("ACTIONS"); }} filters={run?.filtrosAnalise || {}} setFilters={(f) => { const n = typeof f === 'function' ? f(run?.filtrosAnalise) : f; updateRun({ ...run, filtrosAnalise: n }); }} warrantId={run?.warrantId} setWarrantId={setPendingWarrant} tutorialHint={tutState} /></>}
                 </div>
                 <div className="om-tabs"><div className="om-tabs-inner"><button className="om-tab" onClick={() => setViewMode("ACTIONS")}>AÇÃO</button><button className="om-tab" onClick={() => setViewMode("JOURNAL")}>JORNAL</button><button className="om-tab" onClick={() => setViewMode("PROFILE")}>CASOS</button></div></div>
                 {modalConfig.show && <ModalMsg message={modalConfig.message} type={modalConfig.type} isConfirm={modalConfig.isConfirm} onConfirm={modalConfig.onConfirm} onClose={() => setModalConfig({ ...modalConfig, show: false })} />}
+                {pendingWarrant && (
+                    <ModalMsg 
+                        message={`Deseja emitir Mandado de Prisão para ${suspectsSeed.find(s => s.id === pendingWarrant)?.codinome || "este suspeito"}?\n\nO alvo será marcado para captura imediata.`}
+                        type="SUCCESS"
+                        isConfirm={true}
+                        onConfirm={() => {
+                            const id = pendingWarrant;
+                            const target = suspectsSeed.find(s => s.id === id);
+                            const msg = `⚖️ Mandado de Prisão emitido para ${target?.codinome || "Suspeito Não Identificado"}.`;
+                            const nextRun = { 
+                                ...run, 
+                                warrantId: id, 
+                                mandadoEmitido: true,
+                                jornal: [...(run.jornal || []), { t: new Date().toISOString(), msg }]
+                            };
+                            updateRun(nextRun);
+                            setPendingWarrant(null);
+                            setViewMode("ACTIONS");
+                            window.dispatchEvent(new CustomEvent("meridian-play-audio", { detail: true }));
+                        }}
+                        onClose={() => setPendingWarrant(null)}
+                    />
+                )}
             </div>
         );
     } catch (err) {

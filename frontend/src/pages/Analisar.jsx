@@ -38,7 +38,7 @@ export default function Analisar({ onBack, filters, setFilters, warrantId, setWa
 
     const [selectedSuspect, setSelectedSuspect] = useState(null);
     const [isDossierExpanded, setIsDossierExpanded] = useState(false);
-    const [selectedId, setSelectedId] = useState(null); // Para seleção local (checkbox)
+    const [selectedId, setSelectedId] = useState(warrantId || null); // Para seleção local (checkbox)
     const [currentPage, setCurrentPage] = useState(1);
     const itemsPerPage = 4;
 
@@ -245,16 +245,27 @@ export default function Analisar({ onBack, filters, setFilters, warrantId, setWa
                     VOLTAR
                 </button>
                 <button
-                    className={`om-btn om-btn-primary ${tutorialHint?.expectedWarrant && selectedId === "006" ? "tut-chip-highlight" : ""}`}
-                    style={{ flex: 1.5, background: selectedId ? "#ff3b3b" : "rgba(255,255,255,0.1)", borderColor: selectedId ? "#ff3b3b" : "rgba(255,255,255,0.1)" }}
                     disabled={!selectedId}
+                    id="om-btn-mandado"
+                    style={{
+                        padding: "14px 24px",
+                        borderRadius: 14,
+                        border: "none",
+                        background: !selectedId ? "rgba(255,255,255,0.05)" : "linear-gradient(135deg, #ff4d6a 0%, #ff1a40 100%)",
+                        color: "#fff",
+                        fontSize: 13,
+                        fontWeight: 900,
+                        letterSpacing: 1,
+                        cursor: !selectedId ? "not-allowed" : "pointer",
+                        opacity: !selectedId ? 0.3 : 1,
+                        boxShadow: !selectedId ? "none" : "0 8px 16px rgba(255,77,106,0.25)",
+                        transition: "all 0.2s"
+                    }}
                     onClick={() => {
-                        if (window.confirm("Deseja emitir Mandado de Prisão para este suspeito?")) {
-                            setWarrantId(selectedId);
-                        }
+                        setWarrantId(selectedId);
                     }}
                 >
-                    MANDADO
+                    ⚖️ EMITIR MANDADO
                 </button>
             </div>
 
