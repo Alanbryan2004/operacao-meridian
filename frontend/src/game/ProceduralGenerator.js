@@ -11,19 +11,21 @@ import { suspectsSeed } from "./store";
 
 // ── NPC Pool ─────────────────────────────────────────────────
 const NPC_POOL = [
-    { local: "Táxi", personagem: "Taxista", imgLocal: "/NPC/Taxi.png", imgPersonagem: "/NPC/Taxista.png" },
     { local: "Restaurante", personagem: "Garçom", imgLocal: "/NPC/Restaurante.png", imgPersonagem: "/NPC/Garcon.png" },
-    { local: "Banco", personagem: "Banqueiro", imgLocal: "/NPC/Banco.png", imgPersonagem: "/NPC/Banqueiro.png" },
-    { local: "Floricultura", personagem: "Florista", imgLocal: "/NPC/Floricultura.png", imgPersonagem: "/NPC/Florista.png" },
     { local: "Hospital", personagem: "Médica", imgLocal: "/NPC/Hospital.png", imgPersonagem: "/NPC/Medica.png" },
     { local: "Hotel", personagem: "Camareira", imgLocal: "/NPC/Hotel.png", imgPersonagem: "/NPC/Camareira.png" },
     { local: "Casa de Show", personagem: "Dançarina", imgLocal: "/NPC/CasadeShow.png", imgPersonagem: "/NPC/Dancarina.png" },
     { local: "Centro da Cidade", personagem: "Morador de Rua", imgLocal: "/NPC/CentrodaCidade.png", imgPersonagem: "/NPC/moradorderua.png" },
-    { local: "Porto", personagem: "Barqueiro", imgLocal: "/NPC/Restaurante.png", imgPersonagem: "/NPC/Barqueiro.png" },
+    { local: "Porto", personagem: "Pescador", imgLocal: "/NPC/Porto.png", imgPersonagem: "/NPC/Pescador.png" },
     { local: "Biblioteca", personagem: "Bibliotecária", imgLocal: "/NPC/Biblioteca.png", imgPersonagem: "/NPC/Bibliotecaria.png" },
     { local: "Faculdade", personagem: "Professor", imgLocal: "/NPC/Faculdade.png", imgPersonagem: "/NPC/Professor.png" },
     { local: "Antiquário", personagem: "Antiquário", imgLocal: "/NPC/Antiguidade.png", imgPersonagem: "/NPC/Antiquario.png" },
-    { local: "Feira de Vendas", personagem: "Mercador", imgLocal: "/NPC/FeiraVendas.png", imgPersonagem: "/NPC/Mercador.png" },
+    { local: "Banco", personagem: "Banqueiro", imgLocal: "/NPC/Banco.png", imgPersonagem: "/NPC/Banqueiro.png" },
+    { local: "Taxi", personagem: "Taxista", imgLocal: "/NPC/Taxi.png", imgPersonagem: "/NPC/Taxista.png" },
+    { local: "Feira", personagem: "Mercador", imgLocal: "/NPC/FeiraVendas.png", imgPersonagem: "/NPC/Mercador.png" },
+    { local: "Cozinha Industrial", personagem: "Cozinheiro", imgLocal: "/NPC/Restaurante.png", imgPersonagem: "/NPC/Cozinheiro.png" },
+    { local: "Praça", personagem: "Agente de Trânsito", imgLocal: "/NPC/CentrodaCidade.png", imgPersonagem: "/NPC/AgenteTransito.png" },
+    { local: "Floricultura", personagem: "Florista", imgLocal: "/NPC/Floricultura.png", imgPersonagem: "/NPC/Florista.png" }
 ];
 
 // ── Helpers ──────────────────────────────────────────────────
@@ -47,20 +49,20 @@ function pickNRandom(arr, n) {
 /** Get number of stages for a given difficulty level */
 function getStageCount(nivel) {
     const n = (nivel || "").toUpperCase();
-    if (n === "FACIL") return 5;
-    if (n === "MEDIO") return 5;
-    if (n === "DIFICIL") return 10;
-    if (n === "LENDARIO") return 15;
-    return 5;
+    if (n === "FACIL") return 6;
+    if (n === "MEDIO") return 6;
+    if (n === "DIFICIL") return 11;
+    if (n === "LENDARIO") return 16;
+    return 6;
 }
 
 /** Get the last stage index where suspect tips should be given (0-based) */
 function getLastSuspectTipStage(nivel) {
     const n = (nivel || "").toUpperCase();
-    if (n === "FACIL" || n === "MEDIO") return 3;   // stage 4 (0-indexed)
-    if (n === "DIFICIL") return 8;                    // stage 9
-    if (n === "LENDARIO") return 13;                  // stage 14
-    return 3;
+    if (n === "FACIL" || n === "MEDIO") return 4;   // stage 5 (0-indexed)
+    if (n === "DIFICIL") return 9;                    // stage 10
+    if (n === "LENDARIO") return 14;                  // stage 15
+    return 4;
 }
 
 // ── Route Builder ────────────────────────────────────────────
@@ -238,15 +240,20 @@ function selectCityTips(cityName, count, usedTipIds) {
     const selected = pickNRandom(available, count);
 
     // Track used tips
-    selected.forEach(t => usedTipIds.add(t.id));
-
-    // If not enough, generate fillers
-    while (selected.length < count) {
-        selected.push({
-            id: `FILLER_${cityName}_${selected.length}`,
-            texto: `Não há mais informações disponíveis em ${cityName}.`
-        });
+    if (selected.length < count) {
+        const fallbacks = [
+            "Ouvi dizer que o suspeito seguiu para um país distante.",
+            "Disseram que o destino fica em outro continente.",
+            "O suspeito parecia estar com pressa para viajar.",
+            "Vi alguém com as mesmas características saindo no último transporte.",
+            "Perguntaram sobre as passagens para a próxima grande metrópole."
+        ];
+        while (selected.length < count) {
+            selected.push({ id: `fallback_${selected.length}`, texto: fallbacks[selected.length % fallbacks.length] });
+        }
     }
+
+    selected.forEach(t => usedTipIds.add(t.id));
 
     return selected;
 }
@@ -315,7 +322,6 @@ export function generateProceduralScenario(caseObj) {
 
     // 5. Build interrogatorios for each stage
     const usedCityTipIds = new Set();
-    const usedSuspectTipIds = new Set(suspectTipSchedule.map(s => s.tipId));
     const interrogatorios = [];
     const arrestNpcIndex = Math.floor(Math.random() * 3); // 0, 1, or 2
 
@@ -337,17 +343,20 @@ export function generateProceduralScenario(caseObj) {
 
         for (let npcIdx = 0; npcIdx < 3; npcIdx++) {
             const npc = npcs[npcIdx];
-            const cityTip = cityTips[npcIdx];
-            const hasSuspectTip = (npcIdx === suspectTipNpcIdx && suspectTip);
+            const cityTip = cityTips[npcIdx] || { id: `FALLBACK_${npcIdx}`, texto: "Não consegui muitas informações sobre o destino." };
+            const isArrestNPC = isFinalStage && npcIdx === arrestNpcIndex;
+            const hasSuspectTip = !isFinalStage && suspectTip && (npcIdx === suspectTipNpcIdx);
 
             let pista;
-            if (isFinalStage) {
-                // Final stage: simple clues, arrest trigger is on arrestNpcIndex
-                pista = cityTip.texto;
+            if (isArrestNPC) {
+                pista = `Atenção, Agente! Eu vi o suspeito entrando naquele prédio ali agora mesmo! Rápido, você pode capturá-lo!`;
+            } else if (isFinalStage) {
+                pista = `Houve muita agitação por aqui, mas o suspeito parece estar escondido em algum lugar desta cidade. Procure nos arredores!`;
             } else if (hasSuspectTip) {
-                // Combined: city tip + suspect tip
+                // Combined: Exactly 1 Location Tip + 1 Suspect Tip
                 pista = `${cityTip.texto} Além disso: ${suspectTip.texto}`;
             } else {
+                // Exactly 1 Location Tip
                 pista = cityTip.texto;
             }
 

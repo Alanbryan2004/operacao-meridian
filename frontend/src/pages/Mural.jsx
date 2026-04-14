@@ -93,16 +93,23 @@ export default function Mural() {
     if (!state) return null;
     const { player, cases } = state;
 
-    // Sorteia missões priorizando os tutoriais (C001-C010)
+    // Sorteia missões garantindo diversidade de dificuldade (FÁCIL, MÉDIO, DIFÍCIL)
     const dailyMissions = useMemo(() => {
         if (loadingMissions) return [];
+
+        const normalizeDiff = (d) => {
+            if (!d) return "";
+            const s = d.toUpperCase().normalize("NFD").replace(/[\u0300-\u036f]/g, ""); // Remove acentos
+            if (s === "MEDIA") return "MEDIO";
+            return s;
+        };
 
         // 1. Filtrar casos disponíveis (não vencidos e não lendários)
         const available = cases.filter(c => {
             if (c.id === "C000") {
                 if (state.runs["C000"]?.status === "WON" || completedIds.includes("C000")) return false;
             }
-            if (c.dificuldade === "LENDARIO") return false;
+            if (normalizeDiff(c.dificuldade) === "LENDARIO") return false;
             if (completedIds.includes(c.id)) return false;
             if (state.runs[c.id]?.status === "WON") return false;
             return true;
@@ -110,59 +117,60 @@ export default function Mural() {
 
         const activeRun = Object.values(state.runs).find(r => r.status === "IN_PROGRESS");
         const activeCaseId = activeRun?.caseId;
-
-        // 2. Separar Estáticos (Tutoriais: C001-C010) e Procedurais (C011+)
-        const tutorialPool = available.filter(c => {
-            const idNum = parseInt(c.id.replace("C", ""), 10);
-            return idNum >= 1 && idNum <= 10;
-        }).sort((a,b) => a.id.localeCompare(b.id, undefined, { numeric: true }));
-
-        const proceduralPool = available.filter(c => {
-            const idNum = parseInt(c.id.replace("C", ""), 10);
-            return idNum >= 11;
-        });
+        const activeCase = activeCaseId ? cases.find(c => c.id === activeCaseId) : null;
 
         let selected = [];
+        if (activeCase) selected.push(activeCase);
 
-        // Lógica de Prioridade:
-        // Se houver qualquer tutorial (C001-C010) não vencido, mostramos eles primeiro.
-        if (tutorialPool.length > 0) {
-            // Se tem missão ativa, garanta que ela esteja no topo
-            if (activeCaseId) {
-                const activeCase = cases.find(c => c.id === activeCaseId);
-                if (activeCase) selected.push(activeCase);
+        // 2. Definir as dificuldades desejadas
+        const targetDifficulties = ["FACIL", "MEDIO", "DIFICIL"];
+
+        targetDifficulties.forEach(diff => {
+            if (selected.length >= 3) return;
+
+            // Se já temos uma missão ativa desta dificuldade, pula para a próxima vaga
+            if (selected.find(s => normalizeDiff(s.dificuldade) === diff)) return;
+
+            // Busca primeiro nos tutoriais (C001-C010) desta dificuldade
+            const tutorial = available
+                .filter(c => {
+                    const idNum = parseInt(c.id.replace("C", ""), 10);
+                    return idNum >= 1 && idNum <= 10 && normalizeDiff(c.dificuldade) === diff;
+                })
+                .sort((a, b) => a.id.localeCompare(b.id, undefined, { numeric: true }))[0];
+
+            if (tutorial && !selected.find(s => s.id === tutorial.id)) {
+                selected.push(tutorial);
+            } else {
+                // Se não há tutorial, busca nos procedurais (C011+) desta dificuldade
+                const proceduralPool = available.filter(c => {
+                    const idNum = parseInt(c.id.replace("C", ""), 10);
+                    return idNum >= 11 && normalizeDiff(c.dificuldade) === diff;
+                });
+
+                if (proceduralPool.length > 0) {
+                    const randomIndex = Math.floor(Math.random() * proceduralPool.length);
+                    const pick = proceduralPool[randomIndex];
+                    if (!selected.find(s => s.id === pick.id)) {
+                        selected.push(pick);
+                    }
+                }
             }
-            
-            // Preenche o restante com tutoriais ordenados
-            for (const c of tutorialPool) {
+        });
+
+        // 3. Fallback: Se ainda não tiver 3 casos, preenche com qualquer disponível
+        if (selected.length < 3) {
+            for (const c of available) {
                 if (selected.length >= 3) break;
                 if (!selected.find(s => s.id === c.id)) {
                     selected.push(c);
                 }
             }
-        } 
-        
-        // Se ainda houver espaço (não tem 3 tutoriais), preenche com Procedurais usando a lógica de dificuldade
-        if (selected.length < 3) {
-            const difficulties = ["FACIL", "MEDIO", "DIFICIL"];
-            difficulties.forEach(diff => {
-                if (selected.length >= 3) return;
-                
-                // Se já temos uma missão ativa desta dificuldade em 'selected', pula
-                if (selected.find(s => s.dificuldade === diff)) return;
-
-                const pool = proceduralPool.filter(c => c.dificuldade === diff);
-                if (pool.length > 0) {
-                    const randomIndex = Math.floor(Math.random() * pool.length);
-                    selected.push(pool[randomIndex]);
-                }
-            });
         }
 
-        // Caso especial: se o jogador estiver em uma missão procedural, ela DEVE aparecer no mural
-        if (activeCaseId && !selected.find(s => s.id === activeCaseId)) {
-            selected.unshift(cases.find(c => c.id === activeCaseId));
-            if (selected.length > 3) selected.pop();
+        // 4. Garantir que a missão ativa esteja sempre no topo (se foi adicionada depois)
+        if (activeCase && selected[0]?.id !== activeCaseId) {
+            selected = [activeCase, ...selected.filter(s => s.id !== activeCaseId)];
         }
 
         return selected.slice(0, 3);

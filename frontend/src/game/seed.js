@@ -26,6 +26,7 @@ export const casesSeed = [
         resumo: "A joia roubada era a lendária Lágrima de Aeternum, uma relíquia antiga cravejada de ouro e um núcleo de cristal incandescente, conhecida por seu brilho quase sobrenatural.\n\nEla desapareceu do Museu do Centro Histórico, arrancada de um pedestal protegido por vidro reforçado durante a noite.\n\nAvaliada em cerca de R$ 25 milhões, seu valor real vai além do dinheiro, envolvendo séculos de história e segredos ainda não revelados. 🔎💎",
         imgItem: "/reliquiaDesaparecida.png",
         replayable: true,
+        procedural: true,
         interrogatorios: [
             {
                 id: "L001",
@@ -175,6 +176,7 @@ export const casesSeed = [
         resumo: "🖼️ Obra de Arte Sumiu após o Leilão\n📍 Local do crime: Paris, França 🇫🇷\n🕒 Horário estimado: 02:17 da manhã\n🏛️ Local: Hôtel des Ventes du Palais\n\nUma peça inestimável desapareceu misteriosamente logo após ser arrematada em um leilão de elite. O rastro leva a várias metrópoles globais. 🕵️‍♂️🎨",
         imgItem: "/ObradeArteLeilao.jpg",
         replayable: true,
+        procedural: true,
         interrogatorios: [],
     },
     {
@@ -188,6 +190,7 @@ export const casesSeed = [
         resumo: "📜 O Manuscrito que Nunca Existiu\n📍 Local: Biblioteca Imperial de Viena, Áustria 🇦🇹\n\nUm documento que muitos acreditavam ser apenas uma lenda urbana foi roubado do cofre subterrâneo da Biblioteca Imperial. O manuscrito, supostamente escrito por um alquimista do século XVII, conteria segredos sobre a transmutação de metais e a vida eterna.\n\nA equipe Meridian foi acionada para recuperar esta peça inestimável antes que ela caia em mãos erradas. Sua missão começa em Viena. 🔎📚",
         imgItem: "/caso3_Manuscrito_que_nunca_existiu.png",
         replayable: true,
+        procedural: true,
         interrogatorios: [],
     },
     {

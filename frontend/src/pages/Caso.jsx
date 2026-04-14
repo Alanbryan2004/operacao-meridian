@@ -388,22 +388,43 @@ export default function Caso() {
             const globalOptions = DESTINATION_OPTIONS.filter(d => d.origem === run.localAtual?.cidade);
             if (activeScenario?.travelTable && activeScenario.travelTable[run.localAtual?.cidade]) {
                 const forcedCities = activeScenario.travelTable[run.localAtual?.cidade];
-                return globalOptions
-                    .filter(d => forcedCities.includes(d.cidade))
-                    .filter((v, i, a) => a.findIndex(t => t.cidade === v.cidade) === i);
+                let options = globalOptions.filter(d => forcedCities.includes(d.cidade));
+                
+                // 🔥 Sempre permite retornar para a cidade anterior se ela existir
+                if (run.cidadeAnterior && !forcedCities.includes(run.cidadeAnterior)) {
+                    let returnOpt = globalOptions.find(d => d.cidade === run.cidadeAnterior);
+                    if (!returnOpt && run.cidadeAnterior === caseObj.localInicial?.cidade) {
+                        returnOpt = {
+                            ...caseObj.localInicial,
+                            coords: ORIGIN_COORDS[caseObj.localInicial.cidade] || { x: 160, y: 100 },
+                            origem: run.localAtual.cidade,
+                            id: `RETURN_${caseObj.localInicial.cidade}`
+                        };
+                    }
+                    if (returnOpt) options.push(returnOpt);
+                }
+                
+                return options.filter((v, i, a) => a.findIndex(t => t.cidade === v.cidade) === i);
             }
             // Se existe travelTable mas a cidade atual NÃO está nela (cidade errada), limita destinos
             if (activeScenario?.travelTable && !activeScenario.travelTable[run.localAtual?.cidade]) {
                 // Cidade errada: só mostra a cidade anterior como opção de retorno
                 if (run.cidadeAnterior) {
-                    return globalOptions
-                        .filter(d => d.cidade === run.cidadeAnterior)
-                        .filter((v, i, a) => a.findIndex(t => t.cidade === v.cidade) === i);
+                    let options = globalOptions.filter(d => d.cidade === run.cidadeAnterior);
+                    if (options.length === 0 && run.cidadeAnterior === caseObj.localInicial?.cidade) {
+                        options = [{
+                            ...caseObj.localInicial,
+                            coords: ORIGIN_COORDS[caseObj.localInicial.cidade] || { x: 160, y: 100 },
+                            origem: run.localAtual.cidade,
+                            id: `RETURN_${caseObj.localInicial.cidade}`
+                        }];
+                    }
+                    return options.filter((v, i, a) => a.findIndex(t => t.cidade === v.cidade) === i);
                 }
                 return [];
             }
             return globalOptions.filter((v, i, a) => a.findIndex(t => t.cidade === v.cidade) === i);
-        }, [run?.localAtual?.cidade, run?.cidadeAnterior, activeScenario]);
+        }, [run?.localAtual?.cidade, run?.cidadeAnterior, activeScenario, caseObj]);
 
         if (!state || !caseObj || !run) return null;
 
@@ -603,7 +624,10 @@ export default function Caso() {
 
         const handleVoltar = () => {
             if (!run?.cidadeAnterior) return;
-            const destObj = DESTINATION_OPTIONS.find(d => d.cidade === run.cidadeAnterior);
+            let destObj = DESTINATION_OPTIONS.find(d => d.cidade === run.cidadeAnterior);
+            if (!destObj && run.cidadeAnterior === caseObj.localInicial?.cidade) {
+                destObj = { ...caseObj.localInicial, coords: ORIGIN_COORDS[caseObj.localInicial.cidade] || { x: 160, y: 100 } };
+            }
             if (destObj) {
                 setSelectedDest({ ...destObj, isReturn: true });
                 setViewMode("TRAVEL_MODES");
