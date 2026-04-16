@@ -699,6 +699,7 @@ export default function Caso() {
                     .tutorial-highlight { animation: om-tut-pulse 1.5s infinite alternate; border-color: #ffd700 !important; font-weight: 900 !important; color: #ffd700 !important; }
                     @keyframes om-tut-pulse { 0% { box-shadow: 0 0 5px rgba(255,215,0,0.4); transform: scale(1); } 100% { box-shadow: 0 0 20px rgba(255,215,0,1); transform: scale(1.02); } }
                     .om-map-loc-badge { position: absolute; bottom: 0; left: 0; right: 0; padding: 6px 12px; background: linear-gradient(transparent, rgba(6,14,26,0.95)); font-size: 10px; z-index: 10; display: flex; align-items: center; gap: 6px; }
+                    @keyframes om-caption-pulse { 0%, 100% { opacity: 0.7; transform: scale(1); } 50% { opacity: 1; transform: scale(1.03); } }
                 `}</style>
                 <div style={{ padding: "15px 15px 80px 15px" }}>
                     {viewMode !== "ANALYZE" && !(viewMode === "PROFILE" && profileTab === "GALERIA") && (
@@ -770,29 +771,58 @@ export default function Caso() {
                                         `}</style>
                                     </div>
                                 ) : activeVideo && (showSuspectVideo || viewMode === "ARRIVAL") ? (
-                                    <video
-                                        key={activeVideo}
-                                        src={activeVideo}
-                                        autoPlay
-                                        loop={false}
-                                        onEnded={() => {
-                                            if (runStatusRef.current === "WON" || runStatusRef.current === "LOST" || run?.status === "WON" || run?.status === "LOST") {
-                                                nav(`/caso-solucionado/${caseId}${isMissionCompetitive ? "?mode=competitive" : ""}`);
-                                            } else {
-                                                setVideoEnded(true);
-                                                setTimeout(() => {
-                                                    setShowSuspectVideo(false);
-                                                    setActiveVideo(null);
-                                                    // Sempre volta para ACTIONS após o vídeo terminar
-                                                    // O DialogBox de ARRIVAL já terá sido exibido antes do vídeo
-                                                    setViewMode("ACTIONS");
-                                                    setSelectedDest(null);
-                                                    setVideoEnded(false);
-                                                }, 300);
-                                            }
-                                        }}
-                                        style={{ width: "100%", height: "220px", objectFit: "cover" }}
-                                    />
+                                    <div style={{ position: "relative" }}>
+                                        <video
+                                            key={activeVideo}
+                                            src={activeVideo}
+                                            autoPlay
+                                            loop={false}
+                                            onEnded={() => {
+                                                if (runStatusRef.current === "WON" || runStatusRef.current === "LOST" || run?.status === "WON" || run?.status === "LOST") {
+                                                    nav(`/caso-solucionado/${caseId}${isMissionCompetitive ? "?mode=competitive" : ""}`);
+                                                } else {
+                                                    setVideoEnded(true);
+                                                    setTimeout(() => {
+                                                        setShowSuspectVideo(false);
+                                                        setActiveVideo(null);
+                                                        // Sempre volta para ACTIONS após o vídeo terminar
+                                                        // O DialogBox de ARRIVAL já terá sido exibido antes do vídeo
+                                                        setViewMode("ACTIONS");
+                                                        setSelectedDest(null);
+                                                        setVideoEnded(false);
+                                                    }, 300);
+                                                }
+                                            }}
+                                            style={{ width: "100%", height: "220px", objectFit: "cover" }}
+                                        />
+                                        {activeVideo && (() => {
+                                            const isCaptured = activeVideo.includes("suspeitopreso");
+                                            const isEscaped = activeVideo.includes("suspeitonaopreso");
+                                            const isNearby = activeVideo.includes("suspeito2");
+                                            const isPassedBy = activeVideo.includes("suspeito") && !activeVideo.includes("preso") && !activeVideo.includes("suspeito2");
+                                            const caption = isCaptured ? "🚔 Suspeito Capturado!" 
+                                                : isEscaped ? "🚨 Suspeito Fugiu!" 
+                                                : isNearby ? "🕵️ O Suspeito Está aqui..." 
+                                                : isPassedBy ? "🕵️ Suspeito Passou por aqui..." 
+                                                : "";
+                                            const captionColor = isCaptured ? "#3cffA0" : isEscaped ? "#ff4d4d" : "#ffd700";
+                                            if (!caption) return null;
+                                            return (
+                                                <div style={{
+                                                    textAlign: "center",
+                                                    padding: "12px 0",
+                                                    fontSize: isCaptured || isEscaped ? 18 : 14,
+                                                    fontWeight: 900,
+                                                    color: captionColor,
+                                                    letterSpacing: 1.5,
+                                                    animation: "om-caption-pulse 2s ease-in-out infinite",
+                                                    textShadow: `0 0 12px ${captionColor}88, 0 0 25px ${captionColor}44`
+                                                }}>
+                                                    {caption}
+                                                </div>
+                                            );
+                                        })()}
+                                    </div>
                                 ) : (viewMode === "TRAVEL_MAP" || viewMode === "TRAVEL_MODES") ? (
                                     <div className="om-map-container">
                                         {(() => {

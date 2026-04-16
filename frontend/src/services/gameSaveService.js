@@ -99,21 +99,26 @@ export async function saveCompletedMission(missionData) {
 
     const newResult = missionData.resultado || "WON";
 
-    // Verifica se já existe um registro para este case_id
-    const { data: existing } = await supabase
+    // Busca TODOS os registros existentes para este case_id (pode haver duplicatas legadas)
+    const { data: existingRows } = await supabase
         .from("completed_missions")
-        .select("id, resultado")
+        .select("id, resultado, completed_at")
         .eq("user_id", user.id)
         .eq("case_id", missionData.caseId)
-        .maybeSingle();
+        .order("completed_at", { ascending: false });
 
-    if (existing) {
+    if (existingRows && existingRows.length > 0) {
+        // Verifica se algum dos registros existentes já é WON
+        const hasWon = existingRows.some(r => r.resultado === "WON");
+        
         // Se já ganhou antes, não sobrescreve com derrota
-        if (existing.resultado === "WON" && newResult !== "WON") {
+        if (hasWon && newResult !== "WON") {
             console.log(`[gameSaveService] Missão ${missionData.caseId} já está como WON, ignorando resultado ${newResult}.`);
             return;
         }
-        // Atualiza o registro existente
+
+        // Atualiza o registro mais recente
+        const bestRow = existingRows[0];
         const { error } = await supabase
             .from("completed_missions")
             .update({
@@ -125,13 +130,21 @@ export async function saveCompletedMission(missionData) {
                 suspect_captured: missionData.suspectCaptured || null,
                 completed_at: new Date().toISOString(),
             })
-            .eq("id", existing.id);
+            .eq("id", bestRow.id);
 
         if (error) {
             console.warn("[gameSaveService] Erro ao atualizar missão:", error.message);
             throw error;
         }
-        console.log(`[gameSaveService] Missão ${missionData.caseId} atualizada: ${existing.resultado} → ${newResult}.`);
+
+        // Remove duplicatas legadas (mantém apenas o registro atualizado)
+        if (existingRows.length > 1) {
+            const idsToDelete = existingRows.slice(1).map(r => r.id);
+            await supabase.from("completed_missions").delete().in("id", idsToDelete);
+            console.log(`[gameSaveService] Removidas ${idsToDelete.length} duplicatas da missão ${missionData.caseId}.`);
+        }
+
+        console.log(`[gameSaveService] Missão ${missionData.caseId} atualizada: ${bestRow.resultado} → ${newResult}.`);
     } else {
         // Insere novo registro
         const { error } = await supabase

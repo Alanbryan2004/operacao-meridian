@@ -80,8 +80,9 @@ export default function CasoSolucionado() {
     }, [isWon, isCompetitive, winnerName, player.nome, player.nivelTitulo, caseObj.recompensa, caseObj.xp, realCriminal, warrantSuspect]);
 
     function handleEncerrar() {
-        // Para missões perdidas: limpa o run do estado para que o Mural não mostre "EM ANDAMENTO"
-        if (!isWon && state?.runs?.[caseId]) {
+        // Limpa o run do estado para que o Mural não mostre "EM ANDAMENTO"
+        // Aplica tanto para missões vencidas quanto fracassadas
+        if (state?.runs?.[caseId]) {
             const nextRuns = { ...state.runs };
             delete nextRuns[caseId];
             const nextState = { ...state, runs: nextRuns };

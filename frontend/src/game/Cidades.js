@@ -567,7 +567,7 @@ export const CIDADES = [
             { id: "028-07", texto: "Mencionaram jardins futuristas e arquitetura moderna." },
             { id: "028-08", texto: "Ouvi referência a uma cidade-estado muito famosa." },
             { id: "028-09", texto: "A cidade parecia pequena em território, mas gigante em importância." },
-            { id: "028-10", texto: "Tudo apontava para Singapura." }
+            { id: "028-10", texto: "Comentaram sobre leis rigorosas que mantêm a cidade extremamente organizada." }
         ]
     },
     {
@@ -706,7 +706,7 @@ export const CIDADES = [
             { id: "035-06", texto: "Falaram de qualidade de vida altíssima." },
             { id: "035-07", texto: "Mencionaram uma cidade europeia limpa e segura." },
             { id: "035-08", texto: "Ouvi referência a paisagens alpinas por perto." },
-            { id: "035-10", texto: "Tudo apontava para Zurique." }
+            { id: "035-10", texto: "Comentaram sobre uma das maiores bolsas de valores da Europa localizada na cidade." }
         ]
     },
     {
