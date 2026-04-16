@@ -487,7 +487,7 @@ export const CIDADES = [
             { id: "024-07", texto: "Mencionaram um portal histórico voltado para o mar." },
             { id: "024-08", texto: "Ouvi referência a um centro financeiro indiano." },
             { id: "024-09", texto: "A cidade parecia caótica, vibrante e muito populosa." },
-            { id: "024-10", texto: "Tudo apontava para Mumbai." }
+            { id: "024-10", texto: "Comentaram sobre a indústria cinematográfica conhecida como Bollywood." }
         ]
     },
     {
@@ -507,7 +507,7 @@ export const CIDADES = [
             { id: "025-07", texto: "Mencionaram cinema e produção audiovisual." },
             { id: "025-08", texto: "Ouvi referência a uma cidade multicultural do oeste canadense." },
             { id: "025-09", texto: "A cidade parecia limpa, moderna e cercada por beleza natural." },
-            { id: "025-10", texto: "Tudo indicava Vancouver." }
+            { id: "025-10", texto: "Comentaram sobre um parque urbano gigantesco à beira-mar muito famoso na cidade." }
         ]
     },
     {
@@ -527,7 +527,7 @@ export const CIDADES = [
             { id: "026-07", texto: "Mencionaram inovação e vida cultural forte." },
             { id: "026-08", texto: "Ouvi referência a uma cidade importante da Alemanha." },
             { id: "026-09", texto: "A cidade parecia cheia de memória histórica e criatividade." },
-            { id: "026-10", texto: "Tudo apontava para Berlim." }
+            { id: "026-10", texto: "Comentaram sobre um famoso portal de entrada da cidade, símbolo de reunificação." }
         ]
     },
     {

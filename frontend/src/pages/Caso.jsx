@@ -141,6 +141,7 @@ export default function Caso() {
         const [selectedLocal, setSelectedLocal] = useState(null);
         const [selectedDest, setSelectedDest] = useState(null);
         const [showSuspectVideo, setShowSuspectVideo] = useState(false);
+        const [showCaptionDelay, setShowCaptionDelay] = useState(false);
         const [activeVideo, setActiveVideo] = useState(null);
         const [darkenScreen, setDarkenScreen] = useState(false);
         const [videoEnded, setVideoEnded] = useState(false);
@@ -156,6 +157,16 @@ export default function Caso() {
 
         const initRef = useRef(null);
 
+
+        useEffect(() => {
+            if (activeVideo && (activeVideo.includes("suspeitopreso") || activeVideo.includes("suspeitonaopreso"))) {
+                setShowCaptionDelay(false);
+                const timer = setTimeout(() => setShowCaptionDelay(true), 10000);
+                return () => clearTimeout(timer);
+            } else {
+                setShowCaptionDelay(false);
+            }
+        }, [activeVideo]);
         useEffect(() => {
             if (!state || !hydrated) return;
             // Evita rodar múltiplas vezes para o mesmo caseId no mesmo mount
@@ -700,6 +711,7 @@ export default function Caso() {
                     @keyframes om-tut-pulse { 0% { box-shadow: 0 0 5px rgba(255,215,0,0.4); transform: scale(1); } 100% { box-shadow: 0 0 20px rgba(255,215,0,1); transform: scale(1.02); } }
                     .om-map-loc-badge { position: absolute; bottom: 0; left: 0; right: 0; padding: 6px 12px; background: linear-gradient(transparent, rgba(6,14,26,0.95)); font-size: 10px; z-index: 10; display: flex; align-items: center; gap: 6px; }
                     @keyframes om-caption-pulse { 0%, 100% { opacity: 0.7; transform: scale(1); } 50% { opacity: 1; transform: scale(1.03); } }
+                    @keyframes om-caption-fade-in { 0% { opacity: 0; transform: scale(0.8) translateY(10px); } 100% { opacity: 1; transform: scale(1) translateY(0); } }
                 `}</style>
                 <div style={{ padding: "15px 15px 80px 15px" }}>
                     {viewMode !== "ANALYZE" && !(viewMode === "PROFILE" && profileTab === "GALERIA") && (
@@ -796,14 +808,16 @@ export default function Caso() {
                                             style={{ width: "100%", height: "220px", objectFit: "cover" }}
                                         />
                                         {activeVideo && (() => {
+                                        {activeVideo && (() => {
                                             const isCaptured = activeVideo.includes("suspeitopreso");
                                             const isEscaped = activeVideo.includes("suspeitonaopreso");
                                             const isNearby = activeVideo.includes("suspeito2");
                                             const isPassedBy = activeVideo.includes("suspeito") && !activeVideo.includes("preso") && !activeVideo.includes("suspeito2");
-                                            const caption = isCaptured ? "🚔 Suspeito Capturado!" 
-                                                : isEscaped ? "🚨 Suspeito Fugiu!" 
-                                                : isNearby ? "🕵️ O Suspeito Está aqui..." 
-                                                : isPassedBy ? "🕵️ Suspeito Passou por aqui..." 
+                                            if ((isCaptured || isEscaped) && !showCaptionDelay) return null;
+                                            const caption = isCaptured ? "🚔 Suspeito Capturado!"
+                                                : isEscaped ? "🚨 Suspeito Fugiu!"
+                                                : isNearby ? "🕵️ O Suspeito Está aqui..."
+                                                : isPassedBy ? "🕵️ Suspeito Passou por aqui..."
                                                 : "";
                                             const captionColor = isCaptured ? "#3cffA0" : isEscaped ? "#ff4d4d" : "#ffd700";
                                             if (!caption) return null;
@@ -815,7 +829,7 @@ export default function Caso() {
                                                     fontWeight: 900,
                                                     color: captionColor,
                                                     letterSpacing: 1.5,
-                                                    animation: "om-caption-pulse 2s ease-in-out infinite",
+                                                    animation: (isCaptured || isEscaped) ? "om-caption-fade-in 1s ease-out, om-caption-pulse 2s ease-in-out 1s infinite" : "om-caption-pulse 2s ease-in-out infinite",
                                                     textShadow: `0 0 12px ${captionColor}88, 0 0 25px ${captionColor}44`
                                                 }}>
                                                     {caption}
