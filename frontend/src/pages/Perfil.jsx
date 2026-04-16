@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useGame } from "../game/GameProvider";
 import { supabase } from "../lib/supabase";
-import { loadCompletedMissions } from "../services/gameSaveService";
+import { loadCompletedMissions, cleanupDuplicateMissions } from "../services/gameSaveService";
 import SuspectGallery from "../components/SuspectGallery";
 import AvatarDisplay from "../components/AvatarDisplay";
 
@@ -30,9 +30,37 @@ export default function Perfil() {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
+        // Limpa duplicatas existentes no banco de dados (one-time)
+        cleanupDuplicateMissions().catch(() => {});
         // Carrega o histórico permanente do Banco de Dados
         loadCompletedMissions()
-            .then(data => setDoneMissions(data))
+            .then(data => {
+                // Deduplicação: agrupa por case_id, preferindo WON sobre LOST
+                // e mantendo a data mais recente
+                const bestByCase = {};
+                for (const m of data) {
+                    const key = m.case_id;
+                    const existing = bestByCase[key];
+                    if (!existing) {
+                        bestByCase[key] = m;
+                    } else {
+                        // WON sempre ganha sobre LOST
+                        if (m.resultado === "WON" && existing.resultado !== "WON") {
+                            bestByCase[key] = m;
+                        } else if (m.resultado === existing.resultado) {
+                            // Mesmo resultado: mantém o mais recente
+                            const mDate = new Date(m.completed_at || 0);
+                            const eDate = new Date(existing.completed_at || 0);
+                            if (mDate > eDate) bestByCase[key] = m;
+                        }
+                    }
+                }
+                // Ordena por data decrescente
+                const deduplicated = Object.values(bestByCase).sort(
+                    (a, b) => new Date(b.completed_at || 0) - new Date(a.completed_at || 0)
+                );
+                setDoneMissions(deduplicated);
+            })
             .finally(() => setLoading(false));
     }, []);
 

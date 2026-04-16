@@ -147,7 +147,7 @@ export const CIDADES = [
             { id: "007-07", texto: "Mencionaram uma cidade no coração da Península Ibérica." },
             { id: "007-08", texto: "Ouvi referência a um importante centro cultural da Europa." },
             { id: "007-09", texto: "A cidade parecia muito ligada ao futebol e à história real." },
-            { id: "007-10", texto: "Tudo indicava a capital da Espanha." }
+            { id: "007-10", texto: "Lembro de ter ouvido falar de um time famoso com o mesmo nome da Cidade." }
         ]
     },
     {
@@ -467,7 +467,7 @@ export const CIDADES = [
             { id: "023-07", texto: "Mencionaram uma cidade às margens do Danúbio." },
             { id: "023-08", texto: "Ouvi referência a uma capital europeia muito sofisticada." },
             { id: "023-09", texto: "A cidade parecia ligada à arte, ópera e história imperial." },
-            { id: "023-10", texto: "Tudo indicava Viena." }
+            { id: "023-10", texto: "Comentaram sobre um famoso salão de ópera onde apresentações grandiosas acontecem." }
         ]
     },
     {

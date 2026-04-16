@@ -88,33 +88,71 @@ export async function loadGameState(slot = 0) {
     return data?.state ?? null;
 }
 
-/** Salva uma missão concluída na tabela completed_missions */
+/** Salva uma missão concluída na tabela completed_missions.
+ *  Usa lógica de deduplicação: se já existe um registro para o mesmo case_id,
+ *  atualiza apenas se o novo resultado for melhor (WON > LOST).
+ */
 export async function saveCompletedMission(missionData) {
     const { data: { user }, error: userErr } = await supabase.auth.getUser();
     if (userErr) throw userErr;
     if (!user) throw new Error("Not authenticated");
 
-    const payload = {
-        user_id: user.id,
-        case_id: missionData.caseId,
-        titulo: missionData.titulo || "",
-        dificuldade: missionData.dificuldade || "",
-        resultado: missionData.resultado || "WON",
-        xp_ganho: missionData.xpGanho || 0,
-        recompensa_ganha: missionData.recompensaGanha || 0,
-        suspect_captured: missionData.suspectCaptured || null,
-    };
+    const newResult = missionData.resultado || "WON";
 
-    const { error } = await supabase
+    // Verifica se já existe um registro para este case_id
+    const { data: existing } = await supabase
         .from("completed_missions")
-        .insert(payload);
+        .select("id, resultado")
+        .eq("user_id", user.id)
+        .eq("case_id", missionData.caseId)
+        .maybeSingle();
 
-    if (error) {
-        console.warn("[gameSaveService] Erro ao salvar missão concluída:", error.message);
-        throw error;
+    if (existing) {
+        // Se já ganhou antes, não sobrescreve com derrota
+        if (existing.resultado === "WON" && newResult !== "WON") {
+            console.log(`[gameSaveService] Missão ${missionData.caseId} já está como WON, ignorando resultado ${newResult}.`);
+            return;
+        }
+        // Atualiza o registro existente
+        const { error } = await supabase
+            .from("completed_missions")
+            .update({
+                titulo: missionData.titulo || "",
+                dificuldade: missionData.dificuldade || "",
+                resultado: newResult,
+                xp_ganho: missionData.xpGanho || 0,
+                recompensa_ganha: missionData.recompensaGanha || 0,
+                suspect_captured: missionData.suspectCaptured || null,
+                completed_at: new Date().toISOString(),
+            })
+            .eq("id", existing.id);
+
+        if (error) {
+            console.warn("[gameSaveService] Erro ao atualizar missão:", error.message);
+            throw error;
+        }
+        console.log(`[gameSaveService] Missão ${missionData.caseId} atualizada: ${existing.resultado} → ${newResult}.`);
+    } else {
+        // Insere novo registro
+        const { error } = await supabase
+            .from("completed_missions")
+            .insert({
+                user_id: user.id,
+                case_id: missionData.caseId,
+                titulo: missionData.titulo || "",
+                dificuldade: missionData.dificuldade || "",
+                resultado: newResult,
+                xp_ganho: missionData.xpGanho || 0,
+                recompensa_ganha: missionData.recompensaGanha || 0,
+                suspect_captured: missionData.suspectCaptured || null,
+            });
+
+        if (error) {
+            console.warn("[gameSaveService] Erro ao salvar missão concluída:", error.message);
+            throw error;
+        }
+        console.log(`[gameSaveService] Missão ${missionData.caseId} salva com sucesso.`);
     }
-
-    console.log(`[gameSaveService] Missão ${missionData.caseId} salva com sucesso.`);
 }
 
 /** Carrega todas as missões concluídas do jogador */
@@ -135,4 +173,46 @@ export async function loadCompletedMissions() {
     }
 
     return data || [];
+}
+
+/** Remove registros duplicados do banco, mantendo o melhor resultado por case_id */
+export async function cleanupDuplicateMissions() {
+    const { data: { user }, error: userErr } = await supabase.auth.getUser();
+    if (userErr || !user) return;
+
+    const { data, error } = await supabase
+        .from("completed_missions")
+        .select("*")
+        .eq("user_id", user.id)
+        .order("completed_at", { ascending: false });
+
+    if (error || !data) return;
+
+    // Agrupa por case_id, decidindo qual manter
+    const bestByCase = {};
+    const toDelete = [];
+
+    for (const m of data) {
+        const key = m.case_id;
+        if (!bestByCase[key]) {
+            bestByCase[key] = m;
+        } else {
+            const existing = bestByCase[key];
+            // WON ganha sobre LOST
+            if (m.resultado === "WON" && existing.resultado !== "WON") {
+                toDelete.push(existing.id);
+                bestByCase[key] = m;
+            } else {
+                toDelete.push(m.id);
+            }
+        }
+    }
+
+    if (toDelete.length > 0) {
+        console.log(`[gameSaveService] Removendo ${toDelete.length} registros duplicados.`);
+        await supabase
+            .from("completed_missions")
+            .delete()
+            .in("id", toDelete);
+    }
 }
