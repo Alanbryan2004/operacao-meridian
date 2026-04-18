@@ -29,7 +29,7 @@ export default function CasoSolucionado() {
     useEffect(() => {
         const lobbyId = searchParams.get("lobbyId");
         const isGenericName = !foundWinnerName || foundWinnerName === "um Agente de Elite";
-        
+
         if (isCompetitive && !isWon && isGenericName && lobbyId) {
             console.log("[ATLAS] Buscando nome do vencedor no banco...");
             supabase.from("competitive_lobbies")
@@ -43,7 +43,7 @@ export default function CasoSolucionado() {
                             .select("nickname")
                             .eq("id", data.winner_id)
                             .maybeSingle();
-                        
+
                         if (profile?.nickname) {
                             setFoundWinnerName(profile.nickname);
                         }
@@ -159,7 +159,7 @@ export default function CasoSolucionado() {
                     text={reportText}
                     onComplete={handleEncerrar}
                     buttonLabel="ENCERRAR"
-                    maxChars={1000}
+                    maxChars={180}
                 />
             </div>
         </div>

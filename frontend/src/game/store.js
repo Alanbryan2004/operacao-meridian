@@ -176,13 +176,14 @@ export function startRunIfNeeded(state, caseObj, forceReset = false, forcedScena
             { t: nowIso(), msg: `Caso iniciado: ${caseObj.titulo} (${caseObj.dificuldade})` },
             { t: nowIso(), msg: `Local inicial: ${caseObj.localInicial?.cidade || "..."} - ${caseObj.localInicial?.pais || "..."}` },
             { t: nowIso(), msg: `Tempo total: ${caseObj.tempoTotalHoras}h` },
-            !caseObj.isCompetitive && { t: nowIso(), msg: `Bônus de despesas recebido: R$ 1.000,00` },
+            !caseObj.isCompetitive && { t: nowIso(), msg: `Bônus de despesas recebido: R$ ${(caseObj.valorAdiantamento ?? 1000).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}` },
         ].filter(Boolean),
         cidadeAnterior: null,
         proceduralScenario: proceduralScenario || null,
         mandadoEmitido: false,
         warrantId: null,
         suspeitoCapturado: false,
+        valorAdiantamento: caseObj.valorAdiantamento ?? 1000,
         filtrosAnalise: {
             sexo: [],
             corCabelo: [],
@@ -199,7 +200,7 @@ export function startRunIfNeeded(state, caseObj, forceReset = false, forcedScena
         ...state,
         player: {
             ...state.player,
-            dinheiro: caseObj.isCompetitive ? state.player.dinheiro : state.player.dinheiro + 1000
+            dinheiro: caseObj.isCompetitive ? state.player.dinheiro : state.player.dinheiro + (caseObj.valorAdiantamento ?? 1000)
         },
         runs: {
             ...state.runs,
@@ -220,9 +221,9 @@ export function abortRun(state, caseId) {
         jornal: [...run.jornal, { t: nowIso(), msg: "🚩 MISSÃO ABORTADA PELO AGENTE." }],
     };
 
-    // Penalidade: Remove o adiantamento de 1000. 
+    // Penalidade: Remove o adiantamento recebido. 
     // Se for competitivo, não houve adiantamento, então não há penalidade de devolução.
-    const penalty = run.isCompetitive ? 0 : 1000;
+    const penalty = run.isCompetitive ? 0 : (run.valorAdiantamento ?? 1000);
     const nextDinheiro = Math.max(0, state.player.dinheiro - penalty);
 
     return {

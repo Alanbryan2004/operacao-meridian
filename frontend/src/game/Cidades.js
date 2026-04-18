@@ -227,7 +227,7 @@ export const CIDADES = [
             { id: "011-07", texto: "Mencionaram montanhas próximas ao mar." },
             { id: "011-08", texto: "Ouvi referência a uma cidade muito ligada ao carnaval." },
             { id: "011-09", texto: "A cidade parecia unir natureza e vida urbana em cenário icônico." },
-            { id: "011-10", texto: "Tudo indicava uma das cidades mais famosas do Brasil." }
+            { id: "011-10", texto: "Comentaram sobre um bondinho que sobe até o Pão de Açúcar." }
         ]
     },
     {
@@ -595,7 +595,7 @@ export const CIDADES = [
         cidade: "Cidade do México",
         pais: "Mexico",
         continente: "America do Norte",
-        imagem: "/Paises/CidadeDoMexico.png",
+        imagem: "/Paises/CidadedoMexico.png",
         descricao: "Cidade do México é a capital do país, famosa por sua história asteca, cultura rica e grandes avenidas. É uma das maiores metrópoles do mundo.",
         dicas: [
             { id: "030-01", texto: "A bandeira tinha verde, branco e vermelho com um brasão ao centro." },
@@ -1054,7 +1054,7 @@ export const CIDADES = [
         cidade: "Munique",
         pais: "Alemanha",
         continente: "Europa",
-        imagem: "/Paises/default.png",
+        imagem: "/Paises/Munique.png",
         descricao: "Munique é a capital da Baviera, famosa por sua arquitetura clássica, museus de classe mundial e a tradicional Oktoberfest. Uma metrópole vibrante que combina tradição alpina com inovação tecnológica.",
         dicas: [
             { id: "041-01", texto: "A bandeira do país tem faixas preta, vermelha e dourada." },
@@ -1069,6 +1069,46 @@ export const CIDADES = [
             { id: "041-10", texto: "Tudo indicava Munique." }
         ]
     },
+    {
+        id: "042",
+        cidade: "Bruxelas",
+        pais: "Bélgica",
+        continente: "Europa",
+        imagem: "/Paises/Bruxelas.png",
+        descricao: "Bruxelas é a capital da Bélgica e um dos principais centros políticos da Europa. Conhecida por sua arquitetura histórica, chocolates renomados e atmosfera multicultural, a cidade mistura tradição medieval com importância internacional.",
+        dicas: [
+            { id: "042-01", texto: "A bandeira tinha preto, amarelo e vermelho." },
+            { id: "042-02", texto: "A moeda utilizada era o euro." },
+            { id: "042-03", texto: "Ouvi pessoas falando francês, neerlandês e também inglês." },
+            { id: "042-04", texto: "Comentaram sobre uma famosa praça cercada por prédios históricos dourados." },
+            { id: "042-05", texto: "A pista citava chocolates, waffles e batatas fritas muito populares." },
+            { id: "042-06", texto: "Falaram de uma cidade importante para decisões políticas da Europa." },
+            { id: "042-07", texto: "Mencionaram um pequeno monumento de um garoto fazendo xixi." },
+            { id: "042-08", texto: "Ouvi referência a museus, quadrinhos e arquitetura elegante." },
+            { id: "042-09", texto: "A cidade parecia sofisticada, histórica e multicultural." },
+            { id: "042-10", texto: "Disseram que dali saem reuniões importantes da União Europeia." }
+        ]
+    },
+    {
+        id: "044",
+        cidade: "Oslo",
+        pais: "Noruega",
+        continente: "Europa",
+        imagem: "/Paises/Oslo.png",
+        descricao: "Oslo é a capital da Noruega e uma cidade elegante cercada por fiordes, florestas e colinas. Moderna e sustentável, combina arquitetura contemporânea, herança viking e forte conexão com a natureza escandinava.",
+        dicas: [
+            { id: "044-01", texto: "A bandeira tinha vermelho, azul e branco." },
+            { id: "044-02", texto: "A moeda utilizada era a coroa norueguesa." },
+            { id: "044-03", texto: "Ouvi pessoas falando norueguês e também inglês." },
+            { id: "044-04", texto: "Comentaram sobre um porto cercado por fiordes e colinas." },
+            { id: "044-05", texto: "A pista citava salmão, frutos do mar e culinária nórdica." },
+            { id: "044-06", texto: "Falaram de uma cidade moderna com forte ligação à natureza." },
+            { id: "044-07", texto: "Mencionaram esculturas famosas em um grande parque ao ar livre." },
+            { id: "044-08", texto: "Ouvi referência a museus vikings, navios históricos e arquitetura contemporânea." },
+            { id: "044-09", texto: "Dizem que a cidade é limpa, tranquila e organizada." },
+            { id: "044-10", texto: "Disseram que dali saem importantes cerimônias ligadas ao Prêmio Nobel da Paz." }
+        ]
+    }
 ];
 /**
  * Busca uma cidade pelo nome (case-insensitive, aceita acentos).

@@ -104,8 +104,11 @@ export default function DialogBox({
             <div style={{
                 position: "relative",
                 zIndex: 1,
-                padding: "38px 36px 52px 42px",
-                minHeight: 160
+                padding: "34px 40px 48px 44px",
+                minHeight: 140,
+                display: "flex",
+                flexDirection: "column",
+                boxSizing: "border-box"
             }}>
                 {/* Title inside the balloon */}
                 {title && (
@@ -114,19 +117,20 @@ export default function DialogBox({
                         fontWeight: 800,
                         color: "#80bdff",
                         letterSpacing: 1,
-                        marginBottom: 8,
+                        marginBottom: 6,
                         textTransform: "uppercase",
-                        textShadow: "0 1px 3px rgba(0,0,0,0.8)"
+                        textShadow: "0 1px 3px rgba(0,0,0,0.8)",
+                        flexShrink: 0
                     }}>
                         {title}
                     </div>
                 )}
 
-                <div style={{ position: "relative", minHeight: 50 }}>
-                    {/* Hidden full text to reserve the final height */}
+                <div style={{ position: "relative", flexGrow: 1 }}>
+                    {/* Hidden full text to reserve a stable height for the current page */}
                     <div aria-hidden="true" style={{
                         fontSize: 13,
-                        lineHeight: 1.65,
+                        lineHeight: 1.6,
                         fontFamily: "'Inter', sans-serif",
                         whiteSpace: "pre-line",
                         visibility: "hidden",
@@ -141,7 +145,7 @@ export default function DialogBox({
                         left: 0,
                         right: 0,
                         fontSize: 13,
-                        lineHeight: 1.65,
+                        lineHeight: 1.6,
                         color: "#e8e0d0",
                         fontFamily: "'Inter', sans-serif",
                         whiteSpace: "pre-line",
@@ -156,7 +160,7 @@ export default function DialogBox({
                     display: "flex",
                     justifyContent: "space-between",
                     alignItems: "center",
-                    marginTop: 12,
+                    marginTop: 15,
                     visibility: isTyping ? "hidden" : "visible",
                     opacity: isTyping ? 0 : 1,
                     transition: "opacity 0.2s ease"
