@@ -808,28 +808,40 @@ export default function Caso() {
                                             style={{ width: "100%", height: "220px", objectFit: "cover" }}
                                         />
                                         {activeVideo && (() => {
-                                        {activeVideo && (() => {
-                                            const isCaptured = activeVideo.includes("suspeitopreso");
-                                            const isEscaped = activeVideo.includes("suspeitonaopreso");
-                                            const isNearby = activeVideo.includes("suspeito2");
-                                            const isPassedBy = activeVideo.includes("suspeito") && !activeVideo.includes("preso") && !activeVideo.includes("suspeito2");
-                                            if ((isCaptured || isEscaped) && !showCaptionDelay) return null;
-                                            const caption = isCaptured ? "🚔 Suspeito Capturado!"
-                                                : isEscaped ? "🚨 Suspeito Fugiu!"
-                                                : isNearby ? "🕵️ O Suspeito Está aqui..."
-                                                : isPassedBy ? "🕵️ Suspeito Passou por aqui..."
+                                            const videoPath = activeVideo.toLowerCase();
+                                            const isArrest = videoPath.includes("suspeitopreso");
+                                            const isEscape = videoPath.includes("suspeitonaopreso");
+                                            const isResultVideo = isArrest || isEscape;
+                                            
+                                            const isNearby = videoPath.includes("suspeito2");
+                                            const isPassedBy = videoPath.includes("suspeito") && !isResultVideo && !isNearby;
+
+                                            // Só mostra legendas de captura/fuga após o delay de 10s (chase -> black -> result)
+                                            if (isResultVideo && !showCaptionDelay) return null;
+
+                                            const caption = isArrest ? "🚔 Suspeito Capturado!" 
+                                                : isEscape ? "🚨 Suspeito Fugiu!" 
+                                                : isNearby ? "🕵️ O Suspeito Está aqui..." 
+                                                : isPassedBy ? "🕵️ Suspeito Passou por aqui..." 
                                                 : "";
-                                            const captionColor = isCaptured ? "#3cffA0" : isEscaped ? "#ff4d4d" : "#ffd700";
+                                            
                                             if (!caption) return null;
+
+                                            const captionColor = (isArrest || isEscape) 
+                                                ? (isArrest ? "#3cffA0" : "#ff4d4d") 
+                                                : "#ffd700";
+
                                             return (
                                                 <div style={{
                                                     textAlign: "center",
                                                     padding: "12px 0",
-                                                    fontSize: isCaptured || isEscaped ? 18 : 14,
+                                                    fontSize: isResultVideo ? 18 : 14,
                                                     fontWeight: 900,
                                                     color: captionColor,
                                                     letterSpacing: 1.5,
-                                                    animation: (isCaptured || isEscaped) ? "om-caption-fade-in 1s ease-out, om-caption-pulse 2s ease-in-out 1s infinite" : "om-caption-pulse 2s ease-in-out infinite",
+                                                    animation: isResultVideo 
+                                                        ? "om-caption-fade-in 1s ease-out, om-caption-pulse 2s ease-in-out 1s infinite" 
+                                                        : "om-caption-pulse 2s ease-in-out infinite",
                                                     textShadow: `0 0 12px ${captionColor}88, 0 0 25px ${captionColor}44`
                                                 }}>
                                                     {caption}
