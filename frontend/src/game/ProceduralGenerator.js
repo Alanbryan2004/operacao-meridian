@@ -106,7 +106,35 @@ function findRoute(startCity, length, graph) {
 
     // Fallback: if we can't find a perfect route, try shorter but valid
     console.warn(`[ProceduralGenerator] Could not find route of length ${length} from ${startCity}. Attempting with relaxed constraints.`);
+    
+    // Attempt shorter routes from length-1 down to 3
+    for (let l = length - 1; l >= 3; l--) {
+        const shorter = findRouteSync(startCity, l, graph);
+        if (shorter) return shorter;
+    }
+
     return null;
+}
+
+/** Internal sync finder for fallback */
+function findRouteSync(startCity, length, graph) {
+    const path = [startCity];
+    const visited = new Set([startCity]);
+
+    while (path.length < length) {
+        const current = path[path.length - 1];
+        const neighbors = graph[current];
+        if (!neighbors || neighbors.size === 0) break;
+
+        const candidates = [...neighbors].filter(c => !visited.has(c));
+        if (candidates.length === 0) break;
+
+        const next = pickRandom(candidates);
+        path.push(next);
+        visited.add(next);
+    }
+
+    return path.length >= 3 ? path : null;
 }
 
 // ── Travel Table Builder ─────────────────────────────────────

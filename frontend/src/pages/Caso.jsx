@@ -13,56 +13,13 @@ import { saveCompletedMission } from "../services/gameSaveService";
 import { useGame } from "../game/GameProvider";
 import { getCidadeImagem, getCidadeDescricao } from "../game/Cidades";
 import { CASOS_SCENARIOS, findScenario } from "../game/CasosScenarios";
-import { DESTINATION_OPTIONS } from '../game/DestRoutes';
+import { DESTINATION_OPTIONS, ORIGIN_COORDS } from '../game/DestRoutes';
 import Analisar from "./Analisar";
 import SuspectGallery from "../components/SuspectGallery";
 import DialogBox from "../components/DialogBox";
 import ModalMsg from "../components/ModalMsg";
 import { suspectsSeed } from "../game/store";
 import { casesSeed } from "../game/seed";
-
-export const ORIGIN_COORDS = {
-    "Campinas": { x: 137, y: 149 },
-    "Buenos Aires": { x: 124, y: 165 },
-    "Nova York": { x: 107, y: 61 },
-    "Toronto": { x: 101, y: 57 },
-    "Lisboa": { x: 165, y: 72 },
-    "Madrid": { x: 180, y: 65 },
-    "Paris": { x: 194, y: 56 },
-    "Londres": { x: 184, y: 38 },
-    "Roma": { x: 212, y: 70 },
-    "Cairo": { x: 224, y: 76 },
-    "Moscou": { x: 231, y: 40 },
-    "Dubai": { x: 250, y: 82 },
-    "Seul": { x: 330, y: 65 },
-    "Tóquio": { x: 344, y: 68 },
-    "Viena": { x: 215, y: 52 },
-    "Mumbai": { x: 270, y: 91 },
-    "Vancouver": { x: 52, y: 49 },
-    "Singapura": { x: 304, y: 115 },
-    "Sydney": { x: 357, y: 164 },
-    "Berlim": { x: 206, y: 42 },
-    "Istambul": { x: 221, y: 61 },
-    "Amsterdã": { x: 194, y: 38 },
-    "Cidade do Cabo": { x: 209, y: 164 },
-    "Bangcoc": { x: 301, y: 98 },
-    "Trípoli": { x: 204, y: 72 },
-    "Cidade do México": { x: 79, y: 90 },
-    "Pequim": { x: 318, y: 62 },
-    "Thimphu": { x: 288, y: 79 },
-    "Sao Paulo": { x: 137, y: 150 },
-    "São Paulo": { x: 137, y: 150 },
-    "Rio de Janeiro": { x: 141, y: 149 },
-    "Santiago": { x: 110, y: 160 },
-    "Nova Delhi": { x: 275, y: 78 },
-    "Salvador": { x: 146, y: 135 },
-    "Zurich": { x: 198, y: 52 },
-    "Hong Kong": { x: 315, y: 80 },
-    "Barcelona": { x: 190, y: 60 },
-    "Roterdã": { x: 192, y: 44 },
-    "Genebra": { x: 196, y: 54 },
-    "Munique": { x: 210, y: 56 },
-};
 
 const TRANSPORT_MODES = [
     { id: "AVIAO", nome: "Avião", icon: "✈️", custoBase: 800, horasBase: 12, desc: "Rápido e caro", animDuration: 2000, animImg: "/transportes/aviao.png", animImgVolta: "/transportes/aviao_voltando.png" },
@@ -182,7 +139,7 @@ export default function Caso() {
             const scenarioMismatch = forcedScenarioId && currentRun?.scenarioId !== forcedScenarioId;
             const lobbyMismatch = lobbyId && currentRun?.lobbyId !== lobbyId;
             const isSetup = searchParams.get("setup") === "true";
-            const needsReset = isSetup || (isMissionCompetitive && (noRun || lobbyMismatch || scenarioMismatch));
+            const needsReset = isSetup || (isMissionCompetitive && (!currentRun || lobbyMismatch || scenarioMismatch));
             
             const next = startRunIfNeeded(state, { ...caseObj, isCompetitive: isMissionCompetitive }, needsReset, forcedScenarioId, lobbyId);
             
@@ -191,7 +148,7 @@ export default function Caso() {
             }
             initRef.current = caseId;
             window.dispatchEvent(new CustomEvent("meridian-play-audio", { detail: true }));
-        }, [caseId, isMissionCompetitive, forcedScenarioId, nav, replaceState, hydrated]); // state removido das deps para evitar loop de abort
+        }, [caseId, isMissionCompetitive, forcedScenarioId, lobbyId, nav, replaceState, hydrated, searchParams]);
 
 
         const caseObj = useMemo(
@@ -680,6 +637,30 @@ export default function Caso() {
         };
 
         const canAct = run?.status === "IN_PROGRESS";
+
+        if (!run || !caseObj) {
+            return (
+                <div style={{ 
+                    height: "100dvh", 
+                    width: "100vw", 
+                    background: "#000", 
+                    display: "flex", 
+                    flexDirection: "column",
+                    alignItems: "center", 
+                    justifyContent: "center", 
+                    color: "#80bdff", 
+                    fontSize: 12, 
+                    letterSpacing: 4,
+                    gap: 20
+                }}>
+                    <div style={{ width: 40, height: 40, border: "2px solid rgba(128,189,255,0.2)", borderTopColor: "#80bdff", borderRadius: "50%", animation: "om-spin 1s linear infinite" }} />
+                    INICIALIZANDO MISSÃO...
+                    <style>{`
+                        @keyframes om-spin { to { transform: rotate(360deg); } }
+                    `}</style>
+                </div>
+            )
+        }
 
         return (
             <div style={{ minHeight: "100dvh", width: "100vw", background: "radial-gradient(circle at center, #071a26 0%, #000 70%)", color: "#fff", position: "relative" }}>
