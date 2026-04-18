@@ -2,11 +2,7 @@ import { describe, it, expect } from 'vitest';
 import { CASO_1_SCENARIOS } from '../Caso1Scenarios';
 import { CASO_2_SCENARIOS } from '../Caso2Scenarios';
 import { CASO_3_SCENARIOS } from '../Caso3Scenarios';
-import { CASO_4_SCENARIOS } from '../Caso4Scenarios';
-import { Caso5Scenarios } from '../Caso5Scenarios';
-import { Caso6Scenarios } from '../Caso6Scenarios';
-import { Caso7Scenarios } from '../Caso7Scenarios';
-import { Caso8Scenarios } from '../Caso8Scenarios';
+// C004-C008: Migrados para geração procedural, não testados aqui
 import { Caso9Scenarios } from '../Caso9Scenarios';
 import { DESTINATION_OPTIONS } from '../DestRoutes';
 
@@ -14,11 +10,6 @@ const ALL_SCENARIOS = [
     ...CASO_1_SCENARIOS,
     ...CASO_2_SCENARIOS,
     ...CASO_3_SCENARIOS,
-    ...CASO_4_SCENARIOS,
-    ...Caso5Scenarios,
-    ...Caso6Scenarios,
-    ...Caso7Scenarios,
-    ...Caso8Scenarios,
     ...Caso9Scenarios
 ];
 

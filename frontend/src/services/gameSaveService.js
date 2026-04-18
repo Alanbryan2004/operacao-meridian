@@ -65,10 +65,27 @@ export async function saveGameState(state, slot = 0) {
                 legendary_losses: player.legendaryLosses || 0,
                 avatar: player.avatar, // Salva o objeto completo {gender, id, frase}
                 frase: player.avatar?.frase || "",
+                daily_streak: player.dailyStreak || 0,
+                vouchers: player.vouchers || [],
                 updated_at: new Date().toISOString(),
             })
             .eq("id", user.id);
     }
+}
+
+/** Carrega os dados de streak do jogador */
+export async function loadUserStreak() {
+    const { data: { user }, error: userErr } = await supabase.auth.getUser();
+    if (userErr || !user) return null;
+
+    const { data, error } = await supabase
+        .from("daily_streaks")
+        .select("*")
+        .eq("user_id", user.id)
+        .maybeSingle();
+
+    if (error) return null;
+    return data;
 }
 
 /** Carrega o state do jogo (slot 0 por padrão) */

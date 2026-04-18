@@ -14,11 +14,6 @@ import { Caso0Scenarios } from "./Caso0Scenarios";
 import { CASO_1_SCENARIOS } from "./Caso1Scenarios";
 import { CASO_2_SCENARIOS } from "./Caso2Scenarios";
 import { CASO_3_SCENARIOS } from "./Caso3Scenarios";
-import { CASO_4_SCENARIOS } from "./Caso4Scenarios";
-import { Caso5Scenarios } from "./Caso5Scenarios";
-import { Caso6Scenarios } from "./Caso6Scenarios";
-import { Caso7Scenarios } from "./Caso7Scenarios";
-import { Caso8Scenarios } from "./Caso8Scenarios";
 import { Caso9Scenarios } from "./Caso9Scenarios";
 import { Caso10Scenarios } from "./Caso10Scenarios";
 
@@ -27,11 +22,7 @@ export const CASOS_SCENARIOS = {
     "C001": CASO_1_SCENARIOS,
     "C002": CASO_2_SCENARIOS,
     "C003": CASO_3_SCENARIOS,
-    "C004": CASO_4_SCENARIOS,
-    "C005": Caso5Scenarios,
-    "C006": Caso6Scenarios,
-    "C007": Caso7Scenarios,
-    "C008": Caso8Scenarios,
+    // C004-C008: Migrados para geração procedural (ProceduralGenerator.js)
     "C009": Caso9Scenarios,
     "C010": Caso10Scenarios,
 };
@@ -55,23 +46,28 @@ export const CASOS_CONFIG = {
     },
     "C004": {
         hasIntroVideo: true,
-        introVideo: "/Videos/Caso4_Diamante_Muda_Cor.mp4"
+        introVideo: "/Videos/Caso4_Diamante_Muda_Cor.mp4",
+        procedural: true
     },
     "C005": {
         hasIntroVideo: true,
-        introVideo: "/Videos/Caso5_Mapa_Desaparecido.mp4"
+        introVideo: "/Videos/Caso5_Mapa_Desaparecido.mp4",
+        procedural: true
     },
     "C006": {
         hasIntroVideo: true,
-        introVideo: "/Videos/Caso6_Leilao_Fantasma.mp4"
+        introVideo: "/Videos/Caso6_Leilao_Fantasma.mp4",
+        procedural: true
     },
     "C007": {
         hasIntroVideo: true,
-        introVideo: "/Videos/Caso7_Container_Vazio.mp4"
+        introVideo: "/Videos/Caso7_Container_Vazio.mp4",
+        procedural: true
     },
     "C008": {
         hasIntroVideo: true,
-        introVideo: "/Videos/Caso8_Codigo_que_nunca_existiu.mp4"
+        introVideo: "/Videos/Caso8_Codigo_que_nunca_existiu.mp4",
+        procedural: true
     },
     "C009": {
         hasIntroVideo: false,

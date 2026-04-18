@@ -630,6 +630,12 @@ export const DESTINATION_OPTIONS = [
     { id: "VIE_PR", pais: "República Tcheca", cidade: "Praga", origem: "Viena", coords: { x: 214, y: 48 }, flag: "🇨🇿" },
     { id: "VIE_BU", pais: "Hungria", cidade: "Budapeste", origem: "Viena", coords: { x: 218, y: 54 }, flag: "🇭🇺" },
     { id: "ROM_AT", pais: "Grécia", cidade: "Atenas", origem: "Roma", coords: { x: 228, y: 78 }, flag: "🇬🇷" },
+
+    // Rotas de retorno a Campinas (Case 1)
+    { id: "LIS_CAM", pais: "Brasil", cidade: "Campinas", origem: "Lisboa", coords: { x: 137, y: 149 }, flag: "🇧🇷" },
+    { id: "PAR_CAM", pais: "Brasil", cidade: "Campinas", origem: "Paris", coords: { x: 137, y: 149 }, flag: "🇧🇷" },
+    { id: "ROM_CAM", pais: "Brasil", cidade: "Campinas", origem: "Roma", coords: { x: 137, y: 149 }, flag: "🇧🇷" },
+    { id: "CAI_CAM", pais: "Brasil", cidade: "Campinas", origem: "Cairo", coords: { x: 137, y: 149 }, flag: "🇧🇷" },
 ];
 
 export const ORIGIN_COORDS = {

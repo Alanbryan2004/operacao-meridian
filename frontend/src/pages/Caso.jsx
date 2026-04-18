@@ -12,6 +12,7 @@ import {
 import { saveCompletedMission } from "../services/gameSaveService";
 import { useGame } from "../game/GameProvider";
 import { getCidadeImagem, getCidadeDescricao } from "../game/Cidades";
+import { updateStreakOnWin, REWARDS } from "../game/streakService";
 import { CASOS_SCENARIOS, findScenario } from "../game/CasosScenarios";
 import { DESTINATION_OPTIONS, ORIGIN_COORDS } from '../game/DestRoutes';
 import Analisar from "./Analisar";
@@ -108,6 +109,8 @@ export default function Caso() {
         const [animatedTime, setAnimatedTime] = useState(null);
         const [modalConfig, setModalConfig] = useState({ show: false, message: "", type: "INFO", isConfirm: false, onConfirm: null });
         const [pendingWarrant, setPendingWarrant] = useState(null);
+        const [streakUpdated, setStreakUpdated] = useState(null);
+        const [newVoucher, setNewVoucher] = useState(null);
 
         const lobbyId = searchParams.get("lobbyId");
         const forcedScenarioId = searchParams.get("scenario");
@@ -133,6 +136,15 @@ export default function Caso() {
             if (!caseObj) {
                 nav("/mural");
                 return;
+            }
+
+            // --- Checa Streak (Perda por inatividade) ---
+            if (state.player.supabaseId) {
+                import("../game/streakService").then(m => m.checkStreakPersistence(state.player.supabaseId)).then(res => {
+                    if (res && res.current_streak === 0) {
+                        // Opcional: Avisar o usuário que perdeu o streak
+                    }
+                });
             }
 
             const currentRun = state.runs?.[caseId];
@@ -404,8 +416,24 @@ export default function Caso() {
         const confirmarViagem = (transport) => {
             const destino = transport.customDest || selectedDest;
             if (!destino) return;
-            const custo = transport.custoBase;
-            const horas = transport.horasBase;
+            let custo = transport.custoBase;
+            let horas = transport.horasBase;
+
+            // --- Lógica de Vouchers / Créditos Aéreos ---
+            let usedVoucherId = null;
+            if (transport.id === "AVIAO") {
+                const activeVoucher = (state.player.vouchers || []).find(v => (v.credits ?? 0) > 0);
+                if (activeVoucher) {
+                    console.log(`[ATLAS] Aplicando voucher: ${activeVoucher.label}`);
+                    custo = Math.round(custo * (1 - (activeVoucher.discount || 0)));
+                    usedVoucherId = activeVoucher.id;
+                    if (activeVoucher.hasInstantTravel && transport.horasBase > 1) {
+                         // Talvez a regra seja automática ou manual, vamos fazer automático se tiver
+                         horas = 0;
+                    }
+                }
+            }
+
             if (state.player.dinheiro < custo) {
                 updateRun({
                     ...run,
@@ -414,7 +442,16 @@ export default function Caso() {
                 setViewMode("ACTIONS");
                 return;
             }
+
             let nextState = spendMoney(state, custo, `✈️ Viagem para ${destino.pais} (${transport.nome}): -$${custo}`, caseId);
+            
+            // Deduz crédito do voucher se usado
+            if (usedVoucherId) {
+                nextState.player.vouchers = (nextState.player.vouchers || []).map(v => 
+                    v.id === usedVoucherId ? { ...v, credits: (v.credits || 1) - 1 } : v
+                );
+            }
+
             nextState = saveGame(nextState);
             const nextRun = spendTime(nextState.runs[caseId], horas, `✈️ Você chegou em ${destino.cidade} após ${horas}h de viagem.`);
             nextRun.localAtual = { flag: destino.flag, pais: destino.pais, city: destino.cidade }; // city -> cidade
@@ -554,7 +591,7 @@ export default function Caso() {
                         replaceState(saveGame(nextState));
                     }
 
-                    // 🔥 Salva no Banco de Dados (Persistência Permanente)
+                    // 🔥 Salva no Banco de Dados e Atualiza Streak
                     saveCompletedMission({
                         caseId,
                         titulo: caseObj.titulo,
@@ -563,7 +600,27 @@ export default function Caso() {
                         xpGanho: caseObj.xp,
                         recompensaGanha: caseObj.recompensa,
                         suspectCaptured: run.targetSuspectId
-                    }).catch(err => console.error("Falha ao persistir missão concluída:", err));
+                    })
+                    .then(async () => {
+                         if (state.player.supabaseId) {
+                             const streakResult = await updateStreakOnWin(state.player.supabaseId);
+                             if (streakResult) {
+                                 // Atualiza state local com novo streak e vouchers
+                                 const updatedPlayer = { 
+                                     ...nextPlayer, 
+                                     dailyStreak: streakResult.current_streak, 
+                                     vouchers: streakResult.vouchers 
+                                 };
+                                 replaceState(saveGame({ ...state, player: updatedPlayer, runs: { ...state.runs, [caseId]: nextRun } }));
+                                 
+                                 if (streakResult.newlyAwarded) {
+                                     setNewVoucher(streakResult.newlyAwarded);
+                                 }
+                                 setStreakUpdated(streakResult);
+                             }
+                         }
+                    })
+                    .catch(err => console.error("Falha ao persistir missão concluída:", err));
                 } else {
                     const diff = caseObj?.dificuldade;
                     let nextPlayer = { ...state.player };
@@ -867,7 +924,35 @@ export default function Caso() {
                             <Panel>
                                 {viewMode === "ACTIONS" && (<div><div style={{ fontSize: 13, fontWeight: 800, marginBottom: 12 }}>CENTRAL DE OPERAÇÕES</div>{tutState && <div style={{ background: "rgba(255,215,0,0.12)", border: "1px solid rgba(255,215,0,0.4)", borderRadius: 10, padding: "8px 12px", marginBottom: 12, fontSize: 11, color: "#ffd700", textAlign: "center", fontWeight: 700 }}>📌 {tutState.allowInvestigate ? "Clique em INVESTIGAR para coletar pistas" : tutState.allowAnalysis ? "Clique em ANALISAR para filtrar o perfil do suspeito" : tutState.allowTravel ? `Clique em VIAJAR para seguir para ${tutState.expectedDest}` : "Siga as instruções"}</div>}<div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}><button className={`om-btn ${tutState?.allowTravel ? "tutorial-highlight" : ""}`} disabled={!canAct || (!!tutState && !tutState.allowTravel)} onClick={() => setViewMode("TRAVEL_MAP")}>✈️ VIAJAR</button><button className={`om-btn ${tutState?.allowInvestigate ? "tutorial-highlight" : ""}`} disabled={!canAct || (!!tutState && !tutState.allowInvestigate)} onClick={abrirLocais}>🔍 INVESTIGAR</button><button className={`om-btn ${tutState?.allowAnalysis ? "tutorial-highlight" : ""}`} disabled={!canAct || (!!tutState && !tutState.allowAnalysis)} onClick={analisar} style={{ gridColumn: "1/-1" }}>🧪 ANALISAR</button></div></div>)}
                                 {viewMode === "TRAVEL_MAP" && (<div><div style={{ fontSize: 13, fontWeight: 800, marginBottom: 12 }}>DESTINO</div>{tutState && <div style={{ background: "rgba(255,215,0,0.12)", border: "1px solid rgba(255,215,0,0.4)", borderRadius: 10, padding: "8px 12px", marginBottom: 12, fontSize: 11, color: "#ffd700", textAlign: "center", fontWeight: 700 }}>📌 Selecione {tutState.expectedDest} como destino</div>}<div style={{ display: "grid", gap: 8 }}>{travelOptions.map(d => {const isTutTarget = tutState && d.cidade === tutState.expectedDest; return (<button key={d.id} className={`om-btn ${isTutTarget ? "tutorial-highlight" : ""}`} disabled={!!tutState && !isTutTarget} onClick={() => { setSelectedDest(d); setViewMode("TRAVEL_MODES"); }}>{caseObj?.dificuldade === "DIFICIL" || caseObj?.dificuldade === "LENDARIO" ? "📍" : d.flag} {d.cidade}</button>);})}{!tutState && run.localAtual?.cidade !== "Campinas" && <button className="om-btn" onClick={handleVoltar} style={{ border: "1px solid #80bdff" }}>↩️ VOLTAR</button>}</div><button onClick={() => setViewMode("ACTIONS")} style={{ marginTop: 10, background: "transparent", border: "none", color: "#80bdff", width: "100%" }}>Cancelar</button></div>)}
-                                {viewMode === "TRAVEL_MODES" && selectedDest && (<div><div style={{ fontSize: 13, fontWeight: 800, marginBottom: 12 }}>{selectedDest.isReturn ? "↩️ RETORNAR PARA" : "VIAJAR PARA"} {selectedDest.cidade.toUpperCase()}</div><div style={{ display: "grid", gap: 8 }}>{TRANSPORT_MODES.map(t => (<button key={t.id} className="om-btn" onClick={() => confirmarViagem(t)}>{t.icon} {t.nome} (${t.custoBase})</button>))}</div><button onClick={() => setViewMode(selectedDest.isReturn ? "ACTIONS" : "TRAVEL_MAP")} style={{ marginTop: 10, background: "transparent", border: "none", color: "#80bdff", width: "100%" }}>{selectedDest.isReturn ? "Cancelar" : "Mudar Destino"}</button></div>)}
+                                {viewMode === "TRAVEL_MODES" && selectedDest && (
+                                    <div>
+                                        <div style={{ fontSize: 13, fontWeight: 800, marginBottom: 12 }}>{selectedDest.isReturn ? "↩️ RETORNAR PARA" : "VIAJAR PARA"} {selectedDest.cidade.toUpperCase()}</div>
+                                        <div style={{ display: "grid", gap: 8 }}>
+                                            {TRANSPORT_MODES.map(t => {
+                                                let finalCusto = t.custoBase;
+                                                const activeVoucher = t.id === "AVIAO" ? (state.player.vouchers || []).find(v => (v.credits ?? 0) > 0) : null;
+                                                if (activeVoucher) finalCusto = Math.round(t.custoBase * (1 - (activeVoucher.discount || 0)));
+                                                
+                                                return (
+                                                    <button key={t.id} className="om-btn" onClick={() => confirmarViagem(t)}>
+                                                        <div style={{ display: "flex", justifyContent: "space-between", width: "100%", alignItems: "center" }}>
+                                                            <span>{t.icon} {t.nome}</span>
+                                                            <span style={{ color: activeVoucher ? "#3cff9c" : "#fff" }}>
+                                                                ${finalCusto} {activeVoucher && <span style={{ fontSize: 9, opacity: 0.7 }}>(VOUCHER)</span>}
+                                                            </span>
+                                                        </div>
+                                                    </button>
+                                                );
+                                            })}
+                                        </div>
+                                        { (state.player.vouchers || []).some(v => v.credits > 0) && (
+                                            <div style={{ marginTop: 15, fontSize: 10, color: "#3cff9c", textAlign: "center", fontWeight: 700 }}>
+                                                🎟️ VOCÊ TEM CRÉDITOS AÉREOS ATIVOS
+                                            </div>
+                                        )}
+                                        <button onClick={() => setViewMode(selectedDest.isReturn ? "ACTIONS" : "TRAVEL_MAP")} style={{ marginTop: 10, background: "transparent", border: "none", color: "#80bdff", width: "100%" }}>{selectedDest.isReturn ? "Cancelar" : "Mudar Destino"}</button>
+                                    </div>
+                                )}
                                 {viewMode === "LOCATIONS" && (<div><div style={{ fontSize: 13, fontWeight: 800, marginBottom: 12 }}>INVESTIGAÇÃO</div>{tutState && <div style={{ background: "rgba(255,215,0,0.12)", border: "1px solid rgba(255,215,0,0.4)", borderRadius: 10, padding: "8px 12px", marginBottom: 12, fontSize: 11, color: "#ffd700", textAlign: "center", fontWeight: 700 }}>📌 {(() => { const expectedLoc = localInterrogatorios.find(l => l.id === tutState.expectedLocId); return expectedLoc ? `Clique em "${expectedLoc.local}" para investigar` : "Investigue o local indicado"; })()}</div>}<div style={{ display: "grid", gap: 8 }}>{(localInterrogatorios.length > 0 ? localInterrogatorios : [{id:"F1",local:"Taxi",pista:"Nada visto."}]).map(loc => {const isTutTarget = tutState && loc.id === tutState.expectedLocId; return (<button key={loc.id} className={`om-btn ${isTutTarget ? "tutorial-highlight" : ""}`} disabled={!!tutState && !isTutTarget} onClick={() => interrogarNoLocal(loc)}>🕵️‍♂️ Ir para {loc.local}</button>);})}</div><button onClick={() => setViewMode("ACTIONS")} style={{ marginTop: 10, background: "transparent", border: "none", color: "#80bdff", width: "100%" }}>Cancelar</button></div>)}
                                 {viewMode === "JOURNAL" && (<div><div style={{ fontSize: 13, fontWeight: 800, marginBottom: 12 }}>JORNAL</div><div className="om-journal-list">{run.jornal?.slice().reverse().map((j, i) => (<div key={i} className="om-journal-item" style={{ fontSize: 11 }}><div style={{ opacity: 0.5 }}>{new Date(j.t).toLocaleString()}</div><div>{j.msg}</div></div>))}</div></div>)}
                                 {viewMode === "PROFILE" && (<div><div style={{ display: "flex", gap: 8, marginBottom: 15 }}><button onClick={() => setProfileTab("PERFIL")} className="om-btn">PERFIL</button><button onClick={() => setProfileTab("GALERIA")} className="om-btn">GALERIA</button></div>{profileTab === "PERFIL" ? (<div><div style={{ fontSize: 18, fontWeight: 800 }}>{state.player.nome}</div><button onClick={handleAbort} className="om-btn" style={{ marginTop: 20, color: "#ff8080" }}>ABORTAR</button></div>) : <SuspectGallery capturedSuspects={state.capturedSuspects || {}} />}</div>)}
@@ -879,6 +964,75 @@ export default function Caso() {
                 </div>
                 <div className="om-tabs"><div className="om-tabs-inner"><button className={`om-tab ${viewMode === "ACTIONS" ? "om-tab-active" : ""}`} onClick={() => setViewMode("ACTIONS")}>AÇÃO</button><button className={`om-tab ${viewMode === "JOURNAL" ? "om-tab-active" : ""}`} onClick={() => setViewMode("JOURNAL")}>JORNAL</button><button className={`om-tab ${viewMode === "PROFILE" ? "om-tab-active" : ""}`} onClick={() => setViewMode("PROFILE")}>CASOS</button></div></div>
                 {modalConfig.show && <ModalMsg message={modalConfig.message} type={modalConfig.type} isConfirm={modalConfig.isConfirm} onConfirm={modalConfig.onConfirm} onClose={() => setModalConfig({ ...modalConfig, show: false })} />}
+                
+                {/* --- MODAL DE STREAK (DAILY REWARDS) --- */}
+                {streakUpdated && (
+                    <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.85)", backdropFilter: "blur(12px)", zIndex: 9999, display: "flex", alignItems: "center", justifyContent: "center", animation: "fade-in 0.5s ease" }}>
+                        <div style={{ background: "linear-gradient(135deg, #112233 0%, #000 100%)", padding: "40px 30px", borderRadius: 24, border: "1px solid rgba(128,189,255,0.3)", maxWidth: 450, width: "90%", textAlign: "center", boxShadow: "0 20px 50px rgba(0,0,0,0.5)" }}>
+                            <div style={{ color: "#80bdff", letterSpacing: 4, fontSize: 13, marginBottom: 10, fontWeight: 700 }}>📡 CENTRAL A.T.L.A.S.</div>
+                            <h2 style={{ fontSize: 22, fontWeight: 900, marginBottom: 40, color: "#fff" }}>SEQUÊNCIA DIÁRIA</h2>
+                            
+                            {/* Barra de Progresso */}
+                            <div style={{ display: "flex", justifyContent: "space-between", position: "relative", marginBottom: 50, padding: "0 10px" }}>
+                                <div style={{ position: "absolute", top: "50%", left: 10, right: 10, height: 2, background: "rgba(255,255,255,0.1)", transform: "translateY(-50%)", zIndex: 1 }} />
+                                <div style={{ position: "absolute", top: "50%", left: 10, width: `${Math.min((streakUpdated.current_streak - 1) / 6 * 100, 100)}%`, height: 2, background: "#3cff9c", transform: "translateY(-50%)", zIndex: 2, transition: "width 1s ease" }} />
+                                
+                                {[1,2,3,4,5,6,7].map(d => {
+                                    const isCompleted = d < streakUpdated.current_streak;
+                                    const isCurrent = d === streakUpdated.current_streak;
+                                    const isReward = d === 7;
+                                    return (
+                                        <div key={d} style={{ zIndex: 3, position: "relative", display: "flex", flexDirection: "column", alignItems: "center" }}>
+                                            <div style={{ 
+                                                width: 32, height: 32, borderRadius: "50%", 
+                                                background: isCompleted ? "#3cff9c" : isCurrent ? "#fff" : "#1a2a3a",
+                                                border: `2px solid ${isCompleted ? "#3cff9c" : isCurrent ? "#80bdff" : "rgba(255,255,255,0.14)"}`,
+                                                display: "flex", alignItems: "center", justifyContent: "center",
+                                                color: isCompleted ? "#000" : isCurrent ? "#000" : "#555",
+                                                fontSize: 12, fontWeight: 800,
+                                                boxShadow: isCurrent ? "0 0 15px rgba(128,189,255,0.5)" : "none"
+                                            }}>
+                                                {isCompleted ? "✓" : isReward ? "🛫" : d}
+                                            </div>
+                                            <div style={{ fontSize: 9, marginTop: 8, opacity: isCurrent ? 1 : 0.4, color: isCurrent ? "#80bdff" : "#fff", letterSpacing: 1 }}>{isReward ? "VOUCHER" : `DIA ${d}`}</div>
+                                        </div>
+                                    );
+                                })}
+                            </div>
+
+                            <p style={{ fontSize: 14, color: "rgba(255,255,255,0.7)", lineHeight: 1.6, marginBottom: 30 }}>
+                                {streakUpdated.current_streak >= 7 
+                                    ? "Parabéns! Você alcançou a meta semanal." 
+                                    : `Incrível! Você completou ${streakUpdated.current_streak} dias consecutivos.`}
+                            </p>
+
+                            <button onClick={() => setStreakUpdated(null)} className="om-btn" style={{ background: "#80bdff", color: "#000", padding: "12px 0", width: "100%", borderRadius: 12 }}>PROSSEGUIR</button>
+                        </div>
+                    </div>
+                )}
+
+                {/* --- MODAL DE NOVO VOUCHER --- */}
+                {newVoucher && (
+                    <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.9)", backdropFilter: "blur(20px)", zIndex: 10000, display: "flex", alignItems: "center", justifyContent: "center", animation: "scale-in 0.6s cubic-bezier(0.17, 0.67, 0.83, 0.67)" }}>
+                        <div style={{ textAlign: "center", maxWidth: 440, width: "90%" }}>
+                            <div style={{ color: "#ffd700", letterSpacing: 6, fontSize: 14, marginBottom: 20, fontWeight: 900, textShadow: "0 0 20px rgba(255,215,0,0.5)" }}>📡 RECOMPENSA DE ELITE</div>
+                            
+                            <div style={{ position: "relative", marginBottom: 30 }}>
+                                <img src="/Voucher.png" style={{ width: "100%", borderRadius: 20, boxShadow: "0 30px 60px rgba(0,0,0,0.8)", border: "1px solid rgba(255,215,0,0.3)" }} alt="Voucher" />
+                                <div style={{ position: "absolute", inset: 0, borderRadius: 20, boxShadow: "inset 0 0 40px rgba(255,215,0,0.2)" }} />
+                            </div>
+
+                            <h3 style={{ color: "#fff", fontSize: 20, fontWeight: 800, marginBottom: 12 }}>{newVoucher.label}</h3>
+                            <p style={{ color: "rgba(255,255,255,0.6)", fontSize: 14, lineHeight: 1.6, marginBottom: 32 }}>
+                                Agente disciplinado detectado.<br/>
+                                Você recebeu <strong>{newVoucher.credits} créditos aéreos</strong> com <strong>{Math.round(newVoucher.discount * 100)}% de desconto</strong> em viagens de avião.
+                            </p>
+
+                            <button onClick={() => setNewVoucher(null)} className="om-btn" style={{ background: "linear-gradient(135deg, #ffd700, #ffba00)", color: "#000", fontWeight: 900, padding: "16px 0", width: "100%", borderRadius: 16 }}>EQUIPAR AGORA</button>
+                        </div>
+                    </div>
+                )}
+
                 {pendingWarrant && (
                     <ModalMsg 
                         message={`Deseja emitir Mandado de Prisão para ${suspectsSeed.find(s => s.id === pendingWarrant)?.codinome || "este suspeito"}?\n\nO alvo será marcado para captura imediata.`}
@@ -902,6 +1056,11 @@ export default function Caso() {
                         onClose={() => setPendingWarrant(null)}
                     />
                 )}
+
+                <style>{`
+                    @keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
+                    @keyframes scale-in { from { opacity: 0; transform: scale(0.8); } to { opacity: 1; transform: scale(1); } }
+                `}</style>
             </div>
         );
     } catch (err) {

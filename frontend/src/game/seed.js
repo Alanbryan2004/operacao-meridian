@@ -202,8 +202,9 @@ export const casesSeed = [
         tempoTotalHoras: 480,
         localInicial: { pais: "África do Sul", cidade: "Cidade do Cabo" },
         resumo: "💎 CASO 4 — O Diamante que Muda de Cor\n📍 Local: Museu de Ciências da Cidade do Cabo, África do Sul 🇿🇦\n\nUm diamante único, conhecido por mudar de cor sob diferentes condições de luz, foi roubado do Museu de Ciências. O ladrão foi visto fugindo logo após o crime.\n\nSua missão é rastrear o criminoso através de várias capitais globais e recuperar a joia. 🔎💎",
-        imgItem: "/reliquiaDesaparecida.png", // Usando um placeholder plausível
+        imgItem: "/reliquiaDesaparecida.png",
         replayable: true,
+        procedural: true,
         interrogatorios: [],
     },
     {
@@ -212,10 +213,12 @@ export const casesSeed = [
         recompensa: 4500,
         xp: 180,
         tempoTotalHoras: 360,
-        videoIntro: "/Videos/Caso5_Mapa_Desaparecido.mp4",
-        dificuldade: "Médio",
-        historicoCurto: "Um pesquisador misterioso solicitou acesso ao documento. Minutos depois... O mapa desapareceu.",
-        localInicial: { pais: "Portugal", cidade: "Lisboa" }
+        dificuldade: "MEDIO",
+        resumo: "🗺️ O Mapa que Não Aparece em Nenhum Atlas\n📍 Local: Arquivo Nacional de Lisboa, Portugal 🇵🇹\n\nUm pesquisador misterioso solicitou acesso a um documento cartográfico raro e confidencial. Minutos depois, o mapa desapareceu sem deixar vestígios. Ninguém sabe como ele saiu do edifício fortemente vigiado.\n\nSua missão é rastrear o paradeiro do mapa antes que ele seja vendido no mercado negro. 🔎🗺️",
+        localInicial: { pais: "Portugal", cidade: "Lisboa" },
+        procedural: true,
+        replayable: true,
+        interrogatorios: [],
     },
     {
         id: "C006",
@@ -223,10 +226,12 @@ export const casesSeed = [
         recompensa: 4000,
         xp: 200,
         tempoTotalHoras: 360,
-        videoIntro: "/Videos/Caso6_Leilao_Fantasma.mp4",
-        dificuldade: "Médio",
-        historicoCurto: "Uma peça inestimável desapareceu misteriosamente logo após ser arrematada em um leilão de elite.",
-        localInicial: { pais: "Áustria", cidade: "Viena" }
+        dificuldade: "MEDIO",
+        resumo: "🏛️ O Leilão Fantasma\n📍 Local: Casa de Leilões Imperial, Viena, Áustria 🇦🇹\n\nUma peça inestimável desapareceu misteriosamente logo após ser arrematada em um leilão de elite. O comprador nunca apareceu para retirar o item, e as câmeras foram desligadas exatamente na hora errada.\n\nSua missão é descobrir quem orquestrou o desaparecimento e recuperar a peça. 🔎🏛️",
+        localInicial: { pais: "Áustria", cidade: "Viena" },
+        procedural: true,
+        replayable: true,
+        interrogatorios: [],
     },
     {
         id: "C007",
@@ -234,10 +239,12 @@ export const casesSeed = [
         recompensa: 5500,
         xp: 220,
         tempoTotalHoras: 360,
-        videoIntro: "/Videos/Caso7_Container_Vazio.mp4",
-        dificuldade: "Médio",
-        historicoCurto: "Um contêiner chegou ao porto totalmente vazio. A carga valiosa desapareceu sem deixar rastros.",
-        localInicial: { pais: "Portugal", cidade: "Lisboa" }
+        dificuldade: "MEDIO",
+        resumo: "📦 O Contêiner que Chegou Vazio\n📍 Local: Porto de Lisboa, Portugal 🇵🇹\n\nUm contêiner chegou ao porto totalmente vazio. A carga valiosa desapareceu sem deixar rastros durante o trajeto marítimo. Os lacres estavam intactos e a documentação perfeita.\n\nSua missão é descobrir em que ponto a carga foi desviada e identificar o responsável. 🔎📦",
+        localInicial: { pais: "Portugal", cidade: "Lisboa" },
+        procedural: true,
+        replayable: true,
+        interrogatorios: [],
     },
     {
         id: "C008",
@@ -245,10 +252,12 @@ export const casesSeed = [
         recompensa: 4000,
         xp: 250,
         tempoTotalHoras: 360,
-        videoIntro: "/Videos/Caso8_Codigo_que_nunca_existiu.mp4",
-        dificuldade: "Médio",
-        historicoCurto: "Um código misterioso surgiu em servidores de Seul e desapareceu sem deixar rastros. Alguém está por trás.",
-        localInicial: { pais: "Coreia do Sul", cidade: "Seul" }
+        dificuldade: "MEDIO",
+        resumo: "💻 O Código que Não Existe\n📍 Local: Centro de Dados de Seul, Coreia do Sul 🇰🇷\n\nUm código misterioso surgiu em servidores críticos de Seul e desapareceu sem deixar rastros minutos depois. Nenhum login foi registrado, mas dados confidenciais foram acessados.\n\nAlguém está por trás dessa operação fantasma. Sua missão é rastrear a origem do acesso e identificar o invasor. 🔎💻",
+        localInicial: { pais: "Coreia do Sul", cidade: "Seul" },
+        procedural: true,
+        replayable: true,
+        interrogatorios: [],
     },
     {
         id: "C009",
@@ -693,6 +702,8 @@ export const initialPlayer = {
     hardLosses: 0,
     legendaryWins: 0,
     legendaryLosses: 0,
+    dailyStreak: 0,
+    vouchers: [],
     settings: {
         musicEnabled: true,
         clickSoundEnabled: true
