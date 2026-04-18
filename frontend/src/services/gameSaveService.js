@@ -99,72 +99,35 @@ export async function saveCompletedMission(missionData) {
 
     const newResult = missionData.resultado || "WON";
 
-    // Busca TODOS os registros existentes para este case_id (pode haver duplicatas legadas)
-    const { data: existingRows } = await supabase
+    // 1. Sempre insere o novo registro para garantir persistência 
+    // (Útil se houver restrições de UPDATE em tabelas de log/histórico)
+    const { error: insErr } = await supabase
         .from("completed_missions")
-        .select("id, resultado, completed_at")
-        .eq("user_id", user.id)
-        .eq("case_id", missionData.caseId)
-        .order("completed_at", { ascending: false });
+        .insert({
+            user_id: user.id,
+            case_id: missionData.caseId,
+            titulo: missionData.titulo || "",
+            dificuldade: missionData.dificuldade || "",
+            resultado: newResult,
+            xp_ganho: missionData.xpGanho || 0,
+            recompensa_ganha: missionData.recompensaGanha || 0,
+            suspect_captured: missionData.suspectCaptured || null,
+            completed_at: new Date().toISOString(),
+        });
 
-    if (existingRows && existingRows.length > 0) {
-        // Verifica se algum dos registros existentes já é WON
-        const hasWon = existingRows.some(r => r.resultado === "WON");
-        
-        // Se já ganhou antes, não sobrescreve com derrota
-        if (hasWon && newResult !== "WON") {
-            console.log(`[gameSaveService] Missão ${missionData.caseId} já está como WON, ignorando resultado ${newResult}.`);
-            return;
-        }
+    if (insErr) {
+        console.warn("[gameSaveService] Erro ao inserir nova missão:", insErr.message);
+        throw insErr;
+    }
 
-        // Atualiza o registro mais recente
-        const bestRow = existingRows[0];
-        const { error } = await supabase
-            .from("completed_missions")
-            .update({
-                titulo: missionData.titulo || "",
-                dificuldade: missionData.dificuldade || "",
-                resultado: newResult,
-                xp_ganho: missionData.xpGanho || 0,
-                recompensa_ganha: missionData.recompensaGanha || 0,
-                suspect_captured: missionData.suspectCaptured || null,
-                completed_at: new Date().toISOString(),
-            })
-            .eq("id", bestRow.id);
+    console.log(`[gameSaveService] Missão ${missionData.caseId} registrada como ${newResult}.`);
 
-        if (error) {
-            console.warn("[gameSaveService] Erro ao atualizar missão:", error.message);
-            throw error;
-        }
-
-        // Remove duplicatas legadas (mantém apenas o registro atualizado)
-        if (existingRows.length > 1) {
-            const idsToDelete = existingRows.slice(1).map(r => r.id);
-            await supabase.from("completed_missions").delete().in("id", idsToDelete);
-            console.log(`[gameSaveService] Removidas ${idsToDelete.length} duplicatas da missão ${missionData.caseId}.`);
-        }
-
-        console.log(`[gameSaveService] Missão ${missionData.caseId} atualizada: ${bestRow.resultado} → ${newResult}.`);
-    } else {
-        // Insere novo registro
-        const { error } = await supabase
-            .from("completed_missions")
-            .insert({
-                user_id: user.id,
-                case_id: missionData.caseId,
-                titulo: missionData.titulo || "",
-                dificuldade: missionData.dificuldade || "",
-                resultado: newResult,
-                xp_ganho: missionData.xpGanho || 0,
-                recompensa_ganha: missionData.recompensaGanha || 0,
-                suspect_captured: missionData.suspectCaptured || null,
-            });
-
-        if (error) {
-            console.warn("[gameSaveService] Erro ao salvar missão concluída:", error.message);
-            throw error;
-        }
-        console.log(`[gameSaveService] Missão ${missionData.caseId} salva com sucesso.`);
+    // 2. Aciona limpeza de duplicatas para manter o banco limpo
+    // Isso remove registros 'LOST' se agora temos um 'WON', etc.
+    try {
+        await cleanupDuplicateMissions();
+    } catch (cleanErr) {
+        console.warn("[gameSaveService] Falha na limpeza de duplicatas (não-crítico):", cleanErr.message);
     }
 }
 

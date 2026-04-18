@@ -115,12 +115,13 @@ export function startRunIfNeeded(state, caseObj, forceReset = false, forcedScena
         if (hasActiveMission) return state;
     } else if (forceReset) {
         // 🔥 FIX: Bloqueamos o reset AUTOMÁTICO apenas se a missão já estiver em status final 
-        // E o lobby/cenário forem os mesmos. Se o lobby mudou, é uma nova partida!
+        // E for uma partida competitiva (lobbyId existe). 
+        // Em missões solo, permitimos o REJOGAR.
         const existing = state.runs?.[caseObj.id];
         const isSameMatch = existing && existing.lobbyId === lobbyId && (forcedScenarioId ? existing.scenarioId === forcedScenarioId : true);
 
-        if (isSameMatch && (existing.status === "WON" || existing.status === "LOST")) {
-            console.log("[ATLAS] Reset bloqueado: Partida já concluída.");
+        if (lobbyId && isSameMatch && (existing.status === "WON" || existing.status === "LOST")) {
+            console.log("[ATLAS] Reset bloqueado: Partida competitiva já concluída.");
             return state;
         }
     }

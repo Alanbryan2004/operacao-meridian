@@ -39,23 +39,27 @@ export default function Perfil() {
                 // e mantendo a data mais recente
                 const bestByCase = {};
                 for (const m of data) {
-                    const key = m.case_id;
+                    const key = String(m.case_id || "").trim();
+                    if (!key) continue;
+
+                    const res = String(m.resultado || "").toUpperCase().trim();
                     const existing = bestByCase[key];
+                    
                     if (!existing) {
                         bestByCase[key] = m;
                     } else {
-                        // WON sempre ganha sobre LOST
-                        if (m.resultado === "WON" && existing.resultado !== "WON") {
+                        const existingRes = String(existing.resultado || "").toUpperCase().trim();
+                        // WON sempre ganha sobre qualquer outro status
+                        if (res === "WON" && existingRes !== "WON") {
                             bestByCase[key] = m;
-                        } else if (m.resultado === existing.resultado) {
-                            // Mesmo resultado: mantém o mais recente
+                        } else if (res === existingRes || (res !== "WON" && existingRes !== "WON")) {
+                            // Mesmo status ou ambos não-vencidos: mantém o mais recente
                             const mDate = new Date(m.completed_at || 0);
                             const eDate = new Date(existing.completed_at || 0);
                             if (mDate > eDate) bestByCase[key] = m;
                         }
                     }
                 }
-                // Ordena por data decrescente
                 const deduplicated = Object.values(bestByCase).sort(
                     (a, b) => new Date(b.completed_at || 0) - new Date(a.completed_at || 0)
                 );
@@ -218,8 +222,10 @@ export default function Perfil() {
                             )}
 
                             {doneMissions.map(m => {
-                                const statusLabel = m.resultado === "WON" ? "✅ Completa" : "❌ Fracassada";
-                                const statusColor = m.resultado === "WON" ? "#3cffA0" : "#ff6b6b";
+                                const statusValue = String(m.resultado || "").trim().toUpperCase();
+                                const isWon = statusValue === "WON";
+                                const statusLabel = isWon ? "✅ Completa" : "❌ Fracassada";
+                                const statusColor = isWon ? "#3cffA0" : "#ff6b6b";
                                 const dateStr = m.completed_at ? new Date(m.completed_at).toLocaleDateString("pt-BR") : "";
 
                                 return (
@@ -234,10 +240,32 @@ export default function Perfil() {
                                         marginBottom: 8,
                                     }}>
                                         <div>
-                                            <div style={{ fontSize: 13 }}>{m.titulo}</div>
+                                            <div style={{ fontSize: 13, color: isWon ? "white" : "rgba(255,255,255,0.8)" }}>{m.titulo}</div>
                                             <div style={{ fontSize: 9, opacity: 0.4, marginTop: 2 }}>{dateStr} · {m.dificuldade}</div>
                                         </div>
-                                        <div style={{ fontSize: 10, fontWeight: 800, color: statusColor }}>{statusLabel}</div>
+                                        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                                            <div style={{ fontSize: 10, fontWeight: 800, color: statusColor }}>{statusLabel}</div>
+                                            {!isWon && (
+                                                <button
+                                                    onClick={() => nav(`/missao-intro/${m.case_id}`)}
+                                                    style={{
+                                                        background: "rgba(255,255,255,0.06)",
+                                                        border: "1px solid rgba(255,255,255,0.12)",
+                                                        color: "#fff",
+                                                        fontSize: 9,
+                                                        padding: "5px 10px",
+                                                        borderRadius: 8,
+                                                        cursor: "pointer",
+                                                        fontWeight: 800,
+                                                        transition: "all 0.2s"
+                                                    }}
+                                                    onMouseEnter={(e) => { e.currentTarget.style.background = "rgba(128,189,255,0.15)"; e.currentTarget.style.borderColor = "#80bdff"; }}
+                                                    onMouseLeave={(e) => { e.currentTarget.style.background = "rgba(255,255,255,0.06)"; e.currentTarget.style.borderColor = "rgba(255,255,255,0.12)"; }}
+                                                >
+                                                    REJOGAR
+                                                </button>
+                                            )}
+                                        </div>
                                     </div>
                                 );
                             })}

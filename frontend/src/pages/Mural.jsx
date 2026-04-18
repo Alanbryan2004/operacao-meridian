@@ -99,12 +99,11 @@ export default function Mural() {
 
         const normalizeDiff = (d) => {
             if (!d) return "";
-            const s = d.toUpperCase().normalize("NFD").replace(/[\u0300-\u036f]/g, ""); // Remove acentos
+            const s = d.toUpperCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
             if (s === "MEDIA") return "MEDIO";
             return s;
         };
 
-        // 1. Filtrar casos disponíveis (não vencidos e não lendários)
         const available = cases.filter(c => {
             if (c.id === "C000") {
                 if (state.runs["C000"]?.status === "WON" || completedIds.includes("C000")) return false;
@@ -115,62 +114,46 @@ export default function Mural() {
             return true;
         });
 
-        const activeRun = Object.values(state.runs).find(r => r.status === "IN_PROGRESS");
+        const activeRun = Object.values(state.runs || {}).find(r => r.status === "IN_PROGRESS");
         const activeCaseId = activeRun?.caseId;
         const activeCase = activeCaseId ? cases.find(c => c.id === activeCaseId) : null;
 
         let selected = [];
         if (activeCase) selected.push(activeCase);
 
-        // 2. Definir as dificuldades desejadas
-        const targetDifficulties = ["FACIL", "MEDIO", "DIFICIL"];
-
-        targetDifficulties.forEach(diff => {
+        const targetDiffs = ["FACIL", "MEDIO", "DIFICIL"];
+        
+        // 1. Tenta preencher cada slot de dificuldade alvo
+        targetDiffs.forEach(diff => {
             if (selected.length >= 3) return;
-
-            // Se já temos uma missão ativa desta dificuldade, pula para a próxima vaga
+            // Se já temos essa dificuldade selecionada (ex: via missão ativa), pula
             if (selected.find(s => normalizeDiff(s.dificuldade) === diff)) return;
 
-            // Busca primeiro nos tutoriais (C001-C010) desta dificuldade
-            const tutorial = available
-                .filter(c => {
-                    const idNum = parseInt(c.id.replace("C", ""), 10);
-                    return idNum >= 1 && idNum <= 10 && normalizeDiff(c.dificuldade) === diff;
-                })
-                .sort((a, b) => a.id.localeCompare(b.id, undefined, { numeric: true }))[0];
+            const pool = available.filter(c => normalizeDiff(c.dificuldade) === diff && !selected.find(s => s.id === c.id));
+            if (pool.length === 0) return;
 
-            if (tutorial && !selected.find(s => s.id === tutorial.id)) {
-                selected.push(tutorial);
+            const tutorials = pool.filter(c => {
+                const idNum = parseInt(c.id.replace("C", ""), 10);
+                return idNum >= 1 && idNum <= 10;
+            });
+
+            let found = null;
+            if (tutorials.length > 0) {
+                found = tutorials.sort((a,b) => a.id.localeCompare(b.id, undefined, {numeric: true}))[0];
             } else {
-                // Se não há tutorial, busca nos procedurais (C011+) desta dificuldade
-                const proceduralPool = available.filter(c => {
-                    const idNum = parseInt(c.id.replace("C", ""), 10);
-                    return idNum >= 11 && normalizeDiff(c.dificuldade) === diff;
-                });
-
-                if (proceduralPool.length > 0) {
-                    const randomIndex = Math.floor(Math.random() * proceduralPool.length);
-                    const pick = proceduralPool[randomIndex];
-                    if (!selected.find(s => s.id === pick.id)) {
-                        selected.push(pick);
-                    }
-                }
+                found = pool[Math.floor(Math.random() * pool.length)];
             }
+            if (found) selected.push(found);
         });
 
-        // 3. Fallback: Se ainda não tiver 3 casos, preenche com qualquer disponível
+        // 2. Fallback: Preenche até 3 com qualquer disponível
         if (selected.length < 3) {
-            for (const c of available) {
+            const remaining = available.filter(c => !selected.find(s => s.id === c.id));
+            remaining.sort((a,b) => a.id.localeCompare(b.id, undefined, {numeric: true}));
+            for (const c of remaining) {
                 if (selected.length >= 3) break;
-                if (!selected.find(s => s.id === c.id)) {
-                    selected.push(c);
-                }
+                selected.push(c);
             }
-        }
-
-        // 4. Garantir que a missão ativa esteja sempre no topo (se foi adicionada depois)
-        if (activeCase && selected[0]?.id !== activeCaseId) {
-            selected = [activeCase, ...selected.filter(s => s.id !== activeCaseId)];
         }
 
         return selected.slice(0, 3);

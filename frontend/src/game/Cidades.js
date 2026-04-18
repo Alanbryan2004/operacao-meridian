@@ -407,7 +407,7 @@ export const CIDADES = [
             { id: "020-07", texto: "Mencionaram hotéis extravagantes e ilhas artificiais." },
             { id: "020-08", texto: "Ouvi referência a um grande centro de turismo e negócios." },
             { id: "020-09", texto: "A cidade parecia brilhante, quente e futurista." },
-            { id: "020-10", texto: "Tudo apontava para Dubai." }
+            { id: "020-10", texto: "Disseram que lá o impossível costuma virar construção." }
         ]
     },
     {
