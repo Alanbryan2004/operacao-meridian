@@ -4,6 +4,15 @@ import { supabase } from "../lib/supabase";
  * Lógica de Sequência Diária (Streaks) e Recompensas (Vouchers)
  */
 
+function getLocalTodayStr() {
+    const now = new Date();
+    // Retorna YYYY-MM-DD em fuso local
+    const y = now.getFullYear();
+    const m = String(now.getMonth() + 1).padStart(2, "0");
+    const d = String(now.getDate()).padStart(2, "0");
+    return `${y}-${m}-${d}`;
+}
+
 export const REWARDS = {
     DAY_7: {
         type: "ATLAS_40",
@@ -48,7 +57,7 @@ export async function getStreakData(userId) {
  */
 export async function updateStreakOnWin(userId) {
     const now = new Date();
-    const todayStr = now.toISOString().split("T")[0]; // YYYY-MM-DD
+    const todayStr = getLocalTodayStr();
     
     const existing = await getStreakData(userId);
     
@@ -79,9 +88,34 @@ export async function updateStreakOnWin(userId) {
     let newlyAwarded = null;
 
     if (diffDays === 0) {
-        // Já completou hoje, nada a fazer para o streak
-        console.log("[streakService] Missão do dia já contabilizada.");
-        return null;
+        // Já completou hoje. Mas e se for uma "missão fantasma" do bug de UTC?
+        // Vamos checar no banco se existem duas missões diferentes concluídas hoje no fuso local.
+        const { data: missions } = await supabase
+            .from("completed_missions")
+            .select("case_id, completed_at")
+            .eq("user_id", userId)
+            .order("completed_at", { ascending: false })
+            .limit(10);
+        
+        const missionsFromToday = (missions || []).filter(m => {
+            const mDate = new Date(m.completed_at);
+            // Verifica se a missão aconteceu nas últimas 24h
+            if ((now - mDate) > (24 * 60 * 60 * 1000)) return false;
+            
+            // Janela "Fantasma" (UTC-3):
+            // Missões entre 00:00 e 03:00 UTC são na verdade do dia anterior no horário local do Brasil.
+            // Se encontrarmos uma missão nessa janela + uma missão agora, é uma sequência real de 2 dias.
+            const isLateNightGhost = mDate.getUTCHours() < 3;
+            return isLateNightGhost;
+        });
+
+        if (missionsFromToday.length >= 1 && updated.current_streak === 1) {
+            console.log("[streakService] Recuperação de streak detectada (Missão Fantasma corrigida).");
+            updated.current_streak = 2;
+        } else {
+            console.log("[streakService] Missão do dia já contabilizada.");
+            return null;
+        }
     } else if (diffDays === 1) {
         // Sequência mantida
         updated.current_streak += 1;

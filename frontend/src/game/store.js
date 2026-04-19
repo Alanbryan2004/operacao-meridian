@@ -747,7 +747,7 @@ export const suspectsSeed = [
             ],
             esporte: [
                 { id: "007_ESPORTE_01", texto: "Comentou sobre esgrima." },
-                { id: "007_ESPORTE_02", texto: "Parecia ter movimentos precisos e controlados." }
+                { id: "007_ESPORTE_02", texto: "Parecia ter movimentos precisos e controlados como na esgrima." }
             ],
             comida: [
                 { id: "007_COMIDA_01", texto: "Falou de comida francesa." },
