@@ -9,7 +9,7 @@ import {
     registerCapture,
     abortRun,
 } from "../game/store";
-import { saveCompletedMission } from "../services/gameSaveService";
+import { saveCompletedMission, saveGameState } from "../services/gameSaveService";
 import { useGame } from "../game/GameProvider";
 import { getCidadeImagem, getCidadeDescricao } from "../game/Cidades";
 import { updateStreakOnWin, REWARDS } from "../game/streakService";
@@ -582,44 +582,48 @@ export default function Caso() {
 
                         supabase.from("competitive_lobbies").update({ status: "finished", winner_id: state.player.supabaseId }).eq("id", lobbyId).select().then();
                         supabase.from("competitive_players").update({ status: "won" }).eq("lobby_id", lobbyId).eq("player_id", state.player.supabaseId).then();
-
-                        const finalState = registerCapture({ ...state, player: nextPlayer, runs: { ...state.runs, [caseId]: nextRun } }, run.warrantId);
-                        replaceState(saveGame(finalState));
-                    } else {
-                        const nextState = registerCapture({ ...state, player: nextPlayer, runs: { ...state.runs, [caseId]: nextRun } }, run.warrantId);
-                        replaceState(saveGame(nextState));
                     }
 
-                    // 🔥 Salva no Banco de Dados e Atualiza Streak
-                    saveCompletedMission({
-                        caseId,
-                        titulo: caseObj.titulo,
-                        dificuldade: caseObj.dificuldade,
-                        resultado: "WON",
-                        xpGanho: caseObj.xp,
-                        recompensaGanha: caseObj.recompensa,
-                        suspectCaptured: run.targetSuspectId
-                    })
-                    .then(async () => {
-                         if (state.player.supabaseId) {
-                             const streakResult = await updateStreakOnWin(state.player.supabaseId);
-                             if (streakResult) {
-                                 // Atualiza state local com novo streak e vouchers
-                                 const updatedPlayer = { 
-                                     ...nextPlayer, 
-                                     dailyStreak: streakResult.current_streak, 
-                                     vouchers: streakResult.vouchers 
-                                 };
-                                 replaceState(saveGame({ ...state, player: updatedPlayer, runs: { ...state.runs, [caseId]: nextRun } }));
-                                 
-                                 // Salva no localStorage para CasoSolucionado mostrar após ENCERRAR
-                                 localStorage.setItem("pendingStreakResult", JSON.stringify(streakResult));
-                                 if (streakResult.newlyAwarded) {
-                                     localStorage.setItem("pendingNewVoucher", JSON.stringify(streakResult.newlyAwarded));
+                    const captState = registerCapture({ ...state, player: nextPlayer, runs: { ...state.runs, [caseId]: nextRun } }, run.warrantId);
+                    const savedCaptState = saveGame(captState);
+                    replaceState(savedCaptState);
+                    // Força salvamento remoto imediato
+                    if (state.player.supabaseId) saveGameState(savedCaptState).catch(e => console.warn("Erro no save remoto:", e));
+
+                        // 🔥 Salva no Banco de Dados e Atualiza Streak
+                        saveCompletedMission({
+                            caseId,
+                            titulo: caseObj.titulo,
+                            dificuldade: caseObj.dificuldade,
+                            resultado: "WON",
+                            xpGanho: caseObj.xp,
+                            recompensaGanha: caseObj.recompensa,
+                            suspectCaptured: run.targetSuspectId
+                        })
+                        .then(async () => {
+                             if (state.player.supabaseId) {
+                                 const streakResult = await updateStreakOnWin(state.player.supabaseId);
+                                 if (streakResult) {
+                                     // Atualiza state local com novo streak e vouchers
+                                     const updatedPlayer = { 
+                                         ...nextPlayer, 
+                                         dailyStreak: streakResult.current_streak, 
+                                         vouchers: streakResult.vouchers 
+                                     };
+                                     const finalState = saveGame({ ...captState, player: updatedPlayer });
+                                     replaceState(finalState);
+                                     
+                                     // Força salvamento remoto imediato do streak
+                                     saveGameState(finalState).catch(e => console.warn("Erro no save remoto do streak:", e));
+
+                                     // Salva no localStorage para CasoSolucionado mostrar após ENCERRAR
+                                     localStorage.setItem("pendingStreakResult", JSON.stringify(streakResult));
+                                     if (streakResult.newlyAwarded) {
+                                         localStorage.setItem("pendingNewVoucher", JSON.stringify(streakResult.newlyAwarded));
+                                     }
                                  }
                              }
-                         }
-                    })
+                        })
                     .catch(err => console.error("Falha ao persistir missão concluída:", err));
                 } else {
                     const diff = caseObj?.dificuldade;

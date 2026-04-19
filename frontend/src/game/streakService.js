@@ -74,7 +74,7 @@ export async function updateStreakOnWin(userId) {
     if (diffDays === 0) {
         // Já completou hoje, nada a fazer para o streak
         console.log("[streakService] Missão do dia já contabilizada.");
-        return { ...existing, newlyAwarded: null };
+        return null;
     } else if (diffDays === 1) {
         // Sequência mantida
         updated.current_streak += 1;

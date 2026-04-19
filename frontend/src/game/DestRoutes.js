@@ -636,6 +636,56 @@ export const DESTINATION_OPTIONS = [
     { id: "PAR_CAM", pais: "Brasil", cidade: "Campinas", origem: "Paris", coords: { x: 137, y: 149 }, flag: "🇧🇷" },
     { id: "ROM_CAM", pais: "Brasil", cidade: "Campinas", origem: "Roma", coords: { x: 137, y: 149 }, flag: "🇧🇷" },
     { id: "CAI_CAM", pais: "Brasil", cidade: "Campinas", origem: "Cairo", coords: { x: 137, y: 149 }, flag: "🇧🇷" },
+
+    // --- ROTAS PARA CIDADES FALTANTES ---
+    // De Casablanca
+    { id: "CASA_PT", pais: "Portugal", cidade: "Lisboa", origem: "Casablanca", coords: { x: 165, y: 72 }, flag: "🇵🇹" },
+    { id: "CASA_ES", pais: "Espanha", cidade: "Madrid", origem: "Casablanca", coords: { x: 180, y: 65 }, flag: "🇪🇸" },
+    { id: "CASA_EG", pais: "Egito", cidade: "Cairo", origem: "Casablanca", coords: { x: 224, y: 76 }, flag: "🇪🇬" },
+    { id: "CASA_MA", pais: "Marrocos", cidade: "Marrakech", origem: "Casablanca", coords: { x: 165, y: 85 }, flag: "🇲🇦" },
+
+    // De Lima
+    { id: "LIMA_BO", pais: "Colômbia", cidade: "Bogotá", origem: "Lima", coords: { x: 85, y: 110 }, flag: "🇨🇴" },
+    { id: "LIMA_AR", pais: "Argentina", cidade: "Buenos Aires", origem: "Lima", coords: { x: 124, y: 165 }, flag: "🇦🇷" },
+    { id: "LIMA_SA", pais: "Chile", cidade: "Santiago", origem: "Lima", coords: { x: 110, y: 160 }, flag: "🇨🇱" },
+
+    // De Auckland
+    { id: "AUCK_SY", pais: "Austrália", cidade: "Sydney", origem: "Auckland", coords: { x: 357, y: 164 }, flag: "🇦🇺" },
+    { id: "AUCK_SU", pais: "Fiji", cidade: "Suva", origem: "Auckland", coords: { x: 390, y: 150 }, flag: "🇫🇯" },
+    { id: "AUCK_PM", pais: "Papua-Nova Guiné", cidade: "Port Moresby", origem: "Auckland", coords: { x: 350, y: 140 }, flag: "🇵🇬" },
+
+    // De Xangai
+    { id: "XAN_PE", pais: "China", cidade: "Pequim", origem: "Xangai", coords: { x: 318, y: 62 }, flag: "🇨🇳" },
+    { id: "XAN_TK", pais: "Japão", cidade: "Tóquio", origem: "Xangai", coords: { x: 344, y: 68 }, flag: "🇯🇵" },
+    { id: "XAN_SE", pais: "Coreia do Sul", cidade: "Seul", origem: "Xangai", coords: { x: 330, y: 65 }, flag: "🇰🇷" },
+    { id: "XAN_HK", pais: "China", cidade: "Hong Kong", origem: "Xangai", coords: { x: 315, y: 80 }, flag: "🇨🇳" },
+
+    // De Bogotá
+    { id: "BOG_LI", pais: "Peru", cidade: "Lima", origem: "Bogotá", coords: { x: 90, y: 130 }, flag: "🇵🇪" },
+    { id: "BOG_MX", pais: "México", cidade: "Cidade do México", origem: "Bogotá", coords: { x: 79, y: 90 }, flag: "🇲🇽" },
+    { id: "BOG_RI", pais: "Brasil", cidade: "Rio de Janeiro", origem: "Bogotá", coords: { x: 141, y: 149 }, flag: "🇧🇷" },
+
+    // De Marrakech
+    { id: "MARR_CA", pais: "Marrocos", cidade: "Casablanca", origem: "Marrakech", coords: { x: 168, y: 78 }, flag: "🇲🇦" },
+    { id: "MARR_PT", pais: "Portugal", cidade: "Lisboa", origem: "Marrakech", coords: { x: 165, y: 72 }, flag: "🇵🇹" },
+    { id: "MARR_LA", pais: "Nigéria", cidade: "Lagos", origem: "Marrakech", coords: { x: 185, y: 105 }, flag: "🇳🇬" },
+
+    // De Nairóbi
+    { id: "NAI_LA", pais: "Nigéria", cidade: "Lagos", origem: "Nairóbi", coords: { x: 185, y: 105 }, flag: "🇳🇬" },
+    { id: "NAI_DU", pais: "Emirados Árabes", cidade: "Dubai", origem: "Nairóbi", coords: { x: 250, y: 82 }, flag: "🇦🇪" },
+    { id: "NAI_CA", pais: "Egito", cidade: "Cairo", origem: "Nairóbi", coords: { x: 224, y: 76 }, flag: "🇪🇬" },
+
+    // De Lagos
+    { id: "LAG_CA", pais: "Marrocos", cidade: "Casablanca", origem: "Lagos", coords: { x: 168, y: 78 }, flag: "🇲🇦" },
+    { id: "LAG_NA", pais: "Quênia", cidade: "Nairóbi", origem: "Lagos", coords: { x: 225, y: 115 }, flag: "🇰🇪" },
+    { id: "LAG_GB", pais: "Reino Unido", cidade: "Londres", origem: "Lagos", coords: { x: 184, y: 38 }, flag: "🇬🇧" },
+
+    // Adicionando conexões de volta para garantir navegabilidade
+    { id: "LIS_CASA", pais: "Marrocos", cidade: "Casablanca", origem: "Lisboa", coords: { x: 168, y: 78 }, flag: "🇲🇦" },
+    { id: "MAD_CASA", pais: "Marrocos", cidade: "Casablanca", origem: "Madrid", coords: { x: 168, y: 78 }, flag: "🇲🇦" },
+    { id: "SYD_AUCK", pais: "Nova Zelândia", cidade: "Auckland", origem: "Sydney", coords: { x: 375, y: 175 }, flag: "🇳🇿" },
+    { id: "PEQ_XAN", pais: "China", cidade: "Xangai", origem: "Pequim", coords: { x: 330, y: 80 }, flag: "🇨🇳" },
+    { id: "BUE_LIMA", pais: "Peru", cidade: "Lima", origem: "Buenos Aires", coords: { x: 90, y: 130 }, flag: "🇵🇪" },
 ];
 
 export const ORIGIN_COORDS = {
@@ -685,4 +735,14 @@ export const ORIGIN_COORDS = {
     "Praga": { x: 214, y: 48 },
     "Budapeste": { x: 218, y: 54 },
     "Atenas": { x: 228, y: 78 },
+    "Bogotá": { x: 85, y: 110 },
+    "Lima": { x: 90, y: 130 },
+    "Marrakech": { x: 165, y: 85 },
+    "Nairóbi": { x: 225, y: 115 },
+    "Lagos": { x: 185, y: 105 },
+    "Casablanca": { x: 168, y: 78 },
+    "Auckland": { x: 375, y: 175 },
+    "Suva": { x: 390, y: 150 },
+    "Port Moresby": { x: 350, y: 140 },
+    "Xangai": { x: 330, y: 80 },
 };

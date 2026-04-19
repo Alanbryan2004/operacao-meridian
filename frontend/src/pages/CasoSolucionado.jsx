@@ -4,6 +4,7 @@ import { useGame } from "../game/GameProvider";
 import { getCargoByXp, getProximoCargo } from "../game/Cargos";
 import { suspectsSeed, saveGame } from "../game/store";
 import { supabase } from "../lib/supabase";
+import { saveGameState } from "../services/gameSaveService";
 import DialogBox from "../components/DialogBox";
 
 export default function CasoSolucionado() {
@@ -14,20 +15,22 @@ export default function CasoSolucionado() {
     const caseObj = useMemo(() => state?.cases?.find(c => String(c.id) === String(caseId)), [state, caseId]);
     const run = useMemo(() => state?.runs?.[caseId], [state, caseId]);
 
-    if (!state || !caseObj || !run) return null;
-
     const [searchParams] = useSearchParams();
+    
+    // --- Streak / Voucher Modal State ---
+    const [streakUpdated, setStreakUpdated] = useState(null);
+    const [newVoucher, setNewVoucher] = useState(null);
+
+    // Se não temos o run nem o state, e não estamos mostrando o modal, aí sim retornamos null
+    if (!state || !caseObj || (!run && !streakUpdated && !newVoucher)) return null;
+
     const isCompetitive = useMemo(() => {
         return searchParams.get("mode") === "competitive" || !!caseObj?.isCompetitive;
     }, [searchParams, caseObj]);
 
-    const isWon = run.status === "WON";
+    const isWon = run?.status === "WON";
     const player = state.player;
     const [foundWinnerName, setFoundWinnerName] = useState(run?.winnerName || "");
-
-    // --- Streak / Voucher Modal State ---
-    const [streakUpdated, setStreakUpdated] = useState(null);
-    const [newVoucher, setNewVoucher] = useState(null);
 
     // 🔍 Tenta buscar o nome do vencedor caso não tenha sido sincronizado via Broadcast/Realtime
     useEffect(() => {
@@ -59,11 +62,11 @@ export default function CasoSolucionado() {
 
     const winnerName = foundWinnerName || "um Agente de Elite";
 
-    const realCriminal = useMemo(() => suspectsSeed.find(s => String(s.id) === String(run.targetSuspectId)), [run.targetSuspectId]);
-    const warrantSuspect = useMemo(() => suspectsSeed.find(s => String(s.id) === String(run.warrantId)), [run.warrantId]);
+    const realCriminal = useMemo(() => suspectsSeed.find(s => String(s.id) === String(run?.targetSuspectId)), [run?.targetSuspectId]);
+    const warrantSuspect = useMemo(() => suspectsSeed.find(s => String(s.id) === String(run?.warrantId)), [run?.warrantId]);
 
     const conclusionImg = isWon
-        ? `/Suspeitos/Presos/${run.warrantId}.png`
+        ? `/Suspeitos/Presos/${run?.warrantId}.png`
         : `/Suspeitos/Presos/missaoFracassada.png`;
 
     const reportText = useMemo(() => {
@@ -84,12 +87,9 @@ export default function CasoSolucionado() {
     }, [isWon, isCompetitive, winnerName, player.nome, player.nivelTitulo, caseObj.recompensa, caseObj.xp, realCriminal, warrantSuspect]);
 
     function handleEncerrar() {
-        // Limpa o run do estado para que o Mural não mostre "EM ANDAMENTO"
-        if (state?.runs?.[caseId]) {
-            const nextRuns = { ...state.runs };
-            delete nextRuns[caseId];
-            const nextState = { ...state, runs: nextRuns };
-            replaceState(saveGame(nextState));
+        // 🔥 Garante salvamento remoto imediato antes de qualquer coisa
+        if (state.player.supabaseId) {
+            saveGameState(state).catch(e => console.warn("[CasoSolucionado] Erro no sync final:", e));
         }
 
         // 🔥 Se ganhou, verifica se tem streak pendente para exibir
@@ -130,98 +130,116 @@ export default function CasoSolucionado() {
 
 
     // --- MODAIS DE STREAK / VOUCHER (Após ENCERRAR) ---
+    // --- MODAIS DE STREAK / VOUCHER (Após ENCERRAR) ---
     if (streakUpdated || newVoucher) {
-        // Se temos streakUpdated MAS NAO temos a intenção de mostrar voucher ainda, mostra Streak
-        // Se o usuário clicar em PROSSEGUIR e houver newVoucher, a gente limpa streakUpdated e deixa o newVoucher brilhar.
-        
-        const showStreak = streakUpdated && !(!streakUpdated && newVoucher); 
-
         return (
-            <div style={{ minHeight: "100dvh", background: "#0a0c10", color: "#fff", display: "flex", alignItems: "center", justifyContent: "center" }}>
+            <div style={{ 
+                position: "fixed", 
+                inset: 0, 
+                zIndex: 10000, 
+                background: "#0a0c10", 
+                color: "#fff", 
+                display: "flex", 
+                alignItems: "center", 
+                justifyContent: "center",
+                padding: "20px",
+                boxSizing: "border-box"
+            }}>
+                <style>{`
+                    @keyframes om-modal-fade-in { from { opacity: 0; } to { opacity: 1; } }
+                    @keyframes om-modal-scale-in { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
+                `}</style>
+
                 {streakUpdated ? (
-                    <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.85)", backdropFilter: "blur(12px)", zIndex: 9999, display: "flex", alignItems: "center", justifyContent: "center", animation: "fade-in 0.5s ease" }}>
-                        <div style={{ background: "linear-gradient(135deg, #112233 0%, #000 100%)", padding: "40px 30px", borderRadius: 24, border: "1px solid rgba(128,189,255,0.3)", maxWidth: 450, width: "90%", textAlign: "center", boxShadow: "0 20px 50px rgba(0,0,0,0.5)" }}>
-                            <div style={{ color: "#80bdff", letterSpacing: 4, fontSize: 13, marginBottom: 10, fontWeight: 700 }}>📡 CENTRAL A.T.L.A.S.</div>
-                            <h2 style={{ fontSize: 22, fontWeight: 900, marginBottom: 40, color: "#fff" }}>SEQUÊNCIA DIÁRIA</h2>
+                    <div style={{ 
+                        background: "linear-gradient(135deg, #112233 0%, #000 100%)", 
+                        padding: "40px 30px", 
+                        borderRadius: 24, 
+                        border: "1px solid rgba(128,189,255,0.3)", 
+                        maxWidth: 450, 
+                        width: "100%", 
+                        textAlign: "center", 
+                        boxShadow: "0 20px 50px rgba(0,0,0,0.5)",
+                        animation: "om-modal-fade-in 0.4s ease-out" 
+                    }}>
+                        <div style={{ color: "#80bdff", letterSpacing: 4, fontSize: 11, marginBottom: 10, fontWeight: 700 }}>📡 CENTRAL A.T.L.A.S.</div>
+                        <h2 style={{ fontSize: 20, fontWeight: 900, marginBottom: 40, color: "#fff" }}>SEQUÊNCIA DIÁRIA</h2>
+                        
+                        {/* Barra de Progresso */}
+                        <div style={{ display: "flex", justifyContent: "space-between", position: "relative", marginBottom: 50, padding: "0 10px" }}>
+                            <div style={{ position: "absolute", top: "50%", left: 10, right: 10, height: 2, background: "rgba(255,255,255,0.1)", transform: "translateY(-50%)", zIndex: 1 }} />
+                            <div style={{ position: "absolute", top: "50%", left: 10, width: `${Math.min(((streakUpdated?.current_streak || 1) - 1) / 6 * 100, 100)}%`, height: 2, background: "#3cff9c", transform: "translateY(-50%)", zIndex: 2, transition: "width 1s ease" }} />
                             
-                            {/* Barra de Progresso */}
-                            <div style={{ display: "flex", justifyContent: "space-between", position: "relative", marginBottom: 50, padding: "0 10px" }}>
-                                <div style={{ position: "absolute", top: "50%", left: 10, right: 10, height: 2, background: "rgba(255,255,255,0.1)", transform: "translateY(-50%)", zIndex: 1 }} />
-                                <div style={{ position: "absolute", top: "50%", left: 10, width: `${Math.min((streakUpdated.current_streak - 1) / 6 * 100, 100)}%`, height: 2, background: "#3cff9c", transform: "translateY(-50%)", zIndex: 2, transition: "width 1s ease" }} />
-                                
-                                {[1,2,3,4,5,6,7].map(d => {
-                                    const isCompleted = d < streakUpdated.current_streak;
-                                    const isCurrent = d === streakUpdated.current_streak;
-                                    const isReward = d === 7;
-                                    return (
-                                        <div key={d} style={{ zIndex: 3, position: "relative", display: "flex", flexDirection: "column", alignItems: "center" }}>
-                                            <div style={{ 
-                                                width: 32, height: 32, borderRadius: "50%", 
-                                                background: isCompleted ? "#3cff9c" : isCurrent ? "#fff" : "#1a2a3a",
-                                                border: `2px solid ${isCompleted ? "#3cff9c" : isCurrent ? "#80bdff" : "rgba(255,255,255,0.14)"}`,
-                                                display: "flex", alignItems: "center", justifyContent: "center",
-                                                color: isCompleted ? "#000" : isCurrent ? "#000" : "#555",
-                                                fontSize: 12, fontWeight: 800,
-                                                boxShadow: isCurrent ? "0 0 15px rgba(128,189,255,0.5)" : "none"
-                                            }}>
-                                                {isCompleted ? "✓" : isReward ? "🛫" : d}
-                                            </div>
-                                            <div style={{ fontSize: 9, marginTop: 8, opacity: isCurrent ? 1 : 0.4, color: isCurrent ? "#80bdff" : "#fff", letterSpacing: 1 }}>{isReward ? "VOUCHER" : `DIA ${d}`}</div>
+                            {[1,2,3,4,5,6,7].map(d => {
+                                const isCompleted = d < (streakUpdated?.current_streak || 0);
+                                const isCurrent = d === (streakUpdated?.current_streak || 0);
+                                const isReward = d === 7;
+                                return (
+                                    <div key={d} style={{ zIndex: 3, position: "relative", display: "flex", flexDirection: "column", alignItems: "center" }}>
+                                        <div style={{ 
+                                            width: 32, height: 32, borderRadius: "50%", 
+                                            background: isCompleted ? "#3cff9c" : isCurrent ? "#fff" : "#1a2a3a",
+                                            border: `2px solid ${isCompleted ? "#3cff9c" : isCurrent ? "#80bdff" : "rgba(255,255,255,0.14)"}`,
+                                            display: "flex", alignItems: "center", justifyContent: "center",
+                                            color: (isCompleted || isCurrent) ? "#000" : "#555",
+                                            fontSize: 12, fontWeight: 800,
+                                            boxShadow: isCurrent ? "0 0 15px rgba(128,189,255,0.5)" : "none"
+                                        }}>
+                                            {isCompleted ? "✓" : isReward ? "🛫" : d}
                                         </div>
-                                    );
-                                })}
-                            </div>
-
-                            <p style={{ fontSize: 14, color: "rgba(255,255,255,0.7)", lineHeight: 1.6, marginBottom: 30 }}>
-                                {streakUpdated.current_streak >= 7 
-                                    ? "Parabéns! Você alcançou a meta semanal." 
-                                    : `Incrível! Você completou ${streakUpdated.current_streak} dia${streakUpdated.current_streak > 1 ? "s" : ""} consecutivo${streakUpdated.current_streak > 1 ? "s" : ""}.`}
-                            </p>
-
-                            <button 
-                                onClick={() => {
-                                    setStreakUpdated(null); // Fecha este modal e libera para o de voucher se houver
-                                    if (!newVoucher) proceedToNext();
-                                }} 
-                                style={{ background: "#80bdff", color: "#000", padding: "12px 0", width: "100%", borderRadius: 12, border: "none", fontSize: 14, fontWeight: 800, cursor: "pointer" }}
-                            >
-                                PROSSEGUIR
-                            </button>
+                                        <div style={{ fontSize: 9, marginTop: 8, opacity: isCurrent ? 1 : 0.4, color: isCurrent ? "#80bdff" : "#fff", letterSpacing: 1 }}>{isReward ? "VOUCHER" : `DIA ${d}`}</div>
+                                    </div>
+                                );
+                            })}
                         </div>
+
+                        <p style={{ fontSize: 14, color: "rgba(255,255,255,0.7)", lineHeight: 1.6, marginBottom: 30 }}>
+                            {streakUpdated.current_streak >= 7 
+                                ? "Parabéns! Você alcançou a meta semanal e desbloqueou uma recompensa de transporte." 
+                                : `Incrível! Você completou ${streakUpdated.current_streak} dia${streakUpdated.current_streak > 1 ? "s" : ""} consecutivo${streakUpdated.current_streak > 1 ? "s" : ""} de missões.`}
+                        </p>
+
+                        <button 
+                            onClick={() => {
+                                setStreakUpdated(null);
+                                if (!newVoucher) proceedToNext();
+                            }} 
+                            style={{ background: "#80bdff", color: "#000", padding: "14px 0", width: "100%", borderRadius: 12, border: "none", fontSize: 14, fontWeight: 800, cursor: "pointer" }}
+                        >
+                            PROSSEGUIR
+                        </button>
                     </div>
                 ) : newVoucher ? (
-                    /* --- MODAL DE NOVO VOUCHER --- */
-                    <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.9)", backdropFilter: "blur(20px)", zIndex: 10000, display: "flex", alignItems: "center", justifyContent: "center", animation: "scale-in 0.6s cubic-bezier(0.17, 0.67, 0.83, 0.67)" }}>
-                        <div style={{ textAlign: "center", maxWidth: 440, width: "90%" }}>
-                            <div style={{ color: "#ffd700", letterSpacing: 6, fontSize: 14, marginBottom: 20, fontWeight: 900, textShadow: "0 0 20px rgba(255,215,0,0.5)" }}>📡 RECOMPENSA DE ELITE</div>
-                            
-                            <div style={{ position: "relative", marginBottom: 30 }}>
-                                <img src="/Voucher.png" style={{ width: "100%", borderRadius: 20, boxShadow: "0 30px 60px rgba(0,0,0,0.8)", border: "1px solid rgba(255,215,0,0.3)" }} alt="Voucher" />
-                                <div style={{ position: "absolute", inset: 0, borderRadius: 20, boxShadow: "inset 0 0 40px rgba(255,215,0,0.2)" }} />
-                            </div>
-
-                            <h3 style={{ color: "#fff", fontSize: 20, fontWeight: 800, marginBottom: 12 }}>{newVoucher.label}</h3>
-                            <p style={{ color: "rgba(255,255,255,0.6)", fontSize: 14, lineHeight: 1.6, marginBottom: 32 }}>
-                                Agente disciplinado detectado.<br/>
-                                Você recebeu <strong>{newVoucher.credits} créditos aéreos</strong> com <strong>{Math.round(newVoucher.discount * 100)}% de desconto</strong> em viagens de avião.
-                            </p>
-
-                            <button 
-                                onClick={() => {
-                                    setNewVoucher(null);
-                                    proceedToNext();
-                                }} 
-                                style={{ background: "linear-gradient(135deg, #ffd700, #ffba00)", color: "#000", fontWeight: 900, padding: "16px 0", width: "100%", borderRadius: 16, border: "none", fontSize: 14, cursor: "pointer" }}
-                            >
-                                EQUIPAR AGORA
-                            </button>
+                    <div style={{ 
+                        textAlign: "center", 
+                        maxWidth: 440, 
+                        width: "100%",
+                        animation: "om-modal-scale-in 0.5s cubic-bezier(0.17, 0.67, 0.83, 0.67)" 
+                    }}>
+                        <div style={{ color: "#ffd700", letterSpacing: 6, fontSize: 12, marginBottom: 20, fontWeight: 900, textShadow: "0 0 20px rgba(255,215,0,0.5)" }}>📡 RECOMPENSA DE ELITE</div>
+                        
+                        <div style={{ position: "relative", marginBottom: 30 }}>
+                            <img src="/Voucher.png" style={{ width: "100%", borderRadius: 20, boxShadow: "0 30px 60px rgba(0,0,0,0.8)", border: "1px solid rgba(255,215,0,0.3)" }} alt="Voucher" />
+                            <div style={{ position: "absolute", inset: 0, borderRadius: 20, boxShadow: "inset 0 0 40px rgba(255,215,0,0.2)" }} />
                         </div>
+
+                        <h3 style={{ color: "#fff", fontSize: 22, fontWeight: 800, marginBottom: 12 }}>{newVoucher.label}</h3>
+                        <p style={{ color: "rgba(255,255,255,0.6)", fontSize: 15, lineHeight: 1.6, marginBottom: 32 }}>
+                            Agente disciplinado detectado.<br/>
+                            Você recebeu <strong>{newVoucher.credits} créditos aéreos</strong> com <strong>{Math.round(newVoucher.discount * 100)}% de desconto</strong> para suas próximas operações.
+                        </p>
+
+                        <button 
+                            onClick={() => {
+                                setNewVoucher(null);
+                                proceedToNext();
+                            }} 
+                            style={{ background: "linear-gradient(135deg, #ffd700, #ffba00)", color: "#000", fontWeight: 900, padding: "16px 0", width: "100%", borderRadius: 16, border: "none", fontSize: 14, cursor: "pointer" }}
+                        >
+                            RECEBER RECOMPENSA
+                        </button>
                     </div>
                 ) : null}
-                <style>{`
-                    @keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
-                    @keyframes scale-in { from { opacity: 0; transform: scale(0.8); } to { opacity: 1; transform: scale(1); } }
-                `}</style>
             </div>
         );
     }

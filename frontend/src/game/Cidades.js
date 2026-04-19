@@ -1108,6 +1108,26 @@ export const CIDADES = [
             { id: "044-09", texto: "Dizem que a cidade é limpa, tranquila e organizada." },
             { id: "044-10", texto: "Disseram que dali saem importantes cerimônias ligadas ao Prêmio Nobel da Paz." }
         ]
+    },
+    {
+        id: "053",
+        cidade: "Xangai",
+        pais: "China",
+        continente: "Ásia",
+        imagem: "/Paises/default.png",
+        descricao: "Xangai é a maior cidade da China e um centro financeiro global. Seu skyline futurista em Pudong, com a Torre Pérola do Oriente, contrasta com o charme histórico do Bund à beira do rio Huangpu.",
+        dicas: [
+            { id: "053-01", texto: "A bandeira do país é vermelha com cinco estrelas amarelas." },
+            { id: "053-02", texto: "A moeda utilizada é o yuan." },
+            { id: "053-03", texto: "Ouvi pessoas falando mandarim e o dialeto local." },
+            { id: "053-04", texto: "Comentaram sobre um dos maiores portos do mundo." },
+            { id: "053-05", texto: "A pista citava arranha-céus imensos e vida urbana frenética." },
+            { id: "053-06", texto: "Falaram de um jardim histórico chamado Yuyuan." },
+            { id: "053-07", texto: "Mencionaram uma torre de rádio famosa com esferas rosadas." },
+            { id: "053-08", texto: "Ouvi referência a um grande centro financeiro da Ásia." },
+            { id: "053-09", texto: "A cidade parece nunca dormir, com luzes de neon por toda parte." },
+            { id: "053-10", texto: "Tudo indicava Xangai." }
+        ]
     }
 ];
 /**

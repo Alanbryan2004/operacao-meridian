@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { useGame } from "../game/GameProvider";
 import ModalMsg from "../components/ModalMsg";
 import { loadCompletedMissions } from "../services/gameSaveService";
+import { getStreakData } from "../game/streakService";
 
 function Badge({ children, tone = "gray" }) {
     const map = {
@@ -74,15 +75,22 @@ export default function Mural() {
     const [completedIds, setCompletedIds] = useState([]);
     const [loadingMissions, setLoadingMissions] = useState(true);
     const [showPromo, setShowPromo] = useState(false);
+    const [streakData, setStreakData] = useState(null);
 
     useEffect(() => {
-        loadCompletedMissions()
-            .then(data => {
-                const ids = data.filter(m => m.resultado === "WON").map(m => m.case_id);
-                setCompletedIds(ids);
-            })
-            .finally(() => setLoadingMissions(false));
-    }, []);
+        if (!state?.userId) return;
+
+        Promise.all([
+            loadCompletedMissions(),
+            getStreakData(state.userId)
+        ])
+        .then(([missions, streak]) => {
+            const ids = missions.filter(m => m.resultado === "WON").map(m => m.case_id);
+            setCompletedIds(ids);
+            setStreakData(streak);
+        })
+        .finally(() => setLoadingMissions(false));
+    }, [state?.userId]);
 
     useEffect(() => {
         window.dispatchEvent(new CustomEvent("meridian-play-audio", { detail: true }));
@@ -256,25 +264,65 @@ export default function Mural() {
             {showPromo && (
                 <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.9)", backdropFilter: "blur(20px)", zIndex: 10000, display: "flex", alignItems: "center", justifyContent: "center", animation: "scale-in 0.6s cubic-bezier(0.17, 0.67, 0.83, 0.67)" }}>
                     <div style={{ textAlign: "center", maxWidth: 480, width: "95%" }}>
-                        <div style={{ color: "#ffd700", letterSpacing: 8, fontSize: 13, marginBottom: 20, fontWeight: 900, textShadow: "0 0 20px rgba(255,215,0,0.5)" }}>📡 COMUNICADO ESPECIAL</div>
+                        <div style={{ color: "#ffd700", letterSpacing: 8, fontSize: 13, marginBottom: 12, fontWeight: 900, textShadow: "0 0 20px rgba(255,215,0,0.5)" }}>📡 COMUNICADO ESPECIAL</div>
                         
-                        <div style={{ position: "relative", marginBottom: 30 }}>
+                        <div style={{ position: "relative", marginBottom: 20 }}>
                             <img src="/Voucher.png" style={{ width: "100%", borderRadius: 24, boxShadow: "0 30px 60px rgba(0,0,0,0.8)", border: "1px solid rgba(255,215,0,0.3)" }} alt="Voucher Atlas Aéreo" />
                             <div style={{ position: "absolute", inset: 0, borderRadius: 24, boxShadow: "inset 0 0 40px rgba(255,215,0,0.2)" }} />
                         </div>
 
-                        <h3 style={{ color: "#fff", fontSize: 24, fontWeight: 900, marginBottom: 16 }}>VOUCHERS ATLAS AÉREO</h3>
-                        <p style={{ color: "rgba(255,255,255,0.7)", fontSize: 15, lineHeight: 1.6, marginBottom: 35 }}>
+                        <h3 style={{ color: "#fff", fontSize: 20, fontWeight: 900, marginBottom: 10 }}>VOUCHERS ATLAS AÉREO</h3>
+                        <p style={{ color: "rgba(255,255,255,0.7)", fontSize: 14, lineHeight: 1.5, marginBottom: 20 }}>
                             Agentes dedicados agora são recompensados.<br/>
-                            Complete missões diárias para acumular sequências e ganhar <strong>Vouchers de Desconto</strong> para suas viagens de avião.
+                            Complete missões diárias para ganhar <strong>Vouchers de Desconto</strong>.
                         </p>
+
+                        {/* --- PROGRESSO DE SEQUÊNCIA --- */}
+                        <div style={{ background: "rgba(255,255,255,0.05)", borderRadius: 20, padding: "16px 12px", marginBottom: 20, border: "1px solid rgba(255,255,255,0.08)" }}>
+                            <div style={{ display: "flex", justifyContent: "space-between", position: "relative", marginBottom: 10, padding: "0 10px" }}>
+                                <div style={{ position: "absolute", top: "50%", left: 10, right: 10, height: 2, background: "rgba(255,255,255,0.14)", transform: "translateY(-50%)", zIndex: 1 }} />
+                                <div style={{ 
+                                    position: "absolute", top: "50%", left: 10, 
+                                    width: `${Math.min(((streakData?.current_streak || 0)) / 6 * 100, 100)}%`, 
+                                    height: 2, background: "#3cff9c", transform: "translateY(-50%)", zIndex: 2, transition: "width 1s ease" 
+                                }} />
+                                
+                                {[1,2,3,4,5,6,7].map(d => {
+                                    const isCompleted = d <= (streakData?.current_streak || 0);
+                                    const isNext = d === (streakData?.current_streak || 0) + 1;
+                                    const isReward = d === 7;
+                                    return (
+                                        <div key={d} style={{ zIndex: 3, position: "relative", display: "flex", flexDirection: "column", alignItems: "center" }}>
+                                            <div style={{ 
+                                                width: 32, height: 32, borderRadius: "50%", 
+                                                background: isCompleted ? "#3cff9c" : isNext ? "rgba(255,255,255,0.15)" : "#1a2a3a",
+                                                border: `2px solid ${isCompleted ? "#3cff9c" : isNext ? "rgba(255,189,128,0.5)" : "rgba(255,255,255,0.14)"}`,
+                                                display: "flex", alignItems: "center", justifyContent: "center",
+                                                color: isCompleted ? "#000" : "#999",
+                                                fontSize: 12, fontWeight: 800,
+                                            }}>
+                                                {isCompleted ? "✓" : isReward ? "🛫" : d}
+                                            </div>
+                                            <div style={{ fontSize: 9, marginTop: 8, opacity: isCompleted ? 1 : 0.4, color: isCompleted ? "#3cff9c" : "#fff", letterSpacing: 1 }}>
+                                                {isReward ? "RECOMPENSA" : `DIA ${d}`}
+                                            </div>
+                                        </div>
+                                    );
+                                })}
+                            </div>
+                            <div style={{ fontSize: 12, color: "rgba(255,255,255,0.9)", fontWeight: 700, marginTop: 10 }}>
+                                {streakData?.current_streak > 0 
+                                    ? `Você está no DIA ${streakData.current_streak} da sua sequência!`
+                                    : "Comece sua sequência hoje!"}
+                            </div>
+                        </div>
 
                         <button 
                             onClick={() => {
                                 setShowPromo(false);
                                 localStorage.setItem("atlas_voucher_promo_v1", "true");
                             }} 
-                            style={{ background: "linear-gradient(135deg, #ffd700, #ffba00)", color: "#000", fontWeight: 900, padding: "18px 0", width: "100%", borderRadius: 18, border: "none", fontSize: 15, cursor: "pointer", boxShadow: "0 10px 25px rgba(255,186,0,0.3)" }}
+                            style={{ background: "linear-gradient(135deg, #ffd700, #ffba00)", color: "#000", fontWeight: 900, padding: "14px 0", width: "100%", borderRadius: 18, border: "none", fontSize: 15, cursor: "pointer", boxShadow: "0 10px 25px rgba(255,186,0,0.3)" }}
                         >
                             ENTENDIDO, AGENTE
                         </button>
