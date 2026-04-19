@@ -65,8 +65,15 @@ export async function updateStreakOnWin(userId) {
         return { ...initial, newlyAwarded: null };
     }
 
-    const lastDate = new Date(existing.last_completion_date + "T12:00:00");
-    const diffDays = Math.floor((now - lastDate) / (1000 * 60 * 60 * 24));
+    const lastDateParts = existing.last_completion_date.split("-");
+    const lastDate = new Date(lastDateParts[0], lastDateParts[1] - 1, lastDateParts[2]);
+    lastDate.setHours(0,0,0,0);
+
+    const todayDate = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    todayDate.setHours(0,0,0,0);
+
+    const diffMs = todayDate - lastDate;
+    const diffDays = Math.round(diffMs / (1000 * 60 * 60 * 24));
 
     let updated = { ...existing };
     let newlyAwarded = null;
@@ -120,8 +127,15 @@ export async function checkStreakPersistence(userId) {
     if (!data || !data.last_completion_date) return null;
 
     const now = new Date();
-    const lastDate = new Date(data.last_completion_date + "T12:00:00");
-    const diffDays = Math.floor((now - lastDate) / (1000 * 60 * 60 * 24));
+    const lastDateParts = data.last_completion_date.split("-");
+    const lastDate = new Date(lastDateParts[0], lastDateParts[1] - 1, lastDateParts[2]);
+    lastDate.setHours(0,0,0,0);
+
+    const todayDate = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    todayDate.setHours(0,0,0,0);
+
+    const diffMs = todayDate - lastDate;
+    const diffDays = Math.round(diffMs / (1000 * 60 * 60 * 24));
 
     if (diffDays > 1) {
         // Perdeu o streak por inatividade

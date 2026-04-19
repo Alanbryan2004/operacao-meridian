@@ -78,11 +78,11 @@ export default function Mural() {
     const [streakData, setStreakData] = useState(null);
 
     useEffect(() => {
-        if (!state?.userId) return;
+        if (!state?.player?.supabaseId) return;
 
         Promise.all([
             loadCompletedMissions(),
-            getStreakData(state.userId)
+            getStreakData(state.player.supabaseId)
         ])
         .then(([missions, streak]) => {
             const ids = missions.filter(m => m.resultado === "WON").map(m => m.case_id);
@@ -90,7 +90,7 @@ export default function Mural() {
             setStreakData(streak);
         })
         .finally(() => setLoadingMissions(false));
-    }, [state?.userId]);
+    }, [state?.player?.supabaseId]);
 
     useEffect(() => {
         window.dispatchEvent(new CustomEvent("meridian-play-audio", { detail: true }));
