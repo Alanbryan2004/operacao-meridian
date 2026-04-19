@@ -130,10 +130,15 @@ export default function CasoSolucionado() {
 
 
     // --- MODAIS DE STREAK / VOUCHER (Após ENCERRAR) ---
-    if (streakUpdated) {
+    if (streakUpdated || newVoucher) {
+        // Se temos streakUpdated MAS NAO temos a intenção de mostrar voucher ainda, mostra Streak
+        // Se o usuário clicar em PROSSEGUIR e houver newVoucher, a gente limpa streakUpdated e deixa o newVoucher brilhar.
+        
+        const showStreak = streakUpdated && !(!streakUpdated && newVoucher); 
+
         return (
             <div style={{ minHeight: "100dvh", background: "#0a0c10", color: "#fff", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                {!newVoucher ? (
+                {streakUpdated ? (
                     <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.85)", backdropFilter: "blur(12px)", zIndex: 9999, display: "flex", alignItems: "center", justifyContent: "center", animation: "fade-in 0.5s ease" }}>
                         <div style={{ background: "linear-gradient(135deg, #112233 0%, #000 100%)", padding: "40px 30px", borderRadius: 24, border: "1px solid rgba(128,189,255,0.3)", maxWidth: 450, width: "90%", textAlign: "center", boxShadow: "0 20px 50px rgba(0,0,0,0.5)" }}>
                             <div style={{ color: "#80bdff", letterSpacing: 4, fontSize: 13, marginBottom: 10, fontWeight: 700 }}>📡 CENTRAL A.T.L.A.S.</div>
@@ -175,12 +180,8 @@ export default function CasoSolucionado() {
 
                             <button 
                                 onClick={() => {
-                                    if (newVoucher) {
-                                        // Mostra o modal de voucher em seguida (já definido)
-                                    } else {
-                                        setStreakUpdated(null);
-                                        proceedToNext();
-                                    }
+                                    setStreakUpdated(null); // Fecha este modal e libera para o de voucher se houver
+                                    if (!newVoucher) proceedToNext();
                                 }} 
                                 style={{ background: "#80bdff", color: "#000", padding: "12px 0", width: "100%", borderRadius: 12, border: "none", fontSize: 14, fontWeight: 800, cursor: "pointer" }}
                             >
@@ -188,7 +189,7 @@ export default function CasoSolucionado() {
                             </button>
                         </div>
                     </div>
-                ) : (
+                ) : newVoucher ? (
                     /* --- MODAL DE NOVO VOUCHER --- */
                     <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.9)", backdropFilter: "blur(20px)", zIndex: 10000, display: "flex", alignItems: "center", justifyContent: "center", animation: "scale-in 0.6s cubic-bezier(0.17, 0.67, 0.83, 0.67)" }}>
                         <div style={{ textAlign: "center", maxWidth: 440, width: "90%" }}>
@@ -208,7 +209,6 @@ export default function CasoSolucionado() {
                             <button 
                                 onClick={() => {
                                     setNewVoucher(null);
-                                    setStreakUpdated(null);
                                     proceedToNext();
                                 }} 
                                 style={{ background: "linear-gradient(135deg, #ffd700, #ffba00)", color: "#000", fontWeight: 900, padding: "16px 0", width: "100%", borderRadius: 16, border: "none", fontSize: 14, cursor: "pointer" }}
@@ -217,7 +217,7 @@ export default function CasoSolucionado() {
                             </button>
                         </div>
                     </div>
-                )}
+                ) : null}
                 <style>{`
                     @keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
                     @keyframes scale-in { from { opacity: 0; transform: scale(0.8); } to { opacity: 1; transform: scale(1); } }

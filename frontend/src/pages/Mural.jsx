@@ -183,6 +183,8 @@ export default function Mural() {
                 .om-actions { display:flex; gap: 10px; margin-top: 10px; }
                 .om-miniBtn { flex: 1; padding: 10px 12px; border-radius: 14px; border: 1px solid rgba(255,255,255,.16); background: rgba(255,255,255,0.06); color: rgba(255,255,255,.92); font-size: 12px; letter-spacing: 1px; cursor: pointer; }
                 .om-miniBtn:active { transform: scale(0.99); }
+                .om-newsBtn { background: rgba(255,215,0,0.1); border: 1px solid rgba(255,215,0,0.3); color: #ffd700; font-size: 10px; font-weight: 800; padding: 6px 12px; border-radius: 999px; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; transition: all 0.2s; }
+                .om-newsBtn:active { transform: scale(0.95); opacity: 0.8; }
             `}</style>
 
             <div className="om-wrap">
@@ -202,10 +204,11 @@ export default function Mural() {
                                 </div>
                             </div>
                         </div>
-                        <div style={{ marginTop: 10, display: "flex", gap: 8, flexWrap: "wrap" }}>
+                        <div style={{ marginTop: 10, display: "flex", gap: 8, flexWrap: "wrap", alignItems: "center" }}>
                             <Badge tone="blue">{player.classeEmoji || "🟢"} {player.nivelTitulo || "Novato"}</Badge>
                             <Badge tone="green">XP {player.xp}</Badge>
                             <Badge tone="purple">Temporadas: em breve</Badge>
+                            <button className="om-newsBtn" onClick={() => setShowPromo(true)}>✨ NOVIDADES</button>
                         </div>
                         <div className="om-actions">
                             <button className="om-miniBtn" onClick={() => nav("/perfil")}>PERFIL</button>
