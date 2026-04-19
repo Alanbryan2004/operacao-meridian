@@ -73,6 +73,7 @@ export default function Mural() {
     const [modal, setModal] = useState({ show: false, message: "" });
     const [completedIds, setCompletedIds] = useState([]);
     const [loadingMissions, setLoadingMissions] = useState(true);
+    const [showPromo, setShowPromo] = useState(false);
 
     useEffect(() => {
         loadCompletedMissions()
@@ -88,7 +89,15 @@ export default function Mural() {
         if (state && !state.player?.avatar) {
             nav("/avatar-creator?onboarding=true");
         }
-    }, [state, nav]);
+
+        // --- Checa Promo de Voucher (1x) ---
+        if (state && !loadingMissions) {
+            const hasSeen = localStorage.getItem("atlas_voucher_promo_v1");
+            if (!hasSeen) {
+                setShowPromo(true);
+            }
+        }
+    }, [state, nav, loadingMissions]);
 
     if (!state) return null;
     const { player, cases } = state;
@@ -239,6 +248,40 @@ export default function Mural() {
             {modal.show && (
                 <ModalMsg message={modal.message} onClose={() => setModal({ show: false, message: "" })} />
             )}
+
+            {/* --- MODAL PROMOCIONAL VOUCHER --- */}
+            {showPromo && (
+                <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.9)", backdropFilter: "blur(20px)", zIndex: 10000, display: "flex", alignItems: "center", justifyContent: "center", animation: "scale-in 0.6s cubic-bezier(0.17, 0.67, 0.83, 0.67)" }}>
+                    <div style={{ textAlign: "center", maxWidth: 480, width: "95%" }}>
+                        <div style={{ color: "#ffd700", letterSpacing: 8, fontSize: 13, marginBottom: 20, fontWeight: 900, textShadow: "0 0 20px rgba(255,215,0,0.5)" }}>📡 COMUNICADO ESPECIAL</div>
+                        
+                        <div style={{ position: "relative", marginBottom: 30 }}>
+                            <img src="/Voucher.png" style={{ width: "100%", borderRadius: 24, boxShadow: "0 30px 60px rgba(0,0,0,0.8)", border: "1px solid rgba(255,215,0,0.3)" }} alt="Voucher Atlas Aéreo" />
+                            <div style={{ position: "absolute", inset: 0, borderRadius: 24, boxShadow: "inset 0 0 40px rgba(255,215,0,0.2)" }} />
+                        </div>
+
+                        <h3 style={{ color: "#fff", fontSize: 24, fontWeight: 900, marginBottom: 16 }}>VOUCHERS ATLAS AÉREO</h3>
+                        <p style={{ color: "rgba(255,255,255,0.7)", fontSize: 15, lineHeight: 1.6, marginBottom: 35 }}>
+                            Agentes dedicados agora são recompensados.<br/>
+                            Complete missões diárias para acumular sequências e ganhar <strong>Vouchers de Desconto</strong> para suas viagens de avião.
+                        </p>
+
+                        <button 
+                            onClick={() => {
+                                setShowPromo(false);
+                                localStorage.setItem("atlas_voucher_promo_v1", "true");
+                            }} 
+                            style={{ background: "linear-gradient(135deg, #ffd700, #ffba00)", color: "#000", fontWeight: 900, padding: "18px 0", width: "100%", borderRadius: 18, border: "none", fontSize: 15, cursor: "pointer", boxShadow: "0 10px 25px rgba(255,186,0,0.3)" }}
+                        >
+                            ENTENDIDO, AGENTE
+                        </button>
+                    </div>
+                </div>
+            )}
+
+            <style>{`
+                @keyframes scale-in { from { opacity: 0; transform: scale(0.8); } to { opacity: 1; transform: scale(1); } }
+            `}</style>
         </div>
     );
 }

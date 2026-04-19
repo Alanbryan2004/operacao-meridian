@@ -109,8 +109,7 @@ export default function Caso() {
         const [animatedTime, setAnimatedTime] = useState(null);
         const [modalConfig, setModalConfig] = useState({ show: false, message: "", type: "INFO", isConfirm: false, onConfirm: null });
         const [pendingWarrant, setPendingWarrant] = useState(null);
-        const [streakUpdated, setStreakUpdated] = useState(null);
-        const [newVoucher, setNewVoucher] = useState(null);
+        // Streak/Voucher modals are now handled in CasoSolucionado.jsx via localStorage
 
         const lobbyId = searchParams.get("lobbyId");
         const forcedScenarioId = searchParams.get("scenario");
@@ -613,10 +612,11 @@ export default function Caso() {
                                  };
                                  replaceState(saveGame({ ...state, player: updatedPlayer, runs: { ...state.runs, [caseId]: nextRun } }));
                                  
+                                 // Salva no localStorage para CasoSolucionado mostrar após ENCERRAR
+                                 localStorage.setItem("pendingStreakResult", JSON.stringify(streakResult));
                                  if (streakResult.newlyAwarded) {
-                                     setNewVoucher(streakResult.newlyAwarded);
+                                     localStorage.setItem("pendingNewVoucher", JSON.stringify(streakResult.newlyAwarded));
                                  }
-                                 setStreakUpdated(streakResult);
                              }
                          }
                     })
@@ -965,73 +965,7 @@ export default function Caso() {
                 <div className="om-tabs"><div className="om-tabs-inner"><button className={`om-tab ${viewMode === "ACTIONS" ? "om-tab-active" : ""}`} onClick={() => setViewMode("ACTIONS")}>AÇÃO</button><button className={`om-tab ${viewMode === "JOURNAL" ? "om-tab-active" : ""}`} onClick={() => setViewMode("JOURNAL")}>JORNAL</button><button className={`om-tab ${viewMode === "PROFILE" ? "om-tab-active" : ""}`} onClick={() => setViewMode("PROFILE")}>CASOS</button></div></div>
                 {modalConfig.show && <ModalMsg message={modalConfig.message} type={modalConfig.type} isConfirm={modalConfig.isConfirm} onConfirm={modalConfig.onConfirm} onClose={() => setModalConfig({ ...modalConfig, show: false })} />}
                 
-                {/* --- MODAL DE STREAK (DAILY REWARDS) --- */}
-                {streakUpdated && (
-                    <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.85)", backdropFilter: "blur(12px)", zIndex: 9999, display: "flex", alignItems: "center", justifyContent: "center", animation: "fade-in 0.5s ease" }}>
-                        <div style={{ background: "linear-gradient(135deg, #112233 0%, #000 100%)", padding: "40px 30px", borderRadius: 24, border: "1px solid rgba(128,189,255,0.3)", maxWidth: 450, width: "90%", textAlign: "center", boxShadow: "0 20px 50px rgba(0,0,0,0.5)" }}>
-                            <div style={{ color: "#80bdff", letterSpacing: 4, fontSize: 13, marginBottom: 10, fontWeight: 700 }}>📡 CENTRAL A.T.L.A.S.</div>
-                            <h2 style={{ fontSize: 22, fontWeight: 900, marginBottom: 40, color: "#fff" }}>SEQUÊNCIA DIÁRIA</h2>
-                            
-                            {/* Barra de Progresso */}
-                            <div style={{ display: "flex", justifyContent: "space-between", position: "relative", marginBottom: 50, padding: "0 10px" }}>
-                                <div style={{ position: "absolute", top: "50%", left: 10, right: 10, height: 2, background: "rgba(255,255,255,0.1)", transform: "translateY(-50%)", zIndex: 1 }} />
-                                <div style={{ position: "absolute", top: "50%", left: 10, width: `${Math.min((streakUpdated.current_streak - 1) / 6 * 100, 100)}%`, height: 2, background: "#3cff9c", transform: "translateY(-50%)", zIndex: 2, transition: "width 1s ease" }} />
-                                
-                                {[1,2,3,4,5,6,7].map(d => {
-                                    const isCompleted = d < streakUpdated.current_streak;
-                                    const isCurrent = d === streakUpdated.current_streak;
-                                    const isReward = d === 7;
-                                    return (
-                                        <div key={d} style={{ zIndex: 3, position: "relative", display: "flex", flexDirection: "column", alignItems: "center" }}>
-                                            <div style={{ 
-                                                width: 32, height: 32, borderRadius: "50%", 
-                                                background: isCompleted ? "#3cff9c" : isCurrent ? "#fff" : "#1a2a3a",
-                                                border: `2px solid ${isCompleted ? "#3cff9c" : isCurrent ? "#80bdff" : "rgba(255,255,255,0.14)"}`,
-                                                display: "flex", alignItems: "center", justifyContent: "center",
-                                                color: isCompleted ? "#000" : isCurrent ? "#000" : "#555",
-                                                fontSize: 12, fontWeight: 800,
-                                                boxShadow: isCurrent ? "0 0 15px rgba(128,189,255,0.5)" : "none"
-                                            }}>
-                                                {isCompleted ? "✓" : isReward ? "🛫" : d}
-                                            </div>
-                                            <div style={{ fontSize: 9, marginTop: 8, opacity: isCurrent ? 1 : 0.4, color: isCurrent ? "#80bdff" : "#fff", letterSpacing: 1 }}>{isReward ? "VOUCHER" : `DIA ${d}`}</div>
-                                        </div>
-                                    );
-                                })}
-                            </div>
-
-                            <p style={{ fontSize: 14, color: "rgba(255,255,255,0.7)", lineHeight: 1.6, marginBottom: 30 }}>
-                                {streakUpdated.current_streak >= 7 
-                                    ? "Parabéns! Você alcançou a meta semanal." 
-                                    : `Incrível! Você completou ${streakUpdated.current_streak} dias consecutivos.`}
-                            </p>
-
-                            <button onClick={() => setStreakUpdated(null)} className="om-btn" style={{ background: "#80bdff", color: "#000", padding: "12px 0", width: "100%", borderRadius: 12 }}>PROSSEGUIR</button>
-                        </div>
-                    </div>
-                )}
-
-                {/* --- MODAL DE NOVO VOUCHER --- */}
-                {newVoucher && (
-                    <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.9)", backdropFilter: "blur(20px)", zIndex: 10000, display: "flex", alignItems: "center", justifyContent: "center", animation: "scale-in 0.6s cubic-bezier(0.17, 0.67, 0.83, 0.67)" }}>
-                        <div style={{ textAlign: "center", maxWidth: 440, width: "90%" }}>
-                            <div style={{ color: "#ffd700", letterSpacing: 6, fontSize: 14, marginBottom: 20, fontWeight: 900, textShadow: "0 0 20px rgba(255,215,0,0.5)" }}>📡 RECOMPENSA DE ELITE</div>
-                            
-                            <div style={{ position: "relative", marginBottom: 30 }}>
-                                <img src="/Voucher.png" style={{ width: "100%", borderRadius: 20, boxShadow: "0 30px 60px rgba(0,0,0,0.8)", border: "1px solid rgba(255,215,0,0.3)" }} alt="Voucher" />
-                                <div style={{ position: "absolute", inset: 0, borderRadius: 20, boxShadow: "inset 0 0 40px rgba(255,215,0,0.2)" }} />
-                            </div>
-
-                            <h3 style={{ color: "#fff", fontSize: 20, fontWeight: 800, marginBottom: 12 }}>{newVoucher.label}</h3>
-                            <p style={{ color: "rgba(255,255,255,0.6)", fontSize: 14, lineHeight: 1.6, marginBottom: 32 }}>
-                                Agente disciplinado detectado.<br/>
-                                Você recebeu <strong>{newVoucher.credits} créditos aéreos</strong> com <strong>{Math.round(newVoucher.discount * 100)}% de desconto</strong> em viagens de avião.
-                            </p>
-
-                            <button onClick={() => setNewVoucher(null)} className="om-btn" style={{ background: "linear-gradient(135deg, #ffd700, #ffba00)", color: "#000", fontWeight: 900, padding: "16px 0", width: "100%", borderRadius: 16 }}>EQUIPAR AGORA</button>
-                        </div>
-                    </div>
-                )}
+                {/* Streak/Voucher modals agora ficam no CasoSolucionado.jsx */}
 
                 {pendingWarrant && (
                     <ModalMsg 
