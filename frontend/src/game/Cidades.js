@@ -1050,7 +1050,7 @@ export const CIDADES = [
         ]
     },
     {
-        id: "041",
+        id: "053",
         cidade: "Munique",
         pais: "Alemanha",
         continente: "Europa",
@@ -1070,7 +1070,7 @@ export const CIDADES = [
         ]
     },
     {
-        id: "042",
+        id: "054",
         cidade: "Bruxelas",
         pais: "Bélgica",
         continente: "Europa",
@@ -1090,7 +1090,7 @@ export const CIDADES = [
         ]
     },
     {
-        id: "044",
+        id: "055",
         cidade: "Oslo",
         pais: "Noruega",
         continente: "Europa",
@@ -1110,7 +1110,7 @@ export const CIDADES = [
         ]
     },
     {
-        id: "053",
+        id: "056",
         cidade: "Xangai",
         pais: "China",
         continente: "Ásia",
@@ -1128,8 +1128,149 @@ export const CIDADES = [
             { id: "053-09", texto: "A cidade parece nunca dormir, com luzes de neon por toda parte." },
             { id: "053-10", texto: "Tudo indicava Xangai." }
         ]
+    },
+    {
+        id: "057",
+        cidade: "Helsinque",
+        pais: "Finlândia",
+        continente: "Europa",
+        imagem: "/Paises/default.png",
+        descricao: "Helsinque, a capital da Finlândia, é uma cidade costeira vibrante conhecida por seu design moderno, arquitetura neoclássica e forte ligação com o mar Báltico. É um centro de inovação e cultura nórdica.",
+        dicas: [
+            { id: "057-01", texto: "A bandeira tinha uma cruz azul sobre fundo branco." },
+            { id: "057-02", texto: "A moeda utilizada é o euro." },
+            { id: "057-03", texto: "Ouvi pessoas falando finlandês e sueco." },
+            { id: "057-04", texto: "Comentaram sobre uma catedral branca icônica em uma grande praça." },
+            { id: "057-05", texto: "A pista citava design escandinavo e clima frio." },
+            { id: "057-06", texto: "Falaram de saunas e forte conexão com a natureza." },
+            { id: "057-07", texto: "Mencionaram uma capital europeia muito limpa e organizada." },
+            { id: "057-08", texto: "Ouvi referência a um arquipélago no mar Báltico." },
+            { id: "057-09", texto: "A cidade parecia moderna, tecnológica e tranquila." },
+            { id: "057-10", texto: "Tudo apontava para Helsinque." }
+        ]
+    },
+    {
+        id: "058",
+        cidade: "Copenhague",
+        pais: "Dinamarca",
+        continente: "Europa",
+        imagem: "/Paises/default.png",
+        descricao: "Copenhague, a capital da Dinamarca, é famosa por seus canais coloridos, cultura da bicicleta e o icônico parque Tivoli. Une charme histórico com design contemporâneo e alta qualidade de vida.",
+        dicas: [
+            { id: "058-01", texto: "A bandeira era vermelha com uma cruz branca descentralizada." },
+            { id: "058-02", texto: "A moeda utilizada é a coroa dinamarquesa." },
+            { id: "058-03", texto: "Ouvi pessoas falando dinamarquês." },
+            { id: "058-04", texto: "Comentaram sobre um canal com casas coloridas e barcos antigos." },
+            { id: "058-05", texto: "A pista citava uma pequena estátua de sereia à beira-mar." },
+            { id: "058-06", texto: "Falaram de muitas bicicletas e design sustentável." },
+            { id: "058-07", texto: "Mencionaram uma capital europeia muito acolhedora e moderna." },
+            { id: "058-08", texto: "Ouvi referência a um dos parques de diversões mais antigos do mundo." },
+            { id: "058-09", texto: "A cidade parecia vibrante, criativa e muito organizada." },
+            { id: "058-10", texto: "Tudo indicava Copenhague." }
+        ]
+    },
+    {
+        id: "059",
+        cidade: "Estocolmo",
+        pais: "Suécia",
+        continente: "Europa",
+        imagem: "/Paises/default.png",
+        descricao: "Estocolmo, capital da Suécia, é construída sobre 14 ilhas e conectada por mais de 50 pontes. Conhecida como a 'Veneza do Norte', combina história medieval com inovação tecnológica e design sofisticado.",
+        dicas: [
+            { id: "059-01", texto: "A bandeira tinha uma cruz amarela sobre fundo azul." },
+            { id: "059-02", texto: "A moeda utilizada é a coroa sueca." },
+            { id: "059-03", texto: "Ouvi pessoas falando sueco." },
+            { id: "059-04", texto: "Comentaram sobre uma cidade espalhada por muitas ilhas." },
+            { id: "059-05", texto: "A pista citava um centro histórico medieval muito bem preservado." },
+            { id: "059-06", texto: "Falaram de design, tecnologia e alta qualidade de vida." },
+            { id: "059-07", texto: "Mencionaram uma capital nórdica muito elegante." },
+            { id: "059-08", texto: "Ouvi referência ao Prêmio Nobel e sua cerimônia na cidade." },
+            { id: "059-09", texto: "A cidade parecia moderna, sofisticada e cercada por água." },
+            { id: "059-10", texto: "Tudo apontava para Estocolmo." }
+        ]
+    },
+    {
+        id: "060",
+        cidade: "Reykjavik",
+        pais: "Islândia",
+        continente: "Europa",
+        imagem: "/Paises/default.png",
+        descricao: "Reykjavik é a capital da Islândia, a capital mais setentrional do mundo. Famosa por sua energia geotérmica, vida cultural vibrante e proximidade com paisagens naturais dramáticas como vulcões e geleiras.",
+        dicas: [
+            { id: "060-01", texto: "A bandeira era azul com uma cruz vermelha bordejada de branco." },
+            { id: "060-02", texto: "A moeda utilizada é a coroa islandesa." },
+            { id: "060-03", texto: "Ouvi pessoas falando islandês." },
+            { id: "060-04", texto: "Comentaram sobre fontes termais e paisagens vulcânicas próximas." },
+            { id: "060-05", texto: "A pista citava uma capital europeia muito ao norte." },
+            { id: "060-06", texto: "Falaram de auroras boreais e natureza dramática." },
+            { id: "060-07", texto: "Mencionaram uma cidade pequena e aconchegante em uma ilha isolada." },
+            { id: "060-08", texto: "Ouvi referência a gelo, fogo e energia geotérmica." },
+            { id: "060-09", texto: "A cidade parecia única, mística e muito ligada aos elementos naturais." },
+            { id: "060-10", texto: "Tudo indicava Reykjavik." }
+        ]
+    },
+    {
+        id: "061",
+        cidade: "Kuala Lumpur",
+        pais: "Malásia",
+        continente: "Ásia",
+        imagem: "/Paises/default.png",
+        descricao: "Kuala Lumpur, capital da Malásia, é definida por seu skyline moderno dominado pelas Torres Petronas. Mistura arquitetura colonial britânica, influências malaias, chinesas e indianas em uma metrópole vibrante.",
+        dicas: [
+            { id: "061-01", texto: "A bandeira tinha listras vermelhas e brancas com um quadrado azul contendo crescente e estrela." },
+            { id: "061-02", texto: "A moeda utilizada é o ringgit." },
+            { id: "061-03", texto: "Ouvi pessoas falando malaio e inglês." },
+            { id: "061-04", texto: "Comentaram sobre torres gêmeas que já foram as mais altas do mundo." },
+            { id: "061-05", texto: "A pista citava uma mistura cultural intensa na Ásia." },
+            { id: "061-06", texto: "Falaram de templos coloridos e gastronomia de rua incrível." },
+            { id: "061-07", texto: "Mencionaram uma metrópole moderna com forte influência islâmica." },
+            { id: "061-08", texto: "Ouvi referência a cavernas históricas com estátuas gigantes nas proximidades." },
+            { id: "061-09", texto: "A cidade parecia quente, úmida e cheia de arranha-céus futuristas." },
+            { id: "061-10", texto: "Tudo indicava Kuala Lumpur." }
+        ]
+    },
+    {
+        id: "062",
+        cidade: "Jacarta",
+        pais: "Indonésia",
+        continente: "Ásia",
+        imagem: "/Paises/default.png",
+        descricao: "Jacarta é a capital gigantesca e dinâmica da Indonésia, localizada na ilha de Java. Centro econômico e político, é um caldeirão cultural com milhões de habitantes e ritmo urbano frenético.",
+        dicas: [
+            { id: "062-01", texto: "A bandeira tinha duas faixas horizontais: vermelha e branca." },
+            { id: "062-02", texto: "A moeda utilizada é a rupia indonésia." },
+            { id: "062-03", texto: "Ouvi pessoas falando indonésio (bahasa)." },
+            { id: "062-04", texto: "Comentaram sobre uma metrópole imensa na ilha de Java." },
+            { id: "062-05", texto: "A pista citava trânsito intenso e vida urbana muito agitada." },
+            { id: "062-06", texto: "Falaram de uma cidade costeira enfrentando desafios geográficos." },
+            { id: "062-07", texto: "Mencionaram a diversidade de um arquipélago com milhares de ilhas." },
+            { id: "062-08", texto: "Ouvi referência a um grande porto e centro de negócios da Ásia." },
+            { id: "062-09", texto: "A cidade parecia vibrante, populosa e cheia de energia tropical." },
+            { id: "062-10", texto: "Tudo apontava para Jacarta." }
+        ]
+    },
+    {
+        id: "063",
+        cidade: "Manila",
+        pais: "Filipinas",
+        continente: "Ásia",
+        imagem: "/Paises/default.png",
+        descricao: "Manila é a capital das Filipinas, uma cidade que mistura densidade urbana moderna com herança colonial espanhola. Localizada na ilha de Luzon, é o coração histórico e comercial do arquipélago.",
+        dicas: [
+            { id: "063-01", texto: "A bandeira tinha duas faixas horizontais, azul e vermelha, com um triângulo branco contendo sol e estrelas." },
+            { id: "063-02", texto: "A moeda utilizada é o peso filipino." },
+            { id: "063-03", texto: "Ouvi pessoas falando tagalo e inglês." },
+            { id: "063-04", texto: "Comentaram sobre uma cidade com forte influência espanhola na Ásia." },
+            { id: "063-05", texto: "A pista citava um centro histórico cercado por muros antigos." },
+            { id: "063-06", texto: "Falaram de densidade populacional e portos movimentados." },
+            { id: "063-07", texto: "Mencionaram a hospitalidade de um povo espalhado por muitas ilhas." },
+            { id: "063-08", texto: "Ouvi referência a jeeps coloridos usados para transporte urbano." },
+            { id: "063-09", texto: "A cidade parecia quente, vibrante e cheia de história colonial." },
+            { id: "063-10", texto: "Tudo indicava Manila." }
+        ]
     }
 ];
+
 /**
  * Busca uma cidade pelo nome (case-insensitive, aceita acentos).
  * @param {string} nome — Nome da cidade

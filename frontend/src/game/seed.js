@@ -284,7 +284,7 @@ export const casesSeed = [
         xp: 500,
         tempoTotalHoras: 999, // Sem prazo fixo no UI, apenas competitivo
         localInicial: { pais: "Reino Unido", cidade: "Londres" },
-        resumo: "🪙 O COFRE QUE NUNCA FOI ABERTO\n\nUm cofre ultra seguro, localizado em uma instituição financeira internacional… foi violado. Não há sinais de arrombamento. Nenhum sistema acusou acesso. Nenhuma chave foi usada.\n\nDentro dele havia documentos classificados, registros financeiros secretos e identidades protegidas. A A.T.L.A.S suspeita que isso não foi um roubo comum…\n\nA Agência convoca todos Agentes Disponíveis.\n\nRegras de Engajamento:\n1. Sem Fundo de Reserva ($ 0,00 iniciais).\n2. 10 Etapas Críticas.\n3. Vitória única para o primeiro a recuperar os documentos. 🕵️‍♂️⚡",
+        resumo: "🪙 O COFRE QUE NUNCA FOI ABERTO\n\nUm cofre ultra seguro, localizado em uma instituição financeira internacional… foi violado. Não há sinais de arrombamento. Nenhum sistema acusou acesso. Nenhuma chave foi usada.\n\nDentro dele havia documentos classificados, registros financeiros secretos e identidades protegidas. A.T.L.A.S suspeita que isso não foi um roubo comum…\n\nA Agência convoca todos Agentes Disponíveis.\n\nRegras de Engajamento:\n1. Sem Fundo de Reserva ($ 0,00 iniciais).\n2. 10 Etapas Críticas.\n3. Vitória única para o primeiro a recuperar os documentos. 🕵️‍♂️⚡",
         imgItem: "/reliquiaDesaparecida.png", // Imagem padrão
         isCompetitive: true,
         maxPlayers: 10,
@@ -452,7 +452,7 @@ export const casesSeed = [
         recompensa: 1000,
         tempoTotalHoras: 360,
         localInicial: { pais: "Áustria", cidade: "Viena" },
-        resumo: "Um documento oficial apareceu duplicado em um sistema administrativo em Viena, com pequenas diferenças quase imperceptíveis. Nenhum funcionário assumiu a criação do segundo registro, e ambos parecem autênticos. Há suspeita de manipulação discreta de dados. Você deve investigar a origem da duplicação antes que outros registros sejam comprometidos.",
+        resumo: "Um documento oficial apareceu duplicado em um sistema administrativo em Viena, com pequenas diferenças quase imperceptíveis. Nenhum funcionário assumiu a criação do segundo registro, e ambos parecem autênticos. Há suspeita de manipulação discreta de dados. Você deve investigar a origem da duplicação antes que com os outros registros sejam comprometidos.",
         procedural: true,
         replayable: true,
         interrogatorios: [],
@@ -575,7 +575,8 @@ export const casesSeed = [
         tempoTotalHoras: 480,
         resumo: "Um envelope lacrado desapareceu minutos antes de ser entregue em Dublin. Nenhum sinal de arrombamento foi encontrado e poucos sabiam de sua existência. O conteúdo pode parecer simples, mas alguém claramente sabia o que procurar. Sua missão é descobrir quem interceptou o bilhete antes que ele desapareça para sempre.",
         localInicial: { pais: "Irlanda", cidade: "Dublin" },
-        procedural: true
+        procedural: true,
+        replayable: true
     },
     {
         id: "C032",
@@ -587,7 +588,8 @@ export const casesSeed = [
         tempoTotalHoras: 480,
         resumo: "Uma sala segura foi encontrada vazia em Praga, com apenas uma janela entreaberta e nenhum registro de entrada. Nada parece quebrado, mas um objeto importante sumiu discretamente. Alguém entrou e saiu sem deixar marcas. Você deve reconstruir os passos do invasor e encontrar o item perdido.",
         localInicial: { pais: "República Tcheca", cidade: "Praga" },
-        procedural: true
+        procedural: true,
+        replayable: true
     },
     {
         id: "C033",
@@ -599,7 +601,8 @@ export const casesSeed = [
         tempoTotalHoras: 480,
         resumo: "Um contrato oficial armazenado em Budapeste reapareceu com cláusulas alteradas, sem qualquer sinal de edição registrada. Os responsáveis juram que o arquivo estava protegido. Alguém mexeu onde ninguém deveria tocar. Sua missão é identificar quem manipulou o documento antes que ele produza efeitos reais.",
         localInicial: { pais: "Hungria", cidade: "Budapeste" },
-        procedural: true
+        procedural: true,
+        replayable: true
     },
     {
         id: "C034",
@@ -611,7 +614,8 @@ export const casesSeed = [
         tempoTotalHoras: 480,
         resumo: "Funcionários em Atenas relataram movimentação em um corredor restrito durante a madrugada, mas nenhuma câmera registrou presença. Pela manhã, um pequeno item desapareceu do setor. O responsável agiu com calma e precisão. Você deve seguir as pistas e descobrir quem passou por ali.",
         localInicial: { pais: "Grécia", cidade: "Atenas" },
-        procedural: true
+        procedural: true,
+        replayable: true
     },
     {
         id: "C035",
@@ -623,7 +627,8 @@ export const casesSeed = [
         tempoTotalHoras: 480,
         resumo: "Uma peça comum em exposição em Bruxelas recebeu uma etiqueta errada e, horas depois, desapareceu discretamente. O erro parecia pequeno demais para chamar atenção, mas foi calculado. Alguém usou a distração perfeita. Sua missão é descobrir quem planejou a troca e recuperar o objeto.",
         localInicial: { pais: "Bélgica", cidade: "Bruxelas" },
-        procedural: true
+        procedural: true,
+        replayable: true
     },
     {
         id: "C036",
@@ -635,7 +640,8 @@ export const casesSeed = [
         tempoTotalHoras: 360,
         resumo: "Uma senha temporária foi criada e utilizada em Oslo para acessar dados internos sigilosos. Poucos minutos depois, o acesso desapareceu como se nunca tivesse existido. Nenhum funcionário reconhece a autorização. Você deve descobrir quem criou essa brecha e impedir novo uso do método.",
         localInicial: { pais: "Noruega", cidade: "Oslo" },
-        procedural: true
+        procedural: true,
+        replayable: true
     },
     {
         id: "C037",
@@ -647,7 +653,8 @@ export const casesSeed = [
         tempoTotalHoras: 360,
         resumo: "Uma remessa internacional chegou a Vancouver com peso correto, mas parte do conteúdo foi substituído por material sem valor. Os lacres pareciam intactos e a documentação está perfeita. A troca foi feita por alguém experiente. Você precisa descobrir em que ponto ocorreu o desvio.",
         localInicial: { pais: "Canadá", cidade: "Vancouver" },
-        procedural: true
+        procedural: true,
+        replayable: true
     },
     {
         id: "C038",
@@ -659,7 +666,8 @@ export const casesSeed = [
         tempoTotalHoras: 360,
         resumo: "Um mapa histórico em Lima apareceu com marcações recentes indicando locais estratégicos. O documento estava protegido e ninguém deveria ter acesso a ele. As anotações parecem parte de algo maior em preparação. Você deve seguir as novas marcas e identificar quem as deixou.",
         localInicial: { pais: "Peru", cidade: "Lima" },
-        procedural: true
+        procedural: true,
+        replayable: true
     },
     {
         id: "C039",
@@ -671,7 +679,8 @@ export const casesSeed = [
         tempoTotalHoras: 360,
         resumo: "Uma rota regular de transporte foi alterada silenciosamente em Casablanca por poucas horas, tempo suficiente para algo desaparecer no trajeto. Depois disso, tudo voltou ao normal. Nenhum superior autorizou a mudança. Você deve rastrear quem manipulou o percurso e por quê.",
         localInicial: { pais: "Marrocos", cidade: "Casablanca" },
-        procedural: true
+        procedural: true,
+        replayable: true
     },
     {
         id: "C040",
@@ -681,9 +690,10 @@ export const casesSeed = [
         valorAdiantamento: 950,
         recompensa: 2000,
         tempoTotalHoras: 360,
-        resumo: "Uma ordem importante foi transmitida por voz em Auckland e seguida por toda a equipe, mas depois descobriram que o superior jamais deu tal comando. Ninguém sabe como a falsificação convenceu tantas pessoas. O autor conhece rotinas internas e agiu com precisão. Sua missão é encontrar o impostor antes que volte a agir.",
+        resumo: "Uma ordem importante foi transmitida por voz em Auckland e seguida por toda uma equipe, mas depois descobriram que o superior jamais deu tal comando. Ninguém sabe como a falsificação convenceu tantas pessoas. O autor conhece rotinas internas e agiu com precisão. Sua missão é encontrar o impostor antes que volte a agir.",
         localInicial: { pais: "Nova Zelândia", cidade: "Auckland" },
-        procedural: true
+        procedural: true,
+        replayable: true
     },
     {
         id: "C041",
@@ -695,7 +705,8 @@ export const casesSeed = [
         tempoTotalHoras: 480,
         resumo: "Um arquivo físico desapareceu de um setor administrativo em Oslo sem qualquer registro de retirada. Nenhuma porta foi forçada e poucos sabiam da existência do documento. O conteúdo pode revelar informações importantes. Sua missão é encontrar quem levou o material antes que ele seja destruído.",
         localInicial: { pais: "Noruega", cidade: "Oslo" },
-        procedural: true
+        procedural: true,
+        replayable: true
     },
     {
         id: "C042",
@@ -707,7 +718,8 @@ export const casesSeed = [
         tempoTotalHoras: 480,
         resumo: "Uma encomenda registrada como entregue em Genebra não possui assinatura válida nem confirmação visual. O destinatário afirma nunca ter recebido nada. Os registros existem, mas a entrega não. Você deve rastrear quem desviou o pacote antes que a pista desapareça.",
         localInicial: { pais: "Suíça", cidade: "Genebra" },
-        procedural: true
+        procedural: true,
+        replayable: true
     },
     {
         id: "C043",
@@ -719,7 +731,8 @@ export const casesSeed = [
         tempoTotalHoras: 480,
         resumo: "Uma peça comum recebeu identificação trocada em um depósito em Bruxelas e desapareceu horas depois. O erro parecia pequeno demais para chamar atenção, mas claramente foi planejado. Alguém manipulou os registros para esconder o sumiço. Descubra quem está por trás da troca.",
         localInicial: { pais: "Bélgica", cidade: "Bruxelas" },
-        procedural: true
+        procedural: true,
+        replayable: true
     },
     {
         id: "C044",
@@ -731,7 +744,8 @@ export const casesSeed = [
         tempoTotalHoras: 480,
         resumo: "Uma sala reservada em Lisboa foi encontrada aberta pela manhã, embora ninguém tenha relatado uso noturno. Nada parecia fora do lugar até perceberem a falta de um item discreto. O invasor agiu com calma e precisão. Sua missão é seguir os rastros deixados para trás.",
         localInicial: { pais: "Portugal", cidade: "Lisboa" },
-        procedural: true
+        procedural: true,
+        replayable: true
     },
     {
         id: "C045",
@@ -743,7 +757,8 @@ export const casesSeed = [
         tempoTotalHoras: 480,
         resumo: "Uma mensagem importante foi destruída parcialmente antes de chegar ao destinatário em Dublin. O pouco que restou sugere que alguém queria atrasar uma decisão urgente. O responsável ainda pode estar próximo. Descubra quem interceptou a comunicação.",
         localInicial: { pais: "Irlanda", cidade: "Dublin" },
-        procedural: true
+        procedural: true,
+        replayable: true
     },
     {
         id: "C046",
@@ -755,7 +770,8 @@ export const casesSeed = [
         tempoTotalHoras: 384,
         resumo: "Uma linha de acesso secundária foi utilizada em Berlim para consultar dados internos sem autorização. O uso durou poucos minutos e desapareceu dos registros principais. Alguém conhece bem a estrutura do sistema. Você deve encontrar o responsável antes que ele volte a agir.",
         localInicial: { pais: "Alemanha", cidade: "Berlim" },
-        procedural: true
+        procedural: true,
+        replayable: true
     },
     {
         id: "C047",
@@ -767,7 +783,8 @@ export const casesSeed = [
         tempoTotalHoras: 384,
         resumo: "Uma carga internacional passou por Barcelona com lacres intactos, mas parte do conteúdo foi substituída por material sem valor. A documentação parece perfeita e ninguém percebeu o desvio. A operação foi feita por mãos experientes. Você deve descobrir onde a troca ocorreu.",
         localInicial: { pais: "Espanha", cidade: "Barcelona" },
-        procedural: true
+        procedural: true,
+        replayable: true
     },
     {
         id: "C048",
@@ -779,7 +796,8 @@ export const casesSeed = [
         tempoTotalHoras: 384,
         resumo: "Um crachá temporário surgiu em um prédio corporativo em Toronto e foi usado para acessar áreas restritas. Horas depois, deixou de existir nos registros. Nenhum funcionário reconhece sua emissão. Você precisa identificar quem criou essa credencial fantasma.",
         localInicial: { pais: "Canadá", cidade: "Toronto" },
-        procedural: true
+        procedural: true,
+        replayable: true
     },
     {
         id: "C049",
@@ -791,7 +809,8 @@ export const casesSeed = [
         tempoTotalHoras: 384,
         resumo: "Uma rota de transporte foi duplicada digitalmente em Roterdã, fazendo duas cargas parecerem uma só. O erro permitiu que mercadorias desaparecessem sem chamar atenção. O esquema demonstra planejamento preciso. Você deve desmontar a fraude e rastrear os envolvidos.",
         localInicial: { pais: "Países Baixos", cidade: "Roterdã" },
-        procedural: true
+        procedural: true,
+        replayable: true
     },
     {
         id: "C050",
@@ -803,7 +822,8 @@ export const casesSeed = [
         tempoTotalHoras: 384,
         resumo: "Uma ordem operacional falsa foi aceita como legítima em Viena e seguida por toda uma equipe. Quando perceberam o erro, já era tarde demais. O autor conhece rotinas internas e protocolos de confiança. Sua missão é descobrir quem imitou a autoridade real.",
         localInicial: { pais: "Áustria", cidade: "Viena" },
-        procedural: true
+        procedural: true,
+        replayable: true
     },
     {
         id: "C051",
@@ -815,7 +835,8 @@ export const casesSeed = [
         tempoTotalHoras: 480,
         resumo: "Um envelope selado desapareceu de uma recepção em Genebra enquanto dezenas de pessoas circulavam pelo local. Nenhuma câmera mostrou claramente o momento do sumiço. O conteúdo pode comprometer acordos importantes. Descubra quem o levou.",
         localInicial: { pais: "Suíça", cidade: "Genebra" },
-        procedural: true
+        procedural: true,
+        replayable: true
     },
     {
         id: "C052",
@@ -827,7 +848,8 @@ export const casesSeed = [
         tempoTotalHoras: 480,
         resumo: "Uma peça decorativa comum em Paris foi substituída por uma réplica barata. O valor real estava escondido em sua história, não em sua aparência. Quem agiu sabia exatamente o que procurar. Você deve recuperar o original.",
         localInicial: { pais: "França", cidade: "Paris" },
-        procedural: true
+        procedural: true,
+        replayable: true
     },
     {
         id: "C053",
@@ -839,7 +861,8 @@ export const casesSeed = [
         tempoTotalHoras: 384,
         resumo: "Uma senha temporária foi usada em Londres para autorizar movimentações que ninguém aprovou. O acesso durou pouco e sumiu dos logs principais. O responsável entende bem como apagar rastros. Você deve agir rápido para encontrá-lo.",
         localInicial: { pais: "Reino Unido", cidade: "Londres" },
-        procedural: true
+        procedural: true,
+        replayable: true
     },
     {
         id: "C054",
@@ -851,7 +874,8 @@ export const casesSeed = [
         tempoTotalHoras: 384,
         resumo: "Um mapa técnico em Praga foi alterado discretamente, invertendo rotas e posições estratégicas. O erro só foi notado quando operações começaram a falhar. Não foi acidente. Você precisa descobrir quem sabotou as informações.",
         localInicial: { pais: "República Tcheca", cidade: "Praga" },
-        procedural: true
+        procedural: true,
+        replayable: true
     },
     {
         id: "C055",
@@ -863,7 +887,8 @@ export const casesSeed = [
         tempoTotalHoras: 480,
         resumo: "Uma ligação decisiva em Atenas nunca chegou ao destinatário correto, embora conste como concluída. O atraso beneficiou alguém diretamente. Alguém interferiu no momento exato. Descubra quem manipulou a comunicação.",
         localInicial: { pais: "Grécia", cidade: "Atenas" },
-        procedural: true
+        procedural: true,
+        replayable: true
     },
     {
         id: "C056",
@@ -875,7 +900,8 @@ export const casesSeed = [
         tempoTotalHoras: 384,
         resumo: "Uma remessa chegou a Casablanca com lacres aparentemente intactos, mas o conteúdo principal havia sumido. A substituição foi feita sem chamar atenção. O método usado indica experiência logística. Você deve encontrar onde a fraude ocorreu.",
         localInicial: { pais: "Marrocos", cidade: "Casablanca" },
-        procedural: true
+        procedural: true,
+        replayable: true
     },
     {
         id: "C057",
@@ -887,7 +913,8 @@ export const casesSeed = [
         tempoTotalHoras: 480,
         resumo: "Ao amanhecer em Budapeste, uma mesa de trabalho foi encontrada vazia, sem documentos que deveriam estar ali. Nenhum acesso irregular foi registrado. O desaparecimento foi discreto e calculado. Sua missão é localizar quem limpou a cena.",
         localInicial: { pais: "Hungria", cidade: "Budapeste" },
-        procedural: true
+        procedural: true,
+        replayable: true
     },
     {
         id: "C058",
@@ -899,7 +926,8 @@ export const casesSeed = [
         tempoTotalHoras: 384,
         resumo: "Uma passagem internacional foi utilizada duas vezes em menos de uma hora em aeroportos diferentes. Os registros parecem autênticos e sincronizados. Há uma rede por trás da duplicação. Você precisa seguir a trilha e encontrar os envolvidos.",
         localInicial: { pais: "Nova Zelândia", cidade: "Auckland" },
-        procedural: true
+        procedural: true,
+        replayable: true
     },
     {
         id: "C059",
@@ -911,7 +939,8 @@ export const casesSeed = [
         tempoTotalHoras: 480,
         resumo: "Uma caixa lacrada desapareceu de um depósito em Oslo, embora ninguém tenha registrado sua retirada. O item não parecia importante para a maioria, mas alguém sabia seu valor real. Você deve localizar o autor do sumiço.",
         localInicial: { pais: "Noruega", cidade: "Oslo" },
-        procedural: true
+        procedural: true,
+        replayable: true
     },
     {
         id: "C060",
@@ -923,7 +952,8 @@ export const casesSeed = [
         tempoTotalHoras: 384,
         resumo: "Um registro operacional apareceu em Singapura com autorização válida, mas ninguém reconhece a assinatura usada. O documento liberou processos importantes antes de sumir. O autor conhece bem os controles internos. Você deve encontrá-lo antes que use o método novamente.",
         localInicial: { pais: "Singapura", cidade: "Singapura" },
-        procedural: true
+        procedural: true,
+        replayable: true
     }
 ];
 
@@ -947,5 +977,4 @@ export const initialPlayer = {
         musicEnabled: true,
         clickSoundEnabled: true
     }
-
 };
