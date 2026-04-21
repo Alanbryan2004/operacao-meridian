@@ -5,6 +5,7 @@ import { useGame } from "../game/GameProvider";
 import ModalMsg from "../components/ModalMsg";
 import { loadCompletedMissions } from "../services/gameSaveService";
 import { getStreakData } from "../game/streakService";
+import { checkLoginReward } from "../game/loginRewardService";
 
 function Badge({ children, tone = "gray" }) {
     const map = {
@@ -76,6 +77,10 @@ export default function Mural() {
     const [loadingMissions, setLoadingMissions] = useState(true);
     const [showPromo, setShowPromo] = useState(false);
     const [streakData, setStreakData] = useState(null);
+    const [loginStreakData, setLoginStreakData] = useState(null);
+    const [loginReward, setLoginReward] = useState({ show: false, day: 0, reward: 0 });
+    const [newsIndex, setNewsIndex] = useState(0);
+    const [dragStart, setDragStart] = useState(null);
 
     useEffect(() => {
         if (!state?.player?.supabaseId) return;
@@ -88,6 +93,25 @@ export default function Mural() {
             const ids = missions.filter(m => m.resultado === "WON").map(m => m.case_id);
             setCompletedIds(ids);
             setStreakData(streak);
+            
+            // Checa Recompensa de Login
+            return checkLoginReward(state.player.supabaseId);
+        })
+        .then(reward => {
+            if (reward?.show) {
+                setLoginReward(reward);
+                setLoginStreakData({
+                    current_streak: reward.day,
+                    last_reward_date: new Date().toISOString().split('T')[0]
+                });
+                // Atualiza moedas localmente
+                useGame().dispatch({ 
+                    type: "UPDATE_PLAYER", 
+                    payload: { dinheiro: state.player.dinheiro + reward.reward } 
+                });
+            } else if (reward?.streak) {
+                setLoginStreakData(reward.streak);
+            }
         })
         .finally(() => setLoadingMissions(false));
     }, [state?.player?.supabaseId]);
@@ -102,10 +126,15 @@ export default function Mural() {
         if (state && !loadingMissions) {
             const hasSeen = localStorage.getItem("atlas_voucher_promo_v1");
             if (!hasSeen) {
-                setShowPromo(true);
+                // Se tiver recompensa de login, mostra o login primeiro. 
+                // A promo de voucher aparecerá depois ou via botão novidades.
+                if (!loginReward.show) {
+                    setShowPromo(true);
+                    setNewsIndex(0); // Começa no Voucher
+                }
             }
         }
-    }, [state, nav, loadingMissions]);
+    }, [state, nav, loadingMissions, loginReward.show]);
 
     if (!state) return null;
     const { player, cases } = state;
@@ -216,7 +245,7 @@ export default function Mural() {
                             <Badge tone="blue">{player.classeEmoji || "🟢"} {player.nivelTitulo || "Novato"}</Badge>
                             <Badge tone="green">XP {player.xp}</Badge>
                             <Badge tone="purple">Temporadas: em breve</Badge>
-                            <button className="om-newsBtn" onClick={() => setShowPromo(true)}>✨ NOVIDADES</button>
+                            <button className="om-newsBtn" onClick={() => { setShowPromo(true); setNewsIndex(0); }}>✨ NOVIDADES</button>
                         </div>
                         <div className="om-actions">
                             <button className="om-miniBtn" onClick={() => nav("/perfil")}>PERFIL</button>
@@ -260,61 +289,170 @@ export default function Mural() {
                 <ModalMsg message={modal.message} onClose={() => setModal({ show: false, message: "" })} />
             )}
 
-            {/* --- MODAL PROMOCIONAL VOUCHER --- */}
-            {showPromo && (
-                <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.9)", backdropFilter: "blur(20px)", zIndex: 10000, display: "flex", alignItems: "center", justifyContent: "center", animation: "scale-in 0.6s cubic-bezier(0.17, 0.67, 0.83, 0.67)" }}>
-                    <div style={{ textAlign: "center", maxWidth: 480, width: "95%" }}>
-                        <div style={{ color: "#ffd700", letterSpacing: 8, fontSize: 13, marginBottom: 12, fontWeight: 900, textShadow: "0 0 20px rgba(255,215,0,0.5)" }}>📡 COMUNICADO ESPECIAL</div>
+            {/* --- MODAL DE RECOMPENSA DE LOGIN (APARECE 1X AO DIA) --- */}
+            {loginReward.show && (
+                <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.92)", backdropFilter: "blur(25px)", zIndex: 20000, display: "flex", alignItems: "center", justifyContent: "center", overflowY: "auto", padding: "20px 0", animation: "scale-in 0.5s ease-out" }}>
+                    <div style={{ textAlign: "center", maxWidth: 520, width: "95%", margin: "auto" }}>
+                        <div style={{ color: "#3cff9c", letterSpacing: 6, fontSize: 13, marginBottom: 15, fontWeight: 900 }}>🎁 RECOMPENSA DIÁRIA DISPONÍVEL</div>
                         
-                        <div style={{ position: "relative", marginBottom: 20 }}>
-                            <img src="/Voucher.png" style={{ width: "100%", borderRadius: 24, boxShadow: "0 30px 60px rgba(0,0,0,0.8)", border: "1px solid rgba(255,215,0,0.3)" }} alt="Voucher Atlas Aéreo" />
-                            <div style={{ position: "absolute", inset: 0, borderRadius: 24, boxShadow: "inset 0 0 40px rgba(255,215,0,0.2)" }} />
+                        <div style={{ position: "relative", marginBottom: 25 }}>
+                            <img src="/logindiario2.png" style={{ width: "100%", maxHeight: "75vh", objectFit: "contain", borderRadius: 24, boxShadow: "0 25px 50px rgba(0,0,0,0.9)", border: "1px solid rgba(60,255,160,0.3)" }} alt="Login Diário" />
+                            <div style={{ position: "absolute", bottom: -15, left: "50%", transform: "translateX(-50%)", background: "linear-gradient(135deg, #3cff9c, #1a8a5a)", padding: "10px 25px", borderRadius: 15, color: "#000", fontWeight: 900, fontSize: 18, boxShadow: "0 10px 20px rgba(0,0,0,0.5)", whiteSpace: "nowrap" }}>
+                                DIA {loginReward.day} RESGATADO!
+                            </div>
                         </div>
 
-                        <h3 style={{ color: "#fff", fontSize: 20, fontWeight: 900, marginBottom: 10 }}>VOUCHERS ATLAS AÉREO</h3>
-                        <p style={{ color: "rgba(255,255,255,0.7)", fontSize: 14, lineHeight: 1.5, marginBottom: 20 }}>
-                            Agentes dedicados agora são recompensados.<br/>
-                            Complete missões diárias para ganhar <strong>Vouchers de Desconto</strong>.
-                        </p>
+                        <div style={{ color: "#fff", fontSize: 24, fontWeight: 900, marginBottom: 5 }}>+{loginReward.reward} MOEDAS</div>
+                        <p style={{ color: "rgba(255,255,255,0.6)", fontSize: 14, marginBottom: 30 }}>Sua dedicação foi recompensada, Agente.</p>
 
-                        {/* --- PROGRESSO DE SEQUÊNCIA --- */}
-                        <div style={{ background: "rgba(255,255,255,0.05)", borderRadius: 20, padding: "16px 12px", marginBottom: 20, border: "1px solid rgba(255,255,255,0.08)" }}>
-                            <div style={{ display: "flex", justifyContent: "space-between", position: "relative", marginBottom: 10, padding: "0 10px" }}>
-                                <div style={{ position: "absolute", top: "50%", left: 10, right: 10, height: 2, background: "rgba(255,255,255,0.14)", transform: "translateY(-50%)", zIndex: 1 }} />
-                                <div style={{ 
-                                    position: "absolute", top: "50%", left: 10, 
-                                    width: `${Math.min(((streakData?.current_streak || 0)) / 6 * 100, 100)}%`, 
-                                    height: 2, background: "#3cff9c", transform: "translateY(-50%)", zIndex: 2, transition: "width 1s ease" 
-                                }} />
+                        <button 
+                            onClick={() => {
+                                setLoginReward({ ...loginReward, show: false });
+                                // Se ainda não viu a promo do voucher, mostra agora
+                                const hasSeen = localStorage.getItem("atlas_voucher_promo_v1");
+                                if (!hasSeen) setShowPromo(true);
+                            }} 
+                            style={{ background: "#3cff9c", color: "#000", fontWeight: 900, padding: "16px 0", width: "100%", borderRadius: 18, border: "none", fontSize: 16, cursor: "pointer", boxShadow: "0 10px 25px rgba(60,255,160,0.3)" }}
+                        >
+                            RECEBER E CONTINUAR
+                        </button>
+                    </div>
+                </div>
+            )}
+
+            {/* --- MODAL PROMOCIONAL / CARROSSEL DE NOVIDADES --- */}
+            {showPromo && (
+                <div 
+                    style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.95)", backdropFilter: "blur(20px)", zIndex: 10000, display: "flex", alignItems: "center", justifyContent: "center", overflowY: "auto", padding: "40px 0", animation: "scale-in 0.6s cubic-bezier(0.17, 0.67, 0.83, 0.67)" }}
+                    onMouseDown={(e) => setDragStart(e.clientX)}
+                    onMouseUp={(e) => {
+                        if (dragStart === null) return;
+                        const diff = e.clientX - dragStart;
+                        if (Math.abs(diff) > 50) {
+                            if (diff > 0) setNewsIndex(0); else setNewsIndex(1);
+                        }
+                        setDragStart(null);
+                    }}
+                    onTouchStart={(e) => setDragStart(e.touches[0].clientX)}
+                    onTouchEnd={(e) => {
+                        if (dragStart === null) return;
+                        const diff = e.changedTouches[0].clientX - dragStart;
+                        if (Math.abs(diff) > 50) {
+                            if (diff > 0) setNewsIndex(0); else setNewsIndex(1);
+                        }
+                        setDragStart(null);
+                    }}
+                >
+                    <div style={{ textAlign: "center", maxWidth: 520, width: "95%", position: "relative", margin: "auto" }}>
+                        <button 
+                            onClick={() => {
+                                setShowPromo(false);
+                                localStorage.setItem("atlas_voucher_promo_v1", "true");
+                            }}
+                            style={{ position: "absolute", top: -40, right: 0, background: "none", border: "none", color: "#fff", fontSize: 28, cursor: "pointer", opacity: 0.8, zIndex: 10 }}
+                        >✕</button>
+
+                        <div style={{ display: "flex", width: "200%", transition: "transform 0.4s cubic-bezier(0.4, 0, 0.2, 1)", transform: `translateX(${newsIndex === 0 ? "0%" : "-50%"})` }}>
+                            {/* SLIDE 1: VOUCHER ATLAS */}
+                            <div style={{ width: "50%", padding: "0 10px", boxSizing: "border-box" }}>
+                                <div style={{ color: "#ffd700", letterSpacing: 8, fontSize: 13, marginBottom: 12, fontWeight: 900, textShadow: "0 0 20px rgba(255,215,0,0.5)" }}>📡 COMUNICADO ESPECIAL</div>
+                                <div style={{ position: "relative", marginBottom: 12 }}>
+                                    <img src="/Voucher.png" style={{ width: "100%", maxHeight: "40vh", objectFit: "contain", borderRadius: 20, boxShadow: "0 20px 40px rgba(0,0,0,0.6)", border: "1px solid rgba(255,215,0,0.3)" }} alt="Voucher Atlas Aéreo" />
+                                </div>
+                                <h3 style={{ color: "#fff", fontSize: 18, fontWeight: 900, marginBottom: 4 }}>VOUCHERS ATLAS AÉREO</h3>
+                                <p style={{ color: "rgba(255,255,255,0.7)", fontSize: 13, lineHeight: 1.4, marginBottom: 12 }}>
+                                    Complete missões diárias para ganhar <strong>Vouchers de Desconto</strong>.
+                                </p>
+
+                                <div style={{ background: "rgba(255,255,255,0.04)", borderRadius: 18, padding: "12px 10px", marginBottom: 12, border: "1px solid rgba(255,255,255,0.1)" }}>
+                                    <div style={{ display: "flex", justifyContent: "space-between", position: "relative", marginBottom: 8, padding: "0 8px" }}>
+                                        <div style={{ position: "absolute", top: "50%", left: 8, right: 8, height: 2, background: "rgba(255,255,255,0.1)", transform: "translateY(-50%)", zIndex: 1 }} />
+                                        <div style={{ 
+                                            position: "absolute", top: "50%", left: 8, 
+                                            width: `${Math.min(((streakData?.current_streak || 0)) / 6 * 100, 100)}%`, 
+                                            height: 2, background: "#3cff9c", transform: "translateY(-50%)", zIndex: 2, transition: "width 1s ease" 
+                                        }} />
+                                        {[1,2,3,4,5,6,7].map(d => {
+                                            const isCompleted = d <= (streakData?.current_streak || 0);
+                                            const isNext = d === (streakData?.current_streak || 0) + 1;
+                                            const isReward = d === 7;
+                                            return (
+                                                <div key={d} style={{ zIndex: 3, position: "relative", display: "flex", flexDirection: "column", alignItems: "center" }}>
+                                                    <div style={{ width: 28, height: 28, borderRadius: "50%", background: isCompleted ? "#3cff9c" : isNext ? "rgba(255,255,255,0.1)" : "#1a2a3a", border: `2px solid ${isCompleted ? "#3cff9c" : isNext ? "rgba(255,189,128,0.4)" : "rgba(255,255,255,0.12)"}`, display: "flex", alignItems: "center", justifyContent: "center", color: isCompleted ? "#000" : "#999", fontSize: 11, fontWeight: 800 }}>
+                                                        {isCompleted ? "✓" : isReward ? "🛫" : d}
+                                                    </div>
+                                                    <div style={{ fontSize: 8, marginTop: 6, opacity: isCompleted ? 1 : 0.4, color: isCompleted ? "#3cff9c" : "#fff", letterSpacing: 1 }}>{isReward ? "RECOMPENSA" : `DIA ${d}`}</div>
+                                                </div>
+                                            );
+                                        })}
+                                    </div>
+                                    <div style={{ fontSize: 11, color: "rgba(255,255,255,0.9)", fontWeight: 700, marginTop: 6 }}>
+                                        {streakData?.current_streak > 0 ? `Você está no DIA ${streakData.current_streak} da sua sequência!` : "Comece sua sequência hoje!"}
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* SLIDE 2: LOGIN DIÁRIO */}
+                            <div style={{ width: "50%", padding: "0 10px", boxSizing: "border-box" }}>
+                                <div style={{ color: "#3cff9c", letterSpacing: 8, fontSize: 13, marginBottom: 8, fontWeight: 900, textShadow: "0 0 20px rgba(60,255,160,0.5)" }}>📈 RECOMPENSA DIÁRIA</div>
+                                <div style={{ position: "relative", marginBottom: 12 }}>
+                                    <img src="/logindiario2.png" style={{ width: "100%", maxHeight: "40vh", objectFit: "contain", borderRadius: 20, boxShadow: "0 20px 40px rgba(0,0,0,0.6)", border: "1px solid rgba(60,255,160,0.3)" }} alt="Login Diário" />
+                                </div>
+                                <h3 style={{ color: "#fff", fontSize: 18, fontWeight: 900, marginBottom: 4 }}>LOGIN DIÁRIO</h3>
+                                <p style={{ color: "rgba(255,255,255,0.7)", fontSize: 13, lineHeight: 1.4, marginBottom: 12 }}>
+                                    Garanta moedas extras todos os dias apenas acessando o sistema.
+                                </p>
                                 
-                                {[1,2,3,4,5,6,7].map(d => {
-                                    const isCompleted = d <= (streakData?.current_streak || 0);
-                                    const isNext = d === (streakData?.current_streak || 0) + 1;
-                                    const isReward = d === 7;
-                                    return (
-                                        <div key={d} style={{ zIndex: 3, position: "relative", display: "flex", flexDirection: "column", alignItems: "center" }}>
-                                            <div style={{ 
-                                                width: 32, height: 32, borderRadius: "50%", 
-                                                background: isCompleted ? "#3cff9c" : isNext ? "rgba(255,255,255,0.15)" : "#1a2a3a",
-                                                border: `2px solid ${isCompleted ? "#3cff9c" : isNext ? "rgba(255,189,128,0.5)" : "rgba(255,255,255,0.14)"}`,
-                                                display: "flex", alignItems: "center", justifyContent: "center",
-                                                color: isCompleted ? "#000" : "#999",
-                                                fontSize: 12, fontWeight: 800,
-                                            }}>
-                                                {isCompleted ? "✓" : isReward ? "🛫" : d}
-                                            </div>
-                                            <div style={{ fontSize: 9, marginTop: 8, opacity: isCompleted ? 1 : 0.4, color: isCompleted ? "#3cff9c" : "#fff", letterSpacing: 1 }}>
-                                                {isReward ? "RECOMPENSA" : `DIA ${d}`}
-                                            </div>
-                                        </div>
-                                    );
-                                })}
+                                <div style={{ background: "rgba(60,255,160,0.04)", borderRadius: 18, padding: "12px 10px", marginBottom: 12, border: "1px solid rgba(60,255,160,0.12)" }}>
+                                    <div style={{ display: "flex", justifyContent: "space-between", position: "relative", marginBottom: 8, padding: "0 8px" }}>
+                                        <div style={{ position: "absolute", top: "50%", left: 8, right: 8, height: 2, background: "rgba(255,255,255,0.1)", transform: "translateY(-50%)", zIndex: 1 }} />
+                                        <div style={{ 
+                                            position: "absolute", top: "50%", left: 8, 
+                                            width: `${Math.min(((loginStreakData?.current_streak || 0)) / 4 * 100, 100)}%`, 
+                                            height: 2, background: "#3cff9c", transform: "translateY(-50%)", zIndex: 2, transition: "width 1s ease" 
+                                        }} />
+                                        {[1,2,3,4,5].map(d => {
+                                            const isCompleted = d <= (loginStreakData?.current_streak || 0);
+                                            const isNext = d === (loginStreakData?.current_streak || 0) + 1;
+                                            const isReward = d === 5;
+                                            return (
+                                                <div key={d} style={{ zIndex: 3, position: "relative", display: "flex", flexDirection: "column", alignItems: "center" }}>
+                                                    <div style={{ width: 28, height: 28, borderRadius: "50%", background: isCompleted ? "#3cff9c" : isNext ? "rgba(255,255,255,0.1)" : "#1a2a3a", border: `2px solid ${isCompleted ? "#3cff9c" : isNext ? "rgba(60,255,160,0.4)" : "rgba(255,255,255,0.12)"}`, display: "flex", alignItems: "center", justifyContent: "center", color: isCompleted ? "#000" : "#999", fontSize: 11, fontWeight: 800 }}>
+                                                        {isCompleted ? "✓" : isReward ? "💰" : d}
+                                                    </div>
+                                                    <div style={{ fontSize: 8, marginTop: 6, opacity: isCompleted ? 1 : 0.4, color: isCompleted ? "#3cff9c" : "#fff", letterSpacing: 1 }}>{isReward ? "BONUS" : `DIA ${d}`}</div>
+                                                </div>
+                                            );
+                                        })}
+                                    </div>
+                                    <div style={{ fontSize: 11, color: "#fff", fontWeight: 700, marginTop: 6 }}>
+                                        {loginStreakData?.current_streak > 0 
+                                            ? `VOCÊ ESTÁ NO DIA ${loginStreakData.current_streak} DA SEQUÊNCIA!` 
+                                            : "COMECE HOJE SUA SEQUÊNCIA!"}
+                                    </div>
+                                    <div style={{ fontSize: 9, color: "#3cff9c", marginTop: 2, fontWeight: 700, letterSpacing: 1 }}>
+                                        {loginStreakData?.last_reward_date === new Date().toISOString().split('T')[0]
+                                            ? "✓ RECOMPENSA DE HOJE RESGATADA"
+                                            : "⏳ RECOMPENSA DE HOJE DISPONÍVEL!"}
+                                    </div>
+                                </div>
+
+                                <div style={{ background: "rgba(60,255,160,0.04)", borderRadius: 16, padding: "8px", marginBottom: 12, border: "1px solid rgba(60,255,160,0.12)", color: "#3cff9c", fontSize: 11, fontWeight: 700 }}>
+                                    {(() => {
+                                        const d = loginStreakData?.current_streak || 0;
+                                        const rewards = { 2: 500, 3: 700, 4: 900, 5: 1000 };
+                                        if (d < 5) return `💎 PRÓXIMA META: DIA ${d+1} (${rewards[d+1]} MOEDAS)`;
+                                        if (d < 30) return `💎 PRÓXIMA META: DIA 30 (10.000 MOEDAS)`;
+                                        return `💎 META: MANTER SEQUÊNCIA (1.000 MOEDAS)`;
+                                    })()}
+                                </div>
                             </div>
-                            <div style={{ fontSize: 12, color: "rgba(255,255,255,0.9)", fontWeight: 700, marginTop: 10 }}>
-                                {streakData?.current_streak > 0 
-                                    ? `Você está no DIA ${streakData.current_streak} da sua sequência!`
-                                    : "Comece sua sequência hoje!"}
-                            </div>
+                        </div>
+
+                        {/* INDICADORES (BOLINHAS) */}
+                        <div style={{ display: "flex", justifyContent: "center", gap: 10, margin: "10px 0 25px" }}>
+                            <div onClick={() => setNewsIndex(0)} style={{ width: 10, height: 10, borderRadius: "50%", background: newsIndex === 0 ? "#ffd700" : "rgba(255,255,255,0.2)", cursor: "pointer", transition: "0.3s" }} />
+                            <div onClick={() => setNewsIndex(1)} style={{ width: 10, height: 10, borderRadius: "50%", background: newsIndex === 1 ? "#3cff9c" : "rgba(255,255,255,0.2)", cursor: "pointer", transition: "0.3s" }} />
                         </div>
 
                         <button 
@@ -324,7 +462,7 @@ export default function Mural() {
                             }} 
                             style={{ background: "linear-gradient(135deg, #ffd700, #ffba00)", color: "#000", fontWeight: 900, padding: "14px 0", width: "100%", borderRadius: 18, border: "none", fontSize: 15, cursor: "pointer", boxShadow: "0 10px 25px rgba(255,186,0,0.3)" }}
                         >
-                            ENTENDIDO, AGENTE
+                            FECHAR NOVIDADES
                         </button>
                     </div>
                 </div>
