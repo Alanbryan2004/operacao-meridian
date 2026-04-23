@@ -58,7 +58,7 @@ export default function Splash() {
                 onClick={handleStartProtocol}
             >
                 <img
-                    src="/logo-meridian.png"
+                    src="/logo.png"
                     alt="Operação Meridian"
                     style={{
                         maxHeight: "40dvh",
@@ -150,7 +150,7 @@ export default function Splash() {
                 }}
             >
                 <img
-                    src="/logo-meridian.png"
+                    src="/logo.png"
                     alt="Operação Meridian"
                     style={{
                         maxHeight: "50dvh",
