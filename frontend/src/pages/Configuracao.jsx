@@ -21,88 +21,91 @@ export default function Configuracao() {
         <div style={{
             minHeight: "100dvh",
             width: "100vw",
-            background: "radial-gradient(circle at center, #071a26 0%, #000 70%)",
+            background: "#000",
             color: "#fff",
-            padding: "20px",
+            padding: "30px 20px",
             boxSizing: "border-box",
             display: "flex",
             flexDirection: "column",
-            alignItems: "center"
+            alignItems: "center",
+            fontFamily: "'Inter', sans-serif"
         }}>
             <style>{`
                 .cfg-panel { 
                     width: 100%;
                     max-width: 450px;
-                    border-radius: 20px;
-                    border: 1px solid rgba(255,255,255,0.12);
-                    background: rgba(255,255,255,0.05);
-                    backdrop-filter: blur(15px);
-                    padding: 24px;
-                    box-shadow: 0 20px 50px rgba(0,0,0,0.6);
+                    border-radius: 28px;
+                    border: 1px solid rgba(255,255,255,0.1);
+                    background: rgba(255,255,255,0.03);
+                    backdrop-filter: blur(20px);
+                    padding: 32px;
+                    box-shadow: 0 20px 60px rgba(0,0,0,0.8);
                 }
                 .cfg-item {
                     display: flex;
                     justify-content: space-between;
                     align-items: center;
-                    padding: 16px 0;
-                    border-bottom: 1px solid rgba(255,255,255,0.06);
+                    padding: 20px 0;
+                    border-bottom: 1px solid rgba(255,255,255,0.05);
                 }
                 .cfg-item:last-child { border-bottom: none; }
-                .cfg-label { font-size: 15px; font-weight: 600; color: rgba(255,255,255,0.9); }
-                .cfg-desc { font-size: 11px; color: rgba(255,255,255,0.4); margin-top: 4px; }
+                .cfg-label { font-size: 17px; font-weight: 700; color: #fff; }
+                .cfg-desc { font-size: 12px; color: rgba(255,255,255,0.4); margin-top: 4px; }
                 
                 .toggle-btn {
-                    width: 50px;
-                    height: 26px;
-                    background: rgba(255,255,255,0.1);
-                    border-radius: 13px;
+                    width: 52px;
+                    height: 28px;
+                    background: #2a2a2a;
+                    border-radius: 14px;
                     position: relative;
                     cursor: pointer;
-                    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-                    border: 1px solid rgba(255,255,255,0.1);
+                    transition: all 0.3s ease;
                 }
                 .toggle-btn.active {
-                    background: rgba(128,189,255,0.25);
-                    border-color: #80bdff;
+                    background: #4a4a4a;
                 }
                 .toggle-thumb {
-                    width: 20px;
-                    height: 20px;
+                    width: 22px;
+                    height: 22px;
                     background: #fff;
                     border-radius: 50%;
                     position: absolute;
-                    top: 2px;
-                    left: 2px;
-                    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-                    box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+                    top: 3px;
+                    left: 3px;
+                    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
                 }
                 .toggle-btn.active .toggle-thumb {
-                    left: 26px;
-                    background: #80bdff;
+                    left: 27px;
                 }
+
                 .back-btn {
                     align-self: flex-start;
                     background: transparent;
                     border: none;
-                    color: rgba(255,255,255,0.5);
+                    color: rgba(255,255,255,0.6);
                     font-size: 14px;
+                    font-weight: 800;
                     cursor: pointer;
-                    margin-bottom: 24px;
+                    margin-bottom: 30px;
                     display: flex;
                     align-items: center;
-                    gap: 8px;
-                    transition: color 0.2s;
+                    gap: 10px;
+                    transition: all 0.2s;
                     max-width: 450px;
                     width: 100%;
-                    margin: 0 auto 24px;
+                    margin: 0 auto 30px;
                 }
-                .back-btn:hover { color: #80bdff; }
+                .back-btn:hover { color: #fff; transform: translateX(-5px); }
             `}</style>
 
-            <button className="back-btn" onClick={() => nav(-1)}>← VOLTAR</button>
+            <button className="back-btn" onClick={() => nav(-1)}>
+                <span style={{ fontSize: 20 }}>←</span> VOLTAR
+            </button>
 
             <div className="cfg-panel">
-                <h1 style={{ fontSize: 22, fontWeight: 900, marginBottom: 24, letterSpacing: 1, color: "#80bdff" }}>CONFIGURAÇÃO</h1>
+                <h1 style={{ fontSize: 26, fontWeight: 900, marginBottom: 32, color: "#80bdff", letterSpacing: "1px" }}>
+                    CONFIGURAÇÃO
+                </h1>
                 
                 <div className="cfg-item">
                     <div>
@@ -130,7 +133,7 @@ export default function Configuracao() {
                     </div>
                 </div>
 
-                <div style={{ marginTop: 32, fontSize: 11, textAlign: "center", opacity: 0.3 }}>
+                <div style={{ marginTop: 40, fontSize: 11, textAlign: "center", opacity: 0.3, letterSpacing: "1px", fontWeight: 700 }}>
                     VERSÃO 1.4.0 • OPERAÇÃO MERIDIAN
                 </div>
             </div>

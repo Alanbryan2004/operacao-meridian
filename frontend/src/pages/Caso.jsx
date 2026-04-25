@@ -1231,7 +1231,7 @@ export default function Caso() {
                                     <span style={{ fontSize: "18px" }}>👤</span>
                                     <span style={{ fontSize: "10px" }}>PERFIL</span>
                                 </button>
-                                <button className="om-btn" style={{ height: "60px", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: "4px" }} onClick={() => nav("/config")}>
+                                <button className="om-btn" style={{ height: "60px", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: "4px" }} onClick={() => nav("/configuracao")}>
                                     <span style={{ fontSize: "18px" }}>⚙️</span>
                                     <span style={{ fontSize: "10px" }}>CONFIG</span>
                                 </button>

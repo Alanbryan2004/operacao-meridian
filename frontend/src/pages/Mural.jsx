@@ -222,9 +222,52 @@ export default function Mural() {
                 .om-miniBtn:active { transform: scale(0.99); }
                 .om-newsBtn { background: rgba(255,215,0,0.1); border: 1px solid rgba(255,215,0,0.3); color: #ffd700; font-size: 10px; font-weight: 800; padding: 6px 12px; border-radius: 999px; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; transition: all 0.2s; }
                 .om-newsBtn:active { transform: scale(0.95); opacity: 0.8; }
+                
+                .shop-currencies { display: flex; gap: 8px; align-items: center; }
+                .currency-pill { 
+                    background: rgba(0,0,0,0.6); border: 1px solid rgba(255,255,255,0.15);
+                    border-radius: 12px; padding: 4px 10px; display: flex; align-items: center; gap: 6px;
+                    font-size: 13px; font-weight: 800; height: 32px; box-sizing: border-box;
+                    backdrop-filter: blur(10px);
+                }
+                .currency-pill img { width: 32px; height: 32px; object-fit: contain; margin-left: -8px; margin-right: -4px; }
+                .currency-add { 
+                    width: 20px; height: 20px; border-radius: 6px; background: rgba(255,255,255,0.1);
+                    display: flex; align-items: center; justify-content: center; font-size: 12px; cursor: pointer;
+                    opacity: 0.6; margin-left: 4px;
+                }
             `}</style>
 
-            <div className="om-wrap">
+            <div className="om-wrap" style={{ position: "relative" }}>
+                <div style={{ position: "absolute", top: "12px", right: "12px", display: "flex", alignItems: "center", gap: "10px", zIndex: 100 }}>
+                    <div className="shop-currencies">
+                        <div className="currency-pill">
+                            <img src="/Loja/Moeda.png" alt="" />
+                            {player.dinheiro.toLocaleString("pt-BR")}
+                            <div className="currency-add">+</div>
+                        </div>
+                        <div className="currency-pill">
+                            <img src="/Loja/diamante.png" alt="" />
+                            {player.diamonds || 0}
+                            <div className="currency-add">+</div>
+                        </div>
+                    </div>
+                    <div className="currency-pill" onClick={() => nav("/loja")} style={{ cursor: "pointer", padding: "4px 8px" }}>
+                        <img 
+                            src="/Loja/carrinho.png" 
+                            alt="Loja" 
+                            style={{ 
+                                width: "32px", 
+                                height: "auto", 
+                                objectFit: "contain",
+                                margin: 0,
+                                transition: "transform 0.2s"
+                            }}
+                            onMouseOver={(e) => e.currentTarget.style.transform = "scale(1.1)"}
+                            onMouseOut={(e) => e.currentTarget.style.transform = "scale(1)"}
+                        />
+                    </div>
+                </div>
                 <div className="om-sticky">
                     <div className="om-panel">
                         <div className="om-toprow">
@@ -236,9 +279,6 @@ export default function Mural() {
                             <div style={{ textAlign: "right" }}>
                                 <div className="om-kpi">Agente</div>
                                 <div className="om-kpiValue">{player.nome}</div>
-                                <div style={{ marginTop: 6 }}>
-                                    <Badge tone="gray">💰 ${player.dinheiro}</Badge>
-                                </div>
                             </div>
                         </div>
                         <div style={{ marginTop: 10, display: "flex", gap: 8, flexWrap: "wrap", alignItems: "center" }}>
@@ -250,7 +290,6 @@ export default function Mural() {
                         <div className="om-actions">
                             <button className="om-miniBtn" onClick={() => nav("/perfil")}>PERFIL</button>
                             <button className="om-miniBtn" onClick={() => nav("/hall-da-fama")}>HALL DA FAMA</button>
-                            <button className="om-miniBtn" style={{ border: "1px solid rgba(255,215,0,0.3)", color: "#ffd700", fontWeight: "900" }} onClick={() => nav("/loja")}>🛒 LOJA</button>
                         </div>
                     </div>
                 </div>
