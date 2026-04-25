@@ -10,13 +10,6 @@ export default function HallDaFama() {
     const [rankings, setRankings] = useState([]);
     const [loading, setLoading] = useState(true);
     const [selectedAgent, setSelectedAgent] = useState(null);
-    const [currentUserId, setCurrentUserId] = useState(null);
-
-    useEffect(() => {
-        supabase.auth.getUser().then(({ data }) => {
-            if (data?.user) setCurrentUserId(data.user.id);
-        });
-    }, []);
 
     useEffect(() => {
         async function fetchRankings() {
@@ -133,11 +126,11 @@ export default function HallDaFama() {
                         <div style={{ textAlign: 'center', padding: '40px', opacity: 0.5 }}>Descriptografando registros...</div>
                     ) : rankings.map((r, idx) => {
                         const rankNum = idx + 1;
-                        const isPlayer = r.id === currentUserId;
-                        
+                        const isPlayer = r.nickname === player.nome;
+
                         return (
-                            <div 
-                                key={r.id || idx} 
+                            <div
+                                key={r.id || idx}
                                 className={`hf-card ${isPlayer ? 'hf-card-player' : ''}`}
                                 onClick={() => setSelectedAgent(r)}
                             >
@@ -145,10 +138,10 @@ export default function HallDaFama() {
                                     {rankNum}
                                 </div>
                                 <div className="hf-avatar">
-                                    <AvatarDisplay 
-                                        config={r.avatar} 
-                                        googlePhoto={r.avatar_key} 
-                                        size={50} 
+                                    <AvatarDisplay
+                                        config={r.avatar}
+                                        googlePhoto={r.avatar_key}
+                                        size={50}
                                         style={{ borderRadius: 12 }}
                                         useGoogleFirst={true}
                                     />
@@ -176,42 +169,42 @@ export default function HallDaFama() {
                 <div className="hf-overlay" onClick={() => setSelectedAgent(null)}>
                     <div className="hf-dossier" onClick={e => e.stopPropagation()}>
                         <div className="hf-d-title">DOSSIÊ DO AGENTE</div>
-                        <AvatarDisplay 
-                            config={selectedAgent.avatar} 
-                            googlePhoto={selectedAgent.avatar_key} 
-                            size={180} 
-                            style={{ borderRadius: 24 }} 
+                        <AvatarDisplay
+                            config={selectedAgent.avatar}
+                            googlePhoto={selectedAgent.avatar_key}
+                            size={180}
+                            style={{ borderRadius: 24 }}
                             useGoogleFirst={false}
                         />
                         <div className="hf-d-name">{selectedAgent.nickname}</div>
                         <div className="hf-d-role">
                             {selectedAgent.rank || "Agente"} · Nível {selectedAgent.level || 1}
                         </div>
-                         <div style={{ marginTop: 10, color: '#64748b', fontSize: 11, fontWeight: 800 }}>
-                              {selectedAgent.total_capturas || 0} CRIMINOSOS CAPTURADOS
-                         </div>
+                        <div style={{ marginTop: 10, color: '#64748b', fontSize: 11, fontWeight: 800 }}>
+                            {selectedAgent.total_capturas || 0} CRIMINOSOS CAPTURADOS
+                        </div>
 
-                         <div style={{ display: "flex", gap: 12, width: "100%", marginTop: 25 }}>
-                             <div className="hf-d-stat">
-                                 <img src="/icones/emblema_dificil.png" alt="" style={{ width: 40, height: 40, marginBottom: 6, filter: "drop-shadow(0 0 8px rgba(255,0,0,0.3))" }} />
-                                 <div style={{ fontSize: 9, opacity: 0.5, letterSpacing: 1, fontWeight: 800, textTransform: "uppercase" }}>Caso Difícil</div>
-                                 <div style={{ fontSize: 15, fontWeight: 900, marginTop: 4 }}>
-                                     {selectedAgent.hard_wins || 0} <span style={{ color: '#00ffa0', fontSize: 10 }}>VIT</span>
-                                     <span style={{ opacity: 0.2, margin: "0 6px" }}>|</span>
-                                     {selectedAgent.hard_losses || 0} <span style={{ color: '#ff4b4b', fontSize: 10 }}>DER</span>
-                                 </div>
-                             </div>
-                             <div className="hf-d-stat">
-                                 <img src="/icones/emblema_lendario.png" alt="" style={{ width: 40, height: 40, marginBottom: 6, filter: "drop-shadow(0 0 8px rgba(255,215,0,0.2))" }} />
-                                 <div style={{ fontSize: 9, opacity: 0.5, letterSpacing: 1, fontWeight: 800, textTransform: "uppercase" }}>Caso Lendário</div>
-                                 <div style={{ fontSize: 15, fontWeight: 900, marginTop: 4 }}>
-                                     {selectedAgent.legendary_wins || 0} <span style={{ color: '#00ffa0', fontSize: 10 }}>VIT</span>
-                                     <span style={{ opacity: 0.2, margin: "0 6px" }}>|</span>
-                                     {selectedAgent.legendary_losses || 0} <span style={{ color: '#ff4b4b', fontSize: 10 }}>DER</span>
-                                 </div>
-                             </div>
-                         </div>
-                        
+                        <div style={{ display: "flex", gap: 12, width: "100%", marginTop: 25 }}>
+                            <div className="hf-d-stat">
+                                <img src="/icones/emblema_dificil.png" alt="" style={{ width: 40, height: 40, marginBottom: 6, filter: "drop-shadow(0 0 8px rgba(255,0,0,0.3))" }} />
+                                <div style={{ fontSize: 9, opacity: 0.5, letterSpacing: 1, fontWeight: 800, textTransform: "uppercase" }}>Caso Difícil</div>
+                                <div style={{ fontSize: 15, fontWeight: 900, marginTop: 4 }}>
+                                    {selectedAgent.hard_wins || 0} <span style={{ color: '#00ffa0', fontSize: 10 }}>VIT</span>
+                                    <span style={{ opacity: 0.2, margin: "0 6px" }}>|</span>
+                                    {selectedAgent.hard_losses || 0} <span style={{ color: '#ff4b4b', fontSize: 10 }}>DER</span>
+                                </div>
+                            </div>
+                            <div className="hf-d-stat">
+                                <img src="/icones/emblema_lendario.png" alt="" style={{ width: 40, height: 40, marginBottom: 6, filter: "drop-shadow(0 0 8px rgba(255,215,0,0.2))" }} />
+                                <div style={{ fontSize: 9, opacity: 0.5, letterSpacing: 1, fontWeight: 800, textTransform: "uppercase" }}>Caso Lendário</div>
+                                <div style={{ fontSize: 15, fontWeight: 900, marginTop: 4 }}>
+                                    {selectedAgent.legendary_wins || 0} <span style={{ color: '#00ffa0', fontSize: 10 }}>VIT</span>
+                                    <span style={{ opacity: 0.2, margin: "0 6px" }}>|</span>
+                                    {selectedAgent.legendary_losses || 0} <span style={{ color: '#ff4b4b', fontSize: 10 }}>DER</span>
+                                </div>
+                            </div>
+                        </div>
+
                         {selectedAgent.frase ? (
                             <div className="hf-d-phrase">
                                 {selectedAgent.frase}
@@ -222,8 +215,8 @@ export default function HallDaFama() {
                             </div>
                         )}
 
-                        <button 
-                            className="hf-back" 
+                        <button
+                            className="hf-back"
                             style={{ marginTop: 40, background: '#1e293b' }}
                             onClick={() => setSelectedAgent(null)}
                         >

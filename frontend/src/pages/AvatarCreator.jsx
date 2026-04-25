@@ -9,16 +9,16 @@ const MALE_AVATAR_IDS = ["01", "02", "03", "04", "05", "06", "07", "08", "09", "
 const FEMALE_AVATAR_IDS = ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12"];
 
 const AVATAR_3D_IDS = [
-    { id: "Avatar01", label: "Agente Alpha" },
-    { id: "Avatar02", label: "Agente Bravo" },
+  { id: "Avatar01", label: "Agente Alpha" },
+  { id: "Avatar02", label: "Agente Bravo" },
 ];
 
 const ROUPAS = [
-    { id: null, label: "Sem Roupa", icon: "🩳" },
-    { id: "roupa_cadete", label: "Cadete", icon: "👮" },
-    { id: "Roupa_Cadete2", label: "Cadete II", icon: "🎖️" },
-    { id: "roupa_detetive2", label: "Detetive", icon: "🕵️" },
-    { id: "RoupaTatica", label: "Tática", icon: "🦺" },
+  { id: null, label: "Sem Roupa", icon: "🩳" },
+  { id: "roupa_cadete", label: "Cadete", icon: "👮" },
+  { id: "Roupa_Cadete2", label: "Cadete II", icon: "🎖️" },
+  { id: "roupa_detetive2", label: "Detetive", icon: "🕵️" },
+  { id: "RoupaTatica", label: "Tática", icon: "🦺" },
 ];
 
 export default function AvatarCreator() {
@@ -55,11 +55,11 @@ export default function AvatarCreator() {
     if (gender === selectedGender) return;
     setAnimating(true);
     setSelectedGender(gender);
-    
+
     // Bounds check to prevent keeping an invalid ID when switching genders
     const validIds = gender === 'M' ? MALE_AVATAR_IDS : FEMALE_AVATAR_IDS;
     if (!validIds.includes(selectedId)) {
-        setSelectedId("01");
+      setSelectedId("01");
     }
 
     setTimeout(() => setAnimating(false), 300);
@@ -80,7 +80,7 @@ export default function AvatarCreator() {
     handleSelect(ids[nextIndex]);
   };
 
-  const handleSave = async () => {
+  const handleSave = () => {
     const finalNome = (nome || "").trim() || "Recruta";
     const payload = {
       nome: finalNome,
@@ -88,12 +88,7 @@ export default function AvatarCreator() {
       avatar3D: avatarMode === '3D' ? { avatarId: selected3DAvatar, roupaId: selectedRoupa } : state.player.avatar3D || null,
       avatarMode: avatarMode,
     };
-    const { saveGameState } = await import('../services/gameSaveService');
     dispatch({ type: 'UPDATE_PLAYER', payload });
-    
-    // Força o salvamento imediato no banco antes de navegar
-    await saveGameState({ ...state, player: { ...state.player, ...payload } }, 0).catch(e => console.error("Erro ao salvar perfil:", e));
-    
     if (isOnboarding) {
       nav('/missao-intro/C000');
     } else {
@@ -107,28 +102,28 @@ export default function AvatarCreator() {
       <p className="av-step-desc">Confirme seu nome e escolha seu perfil de atuação.</p>
 
       <div style={{ marginBottom: 30, maxWidth: 400, margin: '0 auto 30px auto' }}>
-          <div className="av-phrase-box" style={{ background: 'rgba(59, 130, 246, 0.05)', borderColor: 'rgba(59, 130, 246, 0.2)' }}>
-            <label style={{ color: '#60a5fa' }}>CODINOME / NICKNAME</label>
-            <input 
-               type="text" 
-               value={nome}
-               onChange={(e) => setNome(e.target.value)}
-               placeholder="Como quer ser chamado?"
-               style={{ textAlign: 'center', fontSize: '20px', fontWeight: '800' }}
-            />
-          </div>
+        <div className="av-phrase-box" style={{ background: 'rgba(59, 130, 246, 0.05)', borderColor: 'rgba(59, 130, 246, 0.2)' }}>
+          <label style={{ color: '#60a5fa' }}>CODINOME / NICKNAME</label>
+          <input
+            type="text"
+            value={nome}
+            onChange={(e) => setNome(e.target.value)}
+            placeholder="Como quer ser chamado?"
+            style={{ textAlign: 'center', fontSize: '20px', fontWeight: '800' }}
+          />
+        </div>
       </div>
-      
+
       <div className="av-gender-selection">
-        <button 
+        <button
           className={`av-gender-big ${selectedGender === 'M' ? 'active' : ''}`}
           onClick={() => handleGenderChange('M')}
         >
           <div className="av-gender-icon">♂</div>
           <div className="av-gender-label">AGENTE MASCULINO</div>
         </button>
-        
-        <button 
+
+        <button
           className={`av-gender-big ${selectedGender === 'F' ? 'active' : ''}`}
           onClick={() => handleGenderChange('F')}
         >
@@ -391,7 +386,7 @@ export default function AvatarCreator() {
         </header>
 
         {step === 1 ? (
-           renderStep1()
+          renderStep1()
         ) : (
           <>
             {/* 2D / 3D Toggle (Hidden for now as requested)
@@ -416,7 +411,7 @@ export default function AvatarCreator() {
               <div className="av-main-layout">
                 <div className="av-preview-card">
                   <button className="av-nav-arrow left" onClick={() => handleSlide('prev')} aria-label="Anterior">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6" /></svg>
                   </button>
 
                   <div className={`av-preview-container ${animating ? 'jumping' : ''}`}>
@@ -424,7 +419,7 @@ export default function AvatarCreator() {
                   </div>
 
                   <button className="av-nav-arrow right" onClick={() => handleSlide('next')} aria-label="Próximo">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="m9 18 6-6-6-6" /></svg>
                   </button>
 
                   <div className="av-id-badge">AGENTE {selectedGender === 'M' ? 'M' : 'F'} #{selectedId}</div>

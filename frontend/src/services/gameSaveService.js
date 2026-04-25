@@ -50,25 +50,29 @@ export async function saveGameState(state, slot = 0) {
     if (player) {
         const totalCapturas = Object.values(capturedSuspects || {}).reduce((acc, val) => acc + val, 0);
 
+        const profilePayload = {
+            nickname: player.nome || "Agente",
+            avatar_key: player.avatarUrl || null,
+            rank: player.nivelTitulo || "Novato",
+            xp: player.xp || 0,
+            level: player.level || 1,
+            total_capturas: totalCapturas,
+            hard_wins: player.hardWins || 0,
+            hard_losses: player.hardLosses || 0,
+            legendary_wins: player.legendaryWins || 0,
+            legendary_losses: player.legendaryLosses || 0,
+            avatar: player.avatar, // Salva o objeto completo {gender, id, frase}
+            frase: player.avatar?.frase || "",
+            daily_streak: player.dailyStreak || 0,
+            vouchers: player.vouchers || [],
+            updated_at: new Date().toISOString(),
+        };
+
+        console.log("[gameSaveService] Sincronizando profile com payload:", profilePayload);
+
         const { error: profErr } = await supabase
             .from("profiles")
-            .update({
-                nickname: player.nome || "Agente",
-                avatar_key: player.avatarUrl || null,
-                rank: player.nivelTitulo || "Novato",
-                xp: player.xp || 0,
-                level: player.nivel || 1,
-                total_capturas: totalCapturas,
-                hard_wins: player.hardWins || 0,
-                hard_losses: player.hardLosses || 0,
-                legendary_wins: player.legendaryWins || 0,
-                legendary_losses: player.legendaryLosses || 0,
-                avatar: player.avatar, // Salva o objeto completo {gender, id, frase}
-                frase: player.avatar?.frase || "",
-                daily_streak: player.dailyStreak || 0,
-                vouchers: player.vouchers || [],
-                updated_at: new Date().toISOString(),
-            })
+            .update(profilePayload)
             .eq("id", user.id);
 
         if (profErr) {

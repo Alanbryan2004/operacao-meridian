@@ -1305,21 +1305,7 @@ export default function Caso() {
                             <div style={{ marginTop: "15px", fontSize: "9px", textAlign: "center", opacity: 0.5, display: "flex", flexDirection: "column", gap: "8px" }}>
                                 <div>* Os itens só podem ser ativados em suas telas específicas (Viajar, Analisar ou Investigar).</div>
                                 
-                                {import.meta.env.DEV && (
-                                    <button 
-                                        onClick={async () => {
-                                            const { inventoryService } = await import("../game/inventoryService");
-                                            await inventoryService.addItem(state.player.supabaseId, "satelite_atlas", 5);
-                                            await inventoryService.addItem(state.player.supabaseId, "dossie_sigiloso", 5);
-                                            await inventoryService.addItem(state.player.supabaseId, "fonte_anonima", 5);
-                                            await refreshInventory();
-                                            alert("Modo Debug: +5 Itens Adicionados!");
-                                        }}
-                                        style={{ background: "rgba(255,215,0,0.1)", border: "1px solid rgba(255,215,0,0.3)", color: "#ffd700", fontSize: "8px", padding: "4px 8px", borderRadius: "4px", alignSelf: "center" }}
-                                    >
-                                        🛠️ DEBUG: +5 ITENS
-                                    </button>
-                                )}
+
                             </div>
                         </div>
                     </div>
