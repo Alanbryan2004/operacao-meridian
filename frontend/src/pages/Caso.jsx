@@ -87,7 +87,7 @@ export default function Caso() {
     try {
         const nav = useNavigate();
         const { caseId } = useParams();
-        const { state, replaceState, hydrated } = useGame();
+        const { state, replaceState, hydrated, inventory, refreshInventory } = useGame();
         const [searchParams] = useSearchParams();
         
         const isMissionCompetitive = useMemo(() => {
@@ -109,6 +109,10 @@ export default function Caso() {
         const [animatedTime, setAnimatedTime] = useState(null);
         const [modalConfig, setModalConfig] = useState({ show: false, message: "", type: "INFO", isConfirm: false, onConfirm: null });
         const [pendingWarrant, setPendingWarrant] = useState(null);
+        const [showMaisMenu, setShowMaisMenu] = useState(false);
+        const [showItemsOverlay, setShowItemsOverlay] = useState(false);
+        const [activeItemEffect, setActiveItemEffect] = useState(null); // { name, text, icon }
+        const [highlightedCity, setHighlightedCity] = useState(null);
         // Streak/Voucher modals are now handled in CasoSolucionado.jsx via localStorage
 
         const lobbyId = searchParams.get("lobbyId");
@@ -380,10 +384,28 @@ export default function Caso() {
                             id: `RETURN_${caseObj.localInicial.cidade}`
                         };
                     }
-                    if (returnOpt) options.push(returnOpt);
+                    if (returnOpt) {
+                        if (options.length >= 3) {
+                            // Encontra qual cidade é a correta para NÃO removê-la
+                            const currentCityNorm = (run.localAtual?.cidade || "").toLowerCase().trim().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+                            const currentIdx = activeScenario.route?.findIndex(c => 
+                                c.toLowerCase().trim().normalize("NFD").replace(/[\u0300-\u036f]/g, "") === currentCityNorm
+                            );
+                            const nextCorrectCity = activeScenario.route?.[currentIdx + 1];
+                            
+                            // Remove a primeira cidade da lista que NÃO seja a correta
+                            const wrongIdx = options.findIndex(opt => opt.cidade !== nextCorrectCity);
+                            if (wrongIdx !== -1) {
+                                options.splice(wrongIdx, 1);
+                            }
+                        }
+                        options.push(returnOpt);
+                    }
                 }
                 
-                return options.filter((v, i, a) => a.findIndex(t => t.cidade === v.cidade) === i);
+                // Deduplica por nome e garante o limite de 3
+                const finalOptions = options.filter((v, i, a) => a.findIndex(t => t.cidade === v.cidade) === i);
+                return finalOptions.slice(0, 3);
             }
             // Se existe travelTable mas a cidade atual NÃO está nela (cidade errada), limita destinos
             if (activeScenario?.travelTable && !activeScenario.travelTable[run.localAtual?.cidade]) {
@@ -516,11 +538,13 @@ export default function Caso() {
                     clearInterval(interval);
                     setAnimatedTime(null);
                     setTravelAnimData(null);
+                    setHighlightedCity(null);
                     triggerArrival();
                 }, duration);
             } else {
                 setTravelAnimData(null);
                 setAnimatedTime(null);
+                setHighlightedCity(null);
                 triggerArrival();
             }
         };
@@ -685,6 +709,188 @@ export default function Caso() {
             const next = spendTime(run, 2, "🧾 Mandado emitido: -2h.");
             next.mandadoEmitido = true;
             updateRun(next);
+        };
+
+        const handleUseItem = async (itemKey) => {
+            console.log("[DEBUG] Usando item:", itemKey, "Inventory:", inventory[itemKey], "canAct:", canAct);
+            if (!canAct) return;
+            if (inventory[itemKey] <= 0) return;
+
+            const { inventoryService } = await import("../game/inventoryService");
+            const success = await inventoryService.consumeItem(state.player.supabaseId, itemKey);
+            
+            if (success) {
+                await refreshInventory();
+                
+                if (itemKey === "fonte_anonima") {
+                    // --- Fonte Anônima: Revela uma característica que NÃO será dada na missão ---
+                    const schedule = activeScenario?.suspectTipSchedule || [];
+                    const categoriesInMission = new Set(schedule.map(s => s.category));
+                    const allCategories = ["sexo", "origem", "cabelo", "olhos", "esporte", "comida", "caracteristica"];
+                    
+                    // Categorias que o jogador NÃO vai receber investigando normalmente
+                    const hiddenCategories = allCategories.filter(cat => !categoriesInMission.has(cat));
+                    
+                    let foundTip = null;
+
+                    if (activeScenario?.suspectId) {
+                        const targetSuspect = suspectsSeed.find(s => s.id === activeScenario.suspectId);
+                        
+                        // Tenta pegar uma categoria que não está na missão
+                        if (hiddenCategories.length > 0 && targetSuspect?.dicas) {
+                            // Embaralha as categorias escondidas para pegar uma aleatória
+                            const shuffledHidden = [...hiddenCategories].sort(() => Math.random() - 0.5);
+                            for (const cat of shuffledHidden) {
+                                const tips = targetSuspect.dicas[cat];
+                                if (tips && tips.length > 0) {
+                                    foundTip = { texto: tips[Math.floor(Math.random() * tips.length)].texto, category: cat };
+                                    break;
+                                }
+                            }
+                        }
+
+                        // Se não encontrou nada "escondido", busca no cronograma o que ainda não foi descoberto
+                        if (!foundTip) {
+                            const discoveredTexts = new Set((run.pistasDescobertas || []).map(p => p.conteudo));
+                            foundTip = schedule.find(s => !discoveredTexts.has(s.texto));
+                        }
+
+                        // Se ainda assim não houver nada de suspeito, fallback para pool geral
+                        if (!foundTip && targetSuspect?.dicas) {
+                            const allSuspectTips = Object.values(targetSuspect.dicas).flat().map(d => d.texto);
+                            const discoveredTexts = new Set((run.pistasDescobertas || []).map(p => p.conteudo));
+                            const remaining = allSuspectTips.filter(t => !discoveredTexts.has(t));
+                            if (remaining.length > 0) {
+                                foundTip = { texto: remaining[Math.floor(Math.random() * remaining.length)] };
+                            }
+                        }
+                    }
+
+                    // Fallback final: local não visitado
+                    if (!foundTip) {
+                        const allInterrogatorios = activeScenario?.interrogatorios || [];
+                        const undiscovered = allInterrogatorios.filter(loc => !run.pistasDescobertas?.some(p => p.idInterrogatorio === loc.id));
+                        if (undiscovered.length > 0) {
+                            const randomLoc = undiscovered[Math.floor(Math.random() * undiscovered.length)];
+                            foundTip = { texto: randomLoc.pista, id: randomLoc.id, npc: randomLoc.personagem, local: randomLoc.local, cidade: randomLoc.cidade };
+                        }
+                    }
+
+                    if (foundTip) {
+                        const nextRun = { ...run };
+                        nextRun.pistasDescobertas = [...(run.pistasDescobertas || []), { 
+                            idInterrogatorio: foundTip.id || `FONTE_${Date.now()}`, 
+                            conteudo: foundTip.texto, 
+                            fonte: foundTip.npc || "Informante", 
+                            local: foundTip.local || "Comunicação Cifrada", 
+                            cidade: foundTip.cidade || run.localAtual?.cidade 
+                        }];
+                        nextRun.jornal = [...(run.jornal || []), { t: new Date().toISOString(), msg: "🕵️ Fonte Anônima: Nova pista desbloqueada." }];
+                        updateRun(nextRun);
+                        
+                        setActiveItemEffect({
+                            name: "FONTE ANÔNIMA",
+                            text: "“Uma mensagem cifrada chegou à central. Nova pista desbloqueada.”",
+                            icon: "/Itens/FonteAnonima.png"
+                        });
+
+                        // --- Dispara Diálogo da Fonte Anônima ---
+                        setSelectedLocal({
+                            personagem: "FONTE ANÔNIMA",
+                            imgPersonagem: "/NPC/Informante.png",
+                            imgLocal: currentCityImg,
+                            pista: `Tenho algo para você, agente...\n\nSeu alvo deixou rastros onde menos esperava.\n\n${foundTip.texto}`
+                        });
+                        setViewMode("DIALOGUE");
+                    } else {
+                        setActiveItemEffect({
+                            name: "AVISO",
+                            text: "“Todas as pistas conhecidas já foram interceptadas.”",
+                            icon: "/Itens/FonteAnonima.png"
+                        });
+                    }
+                } else if (itemKey === "satelite_atlas") {
+                    // --- Satélite Atlas ---
+                    if (activeScenario?.route) {
+                        const currentCityNorm = (run.localAtual.cidade || "").toLowerCase().trim().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+                        
+                        const currentIdx = activeScenario.route.findIndex(c => 
+                            c.toLowerCase().trim().normalize("NFD").replace(/[\u0300-\u036f]/g, "") === currentCityNorm
+                        );
+
+                        const nextCityName = activeScenario.route[currentIdx + 1];
+
+                        if (nextCityName) {
+                            setHighlightedCity(nextCityName);
+                            const nextRun = { ...run };
+                            nextRun.jornal = [...(run.jornal || []), { t: new Date().toISOString(), msg: `📡 Satélite Atlas: Rota inimiga localizada para ${nextCityName}.` }];
+                            updateRun(nextRun);
+
+                            setActiveItemEffect({
+                                name: "SATÉLITE ATLAS",
+                                text: "“Varredura orbital concluída. Trajeto inimigo localizado.”",
+                                icon: "/Itens/SateliteAtlas.png"
+                            });
+                        } else if (currentIdx === activeScenario.route.length - 1) {
+                            // Se já está na última cidade da rota
+                            setActiveItemEffect({
+                                name: "AVISO",
+                                text: "“O Satélite indica que o alvo está nesta cidade!”",
+                                icon: "/Itens/SateliteAtlas.png"
+                            });
+                        }
+                    }
+                } else if (itemKey === "dossie_sigiloso") {
+                    // --- Dossiê Sigiloso: Elimina metade dos suspeitos que batem com os filtros ATUAIS ---
+                    const currentFilters = run.filtrosAnalise || {};
+                    const targetId = run.targetSuspectId;
+
+                    // Filtra quem passaria pelos filtros atuais
+                    const matches = suspectsSeed.filter(s => {
+                        return Object.entries(currentFilters).every(([key, vals]) => {
+                            if (!vals || vals.length === 0) return true;
+                            const sVal = s[key];
+                            if (Array.isArray(sVal)) return sVal.some(v => vals.includes(v));
+                            return vals.includes(sVal);
+                        });
+                    });
+
+                    // Pega os que NÃO são o alvo e ainda NÃO foram eliminados
+                    const alreadyEliminated = new Set(run.eliminatedIds || []);
+                    const candidates = matches.filter(s => s.id !== targetId && !alreadyEliminated.has(s.id));
+                    
+                    if (candidates.length > 0) {
+                        // Embaralha e pega metade
+                        const toEliminate = candidates
+                            .sort(() => Math.random() - 0.5)
+                            .slice(0, Math.ceil(candidates.length / 2))
+                            .map(s => s.id);
+
+                        const nextRun = { 
+                            ...run, 
+                            eliminatedIds: [...new Set([...(run.eliminatedIds || []), ...toEliminate])]
+                        };
+                        nextRun.jornal = [...(run.jornal || []), { t: new Date().toISOString(), msg: "📁 Dossiê Sigiloso: Suspeitos improváveis eliminados." }];
+                        updateRun(nextRun);
+
+                        setActiveItemEffect({
+                            name: "DOSSIÊ SIGILOSO",
+                            text: "“Documentos internos recuperados. Informações críticas disponíveis.”",
+                            icon: "/Itens/DossieSigiloso.png"
+                        });
+                    } else {
+                        setActiveItemEffect({
+                            name: "AVISO",
+                            text: "“O dossiê não contém novas informações sobre os suspeitos filtrados.”",
+                            icon: "/Itens/DossieSigiloso.png"
+                        });
+                    }
+                }
+
+                setTimeout(() => setActiveItemEffect(null), 4000);
+                setShowItemsOverlay(false);
+                setShowMaisMenu(false);
+            }
         };
 
         const handleAbort = () => {
@@ -907,13 +1113,33 @@ export default function Caso() {
                                                 <div className="om-map-label" style={{ ...op, color: "#80bdff", transform: "translate(-50%, 14px)" }}>{run.localAtual?.cidade?.toUpperCase()}</div>
                                                 {travelOptions.map(d => {
                                                     const dp = getPos(d.coords);
+                                                    const isHighlighted = highlightedCity === d.cidade;
                                                     return (<React.Fragment key={d.id}>
-                                                        <div className={`om-map-dest ${selectedDest?.id === d.id ? "selected" : ""}`} style={{ ...dp }} />
-                                                        <div className="om-map-label" style={{ ...dp, color: selectedDest?.id === d.id ? "#ffd700" : "#fff", transform: "translate(-50%, 14px)" }}>{d.cidade.toUpperCase()}</div>
+                                                        {isHighlighted && (
+                                                            <div style={{
+                                                                position: "absolute",
+                                                                ...dp,
+                                                                width: 40,
+                                                                height: 40,
+                                                                border: "2px solid #ffd700",
+                                                                borderRadius: "50%",
+                                                                transform: "translate(-50%, -50%)",
+                                                                animation: "om-pulse-gold 1.5s infinite"
+                                                            }} />
+                                                        )}
+                                                        <div className={`om-map-dest ${selectedDest?.id === d.id ? "selected" : ""} ${isHighlighted ? "tutorial-highlight highlighted" : ""}`} style={{ ...dp }} />
+                                                        <div className="om-map-label" style={{ ...dp, color: isHighlighted ? "#ffd700" : (selectedDest?.id === d.id ? "#ffd700" : "#fff"), transform: "translate(-50%, 14px)", fontWeight: isHighlighted ? 900 : 800 }}>{d.cidade.toUpperCase()}</div>
                                                     </React.Fragment>);
                                                 })}
                                             </div>);
                                         })()}
+                                        <style>{`
+                                            @keyframes om-pulse-gold {
+                                                0% { transform: translate(-50%, -50%) scale(0.8); opacity: 1; box-shadow: 0 0 0 0 rgba(255, 215, 0, 0.7); }
+                                                50% { transform: translate(-50%, -50%) scale(1.1); opacity: 1; box-shadow: 0 0 20px 10px rgba(255, 215, 0, 0.3); }
+                                                100% { transform: translate(-50%, -50%) scale(0.8); opacity: 1; box-shadow: 0 0 0 0 rgba(255, 215, 0, 0); }
+                                            }
+                                        `}</style>
                                         <div className="om-map-loc-badge"><span>LOCAL:</span><span>{run.localAtual?.cidade}</span></div>
                                     </div>
                                 ) : (<img src={currentCityImg} style={{ width: "100%", height: "220px", objectFit: "cover" }} alt="" />)}
@@ -926,8 +1152,8 @@ export default function Caso() {
                     {viewMode !== "ANALYZE" && viewMode !== "RESUMO" && viewMode !== "DIALOGUE" && viewMode !== "ARRIVAL" && (
                         <div className="om-card">
                             <Panel>
-                                {viewMode === "ACTIONS" && (<div><div style={{ fontSize: 13, fontWeight: 800, marginBottom: 12 }}>CENTRAL DE OPERAÇÕES</div>{tutState && <div style={{ background: "rgba(255,215,0,0.12)", border: "1px solid rgba(255,215,0,0.4)", borderRadius: 10, padding: "8px 12px", marginBottom: 12, fontSize: 11, color: "#ffd700", textAlign: "center", fontWeight: 700 }}>📌 {tutState.allowInvestigate ? "Clique em INVESTIGAR para coletar pistas" : tutState.allowAnalysis ? "Clique em ANALISAR para filtrar o perfil do suspeito" : tutState.allowTravel ? `Clique em VIAJAR para seguir para ${tutState.expectedDest}` : "Siga as instruções"}</div>}<div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}><button className={`om-btn ${tutState?.allowTravel ? "tutorial-highlight" : ""}`} disabled={!canAct || (!!tutState && !tutState.allowTravel)} onClick={() => setViewMode("TRAVEL_MAP")}>✈️ VIAJAR</button><button className={`om-btn ${tutState?.allowInvestigate ? "tutorial-highlight" : ""}`} disabled={!canAct || (!!tutState && !tutState.allowInvestigate)} onClick={abrirLocais}>🔍 INVESTIGAR</button><button className={`om-btn ${tutState?.allowAnalysis ? "tutorial-highlight" : ""}`} disabled={!canAct || (!!tutState && !tutState.allowAnalysis)} onClick={analisar} style={{ gridColumn: "1/-1" }}>🧪 ANALISAR</button></div></div>)}
-                                {viewMode === "TRAVEL_MAP" && (<div><div style={{ fontSize: 13, fontWeight: 800, marginBottom: 12 }}>DESTINO</div>{tutState && <div style={{ background: "rgba(255,215,0,0.12)", border: "1px solid rgba(255,215,0,0.4)", borderRadius: 10, padding: "8px 12px", marginBottom: 12, fontSize: 11, color: "#ffd700", textAlign: "center", fontWeight: 700 }}>📌 Selecione {tutState.expectedDest} como destino</div>}<div style={{ display: "grid", gap: 8 }}>{travelOptions.map(d => {const isTutTarget = tutState && d.cidade === tutState.expectedDest; return (<button key={d.id} className={`om-btn ${isTutTarget ? "tutorial-highlight" : ""}`} disabled={!!tutState && !isTutTarget} onClick={() => { setSelectedDest(d); setViewMode("TRAVEL_MODES"); }}>{caseObj?.dificuldade === "DIFICIL" || caseObj?.dificuldade === "LENDARIO" ? "📍" : d.flag} {d.cidade}</button>);})}{!tutState && run.localAtual?.cidade !== "Campinas" && <button className="om-btn" onClick={handleVoltar} style={{ border: "1px solid #80bdff" }}>↩️ VOLTAR</button>}</div><button onClick={() => setViewMode("ACTIONS")} style={{ marginTop: 10, background: "transparent", border: "none", color: "#80bdff", width: "100%" }}>Cancelar</button></div>)}
+                                {viewMode === "ACTIONS" && (<div><div style={{ fontSize: 13, fontWeight: 800, marginBottom: 12 }}>CENTRAL DE OPERAÇÕES</div>{tutState && <div style={{ background: "rgba(255,215,0,0.12)", border: "1px solid rgba(255,215,0,0.4)", borderRadius: 10, padding: "8px 12px", marginBottom: 12, fontSize: 11, color: "#ffd700", textAlign: "center", fontWeight: 700 }}>📌 {tutState.allowInvestigate ? "Clique em INVESTIGAR para coletar pistas" : tutState.allowAnalysis ? "Clique em ANALISAR para filtrar o perfil do suspeito" : tutState.allowTravel ? `Clique em VIAJAR para seguir para ${tutState.expectedDest}` : "Siga as instruções"}</div>}<div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}><button className={`om-btn ${ (tutState?.allowTravel || highlightedCity) ? "tutorial-highlight" : ""}`} disabled={!canAct || (!!tutState && !tutState.allowTravel)} onClick={() => setViewMode("TRAVEL_MAP")}>✈️ VIAJAR</button><button className={`om-btn ${tutState?.allowInvestigate ? "tutorial-highlight" : ""}`} disabled={!canAct || (!!tutState && !tutState.allowInvestigate)} onClick={abrirLocais}>🔍 INVESTIGAR</button><button className={`om-btn ${tutState?.allowAnalysis ? "tutorial-highlight" : ""}`} disabled={!canAct || (!!tutState && !tutState.allowAnalysis)} onClick={analisar} style={{ gridColumn: "1/-1" }}>🧪 ANALISAR</button></div></div>)}
+                                {viewMode === "TRAVEL_MAP" && (<div><div style={{ fontSize: 13, fontWeight: 800, marginBottom: 12 }}>DESTINO</div>{tutState && <div style={{ background: "rgba(255,215,0,0.12)", border: "1px solid rgba(255,215,0,0.4)", borderRadius: 10, padding: "8px 12px", marginBottom: 12, fontSize: 11, color: "#ffd700", textAlign: "center", fontWeight: 700 }}>📌 Selecione {tutState.expectedDest} como destino</div>}<div style={{ display: "grid", gap: 8 }}>{travelOptions.map(d => {const isTutTarget = tutState && d.cidade === tutState.expectedDest; const isSatTarget = highlightedCity === d.cidade; return (<button key={d.id} className={`om-btn ${ (isTutTarget || isSatTarget) ? "tutorial-highlight" : ""}`} disabled={!!tutState && !isTutTarget} onClick={() => { setSelectedDest(d); setViewMode("TRAVEL_MODES"); }}>{caseObj?.dificuldade === "DIFICIL" || caseObj?.dificuldade === "LENDARIO" ? "📍" : d.flag} {d.cidade}</button>);})}{!tutState && run.localAtual?.cidade !== "Campinas" && <button className="om-btn" onClick={handleVoltar} style={{ border: "1px solid #80bdff" }}>↩️ VOLTAR</button>}</div><button onClick={() => setViewMode("ACTIONS")} style={{ marginTop: 10, background: "transparent", border: "none", color: "#80bdff", width: "100%" }}>Cancelar</button></div>)}
                                 {viewMode === "TRAVEL_MODES" && selectedDest && (
                                     <div>
                                         <div style={{ fontSize: 13, fontWeight: 800, marginBottom: 12 }}>{selectedDest.isReturn ? "↩️ RETORNAR PARA" : "VIAJAR PARA"} {selectedDest.cidade.toUpperCase()}</div>
@@ -964,9 +1190,158 @@ export default function Caso() {
                         </div>
                     )}
                     {viewMode === "PROFILE" && profileTab === "GALERIA" && <div style={{ marginTop: 20 }}><SuspectGallery capturedSuspects={state.capturedSuspects || {}} /><button onClick={() => setViewMode("ACTIONS")} className="om-btn" style={{ marginTop: 20 }}>VOLTAR</button></div>}
-                    {viewMode === "ANALYZE" && <>{tutState && <div style={{ background: "rgba(255,215,0,0.12)", border: "1px solid rgba(255,215,0,0.4)", borderRadius: 10, padding: "8px 12px", marginBottom: 12, fontSize: 11, color: "#ffd700", textAlign: "center", fontWeight: 700 }}>📌 {tutState.expectedWarrant ? "Selecione Kite Needle e clique em MANDADO para emitir o mandado de prisão" : tutState.expectedAnalise === "sexo" ? "Selecione \"Feminino\" nos filtros de Sexo" : tutState.expectedAnalise === "corCabelo" ? "Selecione \"Preto\" nos filtros de Cor do Cabelo" : tutState.expectedAnalise === "esporte" ? "Selecione \"Ginástica Olímpica\" nos filtros de Esporte" : "Analise o perfil do suspeito"}</div>}<Analisar onBack={() => { setViewMode("ACTIONS"); }} filters={run?.filtrosAnalise || {}} setFilters={(f) => { const n = typeof f === 'function' ? f(run?.filtrosAnalise) : f; updateRun({ ...run, filtrosAnalise: n }); }} warrantId={run?.warrantId} setWarrantId={setPendingWarrant} tutorialHint={tutState} /></>}
+                    {viewMode === "ANALYZE" && <>{tutState && <div style={{ background: "rgba(255,215,0,0.12)", border: "1px solid rgba(255,215,0,0.4)", borderRadius: 10, padding: "8px 12px", marginBottom: 12, fontSize: 11, color: "#ffd700", textAlign: "center", fontWeight: 700 }}>📌 {tutState.expectedWarrant ? "Selecione Kite Needle e clique em MANDADO para emitir o mandado de prisão" : tutState.expectedAnalise === "sexo" ? "Selecione \"Feminino\" nos filtros de Sexo" : tutState.expectedAnalise === "corCabelo" ? "Selecione \"Preto\" nos filtros de Cor do Cabelo" : tutState.expectedAnalise === "esporte" ? "Selecione \"Ginástica Olímpica\" nos filtros de Esporte" : "Analise o perfil do suspeito"}</div>}<Analisar onBack={() => { setViewMode("ACTIONS"); }} filters={run?.filtrosAnalise || {}} setFilters={(f) => { const n = typeof f === 'function' ? f(run?.filtrosAnalise) : f; updateRun({ ...run, filtrosAnalise: n }); }} warrantId={run?.warrantId} setWarrantId={setPendingWarrant} tutorialHint={tutState} eliminatedIds={run.eliminatedIds || []} /></>}
                 </div>
-                <div className="om-tabs"><div className="om-tabs-inner"><button className={`om-tab ${viewMode === "ACTIONS" ? "om-tab-active" : ""}`} onClick={() => setViewMode("ACTIONS")}>AÇÃO</button><button className={`om-tab ${viewMode === "JOURNAL" ? "om-tab-active" : ""}`} onClick={() => setViewMode("JOURNAL")}>JORNAL</button><button className={`om-tab ${viewMode === "PROFILE" ? "om-tab-active" : ""}`} onClick={() => setViewMode("PROFILE")}>CASOS</button></div></div>
+                
+                {/* MENU INFERIOR */}
+                <div className="om-tabs">
+                    <div className="om-tabs-inner">
+                        <button className={`om-tab ${viewMode === "ACTIONS" ? "om-tab-active" : ""}`} onClick={() => { setViewMode("ACTIONS"); setShowMaisMenu(false); }}>AÇÃO</button>
+                        <button className={`om-tab ${viewMode === "JOURNAL" ? "om-tab-active" : ""}`} onClick={() => { setViewMode("JOURNAL"); setShowMaisMenu(false); }}>JORNAL</button>
+                        <button className={`om-tab ${viewMode === "PROFILE" ? "om-tab-active" : ""}`} onClick={() => { setViewMode("PROFILE"); setShowMaisMenu(false); }}>CASOS</button>
+                        <button className={`om-tab ${showMaisMenu ? "om-tab-active" : ""}`} onClick={() => setShowMaisMenu(!showMaisMenu)}>☰ MAIS</button>
+                    </div>
+                </div>
+
+                {/* OVERLAY MAIS MENU */}
+                {showMaisMenu && (
+                    <div style={{ position: "fixed", inset: 0, zIndex: 150, display: "flex", alignItems: "flex-end", background: "rgba(0,0,0,0.4)", backdropFilter: "blur(4px)" }} onClick={() => setShowMaisMenu(false)}>
+                        <div 
+                            style={{ 
+                                width: "100%", 
+                                background: "#071a26", 
+                                borderRadius: "24px 24px 0 0", 
+                                borderTop: "1px solid rgba(128,189,255,0.3)", 
+                                padding: "20px", 
+                                paddingBottom: "110px",
+                                animation: "om-slide-up 0.3s ease-out" 
+                            }} 
+                            onClick={e => e.stopPropagation()}
+                        >
+                            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+                                <button className="om-btn" style={{ height: "60px", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: "4px" }} onClick={() => { setShowItemsOverlay(true); setShowMaisMenu(false); }}>
+                                    <span style={{ fontSize: "18px" }}>🎒</span>
+                                    <span style={{ fontSize: "10px" }}>ITENS</span>
+                                </button>
+                                <button className="om-btn" style={{ height: "60px", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: "4px" }} onClick={() => nav("/loja")}>
+                                    <span style={{ fontSize: "18px" }}>🏪</span>
+                                    <span style={{ fontSize: "10px" }}>LOJA</span>
+                                </button>
+                                <button className="om-btn" style={{ height: "60px", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: "4px" }} onClick={() => nav("/perfil")}>
+                                    <span style={{ fontSize: "18px" }}>👤</span>
+                                    <span style={{ fontSize: "10px" }}>PERFIL</span>
+                                </button>
+                                <button className="om-btn" style={{ height: "60px", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: "4px" }} onClick={() => nav("/config")}>
+                                    <span style={{ fontSize: "18px" }}>⚙️</span>
+                                    <span style={{ fontSize: "10px" }}>CONFIG</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                )}
+
+                {/* OVERLAY ITENS */}
+                {showItemsOverlay && (
+                    <div style={{ position: "fixed", inset: 0, zIndex: 200, background: "rgba(0,0,0,0.85)", backdropFilter: "blur(8px)", display: "flex", alignItems: "center", justifyContent: "center", padding: "20px" }}>
+                        <div style={{ width: "100%", maxWidth: "400px", background: "#050c14", border: "1px solid rgba(128,189,255,0.3)", borderRadius: "20px", padding: "20px" }}>
+                            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "20px" }}>
+                                <div style={{ fontSize: "14px", fontWeight: 900, letterSpacing: "1px" }}>INTELIGÊNCIA OPERACIONAL</div>
+                                <button onClick={() => setShowItemsOverlay(false)} style={{ background: "transparent", border: "none", color: "#fff", fontSize: "24px" }}>×</button>
+                            </div>
+
+                            <div style={{ display: "grid", gap: "12px" }}>
+                                {/* SATELITE */}
+                                <div style={{ background: "rgba(255,255,255,0.05)", padding: "12px", borderRadius: "14px", border: "1px solid rgba(255,255,255,0.1)", display: "flex", gap: "12px", alignItems: "center" }}>
+                                    <img src="/Itens/SateliteAtlas.png" style={{ width: "50px", height: "50px", objectFit: "contain" }} alt="" />
+                                    <div style={{ flex: 1 }}>
+                                        <div style={{ fontSize: "11px", fontWeight: 900, color: "#ffd700" }}>SATÉLITE ATLAS x{inventory.satelite_atlas}</div>
+                                        <div style={{ fontSize: "9px", opacity: 0.6 }}>Revela a cidade correta da próxima etapa.</div>
+                                    </div>
+                                    <button 
+                                        className="om-btn" 
+                                        style={{ width: "auto", padding: "8px 12px", fontSize: "10px", opacity: (inventory.satelite_atlas <= 0 || highlightedCity) ? 0.5 : 1 }}
+                                        disabled={inventory.satelite_atlas <= 0 || highlightedCity}
+                                        onClick={() => handleUseItem("satelite_atlas")}
+                                    >
+                                        USAR
+                                    </button>
+                                </div>
+
+                                {/* DOSSIE */}
+                                <div style={{ background: "rgba(255,255,255,0.05)", padding: "12px", borderRadius: "14px", border: "1px solid rgba(255,255,255,0.1)", display: "flex", gap: "12px", alignItems: "center" }}>
+                                    <img src="/Itens/DossieSigiloso.png" style={{ width: "50px", height: "50px", objectFit: "contain" }} alt="" />
+                                    <div style={{ flex: 1 }}>
+                                        <div style={{ fontSize: "11px", fontWeight: 900, color: "#a080ff" }}>DOSSIÊ SIGILOSO x{inventory.dossie_sigiloso}</div>
+                                        <div style={{ fontSize: "9px", opacity: 0.6 }}>Elimina metade dos suspeitos incorretos.</div>
+                                    </div>
+                                    <button 
+                                        className="om-btn" 
+                                        style={{ width: "auto", padding: "8px 12px", fontSize: "10px", opacity: (inventory.dossie_sigiloso <= 0) ? 0.5 : 1 }}
+                                        disabled={inventory.dossie_sigiloso <= 0}
+                                        onClick={() => handleUseItem("dossie_sigiloso")}
+                                    >
+                                        USAR
+                                    </button>
+                                </div>
+
+                                {/* FONTE */}
+                                <div style={{ background: "rgba(255,255,255,0.05)", padding: "12px", borderRadius: "14px", border: "1px solid rgba(255,255,255,0.1)", display: "flex", gap: "12px", alignItems: "center" }}>
+                                    <img src="/Itens/FonteAnonima.png" style={{ width: "50px", height: "50px", objectFit: "contain" }} alt="" />
+                                    <div style={{ flex: 1 }}>
+                                        <div style={{ fontSize: "11px", fontWeight: 900, color: "#80bdff" }}>FONTE ANÔNIMA x{inventory.fonte_anonima}</div>
+                                        <div style={{ fontSize: "9px", opacity: 0.6 }}>Revela uma pista extra da missão atual.</div>
+                                    </div>
+                                    <button 
+                                        className="om-btn" 
+                                        style={{ width: "auto", padding: "8px 12px", fontSize: "10px", opacity: (inventory.fonte_anonima <= 0) ? 0.5 : 1 }}
+                                        disabled={inventory.fonte_anonima <= 0}
+                                        onClick={() => handleUseItem("fonte_anonima")}
+                                    >
+                                        USAR
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div style={{ marginTop: "15px", fontSize: "9px", textAlign: "center", opacity: 0.5, display: "flex", flexDirection: "column", gap: "8px" }}>
+                                <div>* Os itens só podem ser ativados em suas telas específicas (Viajar, Analisar ou Investigar).</div>
+                                
+                                {import.meta.env.DEV && (
+                                    <button 
+                                        onClick={async () => {
+                                            const { inventoryService } = await import("../game/inventoryService");
+                                            await inventoryService.addItem(state.player.supabaseId, "satelite_atlas", 5);
+                                            await inventoryService.addItem(state.player.supabaseId, "dossie_sigiloso", 5);
+                                            await inventoryService.addItem(state.player.supabaseId, "fonte_anonima", 5);
+                                            await refreshInventory();
+                                            alert("Modo Debug: +5 Itens Adicionados!");
+                                        }}
+                                        style={{ background: "rgba(255,215,0,0.1)", border: "1px solid rgba(255,215,0,0.3)", color: "#ffd700", fontSize: "8px", padding: "4px 8px", borderRadius: "4px", alignSelf: "center" }}
+                                    >
+                                        🛠️ DEBUG: +5 ITENS
+                                    </button>
+                                )}
+                            </div>
+                        </div>
+                    </div>
+                )}
+
+                {/* EFEITO DE ATIVAÇÃO DE ITEM */}
+                {activeItemEffect && (
+                    <div style={{ position: "fixed", inset: 0, zIndex: 1000, display: "flex", alignItems: "center", justifyContent: "center", background: "rgba(0,0,0,0.8)", animation: "om-fade-in 0.5s forwards" }}>
+                        <div style={{ textAlign: "center", padding: "30px", maxWidth: "80%" }}>
+                            <img src={activeItemEffect.icon} style={{ width: "120px", height: "120px", marginBottom: "20px", animation: "om-scale-in 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275)" }} alt="" />
+                            <div style={{ color: "#ffd700", fontSize: "18px", fontWeight: 900, marginBottom: "10px", letterSpacing: "2px" }}>{activeItemEffect.name}</div>
+                            <div style={{ color: "#fff", fontSize: "14px", fontStyle: "italic", opacity: 0.9, lineHeight: "1.4" }}>{activeItemEffect.text}</div>
+                        </div>
+                    </div>
+                )}
+
+                <style>{`
+                    @keyframes om-slide-up {
+                        from { transform: translateY(100%); }
+                        to { transform: translateY(0); }
+                    }
+                `}</style>
                 {modalConfig.show && <ModalMsg message={modalConfig.message} type={modalConfig.type} isConfirm={modalConfig.isConfirm} onConfirm={modalConfig.onConfirm} onClose={() => setModalConfig({ ...modalConfig, show: false })} />}
                 
                 {/* Streak/Voucher modals agora ficam no CasoSolucionado.jsx */}

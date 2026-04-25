@@ -20,7 +20,7 @@ function Panel({ children, style = {} }) {
     );
 }
 
-export default function Analisar({ onBack, filters, setFilters, warrantId, setWarrantId, tutorialHint }) {
+export default function Analisar({ onBack, filters, setFilters, warrantId, setWarrantId, tutorialHint, eliminatedIds = [] }) {
     const { state } = useGame();
     const capturedSuspects = state?.capturedSuspects || {};
 
@@ -192,6 +192,10 @@ export default function Analisar({ onBack, filters, setFilters, warrantId, setWa
                     <div
                         key={s.id}
                         className={`om-suspect-card ${selectedId === s.id ? "selected" : ""} ${tutorialHint?.expectedWarrant && s.id === "006" ? "tut-chip-highlight" : ""}`}
+                        style={{
+                            border: eliminatedIds.includes(s.id) ? "2px solid #ff4d4d" : undefined,
+                            opacity: eliminatedIds.includes(s.id) ? 0.7 : 1
+                        }}
                         onClick={() => setSelectedId(s.id)}
                         onDoubleClick={() => setSelectedSuspect(s)}
                     >
@@ -199,7 +203,18 @@ export default function Analisar({ onBack, filters, setFilters, warrantId, setWa
                             src={capturedSuspects[s.id] > 0 ? `/Suspeitos/${s.id}.png` : `/Suspeitos/NaoIdentificado.png`} 
                             className="om-suspect-img" 
                             alt={s.codinome} 
+                            style={{ filter: eliminatedIds.includes(s.id) ? "grayscale(100%) brightness(0.5)" : "none" }}
                         />
+                        
+                        {eliminatedIds.includes(s.id) && (
+                            <div style={{
+                                position: "absolute", inset: 0, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", zIndex: 5, background: "rgba(0,0,0,0.3)"
+                            }}>
+                                <img src="/Error.png" style={{ width: "60px", height: "60px", marginBottom: "5px" }} alt="Eliminado" />
+                                <div style={{ color: "#ff4d4d", fontSize: "10px", fontWeight: 900, textShadow: "0 0 10px #000" }}>DESCARTADO</div>
+                            </div>
+                        )}
+
                         <div className="om-suspect-name">{s.codinome}</div>
 
                         <div className={`om-selection-badge ${selectedId === s.id ? "active" : ""}`}>

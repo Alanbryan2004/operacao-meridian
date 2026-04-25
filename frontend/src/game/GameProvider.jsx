@@ -56,6 +56,24 @@ export function GameProvider({ initialState, reducer, children }) {
         };
     }, []);
 
+    // --- Inventário ---
+    const [inventory, setInventory] = useState({ fonte_anonima: 0, dossie_sigiloso: 0, satelite_atlas: 0 });
+
+    const refreshInventory = async () => {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (user) {
+            const { inventoryService } = await import("./inventoryService");
+            const data = await inventoryService.getInventory(user.id);
+            if (data) {
+                setInventory({
+                    fonte_anonima: data.fonte_anonima || 0,
+                    dossie_sigiloso: data.dossie_sigiloso || 0,
+                    satelite_atlas: data.satelite_atlas || 0
+                });
+            }
+        }
+    };
+
     // 2) Hidrata remoto (se logado). Se não tiver remoto, cria.
     useEffect(() => {
         if (!sessionReady) return;
@@ -87,6 +105,9 @@ export function GameProvider({ initialState, reducer, children }) {
                 await saveGameState(state, 0);
             }
 
+            // Puxa inventário
+            await refreshInventory();
+
             setHydrated(true);
         })().catch((e) => {
             console.error("Erro ao hidratar save do jogo:", e);
@@ -106,7 +127,9 @@ export function GameProvider({ initialState, reducer, children }) {
         replaceState: (next) => dispatch({ type: REPLACE_STATE, payload: next }),
         hydrated,
         canSave,
-    }), [state, hydrated, canSave]);
+        inventory,
+        refreshInventory
+    }), [state, hydrated, canSave, inventory]);
 
     return <GameContext.Provider value={value}>{children}</GameContext.Provider>;
 }

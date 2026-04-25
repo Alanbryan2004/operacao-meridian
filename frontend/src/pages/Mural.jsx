@@ -329,7 +329,8 @@ export default function Mural() {
                         if (dragStart === null) return;
                         const diff = e.clientX - dragStart;
                         if (Math.abs(diff) > 50) {
-                            if (diff > 0) setNewsIndex(0); else setNewsIndex(1);
+                            if (diff > 0) setNewsIndex(prev => Math.max(0, prev - 1)); 
+                            else setNewsIndex(prev => Math.min(2, prev + 1));
                         }
                         setDragStart(null);
                     }}
@@ -338,7 +339,8 @@ export default function Mural() {
                         if (dragStart === null) return;
                         const diff = e.changedTouches[0].clientX - dragStart;
                         if (Math.abs(diff) > 50) {
-                            if (diff > 0) setNewsIndex(0); else setNewsIndex(1);
+                            if (diff > 0) setNewsIndex(prev => Math.max(0, prev - 1)); 
+                            else setNewsIndex(prev => Math.min(2, prev + 1));
                         }
                         setDragStart(null);
                     }}
@@ -352,9 +354,24 @@ export default function Mural() {
                             style={{ position: "absolute", top: -40, right: 0, background: "none", border: "none", color: "#fff", fontSize: 28, cursor: "pointer", opacity: 0.8, zIndex: 10 }}
                         >✕</button>
 
-                        <div style={{ display: "flex", width: "200%", transition: "transform 0.4s cubic-bezier(0.4, 0, 0.2, 1)", transform: `translateX(${newsIndex === 0 ? "0%" : "-50%"})` }}>
-                            {/* SLIDE 1: VOUCHER ATLAS */}
-                            <div style={{ width: "50%", padding: "0 10px", boxSizing: "border-box" }}>
+                        <div style={{ display: "flex", width: "300%", transition: "transform 0.4s cubic-bezier(0.4, 0, 0.2, 1)", transform: `translateX(-${(newsIndex * 100) / 3}%)` }}>
+                            {/* SLIDE 1: NOVOS ITENS */}
+                            <div style={{ width: "33.333%", padding: "0 10px", boxSizing: "border-box" }}>
+                                <div style={{ color: "#80bdff", letterSpacing: 8, fontSize: 13, marginBottom: 12, fontWeight: 900, textShadow: "0 0 20px rgba(128,189,255,0.5)" }}>🛠️ INTELIGÊNCIA OPERACIONAL</div>
+                                <div style={{ position: "relative", marginBottom: 12 }}>
+                                    <img src="/Banner/Banner_NovosItens.png" style={{ width: "100%", maxHeight: "45vh", objectFit: "contain", borderRadius: 20, boxShadow: "0 20px 40px rgba(0,0,0,0.6)", border: "1px solid rgba(128,189,255,0.3)" }} alt="Novos Itens de Inteligência" />
+                                </div>
+                                <h3 style={{ color: "#fff", fontSize: 18, fontWeight: 900, marginBottom: 4 }}>RECURSOS TÁTICOS</h3>
+                                <p style={{ color: "rgba(255,255,255,0.7)", fontSize: 13, lineHeight: 1.4, marginBottom: 12 }}>
+                                    Fonte Anônima, Dossiê Sigiloso e Satélite Atlas agora disponíveis para auxiliar suas investigações.
+                                </p>
+                                <div style={{ background: "rgba(128,189,255,0.1)", borderRadius: 16, padding: "10px", border: "1px solid rgba(128,189,255,0.2)", fontSize: 11, color: "#80bdff", fontWeight: 700 }}>
+                                    Acesse o menu ☰ MAIS durante a missão para utilizar.
+                                </div>
+                            </div>
+
+                            {/* SLIDE 2: VOUCHER ATLAS */}
+                            <div style={{ width: "33.333%", padding: "0 10px", boxSizing: "border-box" }}>
                                 <div style={{ color: "#ffd700", letterSpacing: 8, fontSize: 13, marginBottom: 12, fontWeight: 900, textShadow: "0 0 20px rgba(255,215,0,0.5)" }}>📡 COMUNICADO ESPECIAL</div>
                                 <div style={{ position: "relative", marginBottom: 12 }}>
                                     <img src="/Voucher.png" style={{ width: "100%", maxHeight: "40vh", objectFit: "contain", borderRadius: 20, boxShadow: "0 20px 40px rgba(0,0,0,0.6)", border: "1px solid rgba(255,215,0,0.3)" }} alt="Voucher Atlas Aéreo" />
@@ -392,8 +409,8 @@ export default function Mural() {
                                 </div>
                             </div>
 
-                            {/* SLIDE 2: LOGIN DIÁRIO */}
-                            <div style={{ width: "50%", padding: "0 10px", boxSizing: "border-box" }}>
+                            {/* SLIDE 3: LOGIN DIÁRIO */}
+                            <div style={{ width: "33.333%", padding: "0 10px", boxSizing: "border-box" }}>
                                 <div style={{ color: "#3cff9c", letterSpacing: 8, fontSize: 13, marginBottom: 8, fontWeight: 900, textShadow: "0 0 20px rgba(60,255,160,0.5)" }}>📈 RECOMPENSA DIÁRIA</div>
                                 <div style={{ position: "relative", marginBottom: 12 }}>
                                     <img src="/logindiario2.png" style={{ width: "100%", maxHeight: "40vh", objectFit: "contain", borderRadius: 20, boxShadow: "0 20px 40px rgba(0,0,0,0.6)", border: "1px solid rgba(60,255,160,0.3)" }} alt="Login Diário" />
@@ -451,8 +468,9 @@ export default function Mural() {
 
                         {/* INDICADORES (BOLINHAS) */}
                         <div style={{ display: "flex", justifyContent: "center", gap: 10, margin: "10px 0 25px" }}>
-                            <div onClick={() => setNewsIndex(0)} style={{ width: 10, height: 10, borderRadius: "50%", background: newsIndex === 0 ? "#ffd700" : "rgba(255,255,255,0.2)", cursor: "pointer", transition: "0.3s" }} />
-                            <div onClick={() => setNewsIndex(1)} style={{ width: 10, height: 10, borderRadius: "50%", background: newsIndex === 1 ? "#3cff9c" : "rgba(255,255,255,0.2)", cursor: "pointer", transition: "0.3s" }} />
+                            <div onClick={() => setNewsIndex(0)} style={{ width: 10, height: 10, borderRadius: "50%", background: newsIndex === 0 ? "#80bdff" : "rgba(255,255,255,0.2)", cursor: "pointer", transition: "0.3s" }} />
+                            <div onClick={() => setNewsIndex(1)} style={{ width: 10, height: 10, borderRadius: "50%", background: newsIndex === 1 ? "#ffd700" : "rgba(255,255,255,0.2)", cursor: "pointer", transition: "0.3s" }} />
+                            <div onClick={() => setNewsIndex(2)} style={{ width: 10, height: 10, borderRadius: "50%", background: newsIndex === 2 ? "#3cff9c" : "rgba(255,255,255,0.2)", cursor: "pointer", transition: "0.3s" }} />
                         </div>
 
                         <button 

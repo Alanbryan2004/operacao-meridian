@@ -80,7 +80,7 @@ export default function AvatarCreator() {
     handleSelect(ids[nextIndex]);
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     const finalNome = (nome || "").trim() || "Recruta";
     const payload = {
       nome: finalNome,
@@ -88,7 +88,12 @@ export default function AvatarCreator() {
       avatar3D: avatarMode === '3D' ? { avatarId: selected3DAvatar, roupaId: selectedRoupa } : state.player.avatar3D || null,
       avatarMode: avatarMode,
     };
+    const { saveGameState } = await import('../services/gameSaveService');
     dispatch({ type: 'UPDATE_PLAYER', payload });
+    
+    // Força o salvamento imediato no banco antes de navegar
+    await saveGameState({ ...state, player: { ...state.player, ...payload } }, 0).catch(e => console.error("Erro ao salvar perfil:", e));
+    
     if (isOnboarding) {
       nav('/missao-intro/C000');
     } else {

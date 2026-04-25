@@ -10,6 +10,13 @@ export default function HallDaFama() {
     const [rankings, setRankings] = useState([]);
     const [loading, setLoading] = useState(true);
     const [selectedAgent, setSelectedAgent] = useState(null);
+    const [currentUserId, setCurrentUserId] = useState(null);
+
+    useEffect(() => {
+        supabase.auth.getUser().then(({ data }) => {
+            if (data?.user) setCurrentUserId(data.user.id);
+        });
+    }, []);
 
     useEffect(() => {
         async function fetchRankings() {
@@ -126,7 +133,7 @@ export default function HallDaFama() {
                         <div style={{ textAlign: 'center', padding: '40px', opacity: 0.5 }}>Descriptografando registros...</div>
                     ) : rankings.map((r, idx) => {
                         const rankNum = idx + 1;
-                        const isPlayer = r.nickname === player.nome;
+                        const isPlayer = r.id === currentUserId;
                         
                         return (
                             <div 

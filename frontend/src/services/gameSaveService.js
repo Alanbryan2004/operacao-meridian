@@ -50,7 +50,7 @@ export async function saveGameState(state, slot = 0) {
     if (player) {
         const totalCapturas = Object.values(capturedSuspects || {}).reduce((acc, val) => acc + val, 0);
 
-        await supabase
+        const { error: profErr } = await supabase
             .from("profiles")
             .update({
                 nickname: player.nome || "Agente",
@@ -70,6 +70,12 @@ export async function saveGameState(state, slot = 0) {
                 updated_at: new Date().toISOString(),
             })
             .eq("id", user.id);
+
+        if (profErr) {
+            console.error("[gameSaveService] Erro ao sincronizar profile:", profErr.message);
+        } else {
+            console.log("[gameSaveService] Profile sincronizado com sucesso.");
+        }
     }
 }
 
