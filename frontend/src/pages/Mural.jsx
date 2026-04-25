@@ -250,6 +250,7 @@ export default function Mural() {
                         <div className="om-actions">
                             <button className="om-miniBtn" onClick={() => nav("/perfil")}>PERFIL</button>
                             <button className="om-miniBtn" onClick={() => nav("/hall-da-fama")}>HALL DA FAMA</button>
+                            <button className="om-miniBtn" style={{ border: "1px solid rgba(255,215,0,0.3)", color: "#ffd700", fontWeight: "900" }} onClick={() => nav("/loja")}>🛒 LOJA</button>
                         </div>
                     </div>
                 </div>

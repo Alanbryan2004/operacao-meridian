@@ -965,6 +965,7 @@ export const initialPlayer = {
     classe: "Iniciante",
     xp: 0,
     dinheiro: 1000,
+    diamonds: 0,
     especializacao: null,
     avatar: null,
     hardWins: 0,

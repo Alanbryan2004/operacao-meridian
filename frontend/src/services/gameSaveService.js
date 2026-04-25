@@ -65,6 +65,7 @@ export async function saveGameState(state, slot = 0) {
             frase: player.avatar?.frase || "",
             daily_streak: player.dailyStreak || 0,
             vouchers: player.vouchers || [],
+            diamonds: player.diamonds || 0,
             updated_at: new Date().toISOString(),
         };
 
