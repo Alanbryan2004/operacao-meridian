@@ -94,10 +94,10 @@ export default function Loja() {
 
             if (success) {
                 // Atualiza moedas/diamantes no state local (que será auto-salvado)
-                const nextDinheiro = item.currency === "coins" 
-                    ? player.dinheiro - item.price 
+                const nextDinheiro = item.currency === "coins"
+                    ? player.dinheiro - item.price
                     : (item.type === "currency" ? player.dinheiro + item.value : player.dinheiro);
-                
+
                 const nextDiamonds = item.currency === "diamonds"
                     ? (player.diamonds || 0) - item.price
                     : (player.diamonds || 0);
@@ -111,7 +111,7 @@ export default function Loja() {
                 });
 
                 if (item.type === "item") await refreshInventory();
-                
+
                 // Feedback visual de sucesso (opcional)
                 console.log("Compra realizada:", item.name);
             }
@@ -137,7 +137,7 @@ export default function Loja() {
         }}>
             <style>{`
                 .shop-container { max-width: 600px; margin: 0 auto; padding-bottom: 40px; }
-                .shop-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 25px; }
+                .shop-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
                 .shop-title-area { display: flex; align-items: center; gap: 12px; }
                 .shop-back { background: none; border: none; color: #fff; font-size: 22px; cursor: pointer; padding: 0; opacity: 0.7; }
                 .shop-title { font-size: 22px; font-weight: 900; letter-spacing: 2px; }
@@ -157,19 +157,25 @@ export default function Loja() {
                 }
 
                 .shop-banner {
-                    display: flex; align-items: center; gap: 20px; margin-bottom: 25px;
-                    background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.1);
-                    border-radius: 24px; padding: 20px; position: relative; overflow: hidden;
-                    backdrop-filter: blur(10px);
+                    display: flex; align-items: flex-start; margin-top: -10px; margin-bottom: 5px;
+                    position: relative; min-height: 120px; padding: 0;
                 }
-                .banner-text { flex: 1; z-index: 2; }
-                .banner-desc { font-size: 13px; opacity: 0.6; line-height: 1.5; font-weight: 500; }
-                .banner-img { width: 140px; height: 90px; object-fit: contain; filter: drop-shadow(0 10px 20px rgba(0,0,0,0.5)); }
+                .banner-text { flex: 1; z-index: 2; margin-top: 10px; }
+                .banner-desc { 
+                    font-size: 11px; opacity: 0.8; line-height: 1.4; font-weight: 500; 
+                    max-width: 180px; color: #ddd;
+                }
+                .banner-img { 
+                    position: absolute; right: -20px; top: -45px;
+                    width: 280px; height: auto; object-fit: contain; 
+                    z-index: 1; pointer-events: none;
+                    filter: drop-shadow(0 15px 30px rgba(0,0,0,0.8));
+                }
 
                 .shop-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
                 
                 .shop-card {
-                    background: #050c14; border: 1px solid rgba(255,255,255,0.1);
+                    background: #000; border: 1px solid rgba(255,255,255,0.1);
                     border-radius: 24px; padding: 18px; display: flex; flex-direction: column;
                     position: relative; overflow: hidden; min-height: 320px;
                     transition: all 0.2s;
@@ -177,31 +183,41 @@ export default function Loja() {
                 .shop-card:hover { border-color: rgba(128,189,255,0.3); }
                 
                 .card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; z-index: 2; }
-                .card-name { font-size: 13px; font-weight: 900; color: #00aaff; letter-spacing: 0.5px; text-transform: uppercase; }
-                .card-info-icon { opacity: 0.5; font-size: 16px; color: #00aaff; }
+                .card-name { 
+                    font-size: 11px; font-weight: 900; color: #00aaff; 
+                    letter-spacing: 0.5px; text-transform: uppercase; 
+                    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+                    max-width: 85%;
+                }
+                .card-info-icon { opacity: 0.5; font-size: 14px; color: #00aaff; }
                 
                 .card-desc { font-size: 11px; opacity: 0.7; line-height: 1.4; margin-bottom: 10px; z-index: 2; color: #ccc; }
                 
                 .card-img-bg { 
-                    position: absolute; inset: 0; top: 60px; bottom: 60px;
+                    position: absolute; inset: 0; top: 60px; bottom: 40px;
                     display: flex; align-items: center; justify-content: center; 
                     z-index: 1; opacity: 0.9; pointer-events: none;
                 }
-                .card-img { width: 100%; height: 100%; object-fit: contain; filter: drop-shadow(0 15px 30px rgba(0,0,0,0.8)); }
+                .card-img { 
+                    width: 100%; height: 100%; object-fit: contain; 
+                    filter: drop-shadow(0 15px 30px rgba(0,0,0,0.8));
+                    mask-image: radial-gradient(circle, black 40%, transparent 95%);
+                    -webkit-mask-image: radial-gradient(circle, black 40%, transparent 95%);
+                }
                 
                 .card-footer { margin-top: auto; z-index: 2; }
-                .card-owned { font-size: 12px; color: #00aaff; opacity: 0.9; font-weight: 800; margin-bottom: 10px; }
+                .card-owned { font-size: 11px; color: #00aaff; opacity: 0.9; font-weight: 800; margin-bottom: 8px; }
                 
                 .buy-btn {
-                    width: 100%; padding: 10px; border-radius: 12px; border: 1px solid #ffd700;
+                    width: 100%; padding: 4px 10px; border-radius: 8px; border: 1px solid #ffd700;
                     background: rgba(0,0,0,0.6); color: #fff; font-weight: 900;
-                    display: flex; align-items: center; justify-content: center; gap: 8px;
-                    cursor: pointer; transition: all 0.2s; font-size: 16px;
+                    display: flex; align-items: center; justify-content: center; gap: 6px;
+                    cursor: pointer; transition: all 0.2s; font-size: 14px;
                     backdrop-filter: blur(5px);
                 }
                 .buy-btn:hover:not(:disabled) { background: rgba(255,215,0,0.1); transform: translateY(-2px); }
                 .buy-btn:disabled { opacity: 0.4; cursor: not-allowed; border-color: rgba(255,255,255,0.2); }
-                .buy-btn-img { width: 42px; height: 42px; object-fit: contain; margin-left: -12px; margin-right: -4px; }
+                .buy-btn-img { width: 28px; height: 28px; object-fit: contain; margin-left: -4px; }
 
                 @keyframes om-pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
                 .buying { animation: om-pulse 0.5s infinite; pointer-events: none; opacity: 0.7; }
@@ -215,7 +231,7 @@ export default function Loja() {
                     </div>
                     <div className="shop-currencies">
                         <div className="currency-pill">
-                            <img src="/Loja/Moeda.png" alt="" />
+                            <div className="logo-meridian" style={{ fontSize: '22px', marginRight: '4px' }}>M</div>
                             {player.dinheiro.toLocaleString("pt-BR")}
                             <div className="currency-add">+</div>
                         </div>
@@ -237,8 +253,8 @@ export default function Loja() {
                 <div className="shop-grid">
                     {shopItems.map(item => {
                         const ownedCount = item.type === "item" ? (inventory[item.id] || 0) : null;
-                        const isAffordable = item.currency === "coins" 
-                            ? player.dinheiro >= item.price 
+                        const isAffordable = item.currency === "coins"
+                            ? player.dinheiro >= item.price
                             : (player.diamonds || 0) >= item.price;
 
                         return (
@@ -247,27 +263,31 @@ export default function Loja() {
                                     <div className="card-name">{item.name}</div>
                                     <div className="card-info-icon">ⓘ</div>
                                 </div>
-                                
+
                                 <div className="card-desc">{item.desc}</div>
-                                
+
                                 <div className="card-img-bg">
                                     <img src={item.img} className="card-img" alt="" />
                                 </div>
-                                
+
                                 <div className="card-footer">
                                     {ownedCount !== null && (
                                         <div className="card-owned">Possui: {ownedCount}</div>
                                     )}
-                                    <button 
+                                    <button
                                         className="buy-btn"
                                         onClick={() => handleBuy(item)}
                                         disabled={!isAffordable || buying}
                                     >
-                                        <img 
-                                            src={item.currency === "coins" ? "/Loja/Moeda.png" : "/Loja/diamante.png"} 
-                                            className="buy-btn-img" 
-                                            alt="" 
-                                        />
+                                        {item.currency === "coins" ? (
+                                            <div className="logo-meridian" style={{ fontSize: '20px', marginRight: '4px' }}>M</div>
+                                        ) : (
+                                            <img
+                                                src="/Loja/diamante.png"
+                                                className="buy-btn-img"
+                                                alt=""
+                                            />
+                                        )}
                                         {item.price.toLocaleString("pt-BR")}
                                     </button>
                                 </div>

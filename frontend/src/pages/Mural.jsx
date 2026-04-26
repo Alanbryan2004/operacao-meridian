@@ -255,8 +255,8 @@ export default function Mural() {
                 <div style={{ position: "absolute", top: "12px", right: "12px", display: "flex", alignItems: "center", gap: "10px", zIndex: 100 }}>
                     <div className="shop-currencies">
                         <div className="currency-pill">
-                            <img src="/Loja/Moeda.png" alt="" />
-                            {player.dinheiro.toLocaleString("pt-BR")}
+                            <div className="logo-meridian" style={{ fontSize: '22px', marginRight: '4px' }}>M</div>
+                            {state.player.dinheiro.toLocaleString("pt-BR")}
                             <div className="currency-add">+</div>
                         </div>
                         <div className="currency-pill">
