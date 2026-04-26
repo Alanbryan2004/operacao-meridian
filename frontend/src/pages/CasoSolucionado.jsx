@@ -168,36 +168,44 @@ export default function CasoSolucionado() {
                         {/* Barra de Progresso */}
                         <div style={{ display: "flex", justifyContent: "space-between", position: "relative", marginBottom: 50, padding: "0 10px" }}>
                             <div style={{ position: "absolute", top: "50%", left: 10, right: 10, height: 2, background: "rgba(255,255,255,0.1)", transform: "translateY(-50%)", zIndex: 1 }} />
-                            <div style={{ position: "absolute", top: "50%", left: 10, width: `${Math.min(((streakUpdated?.current_streak || 1) - 1) / 6 * 100, 100)}%`, height: 2, background: "#3cff9c", transform: "translateY(-50%)", zIndex: 2, transition: "width 1s ease" }} />
+                            <div style={{ position: "absolute", top: "50%", left: 10, width: `${Math.min(((streakUpdated?.streakReached || streakUpdated?.current_streak || 1) - 1) / 6 * 100, 100)}%`, height: 2, background: "#3cff9c", transform: "translateY(-50%)", zIndex: 2, transition: "width 1s ease" }} />
                             
-                            {[1,2,3,4,5,6,7].map(d => {
-                                const isCompleted = d < (streakUpdated?.current_streak || 0);
-                                const isCurrent = d === (streakUpdated?.current_streak || 0);
-                                const isReward = d === 7;
-                                return (
-                                    <div key={d} style={{ zIndex: 3, position: "relative", display: "flex", flexDirection: "column", alignItems: "center" }}>
-                                        <div style={{ 
-                                            width: 32, height: 32, borderRadius: "50%", 
-                                            background: isCompleted ? "#3cff9c" : isCurrent ? "#fff" : "#1a2a3a",
-                                            border: `2px solid ${isCompleted ? "#3cff9c" : isCurrent ? "#80bdff" : "rgba(255,255,255,0.14)"}`,
-                                            display: "flex", alignItems: "center", justifyContent: "center",
-                                            color: (isCompleted || isCurrent) ? "#000" : "#555",
-                                            fontSize: 12, fontWeight: 800,
-                                            boxShadow: isCurrent ? "0 0 15px rgba(128,189,255,0.5)" : "none"
-                                        }}>
-                                            {isCompleted ? "✓" : isReward ? "🛫" : d}
+                            {(() => {
+                                const displayVal = streakUpdated?.streakReached || streakUpdated?.current_streak || 0;
+                                return [1,2,3,4,5,6,7].map(d => {
+                                    const isCompleted = d < displayVal;
+                                    const isCurrent = d === displayVal;
+                                    const isReward = d === 7;
+                                    return (
+                                        <div key={d} style={{ zIndex: 3, position: "relative", display: "flex", flexDirection: "column", alignItems: "center" }}>
+                                            <div style={{ 
+                                                width: 32, height: 32, borderRadius: "50%", 
+                                                background: isCompleted ? "#3cff9c" : isCurrent ? "#fff" : "#1a2a3a",
+                                                border: `2px solid ${isCompleted ? "#3cff9c" : isCurrent ? "#80bdff" : "rgba(255,255,255,0.14)"}`,
+                                                display: "flex", alignItems: "center", justifyContent: "center",
+                                                color: (isCompleted || isCurrent) ? "#000" : "#555",
+                                                fontSize: 12, fontWeight: 800,
+                                                boxShadow: isCurrent ? "0 0 15px rgba(128,189,255,0.5)" : "none"
+                                            }}>
+                                                {isCompleted ? "✓" : isReward ? "🛫" : d}
+                                            </div>
+                                            <div style={{ fontSize: 9, marginTop: 8, opacity: isCurrent ? 1 : 0.4, color: isCurrent ? "#80bdff" : "#fff", letterSpacing: 1 }}>{isReward ? "VOUCHER" : `DIA ${d}`}</div>
                                         </div>
-                                        <div style={{ fontSize: 9, marginTop: 8, opacity: isCurrent ? 1 : 0.4, color: isCurrent ? "#80bdff" : "#fff", letterSpacing: 1 }}>{isReward ? "VOUCHER" : `DIA ${d}`}</div>
-                                    </div>
-                                );
-                            })}
+                                    );
+                                });
+                            })()}
                         </div>
 
-                        <p style={{ fontSize: 14, color: "rgba(255,255,255,0.7)", lineHeight: 1.6, marginBottom: 30 }}>
-                            {streakUpdated.current_streak >= 7 
-                                ? "Parabéns! Você alcançou a meta semanal e desbloqueou uma recompensa de transporte." 
-                                : `Incrível! Você completou ${streakUpdated.current_streak} dia${streakUpdated.current_streak > 1 ? "s" : ""} consecutivo${streakUpdated.current_streak > 1 ? "s" : ""} de missões.`}
-                        </p>
+                        {(() => {
+                            const displayVal = streakUpdated?.streakReached || streakUpdated?.current_streak || 0;
+                            return (
+                                <p style={{ fontSize: 14, color: "rgba(255,255,255,0.7)", lineHeight: 1.6, marginBottom: 30 }}>
+                                    {displayVal >= 7 
+                                        ? "Parabéns! Você alcançou a meta semanal e desbloqueou uma recompensa de transporte." 
+                                        : `Incrível! Você completou ${displayVal} dia${displayVal > 1 ? "s" : ""} consecutivo${displayVal > 1 ? "s" : ""} de missões.`}
+                                </p>
+                            );
+                        })()}
 
                         <button 
                             onClick={() => {

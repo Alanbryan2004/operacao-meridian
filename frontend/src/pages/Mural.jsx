@@ -97,18 +97,31 @@ export default function Mural() {
             // Checa Recompensa de Login
             return checkLoginReward(state.player.supabaseId);
         })
-        .then(reward => {
+        .then(async reward => {
             if (reward?.show) {
                 setLoginReward(reward);
                 setLoginStreakData({
                     current_streak: reward.day,
                     last_reward_date: new Date().toISOString().split('T')[0]
                 });
+                
                 // Atualiza moedas localmente
                 useGame().dispatch({ 
                     type: "UPDATE_PLAYER", 
                     payload: { dinheiro: state.player.dinheiro + reward.reward } 
                 });
+
+                // 🔥 Se houver itens na recompensa, adiciona no banco
+                if (reward.items) {
+                    try {
+                        const { inventoryService } = await import("../game/inventoryService");
+                        for (const [key, qty] of Object.entries(reward.items)) {
+                            await inventoryService.addItem(state.player.supabaseId, key, qty);
+                        }
+                    } catch (e) {
+                        console.error("[Mural] Erro ao creditar itens de login:", e);
+                    }
+                }
             } else if (reward?.streak) {
                 setLoginStreakData(reward.streak);
             }
@@ -343,6 +356,15 @@ export default function Mural() {
                         </div>
 
                         <div style={{ color: "#fff", fontSize: 24, fontWeight: 900, marginBottom: 5 }}>+{loginReward.reward} MOEDAS</div>
+                        {loginReward.items && (
+                            <div style={{ color: "#3cff9c", fontSize: 16, fontWeight: 800, marginBottom: 15 }}>
+                                {Object.entries(loginReward.items).map(([key, qty]) => (
+                                    <div key={key}>
+                                        + {qty} {key.replace(/_/g, ' ').toUpperCase()}
+                                    </div>
+                                ))}
+                            </div>
+                        )}
                         <p style={{ color: "rgba(255,255,255,0.6)", fontSize: 14, marginBottom: 30 }}>Sua dedicação foi recompensada, Agente.</p>
 
                         <button 
@@ -496,10 +518,16 @@ export default function Mural() {
 
                                 <div style={{ background: "rgba(60,255,160,0.04)", borderRadius: 16, padding: "8px", marginBottom: 12, border: "1px solid rgba(60,255,160,0.12)", color: "#3cff9c", fontSize: 11, fontWeight: 700 }}>
                                     {(() => {
-                                        const d = loginStreakData?.current_streak || 0;
-                                        const rewards = { 2: 500, 3: 700, 4: 900, 5: 1000 };
-                                        if (d < 5) return `💎 PRÓXIMA META: DIA ${d+1} (${rewards[d+1]} MOEDAS)`;
-                                        if (d < 30) return `💎 PRÓXIMA META: DIA 30 (10.000 MOEDAS)`;
+                                        const d = (loginStreakData?.current_streak || 0);
+                                        if (d < 5) {
+                                            const rewards = { 1: 300, 2: 500, 3: 700, 4: 900, 5: 1000 };
+                                            return `💎 PRÓXIMA META: DIA ${d+1} (${rewards[d+1] || 1000} MOEDAS)`;
+                                        }
+                                        if (d < 10) return `💎 PRÓXIMA META: DIA 10 (1.000 + 01 FONTE ANÔNIMA)`;
+                                        if (d < 15) return `💎 PRÓXIMA META: DIA 15 (1.000 + 01 SATÉLITE ATLAS)`;
+                                        if (d < 20) return `💎 PRÓXIMA META: DIA 20 (1.000 + 02 FONTE ANÔNIMA)`;
+                                        if (d < 25) return `💎 PRÓXIMA META: DIA 25 (1.000 + 02 SATÉLITE ATLAS)`;
+                                        if (d < 30) return `💎 PRÓXIMA META: DIA 30 (10.000 + ITENS ESPECIAIS)`;
                                         return `💎 META: MANTER SEQUÊNCIA (1.000 MOEDAS)`;
                                     })()}
                                 </div>

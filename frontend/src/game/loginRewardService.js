@@ -14,12 +14,16 @@ function getLocalTodayStr() {
 }
 
 const LOGIN_REWARDS = {
-    1: 300,
-    2: 500,
-    3: 700,
-    4: 900,
-    5: 1000,
-    30: 10000
+    1: { reward: 300 },
+    2: { reward: 500 },
+    3: { reward: 700 },
+    4: { reward: 900 },
+    5: { reward: 1000 },
+    10: { reward: 1000, items: { fonte_anonima: 1 } },
+    15: { reward: 1000, items: { satelite_atlas: 1 } },
+    20: { reward: 1000, items: { fonte_anonima: 2 } },
+    25: { reward: 1000, items: { satelite_atlas: 2 } },
+    30: { reward: 10000, items: { dossie_sigiloso: 1, fonte_anonima: 2, satelite_atlas: 2 } }
 };
 
 export async function checkLoginReward(userId) {
@@ -51,7 +55,7 @@ export async function checkLoginReward(userId) {
             console.error("[loginRewardService] Erro ao criar streak inicial:", insErr.message);
             return { show: false };
         }
-        return { show: true, day: 1, reward: LOGIN_REWARDS[1] };
+        return { show: true, day: 1, reward: LOGIN_REWARDS[1].reward };
     }
 
     // Se já resgatou hoje, não mostra o popup de recompensa
@@ -77,22 +81,24 @@ export async function checkLoginReward(userId) {
     } else if (diffDays > 1) {
         // Sequência perdida, recomeça do dia 1
         newStreakCount = 1;
-    } else {
-        // Mesmo dia (0), ou algo estranho (< 0). Se diffDays for 0 e last_reward_date for diferente, 
-        // significa que ele logou hoje mas não resgatou ainda? 
-        // Na verdade, diffDays ser 0 e last_reward_date não ser hoje é improvável se last_login_date for atualizado no resgate.
-        // Mas vamos garantir que ele receba se ainda não recebeu hoje.
     }
 
-    // 3. Determina o valor da recompensa
-    let reward = 0;
-    if (newStreakCount === 30) {
-        reward = 10000;
-    } else if (newStreakCount >= 5) {
-        reward = 1000;
-    } else {
-        reward = LOGIN_REWARDS[newStreakCount] || 1000;
+    // 3. Determina a recompensa (moedas + itens)
+    let rewardData = LOGIN_REWARDS[newStreakCount];
+    
+    // Fallback para dias sem recompensa específica (ex: dia 6, 7, etc)
+    if (!rewardData) {
+        if (newStreakCount > 30) {
+            rewardData = { reward: 1000 }; // Teto diário após 30 dias
+        } else if (newStreakCount >= 5) {
+            rewardData = { reward: 1000 };
+        } else {
+            rewardData = { reward: 1000 };
+        }
     }
+
+    const rewardCoins = rewardData.reward;
+    const rewardItems = rewardData.items || null;
 
     // 4. Atualiza o banco
     const updatedData = {
@@ -113,5 +119,10 @@ export async function checkLoginReward(userId) {
         return { show: false };
     }
 
-    return { show: true, day: newStreakCount, reward };
+    return { 
+        show: true, 
+        day: newStreakCount, 
+        reward: rewardCoins, 
+        items: rewardItems 
+    };
 }

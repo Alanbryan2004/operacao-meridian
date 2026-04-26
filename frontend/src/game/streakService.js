@@ -130,16 +130,22 @@ export async function updateStreakOnWin(userId) {
     }
 
     // Checar recompensas
+    let streakReached = updated.current_streak; // Armazena o valor atingido para o feedback visual
     if (updated.current_streak === 7) newlyAwarded = REWARDS.DAY_7;
     else if (updated.current_streak === 14) newlyAwarded = REWARDS.DAY_14;
     else if (updated.current_streak === 30) newlyAwarded = REWARDS.DAY_30;
 
     if (newlyAwarded) {
         updated.vouchers = [...(updated.vouchers || []), { ...newlyAwarded, id: Date.now() }];
+        // Ao atingir um marco de recompensa, resetamos a sequência no banco de dados
+        console.log(`[streakService] Recompensa concedida (${newlyAwarded.label}). Resetando streak no banco.`);
+        updated.current_streak = 0;
     }
 
     await saveStreakData(updated);
-    return { ...updated, newlyAwarded };
+    // Retornamos o objeto com o current_streak já resetado para o estado do jogo,
+    // mas incluímos o streakReached para que a interface de Recompensa mostre o valor que disparou o prêmio.
+    return { ...updated, streakReached, newlyAwarded };
 }
 
 /**
