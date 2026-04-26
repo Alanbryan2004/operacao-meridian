@@ -136,8 +136,13 @@ export default function Loja() {
             position: 'relative'
         }}>
             <style>{`
-                .shop-container { max-width: 600px; margin: 0 auto; padding-bottom: 40px; }
-                .shop-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+                .shop-container { 
+                    max-width: 600px; margin: 0 auto; 
+                    height: calc(100dvh - 40px);
+                    display: flex; flex-direction: column;
+                    overflow: hidden;
+                }
+                .shop-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; flex-shrink: 0; }
                 .shop-title-area { display: flex; align-items: center; gap: 12px; }
                 .shop-back { background: none; border: none; color: #fff; font-size: 22px; cursor: pointer; padding: 0; opacity: 0.7; }
                 .shop-title { font-size: 22px; font-weight: 900; letter-spacing: 2px; }
@@ -158,7 +163,7 @@ export default function Loja() {
 
                 .shop-banner {
                     display: flex; align-items: flex-start; margin-top: -10px; margin-bottom: 5px;
-                    position: relative; min-height: 120px; padding: 0;
+                    position: relative; min-height: 120px; padding: 0; flex-shrink: 0;
                 }
                 .banner-text { flex: 1; z-index: 2; margin-top: 10px; }
                 .banner-desc { 
@@ -218,6 +223,17 @@ export default function Loja() {
                 .buy-btn:hover:not(:disabled) { background: rgba(255,215,0,0.1); transform: translateY(-2px); }
                 .buy-btn:disabled { opacity: 0.4; cursor: not-allowed; border-color: rgba(255,255,255,0.2); }
                 .buy-btn-img { width: 28px; height: 28px; object-fit: contain; margin-left: -4px; }
+ 
+                .shop-items-panel {
+                    background: rgba(255,255,255,0.02); 
+                    border: 1px solid rgba(255,255,255,0.08);
+                    border-radius: 32px; padding: 12px;
+                    backdrop-filter: blur(20px);
+                    flex: 1;
+                    overflow-y: auto;
+                    scrollbar-width: none;
+                }
+                .shop-items-panel::-webkit-scrollbar { display: none; }
 
                 @keyframes om-pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
                 .buying { animation: om-pulse 0.5s infinite; pointer-events: none; opacity: 0.7; }
@@ -250,50 +266,52 @@ export default function Loja() {
                     <img src="/Loja/banner_loja.png" className="banner-img" alt="" />
                 </div>
 
-                <div className="shop-grid">
-                    {shopItems.map(item => {
-                        const ownedCount = item.type === "item" ? (inventory[item.id] || 0) : null;
-                        const isAffordable = item.currency === "coins"
-                            ? player.dinheiro >= item.price
-                            : (player.diamonds || 0) >= item.price;
+                <div className="shop-items-panel">
+                    <div className="shop-grid">
+                        {shopItems.map(item => {
+                            const ownedCount = item.type === "item" ? (inventory[item.id] || 0) : null;
+                            const isAffordable = item.currency === "coins"
+                                ? player.dinheiro >= item.price
+                                : (player.diamonds || 0) >= item.price;
 
-                        return (
-                            <div key={item.id} className={`shop-card ${buying === item.id ? 'buying' : ''}`}>
-                                <div className="card-header">
-                                    <div className="card-name">{item.name}</div>
-                                    <div className="card-info-icon">ⓘ</div>
-                                </div>
+                            return (
+                                <div key={item.id} className={`shop-card ${buying === item.id ? 'buying' : ''}`}>
+                                    <div className="card-header">
+                                        <div className="card-name">{item.name}</div>
+                                        <div className="card-info-icon">ⓘ</div>
+                                    </div>
 
-                                <div className="card-desc">{item.desc}</div>
+                                    <div className="card-desc">{item.desc}</div>
 
-                                <div className="card-img-bg">
-                                    <img src={item.img} className="card-img" alt="" />
-                                </div>
+                                    <div className="card-img-bg">
+                                        <img src={item.img} className="card-img" alt="" />
+                                    </div>
 
-                                <div className="card-footer">
-                                    {ownedCount !== null && (
-                                        <div className="card-owned">Possui: {ownedCount}</div>
-                                    )}
-                                    <button
-                                        className="buy-btn"
-                                        onClick={() => handleBuy(item)}
-                                        disabled={!isAffordable || buying}
-                                    >
-                                        {item.currency === "coins" ? (
-                                            <div className="logo-meridian" style={{ fontSize: '20px', marginRight: '4px' }}>M</div>
-                                        ) : (
-                                            <img
-                                                src="/Loja/diamante.png"
-                                                className="buy-btn-img"
-                                                alt=""
-                                            />
+                                    <div className="card-footer">
+                                        {ownedCount !== null && (
+                                            <div className="card-owned">Possui: {ownedCount}</div>
                                         )}
-                                        {item.price.toLocaleString("pt-BR")}
-                                    </button>
+                                        <button
+                                            className="buy-btn"
+                                            onClick={() => handleBuy(item)}
+                                            disabled={!isAffordable || buying}
+                                        >
+                                            {item.currency === "coins" ? (
+                                                <div className="logo-meridian" style={{ fontSize: '20px', marginRight: '4px' }}>M</div>
+                                            ) : (
+                                                <img
+                                                    src="/Loja/diamante.png"
+                                                    className="buy-btn-img"
+                                                    alt=""
+                                                />
+                                            )}
+                                            {item.price.toLocaleString("pt-BR")}
+                                        </button>
+                                    </div>
                                 </div>
-                            </div>
-                        );
-                    })}
+                            );
+                        })}
+                    </div>
                 </div>
             </div>
         </div>
