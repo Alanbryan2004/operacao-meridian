@@ -41,6 +41,15 @@ export default function Loja() {
             type: "item"
         },
         {
+            id: "licenca_tatica",
+            name: "LICENÇA TÁTICA",
+            desc: "Protege sua ofensiva. Se você não puder jogar, a Licença salvará sua sequência.",
+            price: 5000, // Preço que achei equilibrado
+            currency: "coins",
+            img: "/Itens/licencaTatica.png",
+            type: "item"
+        },
+        {
             id: "maleta_moedas",
             name: "MALETA DE MOEDAS",
             desc: "Uma maleta contendo 50.000 moedas para financiar suas operações.",

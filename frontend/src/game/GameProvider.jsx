@@ -68,7 +68,8 @@ export function GameProvider({ initialState, reducer, children }) {
                 setInventory({
                     fonte_anonima: data.fonte_anonima || 0,
                     dossie_sigiloso: data.dossie_sigiloso || 0,
-                    satelite_atlas: data.satelite_atlas || 0
+                    satelite_atlas: data.satelite_atlas || 0,
+                    licenca_tatica: data.licenca_tatica || 0
                 });
             }
         }

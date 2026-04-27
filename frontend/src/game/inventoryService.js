@@ -27,7 +27,8 @@ export const inventoryService = {
             user_id: userId, 
             fonte_anonima: 3, 
             dossie_sigiloso: 1, 
-            satelite_atlas: 1 
+            satelite_atlas: 1,
+            licenca_tatica: 0
           }])
           .select()
           .single();

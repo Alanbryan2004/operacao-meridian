@@ -70,15 +70,15 @@ function CaseCard({ c, onOpen, status }) {
 }
 
 export default function Mural() {
+    const { state, refreshInventory } = useGame();
     const nav = useNavigate();
-    const { state } = useGame();
     const [modal, setModal] = useState({ show: false, message: "" });
     const [completedIds, setCompletedIds] = useState([]);
     const [loadingMissions, setLoadingMissions] = useState(true);
     const [showPromo, setShowPromo] = useState(false);
     const [streakData, setStreakData] = useState(null);
     const [loginStreakData, setLoginStreakData] = useState(null);
-    const [loginReward, setLoginReward] = useState({ show: false, day: 0, reward: 0 });
+    const [loginReward, setLoginReward] = useState({ show: false, moedas: 0, diamantes: 0, diasRestantes: 0, isMax: false });
     const [newsIndex, setNewsIndex] = useState(0);
     const [dragStart, setDragStart] = useState(null);
 
@@ -135,19 +135,32 @@ export default function Mural() {
             nav("/avatar-creator?onboarding=true");
         }
 
-        // --- Checa Promo de Voucher (1x) ---
+        // --- Checa Promo de Voucher e Licenca (1x) ---
         if (state && !loadingMissions) {
-            const hasSeen = localStorage.getItem("atlas_voucher_promo_v1");
-            if (!hasSeen) {
-                // Se tiver recompensa de login, mostra o login primeiro. 
-                // A promo de voucher aparecerá depois ou via botão novidades.
+            const hasSeenLicenca = localStorage.getItem("licenca_tatica_promo_v3");
+            const hasSeenVoucher = localStorage.getItem("atlas_voucher_promo_v1");
+            
+            if (!hasSeenLicenca || !hasSeenVoucher) {
                 if (!loginReward.show) {
-                    setShowPromo(true);
-                    setNewsIndex(0); // Começa no Voucher
+                    if (!hasSeenLicenca) {
+                        localStorage.setItem("licenca_tatica_promo_v3", "true");
+                        import("../game/inventoryService").then(({ inventoryService }) => {
+                            inventoryService.addItem(state.player.supabaseId, "licenca_tatica", 2)
+                            .then(() => {
+                                if (refreshInventory) refreshInventory();
+                            })
+                            .catch(e => console.error(e));
+                        });
+                        setShowPromo(true);
+                        setNewsIndex(0); // Abre direto na Licença
+                    } else if (!hasSeenVoucher) {
+                        setShowPromo(true);
+                        setNewsIndex(2); // Abre no Voucher se a Licença já foi vista
+                    }
                 }
             }
         }
-    }, [state, nav, loadingMissions, loginReward.show]);
+    }, [state, nav, loadingMissions, loginReward.show, refreshInventory]);
 
     if (!state) return null;
     const { player, cases } = state;
@@ -392,7 +405,7 @@ export default function Mural() {
                         const diff = e.clientX - dragStart;
                         if (Math.abs(diff) > 50) {
                             if (diff > 0) setNewsIndex(prev => Math.max(0, prev - 1)); 
-                            else setNewsIndex(prev => Math.min(2, prev + 1));
+                            else setNewsIndex(prev => Math.min(3, prev + 1));
                         }
                         setDragStart(null);
                     }}
@@ -402,7 +415,7 @@ export default function Mural() {
                         const diff = e.changedTouches[0].clientX - dragStart;
                         if (Math.abs(diff) > 50) {
                             if (diff > 0) setNewsIndex(prev => Math.max(0, prev - 1)); 
-                            else setNewsIndex(prev => Math.min(2, prev + 1));
+                            else setNewsIndex(prev => Math.min(3, prev + 1));
                         }
                         setDragStart(null);
                     }}
@@ -416,9 +429,24 @@ export default function Mural() {
                             style={{ position: "absolute", top: -40, right: 0, background: "none", border: "none", color: "#fff", fontSize: 28, cursor: "pointer", opacity: 0.8, zIndex: 10 }}
                         >✕</button>
 
-                        <div style={{ display: "flex", width: "300%", transition: "transform 0.4s cubic-bezier(0.4, 0, 0.2, 1)", transform: `translateX(-${(newsIndex * 100) / 3}%)` }}>
+                        <div style={{ display: "flex", width: "400%", transition: "transform 0.4s cubic-bezier(0.4, 0, 0.2, 1)", transform: `translateX(-${(newsIndex * 100) / 4}%)` }}>
+                            {/* SLIDE 0: LICENÇA TÁTICA */}
+                            <div style={{ width: "25%", padding: "0 10px", boxSizing: "border-box" }}>
+                                <div style={{ color: "#3cff9c", letterSpacing: 8, fontSize: 13, marginBottom: 12, fontWeight: 900, textShadow: "0 0 20px rgba(60,255,160,0.5)" }}>🛡️ PRESENTE DE ELITE</div>
+                                <div style={{ position: "relative", marginBottom: 12 }}>
+                                    <img src="/Banner/Banner_Licenca_Tatica.png" style={{ width: "100%", maxHeight: "45vh", objectFit: "contain", borderRadius: 20, boxShadow: "0 20px 40px rgba(0,0,0,0.6)", border: "1px solid rgba(60,255,160,0.3)" }} alt="Licença Tática" />
+                                </div>
+                                <h3 style={{ color: "#fff", fontSize: 18, fontWeight: 900, marginBottom: 4 }}>LICENÇA TÁTICA</h3>
+                                <p style={{ color: "rgba(255,255,255,0.7)", fontSize: 13, lineHeight: 1.4, marginBottom: 12 }}>
+                                    Proteja sua ofensiva! Se você não puder jogar, a licença manterá sua sequência intacta. Você acaba de receber <strong>2 unidades</strong>!
+                                </p>
+                                <div style={{ background: "rgba(60,255,160,0.1)", borderRadius: 16, padding: "10px", border: "1px solid rgba(60,255,160,0.2)", fontSize: 11, color: "#3cff9c", fontWeight: 700 }}>
+                                    Equipamento acionado automaticamente pelo sistema.
+                                </div>
+                            </div>
+
                             {/* SLIDE 1: NOVOS ITENS */}
-                            <div style={{ width: "33.333%", padding: "0 10px", boxSizing: "border-box" }}>
+                            <div style={{ width: "25%", padding: "0 10px", boxSizing: "border-box" }}>
                                 <div style={{ color: "#80bdff", letterSpacing: 8, fontSize: 13, marginBottom: 12, fontWeight: 900, textShadow: "0 0 20px rgba(128,189,255,0.5)" }}>🛠️ INTELIGÊNCIA OPERACIONAL</div>
                                 <div style={{ position: "relative", marginBottom: 12 }}>
                                     <img src="/Banner/Banner_NovosItens.png" style={{ width: "100%", maxHeight: "45vh", objectFit: "contain", borderRadius: 20, boxShadow: "0 20px 40px rgba(0,0,0,0.6)", border: "1px solid rgba(128,189,255,0.3)" }} alt="Novos Itens de Inteligência" />
@@ -433,7 +461,7 @@ export default function Mural() {
                             </div>
 
                             {/* SLIDE 2: VOUCHER ATLAS */}
-                            <div style={{ width: "33.333%", padding: "0 10px", boxSizing: "border-box" }}>
+                            <div style={{ width: "25%", padding: "0 10px", boxSizing: "border-box" }}>
                                 <div style={{ color: "#ffd700", letterSpacing: 8, fontSize: 13, marginBottom: 12, fontWeight: 900, textShadow: "0 0 20px rgba(255,215,0,0.5)" }}>📡 COMUNICADO ESPECIAL</div>
                                 <div style={{ position: "relative", marginBottom: 12 }}>
                                     <img src="/Voucher.png" style={{ width: "100%", maxHeight: "40vh", objectFit: "contain", borderRadius: 20, boxShadow: "0 20px 40px rgba(0,0,0,0.6)", border: "1px solid rgba(255,215,0,0.3)" }} alt="Voucher Atlas Aéreo" />
@@ -448,12 +476,17 @@ export default function Mural() {
                                         <div style={{ position: "absolute", top: "50%", left: 8, right: 8, height: 2, background: "rgba(255,255,255,0.1)", transform: "translateY(-50%)", zIndex: 1 }} />
                                         <div style={{ 
                                             position: "absolute", top: "50%", left: 8, 
-                                            width: `${Math.min(((streakData?.current_streak || 0)) / 6 * 100, 100)}%`, 
+                                            width: `${Math.min((((streakData?.current_streak || 0) % 7)) / 6 * 100, 100)}%`, 
                                             height: 2, background: "#3cff9c", transform: "translateY(-50%)", zIndex: 2, transition: "width 1s ease" 
                                         }} />
                                         {[1,2,3,4,5,6,7].map(d => {
-                                            const isCompleted = d <= (streakData?.current_streak || 0);
-                                            const isNext = d === (streakData?.current_streak || 0) + 1;
+                                            const currentCycleStreak = (streakData?.current_streak || 0) % 7;
+                                            // Se for múltiplo exato de 7 (ex: 7, 14, 21) e for maior que 0, significa que acabou de completar um ciclo.
+                                            // Mostramos a barra cheia temporariamente.
+                                            const isJustCompletedCycle = (streakData?.current_streak || 0) > 0 && (streakData?.current_streak || 0) % 7 === 0;
+                                            
+                                            const isCompleted = isJustCompletedCycle ? true : d <= currentCycleStreak;
+                                            const isNext = isJustCompletedCycle ? false : d === currentCycleStreak + 1;
                                             const isReward = d === 7;
                                             return (
                                                 <div key={d} style={{ zIndex: 3, position: "relative", display: "flex", flexDirection: "column", alignItems: "center" }}>
@@ -466,13 +499,13 @@ export default function Mural() {
                                         })}
                                     </div>
                                     <div style={{ fontSize: 11, color: "rgba(255,255,255,0.9)", fontWeight: 700, marginTop: 6 }}>
-                                        {streakData?.current_streak > 0 ? `Você está no DIA ${streakData.current_streak} da sua sequência!` : "Comece sua sequência hoje!"}
+                                        {streakData?.current_streak > 0 ? `Você está no DIA ${(streakData.current_streak % 7) || 7} do ciclo atual!` : "Comece sua sequência hoje!"}
                                     </div>
                                 </div>
                             </div>
 
                             {/* SLIDE 3: LOGIN DIÁRIO */}
-                            <div style={{ width: "33.333%", padding: "0 10px", boxSizing: "border-box" }}>
+                            <div style={{ width: "25%", padding: "0 10px", boxSizing: "border-box" }}>
                                 <div style={{ color: "#3cff9c", letterSpacing: 8, fontSize: 13, marginBottom: 8, fontWeight: 900, textShadow: "0 0 20px rgba(60,255,160,0.5)" }}>📈 RECOMPENSA DIÁRIA</div>
                                 <div style={{ position: "relative", marginBottom: 12 }}>
                                     <img src="/logindiario2.png" style={{ width: "100%", maxHeight: "40vh", objectFit: "contain", borderRadius: 20, boxShadow: "0 20px 40px rgba(0,0,0,0.6)", border: "1px solid rgba(60,255,160,0.3)" }} alt="Login Diário" />
@@ -536,9 +569,10 @@ export default function Mural() {
 
                         {/* INDICADORES (BOLINHAS) */}
                         <div style={{ display: "flex", justifyContent: "center", gap: 10, margin: "10px 0 25px" }}>
-                            <div onClick={() => setNewsIndex(0)} style={{ width: 10, height: 10, borderRadius: "50%", background: newsIndex === 0 ? "#80bdff" : "rgba(255,255,255,0.2)", cursor: "pointer", transition: "0.3s" }} />
-                            <div onClick={() => setNewsIndex(1)} style={{ width: 10, height: 10, borderRadius: "50%", background: newsIndex === 1 ? "#ffd700" : "rgba(255,255,255,0.2)", cursor: "pointer", transition: "0.3s" }} />
-                            <div onClick={() => setNewsIndex(2)} style={{ width: 10, height: 10, borderRadius: "50%", background: newsIndex === 2 ? "#3cff9c" : "rgba(255,255,255,0.2)", cursor: "pointer", transition: "0.3s" }} />
+                            <div onClick={() => setNewsIndex(0)} style={{ width: 10, height: 10, borderRadius: "50%", background: newsIndex === 0 ? "#3cff9c" : "rgba(255,255,255,0.2)", cursor: "pointer", transition: "0.3s" }} />
+                            <div onClick={() => setNewsIndex(1)} style={{ width: 10, height: 10, borderRadius: "50%", background: newsIndex === 1 ? "#80bdff" : "rgba(255,255,255,0.2)", cursor: "pointer", transition: "0.3s" }} />
+                            <div onClick={() => setNewsIndex(2)} style={{ width: 10, height: 10, borderRadius: "50%", background: newsIndex === 2 ? "#ffd700" : "rgba(255,255,255,0.2)", cursor: "pointer", transition: "0.3s" }} />
+                            <div onClick={() => setNewsIndex(3)} style={{ width: 10, height: 10, borderRadius: "50%", background: newsIndex === 3 ? "#3cff9c" : "rgba(255,255,255,0.2)", cursor: "pointer", transition: "0.3s" }} />
                         </div>
 
                         <button 

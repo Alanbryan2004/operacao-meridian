@@ -1288,7 +1288,7 @@ export default function Caso() {
                                 <div style={{ background: "rgba(255,255,255,0.05)", padding: "12px", borderRadius: "14px", border: "1px solid rgba(255,255,255,0.1)", display: "flex", gap: "12px", alignItems: "center" }}>
                                     <img src="/Itens/FonteAnonima.png" style={{ width: "50px", height: "50px", objectFit: "contain" }} alt="" />
                                     <div style={{ flex: 1 }}>
-                                        <div style={{ fontSize: "11px", fontWeight: 900, color: "#80bdff" }}>FONTE ANÔNIMA x{inventory.fonte_anonima}</div>
+                                        <div style={{ fontSize: "11px", fontWeight: 900, color: "#80bdff" }}>FONTE ANÔNIMA x{inventory.fonte_anonima || 0}</div>
                                         <div style={{ fontSize: "9px", opacity: 0.6 }}>Revela uma pista extra da missão atual.</div>
                                     </div>
                                     <button 
@@ -1298,6 +1298,22 @@ export default function Caso() {
                                         onClick={() => handleUseItem("fonte_anonima")}
                                     >
                                         USAR
+                                    </button>
+                                </div>
+
+                                {/* LICENÇA TÁTICA */}
+                                <div style={{ background: "rgba(255,255,255,0.05)", padding: "12px", borderRadius: "14px", border: "1px solid rgba(255,255,255,0.1)", display: "flex", gap: "12px", alignItems: "center" }}>
+                                    <img src="/Itens/licencaTatica.png" style={{ width: "50px", height: "50px", objectFit: "contain" }} alt="" />
+                                    <div style={{ flex: 1 }}>
+                                        <div style={{ fontSize: "11px", fontWeight: 900, color: "#3cff9c" }}>LICENÇA TÁTICA x{inventory.licenca_tatica || 0}</div>
+                                        <div style={{ fontSize: "9px", opacity: 0.6 }}>Protege sua ofensiva (uso automático).</div>
+                                    </div>
+                                    <button 
+                                        className="om-btn" 
+                                        style={{ width: "auto", padding: "8px 12px", fontSize: "10px", opacity: 0.5 }}
+                                        disabled={true}
+                                    >
+                                        PASSIVO
                                     </button>
                                 </div>
                             </div>

@@ -131,15 +131,21 @@ export async function updateStreakOnWin(userId) {
 
     // Checar recompensas
     let streakReached = updated.current_streak; // Armazena o valor atingido para o feedback visual
-    if (updated.current_streak === 7) newlyAwarded = REWARDS.DAY_7;
-    else if (updated.current_streak === 14) newlyAwarded = REWARDS.DAY_14;
-    else if (updated.current_streak === 30) newlyAwarded = REWARDS.DAY_30;
-
+    
+    // 🔥 Corrigido: Usar >= 30 para evitar usuários "presos" em sequências altas
+    if (updated.current_streak >= 30) {
+        newlyAwarded = REWARDS.DAY_30;
+    } else if (updated.current_streak >= 14) {
+        newlyAwarded = REWARDS.DAY_14;
+    } else if (updated.current_streak >= 7) {
+        newlyAwarded = REWARDS.DAY_7;
+    }
+ 
     if (newlyAwarded) {
         updated.vouchers = [...(updated.vouchers || []), { ...newlyAwarded, id: Date.now() }];
         // Ao atingir um marco de recompensa, resetamos a sequência no banco de dados
         console.log(`[streakService] Recompensa concedida (${newlyAwarded.label}). Resetando streak no banco.`);
-        updated.current_streak = 0;
+        updated.current_streak = 0; 
     }
 
     await saveStreakData(updated);
@@ -178,10 +184,45 @@ export async function checkStreakPersistence(userId) {
     const diffDays = Math.round(diffMs / (1000 * 60 * 60 * 24));
 
     if (diffDays > 1) {
-        // Perdeu o streak por inatividade
+        // Verifica se o usuário tem Licença Tática no inventário
+        const { data: inv } = await supabase.from("user_inventory").select("licenca_tatica").eq("user_id", userId).maybeSingle();
+        const licencas = inv?.licenca_tatica || 0;
+        const diasPerdidos = diffDays - 1;
+
+        if (licencas >= diasPerdidos) {
+            console.log(`[streakService] ${diasPerdidos} Licença(s) Tática(s) consumida(s)! Salvando ofensiva do agente.`);
+            
+            // Consome as licenças necessárias
+            await supabase.from("user_inventory").update({ licenca_tatica: licencas - diasPerdidos }).eq("user_id", userId);
+            
+            // "Finge" que a última missão concluída foi ontem, para que hoje seja o diffDays === 1
+            const yesterdayDate = new Date(todayDate);
+            yesterdayDate.setDate(yesterdayDate.getDate() - 1);
+            
+            const y = yesterdayDate.getFullYear();
+            const m = String(yesterdayDate.getMonth() + 1).padStart(2, "0");
+            const d = String(yesterdayDate.getDate()).padStart(2, "0");
+            const yesterdayStr = `${y}-${m}-${d}`;
+
+            const savedData = { ...data, last_completion_date: yesterdayStr, licenca_usada: true };
+            await saveStreakData(savedData);
+            return savedData;
+        }
+
+        // Perdeu o streak por inatividade e não tinha licenças suficientes
         const resetData = { ...data, current_streak: 0 };
         await saveStreakData(resetData);
         return resetData;
     }
+
+    // 🔥 Se o usuário já chegou em 30 ou mais e já é um novo dia, 
+    // reseta para que ele possa começar a nova trilha de 7/14/30 dias.
+    if (data.current_streak >= 30 && diffDays === 1) {
+        console.log("[streakService] Ciclo de 30 dias completo. Reiniciando contador.");
+        const resetData = { ...data, current_streak: 0 };
+        await saveStreakData(resetData);
+        return resetData;
+    }
+
     return data;
 }
