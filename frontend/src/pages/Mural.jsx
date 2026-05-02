@@ -6,6 +6,7 @@ import ModalMsg from "../components/ModalMsg";
 import { loadCompletedMissions } from "../services/gameSaveService";
 import { getStreakData } from "../game/streakService";
 import { checkLoginReward } from "../game/loginRewardService";
+import InventoryModal from "../components/InventoryModal";
 
 function Badge({ children, tone = "gray" }) {
     const map = {
@@ -70,7 +71,7 @@ function CaseCard({ c, onOpen, status }) {
 }
 
 export default function Mural() {
-    const { state, refreshInventory } = useGame();
+    const { state, refreshInventory, inventory } = useGame();
     const nav = useNavigate();
     const [modal, setModal] = useState({ show: false, message: "" });
     const [completedIds, setCompletedIds] = useState([]);
@@ -81,6 +82,8 @@ export default function Mural() {
     const [loginReward, setLoginReward] = useState({ show: false, moedas: 0, diamantes: 0, diasRestantes: 0, isMax: false });
     const [newsIndex, setNewsIndex] = useState(0);
     const [dragStart, setDragStart] = useState(null);
+    const [showInventory, setShowInventory] = useState(false);
+    const [hasNewItem, setHasNewItem] = useState(false);
 
     useEffect(() => {
         if (!state?.player?.supabaseId) return;
@@ -128,6 +131,17 @@ export default function Mural() {
         })
         .finally(() => setLoadingMissions(false));
     }, [state?.player?.supabaseId]);
+
+    // Checa se há itens novos no inventário
+    useEffect(() => {
+        if (!inventory) return;
+        const totalItems = Object.values(inventory).reduce((a, b) => a + b, 0) + (state.player.vouchers?.length || 0);
+        const lastTotal = parseInt(localStorage.getItem("meridian_last_total_items") || "0");
+        
+        if (totalItems > lastTotal) {
+            setHasNewItem(true);
+        }
+    }, [inventory, state.player.vouchers]);
 
     useEffect(() => {
         window.dispatchEvent(new CustomEvent("meridian-play-audio", { detail: true }));
@@ -235,7 +249,7 @@ export default function Mural() {
         <div style={{ minHeight: "100dvh", width: "100vw", background: "radial-gradient(circle at center, #071a26 0%, #000 70%)", color: "#fff" }}>
             <style>{`
                 .om-wrap { max-width: 520px; margin: 0 auto; padding: 14px; padding-bottom: 26px; }
-                .om-sticky { position: sticky; top: 0; z-index: 20; padding-top: 12px; padding-bottom: 12px; background: linear-gradient(to bottom, rgba(0,0,0,.85), rgba(0,0,0,0)); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); }
+                .om-sticky { position: sticky; top: 56px; z-index: 20; padding-top: 4px; padding-bottom: 12px; background: linear-gradient(to bottom, rgba(0,0,0,.85), rgba(0,0,0,0)); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); }
                 .om-panel { border-radius: 18px; border: 1px solid rgba(255,255,255,.14); background: rgba(255,255,255,0.06); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); box-shadow: 0 18px 45px rgba(0,0,0,.55); padding: 14px; }
                 .om-h1 { font-size: 16px; font-weight: 800; letter-spacing: .3px; }
                 .om-muted { font-size: 12px; opacity: .75; margin-top: 4px; line-height: 1.35; }
@@ -264,27 +278,66 @@ export default function Mural() {
                 }
             `}</style>
 
-            <div className="om-wrap" style={{ position: "relative" }}>
-                <div style={{ position: "absolute", top: "12px", right: "12px", display: "flex", alignItems: "center", gap: "10px", zIndex: 100 }}>
-                    <div className="shop-currencies">
-                        <div className="currency-pill">
-                            <div className="logo-meridian" style={{ fontSize: '22px', marginRight: '4px' }}>M</div>
-                            {state.player.dinheiro.toLocaleString("pt-BR")}
-                            <div className="currency-add">+</div>
-                        </div>
-                        <div className="currency-pill">
-                            <img src="/Loja/diamante.png" alt="" />
-                            {player.diamonds || 0}
-                            <div className="currency-add">+</div>
-                        </div>
+            <div className="om-wrap">
+                {/* Linha Superior: Inventário, Moedas, Diamantes, Loja */}
+                <div style={{ 
+                    display: "flex", 
+                    alignItems: "center", 
+                    justifyContent: "space-between", 
+                    gap: "8px", 
+                    padding: "12px 0",
+                    position: "sticky",
+                    top: 0,
+                    zIndex: 100,
+                    background: "#050a0d", 
+                    margin: "0 -14px", 
+                    paddingLeft: "14px",
+                    paddingRight: "14px"
+                }}>
+                    {/* Botão de Inventário */}
+                    <div 
+                        className="currency-pill"
+                        onClick={() => {
+                            setShowInventory(true);
+                            setHasNewItem(false);
+                            const totalItems = Object.values(inventory).reduce((a, b) => a + b, 0) + (state.player.vouchers?.length || 0);
+                            localStorage.setItem("meridian_last_total_items", totalItems.toString());
+                        }}
+                        style={{ cursor: "pointer", position: "relative", width: "45px", justifyContent: "center" }}
+                    >
+                        <img src="/Itens/inventario.png" alt="Inventário" style={{ height: "24px", width: "auto", objectFit: "contain" }} />
+                        {hasNewItem && (
+                            <div style={{ 
+                                position: "absolute", 
+                                top: -2, 
+                                right: -2, 
+                                width: 10, 
+                                height: 10, 
+                                background: "#ff4040", 
+                                borderRadius: "50%", 
+                                border: "1.5px solid #000",
+                                boxShadow: "0 0 6px rgba(255,64,64,0.6)"
+                            }} />
+                        )}
                     </div>
-                    <div className="currency-pill" onClick={() => nav("/loja")} style={{ cursor: "pointer", padding: "4px 8px" }}>
+
+                    <div className="currency-pill">
+                        <div className="logo-meridian" style={{ fontSize: '20px', marginRight: '4px' }}>M</div>
+                        {state.player.dinheiro.toLocaleString("pt-BR")}
+                    </div>
+                    
+                    <div className="currency-pill">
+                        <img src="/Loja/diamante.png" alt="" style={{ width: "24px", height: "24px" }} />
+                        {player.diamonds || 0}
+                    </div>
+
+                    <div className="currency-pill" onClick={() => nav("/loja")} style={{ cursor: "pointer", padding: "4px 8px", width: "45px", justifyContent: "center" }}>
                         <img 
                             src="/Loja/carrinho.png" 
                             alt="Loja" 
                             style={{ 
-                                width: "32px", 
-                                height: "auto", 
+                                width: "30px", 
+                                height: "30px", 
                                 objectFit: "contain",
                                 margin: 0,
                                 transition: "transform 0.2s"
@@ -294,6 +347,7 @@ export default function Mural() {
                         />
                     </div>
                 </div>
+
                 <div className="om-sticky">
                     <div className="om-panel">
                         <div className="om-toprow">
@@ -587,6 +641,8 @@ export default function Mural() {
                     </div>
                 </div>
             )}
+
+            <InventoryModal isOpen={showInventory} onClose={() => setShowInventory(false)} />
 
             <style>{`
                 @keyframes scale-in { from { opacity: 0; transform: scale(0.8); } to { opacity: 1; transform: scale(1); } }

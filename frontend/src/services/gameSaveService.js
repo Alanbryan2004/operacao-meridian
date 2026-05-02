@@ -63,9 +63,6 @@ export async function saveGameState(state, slot = 0) {
             legendary_losses: player.legendaryLosses || 0,
             avatar: player.avatar, // Salva o objeto completo {gender, id, frase}
             frase: player.avatar?.frase || "",
-            daily_streak: player.dailyStreak || 0,
-            vouchers: player.vouchers || [],
-            diamonds: player.diamonds || 0,
             updated_at: new Date().toISOString(),
         };
 
