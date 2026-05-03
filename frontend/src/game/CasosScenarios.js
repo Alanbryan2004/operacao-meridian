@@ -132,13 +132,35 @@ export const CASOS_CONFIG = {
     "C058": { hasIntroVideo: false, procedural: true },
     "C059": { hasIntroVideo: false, procedural: true },
     "C060": { hasIntroVideo: false, procedural: true },
+    "C061": { hasIntroVideo: false, procedural: true },
+    "C062": { hasIntroVideo: false, procedural: true },
+    "C063": { hasIntroVideo: false, procedural: true },
+    "C064": { hasIntroVideo: false, procedural: true },
+    "C065": { hasIntroVideo: false, procedural: true },
+    "C066": { hasIntroVideo: false, procedural: true },
+    "C067": { hasIntroVideo: false, procedural: true },
+    "C068": { hasIntroVideo: false, procedural: true },
+    "C069": { hasIntroVideo: false, procedural: true },
+    "C070": { hasIntroVideo: false, procedural: true },
+    "C071": { hasIntroVideo: false, procedural: true },
+    "C072": { hasIntroVideo: false, procedural: true },
+    "C073": { hasIntroVideo: false, procedural: true },
+    "C074": { hasIntroVideo: false, procedural: true },
+    "C075": { hasIntroVideo: false, procedural: true },
+    "C076": { hasIntroVideo: false, procedural: true },
+    "C077": { hasIntroVideo: false, procedural: true },
+    "C078": { hasIntroVideo: false, procedural: true },
+    "C079": { hasIntroVideo: false, procedural: true },
+    "C080": { hasIntroVideo: false, procedural: true },
 };
+
+const DEFAULT_CONFIG = { hasIntroVideo: false, procedural: true };
 
 /**
  * Retorna a configuração de um caso (vídeos, etc)
  */
 export function getCaseConfig(caseId) {
-    return CASOS_CONFIG[caseId] || {};
+    return CASOS_CONFIG[caseId] || DEFAULT_CONFIG;
 }
 
 /**
