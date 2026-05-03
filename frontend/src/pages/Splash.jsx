@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useGame } from "../game/GameProvider";
 
 export default function Splash() {
     const nav = useNavigate();
+    const { state } = useGame();
     // MODOS: "ENTRY" (Botão inicial) | "VIDEO" (Intro) | "FINAL" (Logo + Iniciar)
     const [mode, setMode] = useState("ENTRY");
 
@@ -17,6 +19,18 @@ export default function Splash() {
 
     async function handleStartProtocol() {
         triggerAudio();
+
+        // 🔥 AUTO-LOGIN: Se já estiver logado e tiver avatar, vai direto para o Mural.
+        if (state?.player?.supabaseId) {
+            if (state.player.avatar) {
+                nav("/mural");
+                return;
+            } else {
+                nav("/avatar-creator?onboarding=true");
+                return;
+            }
+        }
+
         setMode("VIDEO");
 
         // Tenta travar em paisagem se estiver no celular (precisa de interação do usuário, que é este clique)
@@ -44,6 +58,18 @@ export default function Splash() {
     function handleGoToLogin(e) {
         e.stopPropagation();
         triggerAudio();
+
+        // 🔥 AUTO-LOGIN: Mesma lógica para o botão Iniciar final
+        if (state?.player?.supabaseId) {
+            if (state.player.avatar) {
+                nav("/mural");
+                return;
+            } else {
+                nav("/avatar-creator?onboarding=true");
+                return;
+            }
+        }
+
         nav("/login");
     }
 

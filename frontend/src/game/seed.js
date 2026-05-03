@@ -1224,7 +1224,7 @@ export const initialPlayer = {
     classeEmoji: "🟢",
     classe: "Iniciante",
     xp: 0,
-    dinheiro: 1000,
+    dinheiro: 5000,
     diamonds: 0,
     especializacao: null,
     avatar: null,
