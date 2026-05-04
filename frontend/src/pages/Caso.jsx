@@ -84,96 +84,85 @@ function Panel({ children }) {
 }
 
 export default function Caso() {
-    try {
-        const nav = useNavigate();
-        const { caseId } = useParams();
-        const { state, replaceState, hydrated, inventory, refreshInventory } = useGame();
-        const [searchParams] = useSearchParams();
+    const nav = useNavigate();
+    const { caseId } = useParams();
+    const { state, replaceState, hydrated, inventory, refreshInventory } = useGame();
+    const [searchParams] = useSearchParams();
+    
+    const isMissionCompetitive = useMemo(() => {
+        const cObj = state?.cases?.find(c => c.id === caseId);
+        return searchParams.get("mode") === "competitive" || !!cObj?.isCompetitive;
+    }, [state?.cases, caseId, searchParams]);
+
+    const [viewMode, setViewMode] = useState("RESUMO");
+    const [selectedLocal, setSelectedLocal] = useState(null);
+    const [selectedDest, setSelectedDest] = useState(null);
+    const [showSuspectVideo, setShowSuspectVideo] = useState(false);
+    const [showCaptionDelay, setShowCaptionDelay] = useState(false);
+    const [activeVideo, setActiveVideo] = useState(null);
+    const [darkenScreen, setDarkenScreen] = useState(false);
+    const [videoEnded, setVideoEnded] = useState(false);
+    const [profileTab, setProfileTab] = useState("PERFIL");
+    const [revealFinalResult, setRevealFinalResult] = useState(false);
+    const [travelAnimData, setTravelAnimData] = useState(null);
+    const [animatedTime, setAnimatedTime] = useState(null);
+    const [modalConfig, setModalConfig] = useState({ show: false, message: "", type: "INFO", isConfirm: false, onConfirm: null });
+    const [pendingWarrant, setPendingWarrant] = useState(null);
+    const [showMaisMenu, setShowMaisMenu] = useState(false);
+    const [showItemsOverlay, setShowItemsOverlay] = useState(false);
+    const [activeItemEffect, setActiveItemEffect] = useState(null); 
+    const [highlightedCity, setHighlightedCity] = useState(null);
+
+    const lobbyId = searchParams.get("lobbyId");
+    const forcedScenarioId = searchParams.get("scenario");
+
+    const initRef = useRef(null);
+
+    useEffect(() => {
+        if (!state || !hydrated) return;
+        if (initRef.current === caseId) return;
         
-        const isMissionCompetitive = useMemo(() => {
-            const cObj = state?.cases?.find(c => c.id === caseId);
-            return searchParams.get("mode") === "competitive" || !!cObj?.isCompetitive;
-        }, [state?.cases, caseId, searchParams]);
+        const caseObj = state.cases?.find((x) => x.id === caseId);
+        if (!caseObj) {
+            nav("/mural");
+            return;
+        }
 
-        const [viewMode, setViewMode] = useState("RESUMO");
-        const [selectedLocal, setSelectedLocal] = useState(null);
-        const [selectedDest, setSelectedDest] = useState(null);
-        const [showSuspectVideo, setShowSuspectVideo] = useState(false);
-        const [showCaptionDelay, setShowCaptionDelay] = useState(false);
-        const [activeVideo, setActiveVideo] = useState(null);
-        const [darkenScreen, setDarkenScreen] = useState(false);
-        const [videoEnded, setVideoEnded] = useState(false);
-        const [profileTab, setProfileTab] = useState("PERFIL");
-        const [revealFinalResult, setRevealFinalResult] = useState(false);
-        const [travelAnimData, setTravelAnimData] = useState(null);
-        const [animatedTime, setAnimatedTime] = useState(null);
-        const [modalConfig, setModalConfig] = useState({ show: false, message: "", type: "INFO", isConfirm: false, onConfirm: null });
-        const [pendingWarrant, setPendingWarrant] = useState(null);
-        const [showMaisMenu, setShowMaisMenu] = useState(false);
-        const [showItemsOverlay, setShowItemsOverlay] = useState(false);
-        const [activeItemEffect, setActiveItemEffect] = useState(null); // { name, text, icon }
-        const [highlightedCity, setHighlightedCity] = useState(null);
-        // Streak/Voucher modals are now handled in CasoSolucionado.jsx via localStorage
+        if (state.player?.supabaseId) {
+            import("../game/streakService").then(m => m.checkStreakPersistence(state.player.supabaseId));
+        }
 
-        const lobbyId = searchParams.get("lobbyId");
-        const forcedScenarioId = searchParams.get("scenario");
+        const currentRun = state.runs?.[caseId];
+        const scenarioMismatch = forcedScenarioId && currentRun?.scenarioId !== forcedScenarioId;
+        const lobbyMismatch = lobbyId && currentRun?.lobbyId !== lobbyId;
+        const isSetup = searchParams.get("setup") === "true";
+        const needsReset = isSetup || (isMissionCompetitive && (!currentRun || lobbyMismatch || scenarioMismatch));
+        
+        const next = startRunIfNeeded(state, { ...caseObj, isCompetitive: isMissionCompetitive }, needsReset, forcedScenarioId, lobbyId);
+        
+        if (next !== state) {
+            replaceState(saveGame(next));
+        }
+        initRef.current = caseId;
+        window.dispatchEvent(new CustomEvent("meridian-play-audio", { detail: true }));
+    }, [caseId, isMissionCompetitive, forcedScenarioId, lobbyId, nav, replaceState, hydrated, searchParams, state]);
 
-        const initRef = useRef(null);
+    const caseObj = useMemo(
+        () => state?.cases?.find((x) => x.id === caseId),
+        [state?.cases, caseId]
+    );
+    const run = useMemo(
+        () => (state?.runs ? state.runs[caseId] : null),
+        [state?.runs, caseId]
+    );
 
-
-        useEffect(() => {
-            if (activeVideo && (activeVideo.includes("suspeitopreso") || activeVideo.includes("suspeitonaopreso"))) {
-                setShowCaptionDelay(false);
-                const timer = setTimeout(() => setShowCaptionDelay(true), 10000);
-                return () => clearTimeout(timer);
-            } else {
-                setShowCaptionDelay(false);
-            }
-        }, [activeVideo]);
-        useEffect(() => {
-            if (!state || !hydrated) return;
-            // Evita rodar múltiplas vezes para o mesmo caseId no mesmo mount
-            if (initRef.current === caseId) return;
-            
-            const caseObj = state.cases.find((x) => x.id === caseId);
-            if (!caseObj) {
-                nav("/mural");
-                return;
-            }
-
-            // --- Checa Streak (Perda por inatividade) ---
-            if (state.player.supabaseId) {
-                import("../game/streakService").then(m => m.checkStreakPersistence(state.player.supabaseId)).then(res => {
-                    if (res && res.current_streak === 0) {
-                        // Opcional: Avisar o usuário que perdeu o streak
-                    }
-                });
-            }
-
-            const currentRun = state.runs?.[caseId];
-            const scenarioMismatch = forcedScenarioId && currentRun?.scenarioId !== forcedScenarioId;
-            const lobbyMismatch = lobbyId && currentRun?.lobbyId !== lobbyId;
-            const isSetup = searchParams.get("setup") === "true";
-            const needsReset = isSetup || (isMissionCompetitive && (!currentRun || lobbyMismatch || scenarioMismatch));
-            
-            const next = startRunIfNeeded(state, { ...caseObj, isCompetitive: isMissionCompetitive }, needsReset, forcedScenarioId, lobbyId);
-            
-            if (next !== state) {
-                replaceState(saveGame(next));
-            }
-            initRef.current = caseId;
-            window.dispatchEvent(new CustomEvent("meridian-play-audio", { detail: true }));
-        }, [caseId, isMissionCompetitive, forcedScenarioId, lobbyId, nav, replaceState, hydrated, searchParams]);
-
-
-        const caseObj = useMemo(
-            () => state?.cases?.find((x) => x.id === caseId),
-            [state, caseId]
+    if (!hydrated || !state) {
+        return (
+            <div style={{ minHeight: "100dvh", width: "100vw", background: "#000", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff" }}>
+                Conectando à rede A.T.L.A.S...
+            </div>
         );
-        const run = useMemo(
-            () => (state?.runs ? state.runs[caseId] : null),
-            [state, caseId]
-        );
+    }
 
         const runStatusRef = useRef(run?.status);
         useEffect(() => { runStatusRef.current = run?.status; }, [run?.status]);
@@ -1378,8 +1367,5 @@ export default function Caso() {
                 `}</style>
             </div>
         );
-    } catch (err) {
-        console.error("[TEST DEBUG] Render Crash:", err.message, err.stack);
-        return <div>Render Crash: {err.message}</div>;
-    }
+
 }

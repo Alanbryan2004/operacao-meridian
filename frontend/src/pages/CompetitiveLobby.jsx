@@ -54,50 +54,75 @@ export default function CompetitiveLobby() {
         try {
             console.log("[ATLAS] Buscando lobby...");
             setStatus("Buscando outros jogadores para este caso..");
-            // 1. Procurar lobby esperando
-            const { data: fetchLobby, error: fetchError } = await supabase
-                .from("competitive_lobbies")
-                .select("*")
-                .eq("case_id", caseId)
-                .eq("status", "waiting")
-                .order("created_at", { ascending: false })
-                .limit(1)
-                .maybeSingle();
+
+            const tenMinutesAgo = new Date(Date.now() - 10 * 60 * 1000).toISOString();
+
+            const findLobby = async () => {
+                return await supabase
+                    .from("competitive_lobbies")
+                    .select("*")
+                    .eq("case_id", caseId)
+                    .eq("status", "waiting")
+                    .gt("created_at", tenMinutesAgo)
+                    .order("created_at", { ascending: true })
+                    .limit(1)
+                    .maybeSingle();
+            };
+
+            let { data: fetchLobby, error: fetchError } = await findLobby();
 
             if (fetchError) {
                 console.error("[ATLAS] Erro fetchLobby:", fetchError);
-                if (fetchError.code === "42P01") {
-                    setErrorMsg("Tabela 'competitive_lobbies' não encontrada. Verifique se executou o SQL.");
-                } else {
-                    setErrorMsg(`Erro na busca: ${fetchError.message}`);
-                }
+                setErrorMsg(`Erro na busca: ${fetchError.message}`);
                 return;
+            }
+
+            // 🔥 NOVO: Lógica de Retry com Jitter (evita que dois jogadores criem salas ao mesmo tempo)
+            if (!fetchLobby) {
+                console.log("[ATLAS] Nenhum lobby encontrado. Aguardando sincronia...");
+                const jitter = Math.floor(Math.random() * 1500) + 500; // 500ms a 2000ms
+                await new Promise(r => setTimeout(r, jitter));
+                
+                const retry = await findLobby();
+                fetchLobby = retry.data;
             }
 
             let targetLobby = fetchLobby;
 
             if (targetLobby) {
-                console.log("[ATLAS] Lobby encontrado:", targetLobby.id, "Criado em:", targetLobby.created_at);
-                // Checar se o lobby está vazio (caso o último jogador tenha saído)
-                // Se estiver vazio, vamos EXPIRAR e criar um novo para ter timer fresco
-                const { count, error: countError } = await supabase
-                    .from("competitive_players")
-                    .select("*", { count: 'exact', head: true })
-                    .eq("lobby_id", targetLobby.id);
+                const created = new Date(targetLobby.created_at);
+                const ageSeconds = (new Date() - created) / 1000;
                 
-                console.log("[ATLAS] Jogadores no lobby:", count);
-
-                if (!countError && count === 0) {
-                    console.log("[ATLAS] Lobby vazio detectado. Expirando e criando novo.");
-                    await supabase.from("competitive_lobbies").update({ status: "expired" }).eq("id", targetLobby.id);
+                if (ageSeconds > 60) {
+                    console.log("[ATLAS] Lobby encontrado já passou de 60s. Criando um novo.");
                     targetLobby = null;
+                }
+            }
+
+            if (!targetLobby) {
+                const { data: activeLobby } = await supabase
+                    .from("competitive_lobbies")
+                    .select("*")
+                    .eq("case_id", caseId)
+                    .eq("status", "active")
+                    .gt("created_at", tenMinutesAgo)
+                    .order("created_at", { ascending: false })
+                    .limit(1)
+                    .maybeSingle();
+                
+                if (activeLobby) {
+                    const created = new Date(activeLobby.created_at);
+                    const ageSeconds = (new Date() - created) / 1000;
+                    if (ageSeconds < 60) {
+                        console.log("[ATLAS] Lobby ativo recente encontrado. Entrando como retardatário.");
+                        targetLobby = activeLobby;
+                    }
                 }
             }
 
             if (!targetLobby) {
                 console.log("[ATLAS] Criando novo lobby...");
                 setStatus("Iniciando novo canal A.T.L.A.S...");
-                // 2. Criar novo lobby se não existe (ou expirou/abandonado)
                 const { data: newLobby, error: createError } = await supabase
                     .from("competitive_lobbies")
                     .insert([{ case_id: caseId, status: "waiting" }])
@@ -110,12 +135,10 @@ export default function CompetitiveLobby() {
                     return;
                 }
                 targetLobby = newLobby;
-                console.log("[ATLAS] Novo lobby criado:", targetLobby.id, "em:", targetLobby.created_at);
             }
 
             setStatus("Agente Sincronizado. Entrando na Missão...");
 
-            // 3. Entrar no lobby
             console.log("[ATLAS] Entrando no lobby:", targetLobby.id);
             const { error: joinError } = await supabase
                 .from("competitive_players")
@@ -127,8 +150,6 @@ export default function CompetitiveLobby() {
                 return;
             }
 
-            // Apenas aqui setamos o lobby, que gatilha o useEffect da sala
-            console.log("[ATLAS] Lobby definido no state.");
             setLobby(targetLobby);
 
         } catch (e) {
@@ -141,12 +162,18 @@ export default function CompetitiveLobby() {
         fetchOrCreateLobby();
     }, [fetchOrCreateLobby]);
 
+    // 🔥 NOVO: Efeito reativo para navegação
+    useEffect(() => {
+        if (lobby?.status === "active" && lobby?.scenario_id) {
+            console.log("[ATLAS] Status mudou para ACTIVE. Iniciando jogo reativamente...");
+            startGame(lobby.scenario_id, lobby.id);
+        }
+    }, [lobby?.status, lobby?.scenario_id]);
 
     useEffect(() => {
         if (!lobby) return;
 
         console.log("[ATLAS] Subscritibilidade Realtime ativada para lobby:", lobby.id);
-        // Inscrever no Realtime para atualizações de jogadores
         const channel = supabase
             .channel(`lobby-${lobby.id}`)
             .on("postgres_changes", {
@@ -163,11 +190,13 @@ export default function CompetitiveLobby() {
                 table: "competitive_lobbies",
                 filter: `id=eq.${lobby.id}`
             }, (payload) => {
-                if (payload.new.status === "active") {
-                    startGame(payload.new.scenario_id);
-                }
+                console.log("[ATLAS] Update no lobby recebido via Realtime:", payload.new.status);
+                // Atualizamos o estado do lobby, o que disparará o useEffect reativo acima
+                setLobby(prev => ({ ...prev, ...payload.new }));
             })
-            .subscribe();
+            .subscribe((status) => {
+                console.log("[ATLAS] Status da subscrição Realtime:", status);
+            });
 
         const refreshPlayers = async () => {
             const { data } = await supabase
@@ -183,18 +212,17 @@ export default function CompetitiveLobby() {
 
         refreshPlayers();
 
-        // Timer
         const interval = setInterval(() => {
+            if (lobby.status !== "waiting") return;
+
             const now = new Date();
             const created = new Date(lobby.created_at);
             const elapsed = (now - created) / 1000;
-            const diff = Math.floor(60 - elapsed);
+            const diff = Math.max(0, Math.floor(60 - elapsed));
             
+            setTimeLeft(diff);
             if (diff <= 0) {
-                setTimeLeft(0);
                 handleStartCondition();
-            } else {
-                setTimeLeft(diff);
             }
         }, 1000);
 
@@ -203,20 +231,27 @@ export default function CompetitiveLobby() {
             supabase.removeChannel(channel);
             clearInterval(interval);
         };
-    }, [lobby]);
+    }, [lobby?.id]);
 
     const handleStartCondition = async () => {
         const currentPlayers = playersRef.current;
-        if (currentPlayers.length === 0) return;
+        if (currentPlayers.length === 0 || lobby.status !== "waiting") return;
+
+        const { getCaseConfig } = await import("../game/CasosScenarios");
+        const config = getCaseConfig(caseId);
+        const isProcedural = config.procedural;
 
         if (currentPlayers.length >= 2) {
-            // 🔥 NOVO: Qualquer um pode tentar disparar o início se o tempo acabou e o lobby ainda está 'waiting'.
-            // Isso evita que o lobby trave se o líder (primeiro da lista) cair ou ficar inativo.
-            console.log("[ATLAS] Tempo esgotado com jogadores suficientes. Tentando ativar lobby...");
+            console.log("[ATLAS] Condição de início atingida. Ativando lobby...");
             
-            // Sorteamos o cenário localmente (o primeiro que gravar no Supabase vence)
-            const scenariosForCase = CASOS_SCENARIOS[caseId] || CASOS_SCENARIOS["C009"]; // Fallback de segurança
-            const randomScenario = scenariosForCase[Math.floor(Math.random() * scenariosForCase.length)];
+            let scenarioId = "procedural";
+            if (!isProcedural) {
+                const scenariosForCase = CASOS_SCENARIOS[caseId];
+                if (scenariosForCase && scenariosForCase.length > 0) {
+                    const randomScenario = scenariosForCase[Math.floor(Math.random() * scenariosForCase.length)];
+                    scenarioId = randomScenario.id;
+                }
+            }
             
             setStatus("Iniciando Missão: Sincronizando cenário...");
 
@@ -224,30 +259,29 @@ export default function CompetitiveLobby() {
                 .from("competitive_lobbies")
                 .update({ 
                     status: "active", 
-                    scenario_id: randomScenario.id 
+                    scenario_id: scenarioId 
                 })
                 .eq("id", lobby.id)
-                .eq("status", "waiting") // Atomicidade: só o primeiro consegue trocar de 'waiting' para 'active'
+                .eq("status", "waiting")
                 .select();
 
             if (updateError) {
                 console.error("[ATLAS] Erro ao ativar lobby:", updateError);
             } else if (data && data.length > 0) {
                 console.log("[ATLAS] Lobby ativado com sucesso por este agente.");
-            } else {
-                console.log("[ATLAS] Outro agente já ativou o lobby.");
+                // O estado local será atualizado pelo listener de Realtime
             }
         } else {
-            // Tempo acabou e só tem 1 jogador
             setIsExpiredWithoutPlayers(true);
         }
     };
 
-    const startGame = (scenarioId) => {
+    const startGame = (scenarioId, lobbyId) => {
         setStatus("Conexão Estabelecida. Iniciando Missão...");
+        // Pequeno delay para garantir que o estado do Supabase propagou
         setTimeout(() => {
-            nav(`/caso/${caseId}/?mode=competitive&scenario=${scenarioId}&lobbyId=${lobby.id}`);
-        }, 2000);
+            nav(`/caso/${caseId}/?mode=competitive&scenario=${scenarioId}&lobbyId=${lobbyId}&reset=true`);
+        }, 800);
     };
 
     if (!lobby) return (
@@ -287,6 +321,7 @@ export default function CompetitiveLobby() {
         }}>
             <div style={{ marginTop: 60, textAlign: "center" }}>
                 <div style={{ fontSize: 14, color: "#00ffcc", letterSpacing: 4, marginBottom: 10 }}>PROTOCOLO FANTASMA</div>
+                <p style={{ fontSize: 10, color: "#fff", opacity: 0.3, letterSpacing: 2, marginBottom: 5 }}>CANAL A.T.L.A.S: {lobby?.id?.slice(0, 8).toUpperCase() || "SINCRONIZANDO..."}</p>
                 <h1 style={{ fontSize: 24, fontWeight: 900, textShadow: "0 0 20px rgba(0,255,204,0.4)" }}>Aguarde... {players.length}/10</h1>
                 <div style={{ opacity: 0.6, fontSize: 12, marginTop: 8 }}>Buscando parceiros na Lista A.T.L.A.S.</div>
             </div>

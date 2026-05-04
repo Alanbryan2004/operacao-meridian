@@ -65,7 +65,7 @@ export default function Analisar({ onBack, filters, setFilters, warrantId, setWa
     }, []);
 
     const filteredSuspects = useMemo(() => {
-        const list = suspectsSeed.filter(s => {
+        return suspectsSeed.filter(s => {
             return Object.entries(filters).every(([key, selectedValues]) => {
                 if (selectedValues.length === 0) return true;
                 const suspectVal = s[key];
@@ -80,8 +80,11 @@ export default function Analisar({ onBack, filters, setFilters, warrantId, setWa
                 return selectedValues.includes(suspectVal);
             });
         });
-        setCurrentPage(1); // Reset page on filter change
-        return list;
+    }, [filters]);
+
+    // Reset page on filter change
+    React.useEffect(() => {
+        setCurrentPage(1);
     }, [filters]);
 
     const paginatedSuspects = useMemo(() => {

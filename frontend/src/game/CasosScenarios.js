@@ -22,9 +22,7 @@ export const CASOS_SCENARIOS = {
     "C001": CASO_1_SCENARIOS,
     "C002": CASO_2_SCENARIOS,
     "C003": CASO_3_SCENARIOS,
-    // C004-C008: Migrados para geração procedural (ProceduralGenerator.js)
-    "C009": Caso9Scenarios,
-    "C010": Caso10Scenarios,
+    // C004-C010: Migrados para geração procedural (ProceduralGenerator.js)
 };
 
 export const CASOS_CONFIG = {
@@ -72,12 +70,14 @@ export const CASOS_CONFIG = {
     "C009": {
         hasIntroVideo: false,
         isCompetitive: true,
+        procedural: true,
         title: "Caso Especial: Protocolo Fantasma",
         description: "Um artefato de inteligência da A.T.L.A.S. foi fragmentado e espalhado pelo submundo digital. Vários agentes foram mobilizados para a recuperação. Apenas o mais rápido garantirá a integridade do sistema."
     },
     "C010": {
         hasIntroVideo: false,
         isCompetitive: true,
+        procedural: true,
         title: "Caso Especial: O Cofre que Nunca Foi Aberto",
         description: "Um cofre ultra seguro internacional foi violado sem deixar rastros. Apenas o melhor e mais rápido agente poderá recuperar os documentos classificados antes dos concorrentes."
     },

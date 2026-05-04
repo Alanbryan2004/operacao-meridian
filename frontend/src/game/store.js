@@ -134,7 +134,7 @@ export function startRunIfNeeded(state, caseObj, forceReset = false, forcedScena
 
     if (caseObj.procedural) {
         // === CASO PROCEDURAL ===
-        proceduralScenario = generateProceduralScenario(caseObj);
+        proceduralScenario = generateProceduralScenario(caseObj, lobbyId);
         if (proceduralScenario) {
             scenario = proceduralScenario;
             interrogatoriosOverride = proceduralScenario.interrogatorios;
@@ -406,8 +406,8 @@ export const suspectsSeed = [
                 { id: "002_SEXO_02", texto: "A presença feminina era evidente pela voz e postura." }
             ],
             origem: [
-                { id: "002_ORIGEM_01", texto: "O jeito de falar lembrava alguém vindo da Ásia." },
-                { id: "002_ORIGEM_02", texto: "A testemunha comentou que o sotaque era asiático." }
+                { id: "002_ORIGEM_01", texto: "O jeito de falar lembrava alguém de origem asiática." },
+                { id: "002_ORIGEM_02", texto: "A testemunha comentou que a pessoa parecia ser da Ásia." }
             ],
             cabelo: [
                 { id: "002_CABELO_01", texto: "O cabelo era preto e bem alinhado." },
@@ -1471,7 +1471,7 @@ export const suspectsSeed = [
                 { id: "019_SEXO_02", texto: "Quem passou por aqui tinha presença claramente feminina." }
             ],
             origem: [
-                { id: "019_ORIGEM_01", texto: "O jeito de falar lembrava alguém vindo da Europa." },
+                { id: "019_ORIGEM_01", texto: "O jeito de falar lembrava alguém de origem europeia." },
                 { id: "019_ORIGEM_02", texto: "A testemunha comentou que a pessoa parecia ser da Europa." }
             ],
             cabelo: [

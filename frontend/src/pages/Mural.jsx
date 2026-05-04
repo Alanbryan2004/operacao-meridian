@@ -191,12 +191,20 @@ export default function Mural() {
         };
 
         const available = cases.filter(c => {
+            const diff = normalizeDiff(c.dificuldade);
+            
             if (c.id === "C000") {
                 if (state.runs["C000"]?.status === "WON" || completedIds.includes("C000")) return false;
             }
-            if (normalizeDiff(c.dificuldade) === "LENDARIO") return false;
-            if (completedIds.includes(c.id)) return false;
-            if (state.runs[c.id]?.status === "WON") return false;
+
+            // Missões de nível DIFICIL e LENDARIO são PVP/Competitivas e podem ser repetidas sempre.
+            const isReplayableByDiff = diff === "DIFICIL" || diff === "LENDARIO";
+
+            if (!isReplayableByDiff) {
+                if (completedIds.includes(c.id)) return false;
+                if (state.runs[c.id]?.status === "WON") return false;
+            }
+            
             return true;
         });
 

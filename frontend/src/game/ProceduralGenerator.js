@@ -29,21 +29,35 @@ const NPC_POOL = [
 ];
 
 // ── Helpers ──────────────────────────────────────────────────
-function shuffle(arr) {
+
+/** Simple seeded random number generator (Park-Miller) */
+function createSeededRng(seedStr) {
+    let seed = 0;
+    for (let i = 0; i < seedStr.length; i++) {
+        seed = (seed << 5) - seed + seedStr.charCodeAt(i);
+        seed |= 0; 
+    }
+    return function() {
+        seed = (seed * 16807) % 2147483647;
+        return (seed - 1) / 2147483646;
+    };
+}
+
+function shuffle(arr, rng) {
     const a = [...arr];
     for (let i = a.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
+        const j = Math.floor(rng() * (i + 1));
         [a[i], a[j]] = [a[j], a[i]];
     }
     return a;
 }
 
-function pickRandom(arr) {
-    return arr[Math.floor(Math.random() * arr.length)];
+function pickRandom(arr, rng) {
+    return arr[Math.floor(rng() * arr.length)];
 }
 
-function pickNRandom(arr, n) {
-    return shuffle(arr).slice(0, n);
+function pickNRandom(arr, n, rng) {
+    return shuffle(arr, rng).slice(0, n);
 }
 
 /** Get number of stages for a given difficulty level */
@@ -51,7 +65,7 @@ function getStageCount(nivel) {
     const n = (nivel || "").toUpperCase();
     if (n === "FACIL") return 6;
     if (n === "MEDIO") return 6;
-    if (n === "DIFICIL") return 11;
+    if (n === "DIFICIL") return 10;
     if (n === "LENDARIO") return 16;
     return 6;
 }
@@ -60,14 +74,12 @@ function getStageCount(nivel) {
 function getLastSuspectTipStage(nivel) {
     const n = (nivel || "").toUpperCase();
     if (n === "FACIL" || n === "MEDIO") return 4;   // stage 5 (0-indexed)
-    if (n === "DIFICIL") return 9;                    // stage 10
+    if (n === "DIFICIL") return 8;                    // stage 9
     if (n === "LENDARIO") return 14;                  // stage 15
     return 4;
 }
 
 // ── Route Builder ────────────────────────────────────────────
-// Builds a graph from DESTINATION_OPTIONS, then finds a path of
-// unique cities from startCity with the required length.
 
 function buildCityGraph() {
     const graph = {};
@@ -78,11 +90,7 @@ function buildCityGraph() {
     return graph;
 }
 
-/**
- * Find a route of `length` unique cities starting from startCity.
- * Uses randomised DFS to produce varied routes.
- */
-function findRoute(startCity, length, graph) {
+function findRoute(startCity, length, graph, rng) {
     const MAX_ATTEMPTS = 50;
     for (let attempt = 0; attempt < MAX_ATTEMPTS; attempt++) {
         const path = [startCity];
@@ -96,7 +104,7 @@ function findRoute(startCity, length, graph) {
             const candidates = [...neighbors].filter(c => !visited.has(c));
             if (candidates.length === 0) break;
 
-            const next = pickRandom(candidates);
+            const next = pickRandom(candidates, rng);
             path.push(next);
             visited.add(next);
         }
@@ -104,20 +112,16 @@ function findRoute(startCity, length, graph) {
         if (path.length === length) return path;
     }
 
-    // Fallback: if we can't find a perfect route, try shorter but valid
-    console.warn(`[ProceduralGenerator] Could not find route of length ${length} from ${startCity}. Attempting with relaxed constraints.`);
-    
-    // Attempt shorter routes from length-1 down to 3
+    // Fallback: Attempt shorter routes
     for (let l = length - 1; l >= 3; l--) {
-        const shorter = findRouteSync(startCity, l, graph);
+        const shorter = findRouteSync(startCity, l, graph, rng);
         if (shorter) return shorter;
     }
 
     return null;
 }
 
-/** Internal sync finder for fallback */
-function findRouteSync(startCity, length, graph) {
+function findRouteSync(startCity, length, graph, rng) {
     const path = [startCity];
     const visited = new Set([startCity]);
 
@@ -129,7 +133,7 @@ function findRouteSync(startCity, length, graph) {
         const candidates = [...neighbors].filter(c => !visited.has(c));
         if (candidates.length === 0) break;
 
-        const next = pickRandom(candidates);
+        const next = pickRandom(candidates, rng);
         path.push(next);
         visited.add(next);
     }
@@ -138,11 +142,8 @@ function findRouteSync(startCity, length, graph) {
 }
 
 // ── Travel Table Builder ─────────────────────────────────────
-// For each city in the route (except the last), provides 3 options:
-// - The correct next city
-// - 2 wrong options (reachable from current, NOT in route)
 
-function buildTravelTable(route, graph) {
+function buildTravelTable(route, graph, rng) {
     const table = {};
     const routeSet = new Set(route);
 
@@ -151,54 +152,54 @@ function buildTravelTable(route, graph) {
         const correct = route[i + 1];
         const neighbors = graph[current] ? [...graph[current]] : [];
 
-        // Wrong options: reachable but NOT in the route
         const wrongCandidates = neighbors.filter(c => c !== correct && !routeSet.has(c));
-        const wrongPicks = pickNRandom(wrongCandidates, 2);
+        const wrongPicks = pickNRandom(wrongCandidates, 2, rng);
 
-        // If we don't have enough wrong picks, use any non-correct reachable city
         while (wrongPicks.length < 2) {
             const fallback = neighbors.filter(c => c !== correct && !wrongPicks.includes(c));
             if (fallback.length > 0) {
-                wrongPicks.push(pickRandom(fallback));
+                wrongPicks.push(pickRandom(fallback, rng));
             } else {
                 break;
             }
         }
 
-        table[current] = shuffle([correct, ...wrongPicks]);
+        table[current] = shuffle([correct, ...wrongPicks], rng);
     }
 
     return table;
 }
 
 // ── Suspect Tip Scheduler ────────────────────────────────────
-// Selects which suspect tip categories to reveal at each stage.
-// Guarantees that by the last tip stage, only 1 suspect matches.
 
 const SUSPECT_TIP_CATEGORIES = ["sexo", "origem", "cabelo", "olhos", "esporte", "comida", "caracteristica"];
 
-/**
- * Given a suspect, pick categories to reveal across stages such that
- * after all are revealed, only 1 suspect in suspectsSeed matches.
- */
-function scheduleSuspectTips(suspect, totalTipStages) {
-    // We have 7 categories, pick up to totalTipStages of them
-    const numTips = Math.min(totalTipStages, SUSPECT_TIP_CATEGORIES.length);
+function scheduleSuspectTips(suspect, totalTipStages, nivel, rng) {
+    const n = (nivel || "").toUpperCase();
 
-    // Strategy: try random orderings until we find one that uniquely identifies
-    // the suspect after all tips are revealed.
+    if (n === "DIFICIL") {
+        const targetStages = [1, 3, 5, 8];
+        const categories = shuffle([...SUSPECT_TIP_CATEGORIES], rng).slice(0, 4);
+
+        return categories.map((cat, i) => {
+            const tips = suspect.dicas?.[cat];
+            if (!tips || tips.length === 0) return null;
+            const tip = pickRandom(tips, rng);
+            return { stage: targetStages[i], category: cat, tipId: tip.id, texto: tip.texto };
+        }).filter(Boolean);
+    }
+
+    const numTips = Math.min(totalTipStages, SUSPECT_TIP_CATEGORIES.length);
     const MAX_ATTEMPTS = 100;
 
     for (let attempt = 0; attempt < MAX_ATTEMPTS; attempt++) {
-        const categories = shuffle([...SUSPECT_TIP_CATEGORIES]).slice(0, numTips);
+        const categories = shuffle([...SUSPECT_TIP_CATEGORIES], rng).slice(0, numTips);
 
-        // Verify: after revealing all these categories, does only 1 suspect match?
         if (verifySuspectUniqueness(suspect, categories)) {
-            // Pick a random tip text for each category
             const schedule = categories.map((cat, i) => {
                 const tips = suspect.dicas?.[cat];
                 if (!tips || tips.length === 0) return null;
-                const tip = pickRandom(tips);
+                const tip = pickRandom(tips, rng);
                 return { stage: i, category: cat, tipId: tip.id, texto: tip.texto };
             }).filter(Boolean);
 
@@ -206,22 +207,16 @@ function scheduleSuspectTips(suspect, totalTipStages) {
         }
     }
 
-    // Fallback: just use all categories we can
-    console.warn("[ProceduralGenerator] Could not guarantee unique suspect with tip subset. Using all available.");
     const schedule = SUSPECT_TIP_CATEGORIES.slice(0, numTips).map((cat, i) => {
         const tips = suspect.dicas?.[cat];
         if (!tips || tips.length === 0) return null;
-        const tip = pickRandom(tips);
+        const tip = pickRandom(tips, rng);
         return { stage: i, category: cat, tipId: tip.id, texto: tip.texto };
     }).filter(Boolean);
 
     return schedule;
 }
 
-/**
- * Check if revealing the given categories for a suspect uniquely identifies them.
- * Maps category → suspect field for comparison.
- */
 function verifySuspectUniqueness(suspect, categories) {
     const catToField = {
         sexo: "sexo",
@@ -254,10 +249,9 @@ function verifySuspectUniqueness(suspect, categories) {
 
 // ── City Tip Selector ────────────────────────────────────────
 
-function selectCityTips(cityName, count, usedTipIds) {
+function selectCityTips(cityName, count, usedTipIds, rng) {
     const city = CIDADES.find(c => c.cidade === cityName);
     if (!city || !city.dicas) {
-        // Fallback generic tips
         return Array.from({ length: count }, (_, i) => ({
             id: `GENERIC_${cityName}_${i}`,
             texto: `Você está investigando em ${cityName}. Continue procurando pistas.`
@@ -265,9 +259,8 @@ function selectCityTips(cityName, count, usedTipIds) {
     }
 
     const available = city.dicas.filter(d => !usedTipIds.has(d.id));
-    const selected = pickNRandom(available, count);
+    const selected = pickNRandom(available, count, rng);
 
-    // Track used tips
     if (selected.length < count) {
         const fallbacks = [
             "Ouvi dizer que o suspeito seguiu para um país distante.",
@@ -288,8 +281,8 @@ function selectCityTips(cityName, count, usedTipIds) {
 
 // ── NPC Assembly ─────────────────────────────────────────────
 
-function pick3Npcs() {
-    const shuffled = shuffle(NPC_POOL);
+function pick3Npcs(rng) {
+    const shuffled = shuffle(NPC_POOL, rng);
     const selected = [];
     const usedLocs = new Set();
 
@@ -306,68 +299,50 @@ function pick3Npcs() {
 
 // ── Main Generator ───────────────────────────────────────────
 
-/**
- * Generate a procedural scenario for a given case.
- *
- * @param {object} caseObj - The case seed object (from seed.js)
- * @returns {object|null} - A scenario compatible with activeScenario in Caso.jsx
- */
-export function generateProceduralScenario(caseObj) {
+export function generateProceduralScenario(caseObj, seed = null) {
+    const rng = seed ? createSeededRng(seed) : Math.random;
+    
     const nivel = (caseObj.dificuldade || caseObj.nivel || "FACIL").toUpperCase();
     const stageCount = getStageCount(nivel);
     const lastSuspectTipStageIdx = getLastSuspectTipStage(nivel);
     const startCity = caseObj.localInicial?.cidade;
 
-    if (!startCity) {
-        console.error("[ProceduralGenerator] Case has no localInicial.cidade");
-        return null;
-    }
+    if (!startCity) return null;
 
-    // 1. Pick a random suspect (must have dicas)
+    // 1. Pick suspect
     const eligibleSuspects = suspectsSeed.filter(s => s.dicas && Object.keys(s.dicas).length > 0);
-    if (eligibleSuspects.length === 0) {
-        console.error("[ProceduralGenerator] No suspects with dicas available.");
-        return null;
-    }
-    const suspect = pickRandom(eligibleSuspects);
+    if (eligibleSuspects.length === 0) return null;
+    const suspect = pickRandom(eligibleSuspects, rng);
 
-    // 2. Build route (all unique cities)
+    // 2. Build route
     const graph = buildCityGraph();
-    const route = findRoute(startCity, stageCount, graph);
-    if (!route) {
-        console.error(`[ProceduralGenerator] Could not build route of ${stageCount} from ${startCity}`);
-        return null;
-    }
+    const route = findRoute(startCity, stageCount, graph, rng);
+    if (!route) return null;
 
     const finalCity = route[route.length - 1];
 
-    // 3. Build travel table (3 options per non-final stage)
-    const travelTable = buildTravelTable(route, graph);
+    // 3. Build travel table
+    const travelTable = buildTravelTable(route, graph, rng);
 
-    // 4. Schedule suspect tips (stages 0 to lastSuspectTipStageIdx)
+    // 4. Schedule suspect tips
     const numSuspectTipStages = lastSuspectTipStageIdx + 1;
-    const suspectTipSchedule = scheduleSuspectTips(suspect, numSuspectTipStages);
+    const suspectTipSchedule = scheduleSuspectTips(suspect, numSuspectTipStages, nivel, rng);
 
-    // 5. Build interrogatorios for each stage
+    // 5. Build interrogatorios
     const usedCityTipIds = new Set();
     const interrogatorios = [];
-    const arrestNpcIndex = Math.floor(Math.random() * 3); // 0, 1, or 2
+    const arrestNpcIndex = Math.floor(rng() * 3);
 
     for (let stageIdx = 0; stageIdx < stageCount; stageIdx++) {
         const city = route[stageIdx];
         const isFinalStage = (stageIdx === stageCount - 1);
-        const npcs = pick3Npcs();
+        const npcs = pick3Npcs(rng);
 
-        // Get suspect tip for this stage (if any)
         const suspectTip = suspectTipSchedule.find(t => t.stage === stageIdx);
-        // Pick which NPC gets the suspect tip (random)
-        const suspectTipNpcIdx = suspectTip ? Math.floor(Math.random() * 3) : -1;
+        const suspectTipNpcIdx = suspectTip ? Math.floor(rng() * 3) : -1;
 
-        // City tips: about the NEXT city (destination), not the current one.
-        // This helps the player figure out WHERE the suspect went.
-        // Final stage: tips about the current city (no next destination).
         const tipCity = isFinalStage ? city : route[stageIdx + 1];
-        const cityTips = selectCityTips(tipCity, 3, usedCityTipIds);
+        const cityTips = selectCityTips(tipCity, 3, usedCityTipIds, rng);
 
         for (let npcIdx = 0; npcIdx < 3; npcIdx++) {
             const npc = npcs[npcIdx];
@@ -381,10 +356,8 @@ export function generateProceduralScenario(caseObj) {
             } else if (isFinalStage) {
                 pista = `Houve muita agitação por aqui, mas o suspeito parece estar escondido em algum lugar desta cidade. Procure nos arredores!`;
             } else if (hasSuspectTip) {
-                // Combined: Exactly 1 Location Tip + 1 Suspect Tip
                 pista = `${cityTip.texto} Além disso: ${suspectTip.texto}`;
             } else {
-                // Exactly 1 Location Tip
                 pista = cityTip.texto;
             }
 
@@ -400,9 +373,8 @@ export function generateProceduralScenario(caseObj) {
         }
     }
 
-    // 6. Build the scenario object
-    const scenario = {
-        id: `${caseObj.id}_PROC_${Date.now()}`,
+    return {
+        id: `${caseObj.id}_PROC_${seed || Date.now()}`,
         suspectId: suspect.id,
         finalCity,
         route,
