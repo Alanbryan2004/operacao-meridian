@@ -562,11 +562,15 @@ export default function Caso() {
                 const isSuccess = run.mandadoEmitido && warrantIdSelected === targetId;
                 setDarkenScreen(true);
                 setVideoEnded(false);
+                setShowCaptionDelay(false);
                 setTimeout(() => {
                     setShowSuspectVideo(true);
                     setActiveVideo(isSuccess ? "/Videos/suspeitopreso.mp4" : "/Videos/suspeitonaopreso.mp4");
                     setDarkenScreen(false);
                     setViewMode("ARRIVAL");
+                    
+                    // Mostra as legendas apenas na parte final do vídeo (após 10s)
+                    setTimeout(() => setShowCaptionDelay(true), 10000);
                 }, 800);
 
                 if (isSuccess) {

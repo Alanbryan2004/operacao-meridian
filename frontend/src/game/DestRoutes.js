@@ -686,6 +686,17 @@ export const DESTINATION_OPTIONS = [
     { id: "SYD_AUCK", pais: "Nova Zelândia", cidade: "Auckland", origem: "Sydney", coords: { x: 375, y: 175 }, flag: "🇳🇿" },
     { id: "PEQ_XAN", pais: "China", cidade: "Xangai", origem: "Pequim", coords: { x: 330, y: 80 }, flag: "🇨🇳" },
     { id: "BUE_LIMA", pais: "Peru", cidade: "Lima", origem: "Buenos Aires", coords: { x: 90, y: 130 }, flag: "🇵🇪" },
+    
+    // --- CONEXÕES GLOBAIS DA OCEANIA (Evita becos sem saída no gerador procedural) ---
+    { id: "SYD_CING", pais: "Cingapura", cidade: "Cingapura", origem: "Sydney", coords: { x: 300, y: 110 }, flag: "🇸🇬" },
+    { id: "SYD_TK", pais: "Japão", cidade: "Tóquio", origem: "Sydney", coords: { x: 344, y: 68 }, flag: "🇯🇵" },
+    { id: "SYD_LA", pais: "Estados Unidos", cidade: "Los Angeles", origem: "Sydney", coords: { x: 55, y: 65 }, flag: "🇺🇸" },
+    { id: "AUCK_SA", pais: "Chile", cidade: "Santiago", origem: "Auckland", coords: { x: 110, y: 160 }, flag: "🇨🇱" },
+    { id: "AUCK_LA", pais: "Estados Unidos", cidade: "Los Angeles", origem: "Auckland", coords: { x: 55, y: 65 }, flag: "🇺🇸" },
+    { id: "SUV_TK", pais: "Japão", cidade: "Tóquio", origem: "Suva", coords: { x: 344, y: 68 }, flag: "🇯🇵" },
+    { id: "SUV_LA", pais: "Estados Unidos", cidade: "Los Angeles", origem: "Suva", coords: { x: 55, y: 65 }, flag: "🇺🇸" },
+    { id: "PM_CING", pais: "Cingapura", cidade: "Cingapura", origem: "Port Moresby", coords: { x: 300, y: 110 }, flag: "🇸🇬" },
+    { id: "PM_JAC", pais: "Indonésia", cidade: "Jacarta", origem: "Port Moresby", coords: { x: 310, y: 118 }, flag: "🇮🇩" },
 ];
 
 export const ORIGIN_COORDS = {
