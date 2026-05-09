@@ -55,7 +55,7 @@ export async function saveGameState(state, slot = 0) {
             avatar_key: player.avatarUrl || null,
             rank: player.nivelTitulo || "Novato",
             xp: player.xp || 0,
-            level: player.level || 1,
+            level: parseInt(player.avatar?.id || player.level || 1, 10),
             total_capturas: totalCapturas,
             hard_wins: player.hardWins || 0,
             hard_losses: player.hardLosses || 0,
