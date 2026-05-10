@@ -91,31 +91,57 @@ function buildCityGraph() {
 }
 
 function findRoute(startCity, length, graph, rng) {
-    const MAX_ATTEMPTS = 50;
-    for (let attempt = 0; attempt < MAX_ATTEMPTS; attempt++) {
-        const path = [startCity];
-        const visited = new Set([startCity]);
+    // DFS com backtracking — garante encontrar rota se existir
+    const path = [startCity];
+    const visited = new Set([startCity]);
 
-        while (path.length < length) {
-            const current = path[path.length - 1];
-            const neighbors = graph[current];
-            if (!neighbors || neighbors.size === 0) break;
+    function dfs() {
+        if (path.length === length) return true;
 
-            const candidates = [...neighbors].filter(c => !visited.has(c));
-            if (candidates.length === 0) break;
+        const current = path[path.length - 1];
+        const neighbors = graph[current];
+        if (!neighbors || neighbors.size === 0) return false;
 
-            const next = pickRandom(candidates, rng);
+        // Embaralha candidatos com o RNG para determinismo
+        const candidates = shuffle([...neighbors].filter(c => !visited.has(c)), rng);
+
+        for (const next of candidates) {
             path.push(next);
             visited.add(next);
+            if (dfs()) return true;
+            // Backtrack
+            path.pop();
+            visited.delete(next);
         }
 
-        if (path.length === length) return path;
+        return false;
     }
 
-    // Fallback: Attempt shorter routes
+    if (dfs()) return path;
+
+    // Fallback: tenta rotas mais curtas
     for (let l = length - 1; l >= 3; l--) {
-        const shorter = findRouteSync(startCity, l, graph, rng);
-        if (shorter) return shorter;
+        path.length = 0;
+        path.push(startCity);
+        visited.clear();
+        visited.add(startCity);
+        
+        const dfsShort = () => {
+            if (path.length === l) return true;
+            const cur = path[path.length - 1];
+            const nb = graph[cur];
+            if (!nb || nb.size === 0) return false;
+            const cands = shuffle([...nb].filter(c => !visited.has(c)), rng);
+            for (const nx of cands) {
+                path.push(nx);
+                visited.add(nx);
+                if (dfsShort()) return true;
+                path.pop();
+                visited.delete(nx);
+            }
+            return false;
+        };
+        if (dfsShort()) return path;
     }
 
     return null;

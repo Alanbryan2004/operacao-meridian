@@ -34,6 +34,13 @@ export default function CompetitiveLobby() {
     const [errorMsg, setErrorMsg] = useState(null);
     const [isExpiredWithoutPlayers, setIsExpiredWithoutPlayers] = useState(false);
 
+    // --- MODO DE CONEXÃO ---
+    const [joinMode, setJoinMode] = useState(null); // null, "PUBLIC", "PRIVATE_CREATE", "PRIVATE_JOIN"
+    const [privateIdInput, setPrivateIdInput] = useState("");
+    const [showPrivateInput, setShowPrivateInput] = useState(false);
+    const [privateWaitSeconds, setPrivateWaitSeconds] = useState(60); // Tempo de espera da sala privada
+    const [showPrivateTimeSelect, setShowPrivateTimeSelect] = useState(false);
+
     const playersRef = useRef([]);
     const statePlayerRef = useRef(state.player);
 
@@ -46,24 +53,77 @@ export default function CompetitiveLobby() {
     }, [state.player]);
 
     const fetchOrCreateLobby = useCallback(async () => {
+        if (!joinMode) return; // Só busca se tiver escolhido o modo
+        
         if (!state.player?.supabaseId) {
             setStatus("Erro: Agente não identificado. Verifique seu login.");
             return;
         }
 
         try {
-            console.log("[ATLAS] Buscando lobby...");
-            setStatus("Buscando outros jogadores para este caso..");
+            console.log(`[ATLAS] Buscando lobby (Modo: ${joinMode})...`);
+            setStatus(
+                joinMode === "PRIVATE_JOIN" ? "Buscando sala privada..." 
+                : joinMode === "PRIVATE_CREATE" ? "Criando sala privada..."
+                : "Buscando parceiros na Lista A.T.L.A.S.."
+            );
+
+            // --- Modo PRIVATE_CREATE: cria direto sem buscar ---
+            if (joinMode === "PRIVATE_CREATE") {
+                const { data: newLobby, error: createError } = await supabase
+                    .from("competitive_lobbies")
+                    .insert([{ case_id: caseId, status: "waiting", wait_seconds: privateWaitSeconds }])
+                    .select()
+                    .single();
+                
+                if (createError) {
+                    console.error("[ATLAS] Erro createLobby:", createError);
+                    setErrorMsg(`Erro ao criar sala: ${createError.message}`);
+                    return;
+                }
+
+                setStatus("Sala privada criada! Compartilhe o código.");
+                console.log("[ATLAS] Sala privada criada:", newLobby.id);
+                
+                const { error: joinError } = await supabase
+                    .from("competitive_players")
+                    .upsert([{ lobby_id: newLobby.id, player_id: state.player.supabaseId }], { onConflict: "lobby_id,player_id" });
+                
+                if (joinError) {
+                    setErrorMsg(`Erro ao entrar na sala: ${joinError.message}`);
+                    return;
+                }
+
+                setLobby(newLobby);
+                return;
+            }
 
             const tenMinutesAgo = new Date(Date.now() - 10 * 60 * 1000).toISOString();
+            const sixtySecondsAgo = new Date(Date.now() - 60 * 1000).toISOString();
 
             const findLobby = async () => {
+                if (joinMode === "PRIVATE_JOIN") {
+                    // UUID não suporta ilike — busca todos os lobbies recentes e filtra pelo código no cliente
+                    const code = privateIdInput.trim().toLowerCase();
+                    const { data: lobbies, error } = await supabase
+                        .from("competitive_lobbies")
+                        .select("*")
+                        .eq("case_id", caseId)
+                        .eq("status", "waiting")
+                        .gt("created_at", tenMinutesAgo)
+                        .order("created_at", { ascending: true });
+                    
+                    if (error) return { data: null, error };
+                    const match = (lobbies || []).find(l => l.id.toLowerCase().startsWith(code));
+                    return { data: match || null, error: null };
+                }
+
                 return await supabase
                     .from("competitive_lobbies")
                     .select("*")
                     .eq("case_id", caseId)
                     .eq("status", "waiting")
-                    .gt("created_at", tenMinutesAgo)
+                    .gt("created_at", sixtySecondsAgo)
                     .order("created_at", { ascending: true })
                     .limit(1)
                     .maybeSingle();
@@ -77,10 +137,10 @@ export default function CompetitiveLobby() {
                 return;
             }
 
-            // 🔥 NOVO: Lógica de Retry com Jitter (evita que dois jogadores criem salas ao mesmo tempo)
-            if (!fetchLobby) {
-                console.log("[ATLAS] Nenhum lobby encontrado. Aguardando sincronia...");
-                const jitter = Math.floor(Math.random() * 1500) + 500; // 500ms a 2000ms
+            // Lógica de Retry com Jitter apenas para buscas públicas
+            if (!fetchLobby && joinMode === "PUBLIC") {
+                console.log("[ATLAS] Nenhum lobby público encontrado. Aguardando sincronia...");
+                const jitter = Math.floor(Math.random() * 1500) + 500; 
                 await new Promise(r => setTimeout(r, jitter));
                 
                 const retry = await findLobby();
@@ -89,43 +149,50 @@ export default function CompetitiveLobby() {
 
             let targetLobby = fetchLobby;
 
-            if (targetLobby) {
-                const created = new Date(targetLobby.created_at);
-                const ageSeconds = (new Date() - created) / 1000;
-                
-                if (ageSeconds > 60) {
-                    console.log("[ATLAS] Lobby encontrado já passou de 60s. Criando um novo.");
-                    targetLobby = null;
+            if (!targetLobby && joinMode === "PRIVATE_JOIN") {
+                // Tenta ver se a sala privada já está ativa (para entrar como retardatário)
+                const code = privateIdInput.trim().toLowerCase();
+                const { data: activeLobbies } = await supabase
+                    .from("competitive_lobbies")
+                    .select("*")
+                    .eq("case_id", caseId)
+                    .eq("status", "active")
+                    .gt("created_at", tenMinutesAgo);
+
+                const activeLobby = (activeLobbies || []).find(l => l.id.toLowerCase().startsWith(code));
+
+                if (activeLobby) {
+                    targetLobby = activeLobby;
+                } else {
+                    setErrorMsg("Sala não encontrada. Verifique o código e tente novamente.");
+                    setJoinMode(null);
+                    return;
                 }
             }
 
-            if (!targetLobby) {
+            if (!targetLobby && joinMode === "PUBLIC") {
                 const { data: activeLobby } = await supabase
                     .from("competitive_lobbies")
                     .select("*")
                     .eq("case_id", caseId)
                     .eq("status", "active")
-                    .gt("created_at", tenMinutesAgo)
+                    .gt("created_at", sixtySecondsAgo)
                     .order("created_at", { ascending: false })
                     .limit(1)
                     .maybeSingle();
                 
                 if (activeLobby) {
-                    const created = new Date(activeLobby.created_at);
-                    const ageSeconds = (new Date() - created) / 1000;
-                    if (ageSeconds < 60) {
-                        console.log("[ATLAS] Lobby ativo recente encontrado. Entrando como retardatário.");
-                        targetLobby = activeLobby;
-                    }
+                    console.log("[ATLAS] Lobby ativo recente encontrado. Entrando como retardatário.");
+                    targetLobby = activeLobby;
                 }
             }
 
-            if (!targetLobby) {
+            if (!targetLobby && (joinMode === "PUBLIC")) {
                 console.log("[ATLAS] Criando novo lobby...");
                 setStatus("Iniciando novo canal A.T.L.A.S...");
                 const { data: newLobby, error: createError } = await supabase
                     .from("competitive_lobbies")
-                    .insert([{ case_id: caseId, status: "waiting" }])
+                    .insert([{ case_id: caseId, status: "waiting", wait_seconds: 60 }])
                     .select()
                     .single();
                 
@@ -136,6 +203,8 @@ export default function CompetitiveLobby() {
                 }
                 targetLobby = newLobby;
             }
+
+            if (!targetLobby) return;
 
             setStatus("Agente Sincronizado. Entrando na Missão...");
 
@@ -156,11 +225,11 @@ export default function CompetitiveLobby() {
             console.error("[ATLAS] Erro inesperado:", e);
             setErrorMsg("Ocorreu um erro inesperado ao conectar à rede.");
         }
-    }, [caseId, state.player?.supabaseId]);
+    }, [caseId, state.player?.supabaseId, joinMode, privateIdInput]);
 
     useEffect(() => {
-        fetchOrCreateLobby();
-    }, [fetchOrCreateLobby]);
+        if (joinMode) fetchOrCreateLobby();
+    }, [fetchOrCreateLobby, joinMode]);
 
     // 🔥 NOVO: Efeito reativo para navegação
     useEffect(() => {
@@ -218,7 +287,8 @@ export default function CompetitiveLobby() {
             const now = new Date();
             const created = new Date(lobby.created_at);
             const elapsed = (now - created) / 1000;
-            const diff = Math.max(0, Math.floor(60 - elapsed));
+            const waitDuration = lobby.wait_seconds || 60;
+            const diff = Math.max(0, Math.floor(waitDuration - elapsed));
             
             setTimeLeft(diff);
             if (diff <= 0) {
@@ -283,6 +353,102 @@ export default function CompetitiveLobby() {
             nav(`/caso/${caseId}/?mode=competitive&scenario=${scenarioId}&lobbyId=${lobbyId}&reset=true`);
         }, 800);
     };
+
+    if (!joinMode) {
+        return (
+            <div style={{
+                minHeight: "100dvh", width: "100vw", background: "radial-gradient(circle at center, #0a1f2e 0%, #000 80%)",
+                display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", color: "#fff", padding: 24
+            }}>
+                <div style={{ fontSize: 14, color: "#00ffcc", letterSpacing: 4, marginBottom: 12 }}>PROTOCOLO FANTASMA</div>
+                <h2 style={{ fontSize: 22, fontWeight: 900, marginBottom: 10, textShadow: "0 0 10px rgba(0,255,204,0.3)" }}>ESCOLHA SUA SINTONIA</h2>
+                <p style={{ fontSize: 11, opacity: 0.4, marginBottom: 30, maxWidth: 280, textAlign: "center", lineHeight: 1.5 }}>Jogue com qualquer agente ou crie uma sala exclusiva para seus aliados.</p>
+                
+                {/* Sala Pública */}
+                <button 
+                    onClick={() => setJoinMode("PUBLIC")}
+                    style={{ width: "100%", maxWidth: 300, padding: 18, borderRadius: 14, border: "1px solid rgba(0,255,204,0.4)", background: "rgba(0,255,204,0.1)", color: "#00ffcc", fontSize: 14, fontWeight: 800, letterSpacing: 2, cursor: "pointer", marginBottom: 12 }}
+                >
+                    🌐 SALA PÚBLICA
+                </button>
+
+                {/* Criar Sala Privada */}
+                {!showPrivateTimeSelect ? (
+                    <button 
+                        onClick={() => setShowPrivateTimeSelect(true)}
+                        style={{ width: "100%", maxWidth: 300, padding: 16, borderRadius: 14, border: "1px solid rgba(255,190,90,0.35)", background: "rgba(255,190,90,0.08)", color: "#ffbe5a", fontSize: 13, fontWeight: 800, letterSpacing: 2, cursor: "pointer", marginBottom: 12 }}
+                    >
+                        🔒 CRIAR SALA PRIVADA
+                    </button>
+                ) : (
+                    <div style={{ width: "100%", maxWidth: 300, background: "rgba(255,190,90,0.06)", border: "1px solid rgba(255,190,90,0.25)", borderRadius: 16, padding: 16, marginBottom: 12, animation: "fadeIn 0.3s ease" }}>
+                        <div style={{ fontSize: 11, color: "#ffbe5a", letterSpacing: 2, marginBottom: 12, fontWeight: 700, textAlign: "center" }}>⏱️ TEMPO DE ESPERA</div>
+                        <div style={{ display: "flex", gap: 8, justifyContent: "center", marginBottom: 14 }}>
+                            {[1, 2, 3, 4, 5].map(min => (
+                                <button 
+                                    key={min}
+                                    onClick={() => setPrivateWaitSeconds(min * 60)}
+                                    style={{ 
+                                        width: 44, height: 44, borderRadius: 12, border: privateWaitSeconds === min * 60 ? "2px solid #ffbe5a" : "1px solid rgba(255,255,255,0.15)", 
+                                        background: privateWaitSeconds === min * 60 ? "rgba(255,190,90,0.2)" : "rgba(255,255,255,0.04)", 
+                                        color: privateWaitSeconds === min * 60 ? "#ffbe5a" : "rgba(255,255,255,0.5)", 
+                                        fontSize: 16, fontWeight: 900, cursor: "pointer",
+                                        transition: "all 0.2s ease"
+                                    }}
+                                >
+                                    {min}
+                                </button>
+                            ))}
+                        </div>
+                        <div style={{ fontSize: 10, opacity: 0.4, textAlign: "center", marginBottom: 12 }}>{privateWaitSeconds / 60} minuto{privateWaitSeconds > 60 ? "s" : ""} de espera</div>
+                        <button 
+                            onClick={() => setJoinMode("PRIVATE_CREATE")}
+                            style={{ width: "100%", padding: 14, borderRadius: 12, border: "none", background: "linear-gradient(135deg, #ffbe5a, #e8a040)", color: "#000", fontSize: 13, fontWeight: 800, letterSpacing: 2, cursor: "pointer" }}
+                        >
+                            CRIAR SALA ❯
+                        </button>
+                    </div>
+                )}
+
+                {/* Entrar em Sala Privada */}
+                {!showPrivateInput ? (
+                    <button 
+                        onClick={() => setShowPrivateInput(true)}
+                        style={{ width: "100%", maxWidth: 300, padding: 16, borderRadius: 14, border: "1px solid rgba(255,255,255,0.1)", background: "transparent", color: "rgba(255,255,255,0.5)", fontSize: 12, letterSpacing: 2, cursor: "pointer" }}
+                    >
+                        🔑 ENTRAR COM CÓDIGO
+                    </button>
+                ) : (
+                    <div style={{ width: "100%", maxWidth: 300, display: "flex", flexDirection: "column", gap: 10, animation: "fadeIn 0.3s ease" }}>
+                        <input 
+                            value={privateIdInput}
+                            onChange={e => setPrivateIdInput(e.target.value)}
+                            placeholder="CÓDIGO DA SALA (EX: 42A360E9)"
+                            autoFocus
+                            style={{ width: "100%", padding: 16, borderRadius: 12, border: "1px solid rgba(255,255,255,0.2)", background: "rgba(0,0,0,0.5)", color: "#fff", fontSize: 14, textAlign: "center", outline: "none", boxSizing: "border-box", textTransform: "uppercase", letterSpacing: 3 }}
+                        />
+                        <button 
+                            onClick={() => {
+                                if (privateIdInput.trim()) setJoinMode("PRIVATE_JOIN");
+                                else setShowPrivateInput(false);
+                            }}
+                            style={{ width: "100%", padding: 16, borderRadius: 12, border: "none", background: "linear-gradient(135deg, #fff, #ddd)", color: "#000", fontSize: 14, fontWeight: 800, letterSpacing: 2, cursor: "pointer" }}
+                        >
+                            CONECTAR ❯
+                        </button>
+                    </div>
+                )}
+                
+                <button 
+                    onClick={() => nav("/mural")}
+                    style={{ marginTop: 40, background: "transparent", color: "rgba(255,255,255,0.4)", border: "none", fontSize: 12, cursor: "pointer", textDecoration: "underline" }}
+                >
+                    Cancelar e Voltar
+                </button>
+                <style>{`@keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }`}</style>
+            </div>
+        );
+    }
 
     if (!lobby) return (
         <div style={{ background: "#000", height: "100vh", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", color: "#00ffcc", fontFamily: "monospace", textAlign: "center", padding: 20 }}>
