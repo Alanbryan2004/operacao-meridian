@@ -125,3 +125,31 @@ export function getCargoByNivel(nivel) {
     return CARGOS.find(c => c.nivel === nivel) || CARGOS[0];
 }
 
+// ── 🏆 Bônus de Promoção por Fase ──
+export const BONUS_POR_FASE = {
+    1:  { moedas: 1000,  label: "Recruta" },
+    2:  { moedas: 5000,  label: "Formação" },
+    3:  { moedas: 10000, label: "Primeira Autoridade" },
+    4:  { moedas: 15000, label: "Operacional Avançado" },
+    5:  { moedas: 20000, label: "Elite" },
+    6:  { moedas: 25000, label: "Supervisão" },
+    7:  { moedas: 30000, label: "Comando" },
+    8:  { moedas: 35000, label: "Diretoria" },
+    9:  { moedas: 40000, label: "Alto Comando" },
+    10: { moedas: 50000, label: "Lendário" },
+};
+
+// Itens possíveis como bônus de promoção
+export const PROMOTION_ITEMS = [
+    "fonte_anonima",
+    "satelite_atlas",
+    "dossie_sigiloso",
+    "licenca_tatica",
+];
+
+/**
+ * Retorna o bônus de promoção para uma determinada fase.
+ */
+export function getPromotionBonus(fase) {
+    return BONUS_POR_FASE[fase] || BONUS_POR_FASE[1];
+}

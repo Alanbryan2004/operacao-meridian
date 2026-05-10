@@ -1,9 +1,11 @@
 import React, { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useGame } from "../game/GameProvider";
-import { getCargoByXp, getProximoCargo, getCargoByNivel } from "../game/Cargos";
+import { getCargoByXp, getProximoCargo, getCargoByNivel, getPromotionBonus, PROMOTION_ITEMS } from "../game/Cargos";
 import { getPromotionQuestion } from "../game/promotionQuestions";
 import { saveGame } from "../game/store";
+import { inventoryService } from "../game/inventoryService";
+import { ITEMS_DATA } from "../game/itemsData";
 
 /**
  * Fases:
@@ -22,6 +24,7 @@ export default function PromocaoScreen() {
     const [selectedAlt, setSelectedAlt] = useState(null);
     const [question, setQuestion] = useState(null);
     const [novoCargo, setNovoCargo] = useState(null);
+    const [bonusData, setBonusData] = useState(null); // { moedas, itemKey, itemNome }
 
     const player = state?.player;
     const cargoAtual = player ? getCargoByNivel(player.nivel || 1) : null;
@@ -46,9 +49,14 @@ export default function PromocaoScreen() {
     function handleAnswer(idx) {
         setSelectedAlt(idx);
 
-        setTimeout(() => {
+        setTimeout(async () => {
             if (idx === question.correta) {
-                // Promovido! Atualiza cargo no state
+                // Calcula bônus baseado na fase do novo cargo
+                const bonus = getPromotionBonus(novoCargo.fase);
+                const randomItemKey = PROMOTION_ITEMS[Math.floor(Math.random() * PROMOTION_ITEMS.length)];
+                const itemInfo = ITEMS_DATA[randomItemKey];
+
+                // Promovido! Atualiza cargo + dinheiro no state
                 const next = {
                     ...state,
                     player: {
@@ -57,10 +65,24 @@ export default function PromocaoScreen() {
                         nivelTitulo: novoCargo.titulo,
                         classe: novoCargo.classe,
                         classeEmoji: novoCargo.emoji,
+                        dinheiro: (state.player.dinheiro || 0) + bonus.moedas,
                     }
                 };
                 replaceState(saveGame(next));
-                setFase("ACERTOU");
+
+                // Salva item no inventário (Supabase)
+                if (state.player.supabaseId) {
+                    inventoryService.addItem(state.player.supabaseId, randomItemKey, 1)
+                        .catch(e => console.warn("[Promoção] Erro ao adicionar item:", e));
+                }
+
+                setBonusData({
+                    moedas: bonus.moedas,
+                    itemKey: randomItemKey,
+                    itemNome: itemInfo?.nome || randomItemKey,
+                    itemImg: itemInfo?.imagem || "/Itens/FonteAnonima.png",
+                });
+                setFase("BONUS");
             } else {
                 setFase("ERROU");
             }
@@ -190,6 +212,72 @@ export default function PromocaoScreen() {
                                 </button>
                             );
                         })}
+                    </div>
+                )}
+
+                {/* ═══════ FASE: BONUS (Moedas + Item) ═══════ */}
+                {fase === "BONUS" && bonusData && (
+                    <div className="promo-panel promo-fade-in" style={{ textAlign: "center" }}>
+                        <style>{`
+                            @keyframes promoCoinPulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.12)} }
+                            @keyframes promoItemGlow { 0%,100%{box-shadow:0 0 15px rgba(0,255,204,0.2)} 50%{box-shadow:0 0 35px rgba(0,255,204,0.5)} }
+                        `}</style>
+                        <div style={{ fontSize: 48, marginBottom: 8 }}>🎁</div>
+                        <div style={{ fontSize: 10, letterSpacing: 3, opacity: 0.5, marginBottom: 6 }}>BÔNUS DE PROMOÇÃO</div>
+                        <div style={{ fontSize: 20, fontWeight: 900, color: "#ffd700", marginBottom: 4 }}>
+                            Recompensa Desbloqueada!
+                        </div>
+                        <div style={{ fontSize: 12, opacity: 0.5, marginBottom: 24 }}>
+                            Fase {novoCargo.fase} — {novoCargo.classe}
+                        </div>
+
+                        {/* Moedas */}
+                        <div style={{
+                            padding: 16, borderRadius: 14,
+                            background: "rgba(255,215,0,0.08)", border: "1px solid rgba(255,215,0,0.25)",
+                            marginBottom: 14, display: "flex", alignItems: "center", gap: 14,
+                        }}>
+                            <div style={{ fontSize: 36, animation: "promoCoinPulse 1.5s ease-in-out infinite" }}>💰</div>
+                            <div style={{ textAlign: "left", flex: 1 }}>
+                                <div style={{ fontSize: 10, opacity: 0.5, letterSpacing: 2 }}>BÔNUS EM MOEDAS</div>
+                                <div style={{ fontSize: 22, fontWeight: 900, color: "#ffd700" }}>
+                                    +R$ {bonusData.moedas.toLocaleString("pt-BR")}
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Item aleatório */}
+                        <div style={{
+                            padding: 16, borderRadius: 14,
+                            background: "rgba(0,255,204,0.05)", border: "1px solid rgba(0,255,204,0.2)",
+                            marginBottom: 24, display: "flex", alignItems: "center", gap: 14,
+                            animation: "promoItemGlow 2s ease-in-out infinite",
+                        }}>
+                            <img
+                                src={bonusData.itemImg}
+                                alt={bonusData.itemNome}
+                                style={{ width: 48, height: 48, borderRadius: 10, objectFit: "cover", background: "rgba(255,255,255,0.05)" }}
+                            />
+                            <div style={{ textAlign: "left", flex: 1 }}>
+                                <div style={{ fontSize: 10, opacity: 0.5, letterSpacing: 2 }}>ITEM TÁTICO</div>
+                                <div style={{ fontSize: 16, fontWeight: 800, color: "#00ffcc" }}>
+                                    {bonusData.itemNome} x1
+                                </div>
+                            </div>
+                        </div>
+
+                        <button
+                            onClick={() => setFase("ACERTOU")}
+                            style={{
+                                width: "100%", padding: "14px",
+                                borderRadius: 14, border: "1px solid rgba(0,255,204,0.3)",
+                                background: "linear-gradient(135deg, rgba(0,255,204,0.12), rgba(0,255,204,0.05))",
+                                color: "#00ffcc", cursor: "pointer", fontSize: 14, fontWeight: 800,
+                                letterSpacing: 1,
+                            }}
+                        >
+                            PROSSEGUIR ▶
+                        </button>
                     </div>
                 )}
 

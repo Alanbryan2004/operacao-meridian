@@ -12,6 +12,7 @@ import HallDaFama from "./pages/HallDaFama";
 import AvatarCreator from "./pages/AvatarCreator";
 import Loja from "./pages/Loja";
 import CompetitiveLobby from "./pages/CompetitiveLobby";
+import Conquistas from "./pages/Conquistas";
 import AudioManager from "./components/AudioManager";
 import { GameProvider } from "./game/GameProvider";
 import { loadGame } from "./game/store";
@@ -53,6 +54,7 @@ export default function App() {
           <Route path="/avatar-creator" element={<AvatarCreator />} />
           <Route path="/loja" element={<Loja />} />
           <Route path="/competitive-lobby/:caseId" element={<CompetitiveLobby />} />
+          <Route path="/conquistas" element={<Conquistas />} />
         </Routes>
       </div>
     </GameProvider>

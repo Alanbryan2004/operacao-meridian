@@ -8,7 +8,7 @@ import { getStreakData } from "../game/streakService";
 import { checkLoginReward } from "../game/loginRewardService";
 import InventoryModal from "../components/InventoryModal";
 
-function Badge({ children, tone = "gray" }) {
+function Badge({ children, tone = "gray", onClick, style: extraStyle }) {
     const map = {
         gray: { bg: "rgba(255,255,255,0.08)", bd: "rgba(255,255,255,0.14)", tx: "rgba(255,255,255,0.86)" },
         green: { bg: "rgba(60,255,160,0.10)", bd: "rgba(60,255,160,0.22)", tx: "rgba(200,255,235,0.95)" },
@@ -19,7 +19,7 @@ function Badge({ children, tone = "gray" }) {
     };
     const s = map[tone] || map.gray;
     return (
-        <span style={{ fontSize: 11, padding: "6px 10px", borderRadius: 999, background: s.bg, border: `1px solid ${s.bd}`, color: s.tx, display: "inline-flex", alignItems: "center", gap: 6, whiteSpace: "nowrap" }}>
+        <span onClick={onClick} style={{ fontSize: 11, padding: "6px 10px", borderRadius: 999, background: s.bg, border: `1px solid ${s.bd}`, color: s.tx, display: "inline-flex", alignItems: "center", gap: 6, whiteSpace: "nowrap", ...extraStyle }}>
             {children}
         </span>
     );
@@ -372,7 +372,7 @@ export default function Mural() {
                         <div style={{ marginTop: 10, display: "flex", gap: 8, flexWrap: "wrap", alignItems: "center" }}>
                             <Badge tone="blue">{player.classeEmoji || "🟢"} {player.nivelTitulo || "Novato"}</Badge>
                             <Badge tone="green">XP {player.xp}</Badge>
-                            <Badge tone="purple">Temporadas: em breve</Badge>
+                            <Badge tone="purple" style={{ cursor: "pointer" }} onClick={() => nav("/conquistas")}>🏆 Conquistas</Badge>
                             <button className="om-newsBtn" onClick={() => { setShowPromo(true); setNewsIndex(0); }}>✨ NOVIDADES</button>
                         </div>
                         <div className="om-actions">
