@@ -21,6 +21,10 @@ export default function CasoSolucionado() {
     const [streakUpdated, setStreakUpdated] = useState(null);
     const [newVoucher, setNewVoucher] = useState(null);
 
+    // --- Ranking Modal State ---
+    const [showRanking, setShowRanking] = useState(false);
+    const [rankingData, setRankingData] = useState([]);
+
     // Se não temos o run nem o state, e não estamos mostrando o modal, aí sim retornamos null
     if (!state || !caseObj || (!run && !streakUpdated && !newVoucher)) return null;
 
@@ -32,32 +36,54 @@ export default function CasoSolucionado() {
     const player = state.player;
     const [foundWinnerName, setFoundWinnerName] = useState(run?.winnerName || "");
 
-    // 🔍 Tenta buscar o nome do vencedor caso não tenha sido sincronizado via Broadcast/Realtime
+    // 🔍 Busca o nome do vencedor com retry (o winner_id pode demorar a ser salvo no banco)
     useEffect(() => {
         const lobbyId = searchParams.get("lobbyId");
         const isGenericName = !foundWinnerName || foundWinnerName === "um Agente de Elite";
 
-        if (isCompetitive && !isWon && isGenericName && lobbyId) {
-            console.log("[ATLAS] Buscando nome do vencedor no banco...");
-            supabase.from("competitive_lobbies")
-                .select("winner_id")
-                .eq("id", lobbyId)
-                .single()
-                .then(async ({ data }) => {
-                    if (data?.winner_id) {
-                        const { data: profile } = await supabase
-                            .from("profiles")
-                            .select("nickname")
-                            .eq("id", data.winner_id)
-                            .maybeSingle();
+        if (!isCompetitive || isWon || !isGenericName || !lobbyId) return;
 
-                        if (profile?.nickname) {
-                            setFoundWinnerName(profile.nickname);
-                        }
+        let cancelled = false;
+        const MAX_RETRIES = 5;
+
+        async function fetchWinnerName(attempt = 0) {
+            if (cancelled) return;
+            console.log(`[ATLAS] Buscando nome do vencedor (tentativa ${attempt + 1}/${MAX_RETRIES})...`);
+            
+            try {
+                const { data } = await supabase.from("competitive_lobbies")
+                    .select("winner_id")
+                    .eq("id", lobbyId)
+                    .single();
+
+                if (data?.winner_id) {
+                    const { data: profile } = await supabase
+                        .from("profiles")
+                        .select("nickname")
+                        .eq("id", data.winner_id)
+                        .maybeSingle();
+
+                    if (profile?.nickname && !cancelled) {
+                        console.log(`[ATLAS] Vencedor encontrado: ${profile.nickname}`);
+                        setFoundWinnerName(profile.nickname);
+                        return;
                     }
-                })
-                .catch(err => console.error("[ATLAS] Erro ao buscar vencedor:", err));
+                }
+
+                // Retry se ainda não encontrou
+                if (attempt < MAX_RETRIES - 1 && !cancelled) {
+                    setTimeout(() => fetchWinnerName(attempt + 1), 2000);
+                }
+            } catch (err) {
+                console.error("[ATLAS] Erro ao buscar vencedor:", err);
+                if (attempt < MAX_RETRIES - 1 && !cancelled) {
+                    setTimeout(() => fetchWinnerName(attempt + 1), 2000);
+                }
+            }
         }
+
+        fetchWinnerName();
+        return () => { cancelled = true; };
     }, [isCompetitive, isWon, foundWinnerName, searchParams]);
 
     const winnerName = foundWinnerName || "um Agente de Elite";
@@ -92,6 +118,41 @@ export default function CasoSolucionado() {
             saveGameState(state).catch(e => console.warn("[CasoSolucionado] Erro no sync final:", e));
         }
 
+        // 🏆 Se for competitivo, busca ranking primeiro
+        const lobbyId = searchParams.get("lobbyId");
+        if (isCompetitive && lobbyId) {
+            fetchRanking(lobbyId);
+            return;
+        }
+
+        proceedAfterRanking();
+    }
+
+    async function fetchRanking(lobbyId) {
+        try {
+            const { data: players } = await supabase
+                .from("competitive_players")
+                .select("player_id, current_stage, status, finished_at, profiles(nickname, avatar)")
+                .eq("lobby_id", lobbyId)
+                .order("current_stage", { ascending: false });
+
+            if (players && players.length > 0) {
+                // Ordena: vencedor primeiro, depois por etapa desc, depois por tempo
+                const sorted = players.sort((a, b) => {
+                    if (a.status === "won" && b.status !== "won") return -1;
+                    if (b.status === "won" && a.status !== "won") return 1;
+                    return (b.current_stage || 0) - (a.current_stage || 0);
+                });
+                setRankingData(sorted);
+            }
+            setShowRanking(true);
+        } catch (err) {
+            console.error("[ATLAS] Erro ao buscar ranking:", err);
+            proceedAfterRanking();
+        }
+    }
+
+    function proceedAfterRanking() {
         // 🔥 Se ganhou, verifica se tem streak pendente para exibir
         if (isWon) {
             try {
@@ -106,7 +167,7 @@ export default function CasoSolucionado() {
                         setNewVoucher(JSON.parse(voucherRaw));
                         localStorage.removeItem("pendingNewVoucher");
                     }
-                    return; // Fica nesta tela para mostrar os modais
+                    return;
                 }
             } catch (e) {
                 console.error("[CasoSolucionado] Erro ao ler streak pendente:", e);
@@ -128,8 +189,106 @@ export default function CasoSolucionado() {
         nav("/mural");
     }
 
+    // --- RANKING MODAL (Competitivo) ---
+    if (showRanking) {
+        const totalStages = run?.proceduralScenario?.route?.length || 10;
+        return (
+            <div style={{
+                position: "fixed", inset: 0, zIndex: 10000, background: "#0a0c10",
+                color: "#fff", display: "flex", alignItems: "center", justifyContent: "center",
+                padding: 20, boxSizing: "border-box"
+            }}>
+                <style>{`
+                    @keyframes om-rank-slide { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+                    @keyframes om-rank-glow { 0%, 100% { box-shadow: 0 0 15px rgba(255,215,0,0.3); } 50% { box-shadow: 0 0 30px rgba(255,215,0,0.6); } }
+                `}</style>
+                <div style={{
+                    maxWidth: 420, width: "100%",
+                    animation: "om-rank-slide 0.5s ease-out"
+                }}>
+                    <div style={{ textAlign: "center", marginBottom: 24 }}>
+                        <div style={{ fontSize: 12, color: "#00ffcc", letterSpacing: 4, marginBottom: 8, fontWeight: 700 }}>📡 CENTRAL A.T.L.A.S.</div>
+                        <h2 style={{ fontSize: 22, fontWeight: 900, margin: 0, marginBottom: 4 }}>🏆 RANKING FINAL</h2>
+                        <div style={{ fontSize: 12, opacity: 0.5 }}>{caseObj?.titulo}</div>
+                    </div>
 
-    // --- MODAIS DE STREAK / VOUCHER (Após ENCERRAR) ---
+                    <div style={{
+                        background: "rgba(255,255,255,0.03)",
+                        border: "1px solid rgba(255,255,255,0.08)",
+                        borderRadius: 16, overflow: "hidden"
+                    }}>
+                        {rankingData.length > 0 ? rankingData.map((p, i) => {
+                            const isWinner = p.status === "won";
+                            const isMe = p.player_id === state.player.supabaseId;
+                            const nickname = p.profiles?.nickname || "Agente Desconhecido";
+                            const stage = p.current_stage || 1;
+                            const medal = i === 0 ? "🥇" : i === 1 ? "🥈" : i === 2 ? "🥉" : `${i + 1}º`;
+
+                            return (
+                                <div key={p.player_id} style={{
+                                    display: "flex", alignItems: "center", gap: 12,
+                                    padding: "14px 16px",
+                                    background: isWinner ? "rgba(255,215,0,0.08)" : isMe ? "rgba(0,255,204,0.05)" : "transparent",
+                                    borderBottom: i < rankingData.length - 1 ? "1px solid rgba(255,255,255,0.06)" : "none",
+                                    animation: `om-rank-slide 0.4s ease-out ${i * 0.1}s both`,
+                                    ...(isWinner ? { animation: `om-rank-slide 0.4s ease-out both, om-rank-glow 2s ease-in-out infinite` } : {})
+                                }}>
+                                    <div style={{
+                                        fontSize: i < 3 ? 24 : 16, minWidth: 36, textAlign: "center",
+                                        fontWeight: 900, color: isWinner ? "#ffd700" : "#fff"
+                                    }}>
+                                        {medal}
+                                    </div>
+                                    <div style={{ flex: 1 }}>
+                                        <div style={{
+                                            fontSize: 14, fontWeight: isMe ? 900 : 600,
+                                            color: isWinner ? "#ffd700" : isMe ? "#00ffcc" : "#fff"
+                                        }}>
+                                            {isMe ? `Agente VOCÊ` : `Agente ${nickname}`}
+                                        </div>
+                                        {!isWinner && (
+                                            <div style={{ fontSize: 11, opacity: 0.5, marginTop: 2 }}>
+                                                Parou na Etapa {stage}/{totalStages}
+                                            </div>
+                                        )}
+                                        {isWinner && (
+                                            <div style={{ fontSize: 11, color: "rgba(255,215,0,0.6)", marginTop: 2 }}>
+                                                ✅ Missão Concluída
+                                            </div>
+                                        )}
+                                    </div>
+                                    {isWinner && (
+                                        <div style={{ fontSize: 20 }}>🏆</div>
+                                    )}
+                                </div>
+                            );
+                        }) : (
+                            <div style={{ padding: 30, textAlign: "center", opacity: 0.5 }}>Carregando ranking...</div>
+                        )}
+                    </div>
+
+                    <button
+                        onClick={() => {
+                            setShowRanking(false);
+                            proceedAfterRanking();
+                        }}
+                        style={{
+                            marginTop: 24, width: "100%", padding: 16,
+                            borderRadius: 14, border: "none",
+                            background: "linear-gradient(135deg, #1a2a3a, #0d1b2a)",
+                            color: "#00ffcc", fontSize: 14, fontWeight: 800,
+                            letterSpacing: 2, cursor: "pointer",
+                            border: "1px solid rgba(0,255,204,0.3)"
+                        }}
+                    >
+                        FECHAR RANKING
+                    </button>
+                </div>
+            </div>
+        );
+    }
+
+
     // --- MODAIS DE STREAK / VOUCHER (Após ENCERRAR) ---
     if (streakUpdated || newVoucher) {
         return (

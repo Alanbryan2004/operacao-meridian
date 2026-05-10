@@ -470,6 +470,19 @@ export default function Caso() {
             const finalState = saveGame({ ...nextState, runs: { ...nextState.runs, [caseId]: nextRun } });
             replaceState(finalState);
 
+            // 🏆 Atualiza etapa atual no banco para ranking competitivo
+            if (isMissionCompetitive && lobbyId && state.player.supabaseId && activeScenario?.route) {
+                const routeIdx = activeScenario.route.indexOf(destino.cidade);
+                const stageNum = routeIdx >= 0 ? routeIdx + 1 : null;
+                if (stageNum) {
+                    supabase.from("competitive_players")
+                        .update({ current_stage: stageNum })
+                        .eq("lobby_id", lobbyId)
+                        .eq("player_id", state.player.supabaseId)
+                        .then();
+                }
+            }
+
             const shouldAnim = true;
             
             let videoPath = null;
@@ -598,7 +611,7 @@ export default function Caso() {
                         });
 
                         supabase.from("competitive_lobbies").update({ status: "finished", winner_id: state.player.supabaseId }).eq("id", lobbyId).select().then();
-                        supabase.from("competitive_players").update({ status: "won" }).eq("lobby_id", lobbyId).eq("player_id", state.player.supabaseId).then();
+                        supabase.from("competitive_players").update({ status: "won", current_stage: activeScenario?.route?.length || 10, finished_at: new Date().toISOString() }).eq("lobby_id", lobbyId).eq("player_id", state.player.supabaseId).then();
                     }
 
                     const captState = registerCapture({ ...state, player: nextPlayer, runs: { ...state.runs, [caseId]: nextRun } }, run.warrantId);

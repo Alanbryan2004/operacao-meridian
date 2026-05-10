@@ -37,6 +37,9 @@ function createSeededRng(seedStr) {
         seed = (seed << 5) - seed + seedStr.charCodeAt(i);
         seed |= 0; 
     }
+    // Park-Miller requer seed positivo no range [1, 2^31-2]
+    seed = Math.abs(seed) % 2147483646;
+    if (seed === 0) seed = 1;
     return function() {
         seed = (seed * 16807) % 2147483647;
         return (seed - 1) / 2147483646;
