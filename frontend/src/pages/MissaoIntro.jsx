@@ -93,9 +93,13 @@ export default function MissaoIntro() {
                     ref={videoRef}
                     src={caseConfig.introVideo}
                     autoPlay
+                    playsInline
+                    muted
+                    webkit-playsinline="true"
                     style={{ maxWidth: "100%", maxHeight: "100%" }}
                     onEnded={handleVideoEnd}
                     onError={handleVideoEnd}
+                    onStalled={() => { setTimeout(handleVideoEnd, 5000); }}
                 />
                 <button
                     onClick={handleVideoEnd}

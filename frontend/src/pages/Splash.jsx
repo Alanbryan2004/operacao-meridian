@@ -112,7 +112,12 @@ export default function Splash() {
                 <video
                     src="/Videos/introducao.mp4"
                     autoPlay
+                    playsInline
+                    muted
+                    webkit-playsinline="true"
                     onEnded={handleSkipOrEndVideo}
+                    onError={handleSkipOrEndVideo}
+                    onStalled={() => { setTimeout(() => { if (mode === "VIDEO") handleSkipOrEndVideo(); }, 5000); }}
                     style={{
                         width: "100%",
                         height: "100%",

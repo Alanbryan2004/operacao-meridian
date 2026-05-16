@@ -126,7 +126,11 @@ export default function PromocaoScreen() {
                             src="/Videos/promocao.mp4"
                             autoPlay
                             playsInline
+                            muted
+                            webkit-playsinline="true"
                             onEnded={() => setFase("COMUNICADO")}
+                            onError={() => setFase("COMUNICADO")}
+                            onStalled={() => { setTimeout(() => { if (fase === "VIDEO") setFase("COMUNICADO"); }, 5000); }}
                             style={{ width: "100%", display: "block", objectFit: "cover" }}
                         />
                         <button

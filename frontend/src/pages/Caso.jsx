@@ -1042,6 +1042,9 @@ export default function Caso() {
                                             key={activeVideo}
                                             src={activeVideo}
                                             autoPlay
+                                            playsInline
+                                            muted
+                                            webkit-playsinline="true"
                                             loop={false}
                                             onEnded={() => {
                                                 if (runStatusRef.current === "WON" || runStatusRef.current === "LOST" || run?.status === "WON" || run?.status === "LOST") {
