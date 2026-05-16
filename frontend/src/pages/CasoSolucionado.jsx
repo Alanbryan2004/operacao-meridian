@@ -1,10 +1,11 @@
-import React, { useMemo, useState, useEffect } from "react";
+import React, { useMemo, useState, useEffect, useRef } from "react";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { useGame } from "../game/GameProvider";
 import { getCargoByXp, getProximoCargo } from "../game/Cargos";
 import { suspectsSeed, saveGame } from "../game/store";
 import { supabase } from "../lib/supabase";
 import { saveGameState } from "../services/gameSaveService";
+import { submitSpeedRecord, formatDuration } from "../services/speedRecordService";
 import DialogBox from "../components/DialogBox";
 
 export default function CasoSolucionado() {
@@ -24,6 +25,11 @@ export default function CasoSolucionado() {
     // --- Ranking Modal State ---
     const [showRanking, setShowRanking] = useState(false);
     const [rankingData, setRankingData] = useState([]);
+
+    // --- Speed Record State ---
+    const [showSpeedRecord, setShowSpeedRecord] = useState(false);
+    const [speedRecordData, setSpeedRecordData] = useState(null); // { isNewRecord, duration, globalRank }
+    const speedRecordSubmitted = useRef(false);
 
     // Se não temos o run nem o state, e não estamos mostrando o modal, aí sim retornamos null
     if (!state || !caseObj || (!run && !streakUpdated && !newVoucher)) return null;
@@ -112,6 +118,29 @@ export default function CasoSolucionado() {
             : `O suspeito escapou da captura.\nA relíquia permanece desaparecida.\n\nCulpado Real: ${realCriminal?.codinome || "Desconhecido"}\nMandado Emitido para: ${warrantSuspect?.codinome || "Nenhum"}\n\nA Agência reconhece que o(a) Agente ${player.nivelTitulo} "${player.nome}" demonstrou potencial estratégico acima da média.\nPorém, falhas na identificação final permitiram que o alvo deixasse o país antes da captura.\n\nA.T.L.A.S. espera mais de alguém que já demonstrou ser brilhante.\nFracassos não definem um agente. Eles moldam os próximos acertos.\n\nReavalie as pistas. Ajuste a estratégia. O próximo movimento será decisivo.\n🌍 O jogo continua.`;
     }, [isWon, isCompetitive, winnerName, player.nome, player.nivelTitulo, caseObj.recompensa, caseObj.xp, realCriminal, warrantSuspect]);
 
+    // 🏆 Speed Record: Submete o recorde ao montar (se ganhou)
+    useEffect(() => {
+        if (!isWon || !run?.startedAtRealTime || !state?.player?.supabaseId || speedRecordSubmitted.current) return;
+        speedRecordSubmitted.current = true;
+
+        const durationMs = Date.now() - new Date(run.startedAtRealTime).getTime();
+        const durationSeconds = Math.floor(durationMs / 1000);
+
+        submitSpeedRecord(caseId, durationSeconds, {
+            nickname: player.nome || "Agente",
+            rank: player.nivelTitulo || "Novato",
+            avatar: player.avatar || null,
+            avatarKey: player.avatarUrl || null,
+        }).then(result => {
+            setSpeedRecordData({
+                ...result,
+                duration: durationSeconds,
+            });
+        }).catch(err => {
+            console.warn("[SpeedRecord] Erro ao submeter recorde:", err);
+        });
+    }, [isWon, run?.startedAtRealTime, state?.player?.supabaseId, caseId]);
+
     function handleEncerrar() {
         // 🔥 Garante salvamento remoto imediato antes de qualquer coisa
         if (state.player.supabaseId) {
@@ -153,6 +182,16 @@ export default function CasoSolucionado() {
     }
 
     function proceedAfterRanking() {
+        // 🏆 Se ganhou e tem recorde novo, exibe modal de recorde primeiro
+        if (isWon && speedRecordData?.isNewRecord && !showSpeedRecord) {
+            setShowSpeedRecord(true);
+            return;
+        }
+
+        proceedAfterSpeedRecord();
+    }
+
+    function proceedAfterSpeedRecord() {
         // 🔥 Se ganhou, verifica se tem streak pendente para exibir
         if (isWon) {
             try {
@@ -187,6 +226,90 @@ export default function CasoSolucionado() {
             }
         }
         nav("/mural");
+    }
+
+    // --- SPEED RECORD MODAL ---
+    if (showSpeedRecord && speedRecordData) {
+        const dur = speedRecordData.duration;
+        const prevBest = speedRecordData.previousBest;
+        const rank = speedRecordData.globalRank;
+        return (
+            <div style={{
+                position: "fixed", inset: 0, zIndex: 10000, background: "#0a0c10",
+                color: "#fff", display: "flex", alignItems: "center", justifyContent: "center",
+                padding: 20, boxSizing: "border-box"
+            }}>
+                <style>{`
+                    @keyframes sr-pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.08); } }
+                    @keyframes sr-glow { 0%, 100% { text-shadow: 0 0 20px rgba(255,215,0,0.4); } 50% { text-shadow: 0 0 40px rgba(255,215,0,0.8); } }
+                    @keyframes sr-slide { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+                `}</style>
+                <div style={{
+                    maxWidth: 420, width: "100%", textAlign: "center",
+                    animation: "sr-slide 0.6s cubic-bezier(0.22, 1, 0.36, 1)"
+                }}>
+                    <div style={{ fontSize: 64, marginBottom: 12, animation: "sr-pulse 1.5s ease-in-out infinite" }}>⚡</div>
+                    <div style={{ fontSize: 11, letterSpacing: 4, color: "#ffd700", fontWeight: 800, marginBottom: 8 }}>📡 CENTRAL A.T.L.A.S.</div>
+                    <h2 style={{ fontSize: 24, fontWeight: 900, margin: 0, marginBottom: 6, color: "#ffd700", animation: "sr-glow 2s ease-in-out infinite" }}>
+                        NOVO RECORDE CONQUISTADO!
+                    </h2>
+                    <div style={{ fontSize: 12, opacity: 0.5, marginBottom: 30 }}>{caseObj?.titulo}</div>
+
+                    {/* Tempo */}
+                    <div style={{
+                        background: "rgba(255,215,0,0.08)", border: "1px solid rgba(255,215,0,0.25)",
+                        borderRadius: 18, padding: "20px 16px", marginBottom: 14
+                    }}>
+                        <div style={{ fontSize: 10, opacity: 0.5, letterSpacing: 2, marginBottom: 8, fontWeight: 800 }}>TEMPO DE CONCLUSÃO</div>
+                        <div style={{ fontSize: 32, fontWeight: 900, color: "#ffd700", letterSpacing: 1 }}>
+                            {formatDuration(dur)}
+                        </div>
+                    </div>
+
+                    {/* Info cards */}
+                    <div style={{ display: "flex", gap: 10, marginBottom: 30 }}>
+                        {prevBest !== null && (
+                            <div style={{
+                                flex: 1, background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)",
+                                borderRadius: 14, padding: "14px 10px"
+                            }}>
+                                <div style={{ fontSize: 9, opacity: 0.4, letterSpacing: 1, fontWeight: 800 }}>RECORDE ANTERIOR</div>
+                                <div style={{ fontSize: 16, fontWeight: 800, marginTop: 4, color: "rgba(255,255,255,0.5)", textDecoration: "line-through" }}>
+                                    {formatDuration(prevBest)}
+                                </div>
+                            </div>
+                        )}
+                        {rank && (
+                            <div style={{
+                                flex: 1, background: "rgba(0,255,160,0.06)", border: "1px solid rgba(0,255,160,0.15)",
+                                borderRadius: 14, padding: "14px 10px"
+                            }}>
+                                <div style={{ fontSize: 9, opacity: 0.4, letterSpacing: 1, fontWeight: 800 }}>RANKING GLOBAL</div>
+                                <div style={{ fontSize: 22, fontWeight: 900, marginTop: 4, color: "#00ffa0" }}>
+                                    #{rank}
+                                </div>
+                            </div>
+                        )}
+                    </div>
+
+                    <button
+                        onClick={() => {
+                            setShowSpeedRecord(false);
+                            proceedAfterSpeedRecord();
+                        }}
+                        style={{
+                            width: "100%", padding: 16, borderRadius: 14,
+                            background: "linear-gradient(135deg, rgba(255,215,0,0.15), rgba(255,215,0,0.05))",
+                            border: "1px solid rgba(255,215,0,0.35)",
+                            color: "#ffd700", fontSize: 14, fontWeight: 800,
+                            letterSpacing: 2, cursor: "pointer"
+                        }}
+                    >
+                        PROSSEGUIR ▶
+                    </button>
+                </div>
+            </div>
+        );
     }
 
     // --- RANKING MODAL (Competitivo) ---

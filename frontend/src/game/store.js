@@ -163,6 +163,7 @@ export function startRunIfNeeded(state, caseObj, forceReset = false, forcedScena
     const run = {
         caseId: caseObj.id,
         lobbyId: lobbyId,
+        startedAtRealTime: nowIso(),
         scenarioId: scenario?.id || null,
         targetSuspectId: targetSuspectId,
         status: "IN_PROGRESS",

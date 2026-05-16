@@ -3,18 +3,21 @@ import { useNavigate } from "react-router-dom";
 import { useGame } from "../game/GameProvider";
 import { supabase } from "../lib/supabase";
 import AvatarDisplay from "../components/AvatarDisplay";
+import { fetchGlobalTopRecords, formatDuration } from "../services/speedRecordService";
+import { casesSeed } from "../game/seed";
 
 export default function HallDaFama() {
     const nav = useNavigate();
     const { state } = useGame();
     const [rankings, setRankings] = useState([]);
+    const [speedRecords, setSpeedRecords] = useState([]);
     const [loading, setLoading] = useState(true);
     const [selectedAgent, setSelectedAgent] = useState(null);
+    const [activeTab, setActiveTab] = useState("CAPTURAS"); // CAPTURAS | TEMPO_RECORDE
 
     useEffect(() => {
         async function fetchRankings() {
             try {
-                // Ensure we select 'avatar', 'frase' AND 'avatar_key'
                 const { data, error } = await supabase
                     .from("profiles")
                     .select("id, nickname, rank, total_capturas, level, avatar, frase, avatar_key, hard_wins, hard_losses, legendary_wins, legendary_losses")
@@ -25,15 +28,29 @@ export default function HallDaFama() {
                 setRankings(data || []);
             } catch (err) {
                 console.error("Erro ao buscar ranking:", err);
-            } finally {
-                setLoading(false);
             }
         }
-        fetchRankings();
+
+        async function fetchSpeedRankings() {
+            try {
+                const records = await fetchGlobalTopRecords(20);
+                setSpeedRecords(records);
+            } catch (err) {
+                console.error("Erro ao buscar recordes de velocidade:", err);
+            }
+        }
+
+        Promise.all([fetchRankings(), fetchSpeedRankings()]).finally(() => setLoading(false));
     }, []);
 
     if (!state) return null;
     const { player } = state;
+
+    // Helper: busca título do caso pelo case_id
+    function getCaseTitle(caseId) {
+        const c = casesSeed.find(s => s.id === caseId);
+        return c?.titulo || caseId;
+    }
 
     return (
         <div style={{
@@ -46,7 +63,7 @@ export default function HallDaFama() {
         }}>
             <style>{`
                 .hf-container { max-width: 500px; margin: 0 auto; padding: 20px; padding-bottom: 40px; }
-                .hf-header { text-align: center; margin-bottom: 30px; padding-top: 20px; }
+                .hf-header { text-align: center; margin-bottom: 20px; padding-top: 20px; }
                 .hf-title { font-size: 28px; font-weight: 900; letter-spacing: 2px; text-transform: uppercase; color: #fff; text-shadow: 0 0 15px rgba(0,255,160,0.3); }
                 .hf-subtitle { font-size: 13px; opacity: 0.6; margin-top: 6px; }
                 .hf-list { display: grid; gap: 12px; }
@@ -79,6 +96,23 @@ export default function HallDaFama() {
                 .hf-score { text-align: right; }
                 .hf-score-val { font-size: 18px; font-weight: 900; color: #00ffa0; }
                 .hf-score-label { font-size: 9px; opacity: 0.4; text-transform: uppercase; }
+
+                /* Tabs */
+                .hf-tabs { display: flex; gap: 0; margin-bottom: 20px; border-radius: 14px; overflow: hidden; border: 1px solid rgba(255,255,255,0.1); }
+                .hf-tab {
+                    flex: 1; padding: 12px 8px; text-align: center; font-size: 12px; font-weight: 800;
+                    letter-spacing: 1.5px; cursor: pointer; transition: all 0.2s;
+                    background: rgba(255,255,255,0.03); color: rgba(255,255,255,0.4); border: none;
+                }
+                .hf-tab:first-child { border-right: 1px solid rgba(255,255,255,0.08); }
+                .hf-tab-active {
+                    background: linear-gradient(135deg, rgba(0,255,160,0.1), rgba(0,180,255,0.06));
+                    color: #00ffa0; box-shadow: inset 0 -2px 0 #00ffa0;
+                }
+                .hf-tab-speed.hf-tab-active {
+                    background: linear-gradient(135deg, rgba(255,215,0,0.1), rgba(255,180,0,0.06));
+                    color: #ffd700; box-shadow: inset 0 -2px 0 #ffd700;
+                }
 
                 /* Dossiê Modal */
                 .hf-overlay {
@@ -113,6 +147,10 @@ export default function HallDaFama() {
                     background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06);
                     padding: 15px 10px; border-radius: 16px; flex: 1;
                 }
+
+                /* Speed record card */
+                .hf-speed-time { font-size: 16px; font-weight: 900; color: #ffd700; }
+                .hf-speed-case { font-size: 10px; opacity: 0.45; margin-top: 2px; line-height: 1.3; }
             `}</style>
 
             <div className="hf-container">
@@ -121,43 +159,121 @@ export default function HallDaFama() {
                     <div className="hf-subtitle">Agentes que fizeram história na Meridian.</div>
                 </div>
 
-                <div className="hf-list">
-                    {loading ? (
-                        <div style={{ textAlign: 'center', padding: '40px', opacity: 0.5 }}>Descriptografando registros...</div>
-                    ) : rankings.map((r, idx) => {
-                        const rankNum = idx + 1;
-                        const isPlayer = r.nickname === player.nome;
+                {/* Tabs */}
+                <div className="hf-tabs">
+                    <button
+                        className={`hf-tab ${activeTab === "CAPTURAS" ? "hf-tab-active" : ""}`}
+                        onClick={() => setActiveTab("CAPTURAS")}
+                    >
+                        🎯 CAPTURAS
+                    </button>
+                    <button
+                        className={`hf-tab hf-tab-speed ${activeTab === "TEMPO_RECORDE" ? "hf-tab-active" : ""}`}
+                        onClick={() => setActiveTab("TEMPO_RECORDE")}
+                    >
+                        ⚡ TEMPO RECORDE
+                    </button>
+                </div>
 
-                        return (
-                            <div
-                                key={r.id || idx}
-                                className={`hf-card ${isPlayer ? 'hf-card-player' : ''}`}
-                                onClick={() => setSelectedAgent(r)}
-                            >
-                                <div className={`hf-rank ${rankNum <= 3 ? `hf-rank-${rankNum}` : ''}`}>
-                                    {rankNum}
+                {/* Tab: CAPTURAS */}
+                {activeTab === "CAPTURAS" && (
+                    <div className="hf-list">
+                        {loading ? (
+                            <div style={{ textAlign: 'center', padding: '40px', opacity: 0.5 }}>Descriptografando registros...</div>
+                        ) : rankings.length === 0 ? (
+                            <div style={{ textAlign: 'center', padding: '40px', opacity: 0.5 }}>Nenhum agente registrado ainda.</div>
+                        ) : rankings.map((r, idx) => {
+                            const rankNum = idx + 1;
+                            const isPlayer = r.nickname === player.nome;
+
+                            return (
+                                <div
+                                    key={r.id || idx}
+                                    className={`hf-card ${isPlayer ? 'hf-card-player' : ''}`}
+                                    onClick={() => setSelectedAgent(r)}
+                                >
+                                    <div className={`hf-rank ${rankNum <= 3 ? `hf-rank-${rankNum}` : ''}`}>
+                                        {rankNum}
+                                    </div>
+                                    <div className="hf-avatar">
+                                        <AvatarDisplay
+                                            config={r.avatar}
+                                            googlePhoto={r.avatar_key}
+                                            size={50}
+                                            style={{ borderRadius: 12 }}
+                                            useGoogleFirst={true}
+                                        />
+                                    </div>
+                                    <div className="hf-info">
+                                        <div className="hf-name">{r.nickname} {isPlayer && "(VOCÊ)"}</div>
+                                        <div className="hf-role">{r.rank || "Agente"} (Nível {r.level || 1})</div>
+                                    </div>
+                                    <div className="hf-score">
+                                        <div className="hf-score-val">{r.total_capturas || 0}</div>
+                                        <div className="hf-score-label">Capturas</div>
+                                    </div>
                                 </div>
-                                <div className="hf-avatar">
-                                    <AvatarDisplay
-                                        config={r.avatar}
-                                        googlePhoto={r.avatar_key}
-                                        size={50}
-                                        style={{ borderRadius: 12 }}
-                                        useGoogleFirst={true}
-                                    />
-                                </div>
-                                <div className="hf-info">
-                                    <div className="hf-name">{r.nickname} {isPlayer && "(VOCÊ)"}</div>
-                                    <div className="hf-role">{r.rank || "Agente"} (Nível {r.level || 1})</div>
-                                </div>
-                                <div className="hf-score">
-                                    <div className="hf-score-val">{r.total_capturas || 0}</div>
-                                    <div className="hf-score-label">Capturas</div>
+                            );
+                        })}
+                    </div>
+                )}
+
+                {/* Tab: TEMPO RECORDE */}
+                {activeTab === "TEMPO_RECORDE" && (
+                    <div className="hf-list">
+                        {loading ? (
+                            <div style={{ textAlign: 'center', padding: '40px', opacity: 0.5 }}>Descriptografando registros...</div>
+                        ) : speedRecords.length === 0 ? (
+                            <div style={{ textAlign: 'center', padding: '40px', opacity: 0.4 }}>
+                                <div style={{ fontSize: 40, marginBottom: 12 }}>⚡</div>
+                                <div style={{ fontSize: 14, fontWeight: 700 }}>Nenhum recorde registrado</div>
+                                <div style={{ fontSize: 12, opacity: 0.6, marginTop: 8 }}>
+                                    Complete missões com sucesso para aparecer aqui!
                                 </div>
                             </div>
-                        );
-                    })}
-                </div>
+                        ) : speedRecords.map((r, idx) => {
+                            const rankNum = idx + 1;
+                            const isPlayer = r.user_id === state.player?.supabaseId;
+                            const caseTitle = getCaseTitle(r.case_id);
+
+                            return (
+                                <div
+                                    key={r.user_id + r.case_id}
+                                    className={`hf-card ${isPlayer ? 'hf-card-player' : ''}`}
+                                    onClick={() => setSelectedAgent({
+                                        nickname: r.nickname,
+                                        rank: r.rank,
+                                        avatar: r.avatar,
+                                        avatar_key: r.avatar_key,
+                                        total_capturas: null,
+                                        speedRecord: { duration: r.duration_seconds, caseTitle, caseId: r.case_id },
+                                    })}
+                                >
+                                    <div className={`hf-rank ${rankNum <= 3 ? `hf-rank-${rankNum}` : ''}`}>
+                                        {rankNum}
+                                    </div>
+                                    <div className="hf-avatar">
+                                        <AvatarDisplay
+                                            config={r.avatar}
+                                            googlePhoto={r.avatar_key}
+                                            size={50}
+                                            style={{ borderRadius: 12 }}
+                                            useGoogleFirst={true}
+                                        />
+                                    </div>
+                                    <div className="hf-info">
+                                        <div className="hf-name">{r.nickname} {isPlayer && "(VOCÊ)"}</div>
+                                        <div className="hf-speed-case">{caseTitle}</div>
+                                    </div>
+                                    <div className="hf-score">
+                                        <div className="hf-speed-time">{formatDuration(r.duration_seconds)}</div>
+                                        <div className="hf-score-label">Tempo</div>
+                                    </div>
+                                </div>
+                            );
+                        })}
+                    </div>
+                )}
 
                 <button className="hf-back" onClick={() => nav("/mural")}>
                     VOLTAR AO MURAL
@@ -180,30 +296,52 @@ export default function HallDaFama() {
                         <div className="hf-d-role">
                             {selectedAgent.rank || "Agente"} · Nível {selectedAgent.level || 1}
                         </div>
-                        <div style={{ marginTop: 10, color: '#64748b', fontSize: 11, fontWeight: 800 }}>
-                            {selectedAgent.total_capturas || 0} CRIMINOSOS CAPTURADOS
-                        </div>
 
-                        <div style={{ display: "flex", gap: 12, width: "100%", marginTop: 25 }}>
-                            <div className="hf-d-stat">
-                                <img src="/icones/emblema_dificil.png" alt="" style={{ width: 40, height: 40, marginBottom: 6, filter: "drop-shadow(0 0 8px rgba(255,0,0,0.3))" }} />
-                                <div style={{ fontSize: 9, opacity: 0.5, letterSpacing: 1, fontWeight: 800, textTransform: "uppercase" }}>Caso Difícil</div>
-                                <div style={{ fontSize: 15, fontWeight: 900, marginTop: 4 }}>
-                                    {selectedAgent.hard_wins || 0} <span style={{ color: '#00ffa0', fontSize: 10 }}>VIT</span>
-                                    <span style={{ opacity: 0.2, margin: "0 6px" }}>|</span>
-                                    {selectedAgent.hard_losses || 0} <span style={{ color: '#ff4b4b', fontSize: 10 }}>DER</span>
+                        {/* Speed Record info (quando vem da tab de recordes) */}
+                        {selectedAgent.speedRecord && (
+                            <div style={{
+                                marginTop: 20, padding: 16, borderRadius: 16, width: "100%",
+                                background: "rgba(255,215,0,0.06)", border: "1px solid rgba(255,215,0,0.2)"
+                            }}>
+                                <div style={{ fontSize: 9, opacity: 0.5, letterSpacing: 2, fontWeight: 800, marginBottom: 6 }}>⚡ MELHOR TEMPO</div>
+                                <div style={{ fontSize: 28, fontWeight: 900, color: "#ffd700" }}>
+                                    {formatDuration(selectedAgent.speedRecord.duration)}
+                                </div>
+                                <div style={{ fontSize: 11, opacity: 0.5, marginTop: 6 }}>
+                                    {selectedAgent.speedRecord.caseTitle}
                                 </div>
                             </div>
-                            <div className="hf-d-stat">
-                                <img src="/icones/emblema_lendario.png" alt="" style={{ width: 40, height: 40, marginBottom: 6, filter: "drop-shadow(0 0 8px rgba(255,215,0,0.2))" }} />
-                                <div style={{ fontSize: 9, opacity: 0.5, letterSpacing: 1, fontWeight: 800, textTransform: "uppercase" }}>Caso Lendário</div>
-                                <div style={{ fontSize: 15, fontWeight: 900, marginTop: 4 }}>
-                                    {selectedAgent.legendary_wins || 0} <span style={{ color: '#00ffa0', fontSize: 10 }}>VIT</span>
-                                    <span style={{ opacity: 0.2, margin: "0 6px" }}>|</span>
-                                    {selectedAgent.legendary_losses || 0} <span style={{ color: '#ff4b4b', fontSize: 10 }}>DER</span>
+                        )}
+
+                        {/* Capturas info (quando vem da tab de capturas) */}
+                        {selectedAgent.total_capturas !== null && selectedAgent.total_capturas !== undefined && (
+                            <>
+                                <div style={{ marginTop: 10, color: '#64748b', fontSize: 11, fontWeight: 800 }}>
+                                    {selectedAgent.total_capturas || 0} CRIMINOSOS CAPTURADOS
                                 </div>
-                            </div>
-                        </div>
+
+                                <div style={{ display: "flex", gap: 12, width: "100%", marginTop: 25 }}>
+                                    <div className="hf-d-stat">
+                                        <img src="/icones/emblema_dificil.png" alt="" style={{ width: 40, height: 40, marginBottom: 6, filter: "drop-shadow(0 0 8px rgba(255,0,0,0.3))" }} />
+                                        <div style={{ fontSize: 9, opacity: 0.5, letterSpacing: 1, fontWeight: 800, textTransform: "uppercase" }}>Caso Difícil</div>
+                                        <div style={{ fontSize: 15, fontWeight: 900, marginTop: 4 }}>
+                                            {selectedAgent.hard_wins || 0} <span style={{ color: '#00ffa0', fontSize: 10 }}>VIT</span>
+                                            <span style={{ opacity: 0.2, margin: "0 6px" }}>|</span>
+                                            {selectedAgent.hard_losses || 0} <span style={{ color: '#ff4b4b', fontSize: 10 }}>DER</span>
+                                        </div>
+                                    </div>
+                                    <div className="hf-d-stat">
+                                        <img src="/icones/emblema_lendario.png" alt="" style={{ width: 40, height: 40, marginBottom: 6, filter: "drop-shadow(0 0 8px rgba(255,215,0,0.2))" }} />
+                                        <div style={{ fontSize: 9, opacity: 0.5, letterSpacing: 1, fontWeight: 800, textTransform: "uppercase" }}>Caso Lendário</div>
+                                        <div style={{ fontSize: 15, fontWeight: 900, marginTop: 4 }}>
+                                            {selectedAgent.legendary_wins || 0} <span style={{ color: '#00ffa0', fontSize: 10 }}>VIT</span>
+                                            <span style={{ opacity: 0.2, margin: "0 6px" }}>|</span>
+                                            {selectedAgent.legendary_losses || 0} <span style={{ color: '#ff4b4b', fontSize: 10 }}>DER</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </>
+                        )}
 
                         {selectedAgent.frase ? (
                             <div className="hf-d-phrase">

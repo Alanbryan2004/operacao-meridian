@@ -65,6 +65,15 @@ const ACHIEVEMENTS = [
         type: "hard_wins",
         rewards: { moedas: 10000, items: [{ key: "licenca_tatica", qty: 1 }] },
     },
+    {
+        id: "speed_rank_1st_3",
+        title: "Recordista Supremo",
+        description: "Conquiste 3x o 1º Lugar no Ranking Tempo Recorde.",
+        icon: "⚡",
+        target: 3,
+        type: "speed_rank_1st",
+        rewards: { moedas: 20000, items: [{ key: "dossie_sigiloso", qty: 1 }] },
+    },
 ];
 
 export default function Conquistas() {
@@ -75,8 +84,9 @@ export default function Conquistas() {
     const [missionStats, setMissionStats] = useState(null);
     const [claiming, setClaiming] = useState(null);
     const [claimSuccess, setClaimSuccess] = useState(null);
+    const [speedRank1stCount, setSpeedRank1stCount] = useState(0);
 
-    // Busca estatísticas de missões do Supabase
+    // Busca estatísticas de missões e recordes do Supabase
     useEffect(() => {
         async function fetchStats() {
             try {
@@ -96,6 +106,25 @@ export default function Conquistas() {
                         mediumWon: won.filter(m => m.dificuldade === "MEDIO").length,
                         hardWon: won.filter(m => m.dificuldade === "DIFICIL").length,
                     });
+                }
+
+                // Conta em quantos casos o jogador está em 1º lugar no ranking de velocidade
+                const { data: allRecords } = await supabase
+                    .from("speed_records")
+                    .select("user_id, case_id, duration_seconds")
+                    .order("duration_seconds", { ascending: true });
+
+                if (allRecords) {
+                    // Agrupa por case_id e pega o 1º (menor tempo) de cada
+                    const bestByCase = {};
+                    for (const r of allRecords) {
+                        if (!bestByCase[r.case_id]) {
+                            bestByCase[r.case_id] = r;
+                        }
+                    }
+                    // Conta quantas vezes o user é o 1º
+                    const firstPlaceCount = Object.values(bestByCase).filter(r => r.user_id === user.id).length;
+                    setSpeedRank1stCount(firstPlaceCount);
                 }
             } catch (err) {
                 console.error("[Conquistas] Erro ao buscar stats:", err);
@@ -120,6 +149,8 @@ export default function Conquistas() {
                 return 0;
             case "hard_wins":
                 return player?.hardWins || 0;
+            case "speed_rank_1st":
+                return speedRank1stCount;
             default:
                 return 0;
         }
