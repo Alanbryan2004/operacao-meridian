@@ -43,6 +43,7 @@ export default function MissaoIntro() {
     const [phase, setPhase] = useState("VIDEO"); // VIDEO → RESUMO → BRIEFING
     const [fadeOut, setFadeOut] = useState(false);
     const { state } = useGame();
+    const musicEnabled = state?.player?.settings?.musicEnabled ?? true;
     const videoRef = useRef(null);
 
     const caseConfig = getCaseConfig(caseId);
@@ -90,11 +91,10 @@ export default function MissaoIntro() {
         return (
             <div style={{ height: "100dvh", width: "100vw", background: "#000", display: "flex", alignItems: "center", justifyContent: "center" }}>
                 <video
-                    ref={videoRef}
+                    ref={el => { videoRef.current = el; if (el) el.muted = !musicEnabled; }}
                     src={caseConfig.introVideo}
                     autoPlay
                     playsInline
-                    muted
                     webkit-playsinline="true"
                     style={{ maxWidth: "100%", maxHeight: "100%" }}
                     onEnded={handleVideoEnd}

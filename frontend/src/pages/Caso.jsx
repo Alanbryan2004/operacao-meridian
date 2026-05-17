@@ -87,6 +87,7 @@ export default function Caso() {
     const nav = useNavigate();
     const { caseId } = useParams();
     const { state, replaceState, hydrated, inventory, refreshInventory } = useGame();
+    const musicEnabled = state?.player?.settings?.musicEnabled ?? true;
     const [searchParams] = useSearchParams();
     
     const isMissionCompetitive = useMemo(() => {
@@ -1043,7 +1044,7 @@ export default function Caso() {
                                             src={activeVideo}
                                             autoPlay
                                             playsInline
-                                            muted
+                                            ref={el => { if (el) el.muted = !musicEnabled; }}
                                             webkit-playsinline="true"
                                             loop={false}
                                             onEnded={() => {

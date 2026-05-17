@@ -18,6 +18,7 @@ import { ITEMS_DATA } from "../game/itemsData";
 export default function PromocaoScreen() {
     const nav = useNavigate();
     const { state, replaceState } = useGame();
+    const musicEnabled = state?.player?.settings?.musicEnabled ?? true;
     const videoRef = useRef(null);
 
     const [fase, setFase] = useState("VIDEO");
@@ -122,11 +123,10 @@ export default function PromocaoScreen() {
                 {fase === "VIDEO" && (
                     <div style={{ borderRadius: 18, overflow: "hidden", position: "relative" }}>
                         <video
-                            ref={videoRef}
+                            ref={el => { videoRef.current = el; if (el) el.muted = !musicEnabled; }}
                             src="/Videos/promocao.mp4"
                             autoPlay
                             playsInline
-                            muted
                             webkit-playsinline="true"
                             onEnded={() => setFase("COMUNICADO")}
                             onError={() => setFase("COMUNICADO")}

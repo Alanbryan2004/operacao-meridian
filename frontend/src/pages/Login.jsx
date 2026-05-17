@@ -112,8 +112,19 @@ export default function Login() {
     async function loginComGoogle() {
         setLoading(true);
 
-        // Em produção: defina VITE_SITE_URL na Vercel (https://operacao-meridian.vercel.app)
-        // Em dev: se não existir, cai no origin atual (http://localhost:5173)
+        // ── Android WebView: usa autenticação nativa ──
+        if (window.Android?.startGoogleLogin) {
+            try {
+                window.Android.startGoogleLogin();
+            } catch (e) {
+                console.error("[Android Bridge] Erro ao iniciar login nativo:", e);
+                alert("Erro ao conectar com Google. Tente novamente.");
+            }
+            setLoading(false);
+            return;
+        }
+
+        // ── Web: fluxo OAuth padrão (redirect) ──
         const siteUrl = import.meta.env.VITE_SITE_URL || window.location.origin;
 
         const { error } = await supabase.auth.signInWithOAuth({

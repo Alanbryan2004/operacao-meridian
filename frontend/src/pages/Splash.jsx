@@ -5,6 +5,7 @@ import { useGame } from "../game/GameProvider";
 export default function Splash() {
     const nav = useNavigate();
     const { state } = useGame();
+    const musicEnabled = state?.player?.settings?.musicEnabled ?? true;
     // MODOS: "ENTRY" (Botão inicial) | "VIDEO" (Intro) | "FINAL" (Logo + Iniciar)
     const [mode, setMode] = useState("ENTRY");
 
