@@ -24,11 +24,14 @@ export async function submitSpeedRecord(caseId, durationSeconds, playerData = {}
 
     const previousBest = existing?.duration_seconds ?? null;
 
-    // Se já tem um recorde melhor, não atualiza
+    // Se já tem um recorde melhor ou igual, não atualiza
     if (previousBest !== null && previousBest <= durationSeconds) {
         console.log(`[SpeedRecord] Tempo atual (${durationSeconds}s) não superou o recorde pessoal (${previousBest}s).`);
-        return { isNewRecord: false, previousBest, globalRank: null };
+        return { isNewRecord: false, isFirstRecord: false, previousBest, globalRank: null };
     }
+
+    // Se é a primeira vez (sem recorde anterior), registra mas NÃO exibe como "novo recorde"
+    const isFirstRecord = previousBest === null;
 
     // 2. Upsert do recorde
     const payload = {
@@ -61,9 +64,13 @@ export async function submitSpeedRecord(caseId, durationSeconds, playerData = {}
         ? allRecords.findIndex(r => r.user_id === user.id) + 1
         : null;
 
-    console.log(`[SpeedRecord] 🏆 Novo recorde! ${durationSeconds}s (anterior: ${previousBest ?? "nenhum"}) — Posição global: #${globalRank}`);
+    if (isFirstRecord) {
+        console.log(`[SpeedRecord] Primeiro recorde registrado: ${durationSeconds}s — Posição global: #${globalRank}`);
+    } else {
+        console.log(`[SpeedRecord] 🏆 Novo recorde! ${durationSeconds}s (anterior: ${previousBest}) — Posição global: #${globalRank}`);
+    }
 
-    return { isNewRecord: true, previousBest, globalRank };
+    return { isNewRecord: !isFirstRecord, isFirstRecord, previousBest, globalRank };
 }
 
 /**

@@ -182,8 +182,8 @@ export default function CasoSolucionado() {
     }
 
     function proceedAfterRanking() {
-        // 🏆 Se ganhou e tem recorde novo, exibe modal de recorde primeiro
-        if (isWon && speedRecordData?.isNewRecord && !showSpeedRecord) {
+        // 🏆 Se ganhou e tem recorde novo OU primeiro registro, exibe modal
+        if (isWon && (speedRecordData?.isNewRecord || speedRecordData?.isFirstRecord) && !showSpeedRecord) {
             setShowSpeedRecord(true);
             return;
         }
@@ -233,6 +233,18 @@ export default function CasoSolucionado() {
         const dur = speedRecordData.duration;
         const prevBest = speedRecordData.previousBest;
         const rank = speedRecordData.globalRank;
+        const isFirst = speedRecordData.isFirstRecord;
+
+        // Cores e textos dinâmicos baseados no tipo de conquista
+        const accentColor = isFirst ? "#00ffcc" : "#ffd700";
+        const accentBg = isFirst ? "rgba(0,255,204,0.08)" : "rgba(255,215,0,0.08)";
+        const accentBorder = isFirst ? "rgba(0,255,204,0.25)" : "rgba(255,215,0,0.25)";
+        const titleText = isFirst ? "RANKING DESBLOQUEADO!" : "NOVO RECORDE CONQUISTADO!";
+        const emoji = isFirst ? "🏅" : "⚡";
+        const glowAnim = isFirst
+            ? "@keyframes sr-glow { 0%, 100% { text-shadow: 0 0 20px rgba(0,255,204,0.4); } 50% { text-shadow: 0 0 40px rgba(0,255,204,0.8); } }"
+            : "@keyframes sr-glow { 0%, 100% { text-shadow: 0 0 20px rgba(255,215,0,0.4); } 50% { text-shadow: 0 0 40px rgba(255,215,0,0.8); } }";
+
         return (
             <div style={{
                 position: "fixed", inset: 0, zIndex: 10000, background: "#0a0c10",
@@ -241,27 +253,36 @@ export default function CasoSolucionado() {
             }}>
                 <style>{`
                     @keyframes sr-pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.08); } }
-                    @keyframes sr-glow { 0%, 100% { text-shadow: 0 0 20px rgba(255,215,0,0.4); } 50% { text-shadow: 0 0 40px rgba(255,215,0,0.8); } }
+                    ${glowAnim}
                     @keyframes sr-slide { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
                 `}</style>
                 <div style={{
                     maxWidth: 420, width: "100%", textAlign: "center",
                     animation: "sr-slide 0.6s cubic-bezier(0.22, 1, 0.36, 1)"
                 }}>
-                    <div style={{ fontSize: 64, marginBottom: 12, animation: "sr-pulse 1.5s ease-in-out infinite" }}>⚡</div>
-                    <div style={{ fontSize: 11, letterSpacing: 4, color: "#ffd700", fontWeight: 800, marginBottom: 8 }}>📡 CENTRAL A.T.L.A.S.</div>
-                    <h2 style={{ fontSize: 24, fontWeight: 900, margin: 0, marginBottom: 6, color: "#ffd700", animation: "sr-glow 2s ease-in-out infinite" }}>
-                        NOVO RECORDE CONQUISTADO!
+                    <div style={{ fontSize: 64, marginBottom: 12, animation: "sr-pulse 1.5s ease-in-out infinite" }}>{emoji}</div>
+                    <div style={{ fontSize: 11, letterSpacing: 4, color: accentColor, fontWeight: 800, marginBottom: 8 }}>📡 CENTRAL A.T.L.A.S.</div>
+                    <h2 style={{ fontSize: 24, fontWeight: 900, margin: 0, marginBottom: 6, color: accentColor, animation: "sr-glow 2s ease-in-out infinite" }}>
+                        {titleText}
                     </h2>
-                    <div style={{ fontSize: 12, opacity: 0.5, marginBottom: 30 }}>{caseObj?.titulo}</div>
+                    <div style={{ fontSize: 12, opacity: 0.5, marginBottom: 8 }}>{caseObj?.titulo}</div>
+                    {isFirst && (
+                        <div style={{ fontSize: 13, opacity: 0.6, marginBottom: 22, lineHeight: 1.6 }}>
+                            Seu tempo foi registrado no Ranking Global.<br />
+                            Complete novamente para tentar bater seu próprio recorde!
+                        </div>
+                    )}
+                    {!isFirst && (
+                        <div style={{ marginBottom: 22 }} />
+                    )}
 
                     {/* Tempo */}
                     <div style={{
-                        background: "rgba(255,215,0,0.08)", border: "1px solid rgba(255,215,0,0.25)",
+                        background: accentBg, border: `1px solid ${accentBorder}`,
                         borderRadius: 18, padding: "20px 16px", marginBottom: 14
                     }}>
                         <div style={{ fontSize: 10, opacity: 0.5, letterSpacing: 2, marginBottom: 8, fontWeight: 800 }}>TEMPO DE CONCLUSÃO</div>
-                        <div style={{ fontSize: 32, fontWeight: 900, color: "#ffd700", letterSpacing: 1 }}>
+                        <div style={{ fontSize: 32, fontWeight: 900, color: accentColor, letterSpacing: 1 }}>
                             {formatDuration(dur)}
                         </div>
                     </div>
@@ -299,9 +320,9 @@ export default function CasoSolucionado() {
                         }}
                         style={{
                             width: "100%", padding: 16, borderRadius: 14,
-                            background: "linear-gradient(135deg, rgba(255,215,0,0.15), rgba(255,215,0,0.05))",
-                            border: "1px solid rgba(255,215,0,0.35)",
-                            color: "#ffd700", fontSize: 14, fontWeight: 800,
+                            background: `linear-gradient(135deg, ${accentBg}, rgba(0,0,0,0.2))`,
+                            border: `1px solid ${accentBorder}`,
+                            color: accentColor, fontSize: 14, fontWeight: 800,
                             letterSpacing: 2, cursor: "pointer"
                         }}
                     >
