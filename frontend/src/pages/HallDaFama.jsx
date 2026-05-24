@@ -46,6 +46,55 @@ export default function HallDaFama() {
     if (!state) return null;
     const { player } = state;
 
+    // Estado e efeito para controlar a animação de subida (climb) do jogador no ranking
+    const [animateClimb, setAnimateClimb] = useState(false);
+
+    useEffect(() => {
+        setAnimateClimb(false);
+        if (!loading) {
+            const timer = setTimeout(() => {
+                setAnimateClimb(true);
+            }, 150);
+            return () => clearTimeout(timer);
+        }
+    }, [activeTab, loading]);
+
+    // Calcula o deslocamento e a transição da subida do jogador
+    function getClimbStyle(idx, items, isPlayer) {
+        if (!animateClimb) {
+            const playerIdx = items.findIndex(item => {
+                if (activeTab === "CAPTURAS") {
+                    return item.nickname === player.nome;
+                } else {
+                    return item.user_id === state.player?.supabaseId;
+                }
+            });
+
+            if (playerIdx !== -1) {
+                const startIdx = Math.min(items.length - 1, playerIdx + 4);
+                const delta = startIdx - playerIdx;
+
+                if (isPlayer) {
+                    return {
+                        transform: `translateY(${delta * 92}px)`,
+                        zIndex: 10,
+                        boxShadow: "0 0 25px rgba(0, 255, 160, 0.4)",
+                        borderColor: "rgba(0, 255, 160, 0.6)",
+                    };
+                } else if (idx > playerIdx && idx <= startIdx) {
+                    return {
+                        transform: "translateY(-92px)",
+                    };
+                }
+            }
+        }
+
+        return {
+            transform: "translateY(0)",
+            transition: "transform 1.2s cubic-bezier(0.34, 1.56, 0.64, 1), border-color 0.4s, background 0.4s, box-shadow 0.4s",
+        };
+    }
+
     // Helper: busca título do caso pelo case_id
     function getCaseTitle(caseId) {
         const c = casesSeed.find(s => s.id === caseId);
@@ -191,6 +240,7 @@ export default function HallDaFama() {
                                     key={r.id || idx}
                                     className={`hf-card ${isPlayer ? 'hf-card-player' : ''}`}
                                     onClick={() => setSelectedAgent(r)}
+                                    style={getClimbStyle(idx, rankings, isPlayer)}
                                 >
                                     <div className={`hf-rank ${rankNum <= 3 ? `hf-rank-${rankNum}` : ''}`}>
                                         {rankNum}
@@ -248,6 +298,7 @@ export default function HallDaFama() {
                                         total_capturas: null,
                                         speedRecord: { duration: r.duration_seconds, caseTitle, caseId: r.case_id },
                                     })}
+                                    style={getClimbStyle(idx, speedRecords, isPlayer)}
                                 >
                                     <div className={`hf-rank ${rankNum <= 3 ? `hf-rank-${rankNum}` : ''}`}>
                                         {rankNum}

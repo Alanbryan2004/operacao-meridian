@@ -24,14 +24,22 @@ export async function submitSpeedRecord(caseId, durationSeconds, playerData = {}
 
     const previousBest = existing?.duration_seconds ?? null;
 
-    // Se já tem um recorde melhor ou igual, não atualiza
+    // Busca todos os recordes do jogador para saber se ele já possui registros e qual o melhor tempo geral dele
+    const { data: allUserRecords } = await supabase
+        .from("speed_records")
+        .select("duration_seconds")
+        .eq("user_id", user.id);
+
+    const hasAnyRecordsBefore = allUserRecords && allUserRecords.length > 0;
+    const overallBestBefore = hasAnyRecordsBefore
+        ? Math.min(...allUserRecords.map(r => r.duration_seconds))
+        : null;
+
+    // Se já tem um recorde melhor ou igual para este caso específico, não atualiza no banco
     if (previousBest !== null && previousBest <= durationSeconds) {
-        console.log(`[SpeedRecord] Tempo atual (${durationSeconds}s) não superou o recorde pessoal (${previousBest}s).`);
+        console.log(`[SpeedRecord] Tempo atual (${durationSeconds}s) não superou o recorde pessoal deste caso (${previousBest}s).`);
         return { isNewRecord: false, isFirstRecord: false, previousBest, globalRank: null };
     }
-
-    // Se é a primeira vez (sem recorde anterior), registra mas NÃO exibe como "novo recorde"
-    const isFirstRecord = previousBest === null;
 
     // 2. Upsert do recorde
     const payload = {
@@ -64,13 +72,21 @@ export async function submitSpeedRecord(caseId, durationSeconds, playerData = {}
         ? allRecords.findIndex(r => r.user_id === user.id) + 1
         : null;
 
+    // Definição inteligente das flags para o Modal:
+    // - isFirstRecord (Ranking Desbloqueado): Só quando o jogador entra no ranking pela primeira vez (não possuía nenhum recorde antes).
+    // - isNewRecord (Novo Recorde Conquistado): Quando ele já tinha recordes, mas o novo tempo supera o seu melhor tempo absoluto anterior.
+    const isFirstRecord = !hasAnyRecordsBefore;
+    const isNewRecord = hasAnyRecordsBefore && (overallBestBefore === null || durationSeconds < overallBestBefore);
+
     if (isFirstRecord) {
-        console.log(`[SpeedRecord] Primeiro recorde registrado: ${durationSeconds}s — Posição global: #${globalRank}`);
+        console.log(`[SpeedRecord] Ranking Desbloqueado! Primeiro recorde geral registrado: ${durationSeconds}s — Posição global no caso: #${globalRank}`);
+    } else if (isNewRecord) {
+        console.log(`[SpeedRecord] 🏆 Novo Recorde Geral do Jogador! ${durationSeconds}s (anterior: ${overallBestBefore}s) — Posição global no caso: #${globalRank}`);
     } else {
-        console.log(`[SpeedRecord] 🏆 Novo recorde! ${durationSeconds}s (anterior: ${previousBest}) — Posição global: #${globalRank}`);
+        console.log(`[SpeedRecord] Recorde do caso atualizado para ${durationSeconds}s, mas não supera o recorde geral do ranking (${overallBestBefore}s). Modal ocultado.`);
     }
 
-    return { isNewRecord: !isFirstRecord, isFirstRecord, previousBest, globalRank };
+    return { isNewRecord, isFirstRecord, previousBest, globalRank };
 }
 
 /**

@@ -5,6 +5,7 @@ import { saveGame, suspectsSeed } from "../game/store";
 import { supabase } from "../lib/supabase";
 import { inventoryService } from "../game/inventoryService";
 import { ITEMS_DATA } from "../game/itemsData";
+import { saveGameState } from "../services/gameSaveService";
 
 // ── Definição das Conquistas ────────────────────────────────
 const ACHIEVEMENTS = [
@@ -161,14 +162,22 @@ export default function Conquistas() {
         setClaiming(achievement.id);
 
         try {
-            // Adiciona moedas
+            // Adiciona moedas e marca como resgatado
             const nextPlayer = {
                 ...state.player,
                 dinheiro: (state.player.dinheiro || 0) + achievement.rewards.moedas,
                 claimedAchievements: [...(state.player.claimedAchievements || []), achievement.id],
             };
 
-            replaceState(saveGame({ ...state, player: nextPlayer }));
+            const nextState = { ...state, player: nextPlayer };
+            replaceState(saveGame(nextState));
+
+            // 🔥 Sincroniza com Supabase IMEDIATAMENTE para garantir persistência
+            if (nextPlayer.supabaseId) {
+                saveGameState(nextState, 0).catch(e =>
+                    console.warn("[Conquistas] Erro ao sincronizar claim com Supabase:", e)
+                );
+            }
 
             // Adiciona itens no inventário (Supabase)
             if (state.player.supabaseId && achievement.rewards.items) {
