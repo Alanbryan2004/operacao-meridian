@@ -3,10 +3,11 @@ import { useEffect, useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { useGame } from "../game/GameProvider";
 import ModalMsg from "../components/ModalMsg";
-import { loadCompletedMissions } from "../services/gameSaveService";
+import { loadCompletedMissions, saveGameState } from "../services/gameSaveService";
 import { getStreakData } from "../game/streakService";
 import { checkLoginReward } from "../game/loginRewardService";
 import InventoryModal from "../components/InventoryModal";
+import { saveGame, getUnlockedLeaders, FACTIONS } from "../game/store";
 
 function Badge({ children, tone = "gray", onClick, style: extraStyle }) {
     const map = {
@@ -71,7 +72,7 @@ function CaseCard({ c, onOpen, status }) {
 }
 
 export default function Mural() {
-    const { state, refreshInventory, inventory } = useGame();
+    const { state, refreshInventory, inventory, replaceState, dispatch } = useGame();
     const nav = useNavigate();
     const [modal, setModal] = useState({ show: false, message: "" });
     const [completedIds, setCompletedIds] = useState([]);
@@ -85,6 +86,7 @@ export default function Mural() {
     const [showInventory, setShowInventory] = useState(false);
     const [hasNewItem, setHasNewItem] = useState(false);
     const [weeklyRankReward, setWeeklyRankReward] = useState({ show: false, id: null, rankPosition: 0, moedas: 0, items: null });
+    const [unlockedFaction, setUnlockedFaction] = useState(null);
 
     async function handleClaimWeeklyRankReward() {
         if (!weeklyRankReward.id) return;
@@ -96,7 +98,7 @@ export default function Mural() {
             if (success) {
                 // Credita moedas localmente se houver
                 if (weeklyRankReward.moedas > 0) {
-                    useGame().dispatch({ 
+                    dispatch({ 
                         type: "UPDATE_PLAYER", 
                         payload: { dinheiro: state.player.dinheiro + weeklyRankReward.moedas } 
                     });
@@ -115,6 +117,34 @@ export default function Mural() {
             console.error("[Mural] Erro ao resgatar recompensa semanal:", err);
         } finally {
             setWeeklyRankReward({ show: false, id: null, rankPosition: 0, moedas: 0, items: null });
+        }
+    }
+
+    async function handleAcknowledgeFactionUnlock() {
+        if (!unlockedFaction?.leaderId) return;
+
+        try {
+            const leaderId = unlockedFaction.leaderId;
+            const currentSeen = state.player.seenLeaderUnlocks || [];
+            if (!currentSeen.includes(leaderId)) {
+                const nextSeen = [...currentSeen, leaderId];
+                const nextState = {
+                    ...state,
+                    player: {
+                        ...state.player,
+                        seenLeaderUnlocks: nextSeen
+                    }
+                };
+                const saved = saveGame(nextState);
+                replaceState(saved);
+                if (state.player.supabaseId) {
+                    await saveGameState(saved).catch(e => console.warn("[Mural] Erro ao salvar seenLeaderUnlocks remoto:", e));
+                }
+            }
+        } catch (e) {
+            console.error("[Mural] Erro ao reconhecer facção:", e);
+        } finally {
+            setUnlockedFaction(null);
         }
     }
 
@@ -142,7 +172,7 @@ export default function Mural() {
                 });
                 
                 // Atualiza moedas localmente
-                useGame().dispatch({ 
+                dispatch({ 
                     type: "UPDATE_PLAYER", 
                     payload: { dinheiro: state.player.dinheiro + reward.reward } 
                 });
@@ -186,6 +216,36 @@ export default function Mural() {
             setHasNewItem(true);
         }
     }, [inventory, state.player.vouchers]);
+
+    // Verifica se existem facções desbloqueadas cujos líderes ainda não foram vistos/reconhecidos
+    useEffect(() => {
+        if (!state || !state.player || loadingMissions) return;
+
+        // Aguarda fechar recompensas de login e de ranking semanal para não encavalar popups
+        if (loginReward.show || weeklyRankReward.show) return;
+
+        try {
+            const unlockedLeaders = getUnlockedLeaders(state.capturedSuspects);
+            const seenLeaders = state.player.seenLeaderUnlocks || [];
+            const unseenLeaderId = unlockedLeaders.find(id => !seenLeaders.includes(id));
+
+            if (unseenLeaderId) {
+                const faction = Object.values(FACTIONS).find(f => f.leaderId === unseenLeaderId);
+                if (faction) {
+                    setUnlockedFaction({
+                        factionId: faction.id,
+                        factionName: faction.name,
+                        factionEmoji: faction.emoji,
+                        leaderId: faction.leaderId,
+                        leaderName: faction.leaderName,
+                        message: faction.milestoneMessage
+                    });
+                }
+            }
+        } catch (e) {
+            console.error("[Mural] Erro ao checar facções desbloqueadas pendentes:", e);
+        }
+    }, [state, loadingMissions, loginReward.show, weeklyRankReward.show]);
 
     useEffect(() => {
         window.dispatchEvent(new CustomEvent("meridian-play-audio", { detail: true }));
@@ -804,6 +864,126 @@ export default function Mural() {
                             style={{ background: "linear-gradient(135deg, #ffd700, #ffba00)", color: "#000", fontWeight: 900, padding: "14px 0", width: "100%", borderRadius: 18, border: "none", fontSize: 15, cursor: "pointer", boxShadow: "0 10px 25px rgba(255,186,0,0.3)" }}
                         >
                             FECHAR NOVIDADES
+                        </button>
+                    </div>
+                </div>
+            )}
+
+            {unlockedFaction && (
+                <div style={{
+                    position: "fixed", inset: 0, zIndex: 10005, background: "#060a0f",
+                    color: "#fff", display: "flex", alignItems: "center", justifyContent: "center",
+                    padding: 20, boxSizing: "border-box"
+                }}>
+                    <style>{`
+                        @keyframes border-glow {
+                            0%, 100% { border-color: rgba(255,215,0,0.3); box-shadow: 0 0 15px rgba(255,215,0,0.1); }
+                            50% { border-color: rgba(255,215,0,1); box-shadow: 0 0 35px rgba(255,215,0,0.4); }
+                        }
+                        @keyframes header-glow {
+                            0%, 100% { text-shadow: 0 0 10px rgba(255,77,106,0.3); color: #ff4d6a; }
+                            50% { text-shadow: 0 0 25px rgba(255,77,106,0.8); color: #ff1a40; }
+                        }
+                        @keyframes panel-slide {
+                            from { opacity: 0; transform: translateY(40px); }
+                            to { opacity: 1; transform: translateY(0); }
+                        }
+                        .uf-circle-glow {
+                            animation: border-glow 2.5s infinite ease-in-out;
+                        }
+                        .uf-header-glow {
+                            animation: header-glow 2s infinite ease-in-out;
+                        }
+                    `}</style>
+                    <div style={{
+                        maxWidth: 420, width: "100%", textAlign: "center",
+                        animation: "panel-slide 0.7s cubic-bezier(0.19, 1, 0.22, 1) both"
+                    }}>
+                        <div style={{ marginBottom: 16, display: "flex", justifyContent: "center" }}>
+                            <img 
+                                src="/AgenciaATLAS.png" 
+                                alt="Agência A.T.L.A.S." 
+                                style={{ width: 80, height: 80, objectFit: "contain" }} 
+                            />
+                        </div>
+                        <div style={{ fontSize: 10, letterSpacing: 4, color: "#80bdff", fontWeight: 800, marginBottom: 6 }}>📡 ALERTA DE INTELIGÊNCIA A.T.L.A.S.</div>
+                        
+                        <h2 className="uf-header-glow" style={{ fontSize: 24, fontWeight: 900, margin: 0, marginBottom: 15, textTransform: "uppercase" }}>
+                            Facção Desmantelada!
+                        </h2>
+                        
+                        <div style={{
+                            background: "rgba(255,255,255,0.02)",
+                            border: "1px solid rgba(255,255,255,0.06)",
+                            borderRadius: 16,
+                            padding: "16px 20px",
+                            marginBottom: 24,
+                            fontSize: 14,
+                            lineHeight: 1.6,
+                            color: "rgba(255,255,255,0.85)",
+                            fontStyle: "italic"
+                        }}>
+                            "{unlockedFaction.message}"
+                        </div>
+
+                        {/* Exposed Boss Card */}
+                        <div style={{
+                            background: "linear-gradient(135deg, rgba(7, 18, 26, 0.9) 0%, rgba(3, 8, 13, 0.95) 100%)",
+                            border: "1px solid rgba(255,215,0,0.2)",
+                            borderRadius: 20,
+                            padding: "24px 16px",
+                            marginBottom: 30,
+                            display: "flex",
+                            flexDirection: "column",
+                            alignItems: "center"
+                        }}>
+                            <div 
+                                className="uf-circle-glow"
+                                style={{
+                                    width: 96, height: 96, borderRadius: "50%",
+                                    overflow: "hidden", border: "2px solid rgba(255,215,0,0.3)",
+                                    background: "#0a131a", marginBottom: 16
+                                }}
+                            >
+                                <img 
+                                    src="/Suspeitos/NaoIdentificadoLider.png" 
+                                    alt="Líder Não Identificado" 
+                                    style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "top" }}
+                                />
+                            </div>
+
+                            <div style={{ fontSize: 9, color: "#ffd700", fontWeight: 900, letterSpacing: 2, textTransform: "uppercase", marginBottom: 4 }}>
+                                👑 LÍDER EXPOSTO
+                            </div>
+                            <div style={{ fontSize: 20, fontWeight: 900, color: "#ffd700", textShadow: "0 0 10px rgba(255,215,0,0.3)", textTransform: "uppercase", marginBottom: 8 }}>
+                                {unlockedFaction.leaderName}
+                            </div>
+                            
+                            <div style={{ fontSize: 11, color: "rgba(255,255,255,0.5)", maxWidth: 260, lineHeight: 1.4 }}>
+                                A rede de inteligência Meridian foi rompida. Este alvo agora pode surgir como alvo principal em suas missões procedurais.
+                            </div>
+                        </div>
+
+                        <button
+                            onClick={handleAcknowledgeFactionUnlock}
+                            style={{
+                                width: "100%", padding: 16, borderRadius: 14,
+                                background: "linear-gradient(135deg, rgba(255,215,0,0.15), rgba(0,0,0,0.3))",
+                                border: "1px solid rgba(255,215,0,0.35)",
+                                color: "#ffd700", fontSize: 13, fontWeight: 800,
+                                letterSpacing: 2, cursor: "pointer", transition: "all 0.3s",
+                                boxShadow: "0 5px 15px rgba(255,215,0,0.1)"
+                            }}
+                            onMouseEnter={(e) => {
+                                e.currentTarget.style.background = "linear-gradient(135deg, rgba(255,215,0,0.25), rgba(255,215,0,0.05))";
+                                e.currentTarget.style.boxShadow = "0 8px 25px rgba(255,215,0,0.25)";
+                            }}
+                            onMouseLeave={(e) => {
+                                e.currentTarget.style.background = "linear-gradient(135deg, rgba(255,215,0,0.15), rgba(0,0,0,0.3))";
+                                e.currentTarget.style.boxShadow = "0 5px 15px rgba(255,215,0,0.1)";
+                            }}
+                        >
+                            RECONHECER ALVO ➔
                         </button>
                     </div>
                 </div>

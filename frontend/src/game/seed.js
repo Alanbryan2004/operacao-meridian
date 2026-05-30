@@ -2016,6 +2016,7 @@ export const initialPlayer = {
     legendaryLosses: 0,
     dailyStreak: 0,
     vouchers: [],
+    seenLeaderUnlocks: [],
     settings: {
         musicEnabled: true,
         clickSoundEnabled: true

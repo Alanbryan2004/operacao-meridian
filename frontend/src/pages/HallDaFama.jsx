@@ -111,8 +111,37 @@ export default function HallDaFama() {
             position: 'relative'
         }}>
             <style>{`
-                .hf-container { max-width: 500px; margin: 0 auto; padding: 20px; padding-bottom: 40px; }
-                .hf-header { text-align: center; margin-bottom: 20px; padding-top: 20px; }
+                .hf-container { 
+                    max-width: 500px; 
+                    margin: 0 auto; 
+                    padding: 16px; 
+                    height: 100dvh; 
+                    display: flex; 
+                    flex-direction: column; 
+                    box-sizing: border-box; 
+                    overflow: hidden; 
+                }
+                .hf-scrollable-content {
+                    flex: 1;
+                    overflow-y: auto;
+                    padding: 4px 6px 16px 6px;
+                    margin: 0 -6px;
+                }
+                .hf-scrollable-content::-webkit-scrollbar {
+                    width: 6px;
+                }
+                .hf-scrollable-content::-webkit-scrollbar-track {
+                    background: rgba(255, 255, 255, 0.01);
+                    border-radius: 999px;
+                }
+                .hf-scrollable-content::-webkit-scrollbar-thumb {
+                    background: rgba(255, 255, 255, 0.12);
+                    border-radius: 999px;
+                }
+                .hf-scrollable-content::-webkit-scrollbar-thumb:hover {
+                    background: rgba(255, 255, 255, 0.25);
+                }
+                .hf-header { text-align: center; margin-bottom: 16px; }
                 .hf-title { font-size: 28px; font-weight: 900; letter-spacing: 2px; text-transform: uppercase; color: #fff; text-shadow: 0 0 15px rgba(0,255,160,0.3); }
                 .hf-subtitle { font-size: 13px; opacity: 0.6; margin-top: 6px; }
                 .hf-list { display: grid; gap: 12px; }
@@ -224,6 +253,8 @@ export default function HallDaFama() {
                     </button>
                 </div>
 
+                <div className="hf-scrollable-content">
+
                 {/* Tab: CAPTURAS */}
                 {activeTab === "CAPTURAS" && (
                     <div className="hf-list">
@@ -325,6 +356,7 @@ export default function HallDaFama() {
                         })}
                     </div>
                 )}
+                </div>
 
                 <button className="hf-back" onClick={() => nav("/mural")}>
                     VOLTAR AO MURAL

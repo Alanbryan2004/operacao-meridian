@@ -485,7 +485,13 @@ export default function CasoSolucionado() {
                     maxWidth: 420, width: "100%", textAlign: "center",
                     animation: "panel-slide 0.7s cubic-bezier(0.19, 1, 0.22, 1) both"
                 }}>
-                    <div style={{ fontSize: 50, marginBottom: 12 }}>{unlockedFaction.factionEmoji}</div>
+                    <div style={{ marginBottom: 16, display: "flex", justifyContent: "center" }}>
+                        <img 
+                            src="/AgenciaATLAS.png" 
+                            alt="Agência A.T.L.A.S." 
+                            style={{ width: 80, height: 80, objectFit: "contain" }} 
+                        />
+                    </div>
                     <div style={{ fontSize: 10, letterSpacing: 4, color: "#80bdff", fontWeight: 800, marginBottom: 6 }}>📡 ALERTA DE INTELIGÊNCIA A.T.L.A.S.</div>
                     
                     <h2 className="uf-header-glow" style={{ fontSize: 24, fontWeight: 900, margin: 0, marginBottom: 15, textTransform: "uppercase" }}>
@@ -546,6 +552,25 @@ export default function CasoSolucionado() {
 
                     <button
                         onClick={() => {
+                            if (unlockedFaction?.leaderId) {
+                                const leaderId = unlockedFaction.leaderId;
+                                const currentSeen = state.player.seenLeaderUnlocks || [];
+                                if (!currentSeen.includes(leaderId)) {
+                                    const nextSeen = [...currentSeen, leaderId];
+                                    const nextState = {
+                                        ...state,
+                                        player: {
+                                            ...state.player,
+                                            seenLeaderUnlocks: nextSeen
+                                        }
+                                    };
+                                    const saved = saveGame(nextState);
+                                    replaceState(saved);
+                                    if (state.player.supabaseId) {
+                                        saveGameState(saved).catch(e => console.warn("[CasoSolucionado] Erro ao salvar seenLeaderUnlocks remoto:", e));
+                                    }
+                                }
+                            }
                             setUnlockedFaction(null);
                             proceedAfterFactionUnlock();
                         }}
