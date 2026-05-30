@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { useGame } from "../game/GameProvider";
-import { saveGame, suspectsSeed } from "../game/store";
+import { saveGame, suspectsSeed, FACTIONS } from "../game/store";
 import { supabase } from "../lib/supabase";
 import { inventoryService } from "../game/inventoryService";
 import { ITEMS_DATA } from "../game/itemsData";
@@ -10,13 +10,111 @@ import { saveGameState } from "../services/gameSaveService";
 // ── Definição das Conquistas ────────────────────────────────
 const ACHIEVEMENTS = [
     {
-        id: "suspects_26",
+        id: "suspects_20",
+        title: "Investigador Avançado",
+        description: "Capture 20 suspeitos comuns no banco de dados A.T.L.A.S.",
+        icon: "📡",
+        target: 20,
+        type: "suspects",
+        rewards: { moedas: 10000, items: [{ key: "satelite_atlas", qty: 1 }] },
+    },
+    {
+        id: "suspects_30",
+        title: "Lenda da Investigação",
+        description: "Capture 30 suspeitos comuns no banco de dados A.T.L.A.S.",
+        icon: "🗣️",
+        target: 30,
+        type: "suspects",
+        rewards: { moedas: 10000, items: [{ key: "fonte_anonima", qty: 1 }] },
+    },
+    {
+        id: "suspects_35",
         title: "Caçador de Criminosos",
-        description: "Capture todos os 26 suspeitos do banco de dados A.T.L.A.S.",
+        description: "Capture todos os 35 suspeitos do banco de dados A.T.L.A.S.",
         icon: "🕵️",
-        target: 26,
+        target: 35,
         type: "suspects",
         rewards: { moedas: 10000, items: [{ key: "dossie_sigiloso", qty: 1 }] },
+    },
+    {
+        id: "faction_F1",
+        title: "Fim da Shadow Forge",
+        description: "Derrube a Shadow Forge capturando todos os seus 5 integrantes.",
+        icon: "🕸️",
+        target: 5,
+        type: "faction_captured",
+        factionId: "F1",
+        rewards: { moedas: 20000, items: [{ key: "dossie_sigiloso", qty: 1 }] },
+    },
+    {
+        id: "faction_F2",
+        title: "Queda da Black Tide",
+        description: "Derrube a Black Tide capturando todos os seus 5 integrantes.",
+        icon: "⚓",
+        target: 5,
+        type: "faction_captured",
+        factionId: "F2",
+        rewards: { moedas: 20000, items: [{ key: "dossie_sigiloso", qty: 1 }] },
+    },
+    {
+        id: "faction_F3",
+        title: "Desvelando a Golden Veil",
+        description: "Derrube a Golden Veil capturando todos os seus 5 integrantes.",
+        icon: "🏛️",
+        target: 5,
+        type: "faction_captured",
+        factionId: "F3",
+        rewards: { moedas: 20000, items: [{ key: "dossie_sigiloso", qty: 1 }] },
+    },
+    {
+        id: "faction_F4",
+        title: "Caça ao Neon Phantom",
+        description: "Derrube a Neon Phantom capturando todos os seus 5 integrantes.",
+        icon: "💻",
+        target: 5,
+        type: "faction_captured",
+        factionId: "F4",
+        rewards: { moedas: 20000, items: [{ key: "dossie_sigiloso", qty: 1 }] },
+    },
+    {
+        id: "faction_F5",
+        title: "Corte da Silent Thread",
+        description: "Derrube a Silent Thread capturando todos os seus 5 integrantes.",
+        icon: "🥷",
+        target: 5,
+        type: "faction_captured",
+        factionId: "F5",
+        rewards: { moedas: 20000, items: [{ key: "dossie_sigiloso", qty: 1 }] },
+    },
+    {
+        id: "faction_F6",
+        title: "Derrubando a Crimson Crown",
+        description: "Derrube a Crimson Crown capturando todos os seus 5 integrantes.",
+        icon: "💰",
+        target: 5,
+        type: "faction_captured",
+        factionId: "F6",
+        rewards: { moedas: 20000, items: [{ key: "dossie_sigiloso", qty: 1 }] },
+    },
+    {
+        id: "faction_F7",
+        title: "Fim do Omega Protocol",
+        description: "Derrube o Omega Protocol capturando todos os seus 5 integrantes.",
+        icon: "☢️",
+        target: 5,
+        type: "faction_captured",
+        factionId: "F7",
+        rewards: { moedas: 20000, items: [{ key: "dossie_sigiloso", qty: 1 }] },
+    },
+    {
+        id: "capture_vesper",
+        title: "Derrubando Vesper",
+        description: "Capture Vesper, o Maior Criminoso e Líder Supremo da Meridian.",
+        icon: "👑",
+        target: 1,
+        type: "capture_suspect",
+        suspectId: "L07",
+        rewards: { moedas: 100000, items: [{ key: "dossie_sigiloso", qty: 1 }, { key: "fonte_anonima", qty: 1 }, { key: "satelite_atlas", qty: 1 }] },
     },
     {
         id: "cases_100",
@@ -135,12 +233,21 @@ export default function Conquistas() {
     }, []);
 
     const claimed = useMemo(() => player?.claimedAchievements || [], [player?.claimedAchievements]);
-    const capturedCount = useMemo(() => Object.keys(state?.capturedSuspects || {}).length, [state?.capturedSuspects]);
+    const capturedCount = useMemo(() => {
+        return Object.keys(state?.capturedSuspects || {}).filter(id => !id.startsWith("L")).length;
+    }, [state?.capturedSuspects]);
 
     function getProgress(achievement) {
         switch (achievement.type) {
             case "suspects":
                 return capturedCount;
+            case "faction_captured": {
+                const faction = FACTIONS[achievement.factionId];
+                if (!faction) return 0;
+                return faction.members.filter(memberId => (state?.capturedSuspects?.[memberId] || 0) > 0).length;
+            }
+            case "capture_suspect":
+                return (state?.capturedSuspects?.[achievement.suspectId] || 0) > 0 ? 1 : 0;
             case "total_won":
                 return missionStats?.totalWon ?? 0;
             case "difficulty_won":
@@ -200,195 +307,235 @@ export default function Conquistas() {
 
     return (
         <div style={{
-            minHeight: "100dvh",
+            height: "100dvh",
+            width: "100vw",
             background: "#0a0c10",
             color: "#fff",
             fontFamily: "'Inter', sans-serif",
-            padding: "16px",
+            padding: "16px 16px 0 16px",
             boxSizing: "border-box",
+            display: "flex",
+            flexDirection: "column",
+            overflow: "hidden",
         }}>
             <style>{`
                 @keyframes achv-pulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.05)} }
                 @keyframes achv-glow { 0%,100%{box-shadow:0 0 10px rgba(0,255,204,0.2)} 50%{box-shadow:0 0 25px rgba(0,255,204,0.5)} }
                 @keyframes achv-claimed { 0%{opacity:0;transform:translateY(10px)} 100%{opacity:1;transform:translateY(0)} }
                 @keyframes achv-bar { from{width:0} }
+                
+                .ac-wrap {
+                    max-width: 480px;
+                    margin: 0 auto;
+                    width: 100%;
+                    height: 100%;
+                    display: flex;
+                    flex-direction: column;
+                    overflow: hidden;
+                }
+                .ac-header {
+                    flex-shrink: 0;
+                    padding-bottom: 14px;
+                }
+                .ac-body {
+                    flex: 1;
+                    overflow-y: auto;
+                    padding-bottom: 20px;
+                }
+                .om-scrollbar::-webkit-scrollbar {
+                    width: 6px;
+                }
+                .om-scrollbar::-webkit-scrollbar-track {
+                    background: rgba(255, 255, 255, 0.02);
+                    border-radius: 99px;
+                }
+                .om-scrollbar::-webkit-scrollbar-thumb {
+                    background: rgba(255, 255, 255, 0.12);
+                    border-radius: 99px;
+                }
+                .om-scrollbar::-webkit-scrollbar-thumb:hover {
+                    background: rgba(0, 255, 204, 0.3);
+                }
             `}</style>
 
-            {/* Header */}
-            <div style={{ maxWidth: 480, margin: "0 auto" }}>
-                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 24 }}>
-                    <button
-                        onClick={() => nav("/mural")}
-                        style={{
-                            background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.12)",
-                            color: "#fff", padding: "8px 16px", borderRadius: 10, fontSize: 12,
-                            fontWeight: 700, cursor: "pointer",
-                        }}
-                    >
-                        ← VOLTAR
-                    </button>
-                    <div style={{ textAlign: "right" }}>
-                        <div style={{ fontSize: 10, letterSpacing: 3, opacity: 0.4 }}>📡 CENTRAL A.T.L.A.S.</div>
-                        <div style={{ fontSize: 18, fontWeight: 900, color: "#ffd700" }}>🏆 CONQUISTAS</div>
+            <div className="ac-wrap">
+                <div className="ac-header">
+                    {/* Header */}
+                    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 20 }}>
+                        <button
+                            onClick={() => nav("/mural")}
+                            style={{
+                                background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.12)",
+                                color: "#fff", padding: "8px 16px", borderRadius: 10, fontSize: 12,
+                                fontWeight: 700, cursor: "pointer",
+                            }}
+                        >
+                            ← VOLTAR
+                        </button>
+                        <div style={{ textAlign: "right" }}>
+                            <div style={{ fontSize: 10, letterSpacing: 3, opacity: 0.4 }}>📡 CENTRAL A.T.L.A.S.</div>
+                            <div style={{ fontSize: 18, fontWeight: 900, color: "#ffd700" }}>🏆 CONQUISTAS</div>
+                        </div>
+                    </div>
+
+                    {/* Stats Summary */}
+                    <div style={{
+                        display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 8,
+                    }}>
+                        {[
+                            { label: "Suspeitos", value: capturedCount, total: 35, color: "#ffd700" },
+                            { label: "Vitórias", value: missionStats?.totalWon ?? "...", color: "#3cffA0" },
+                            { label: "PVP Difícil", value: player.hardWins || 0, color: "#ff6b6b" },
+                        ].map((s, i) => (
+                            <div key={i} style={{
+                                background: "rgba(255,255,255,0.04)", borderRadius: 12,
+                                padding: "12px 8px", textAlign: "center",
+                                border: "1px solid rgba(255,255,255,0.06)",
+                            }}>
+                                <div style={{ fontSize: 22, fontWeight: 900, color: s.color }}>{s.value}</div>
+                                <div style={{ fontSize: 9, letterSpacing: 1, opacity: 0.5, marginTop: 2 }}>{s.label.toUpperCase()}</div>
+                            </div>
+                        ))}
                     </div>
                 </div>
 
-                {/* Stats Summary */}
-                <div style={{
-                    display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 8, marginBottom: 24,
-                }}>
-                    {[
-                        { label: "Suspeitos", value: capturedCount, total: 26, color: "#ffd700" },
-                        { label: "Vitórias", value: missionStats?.totalWon ?? "...", color: "#3cffA0" },
-                        { label: "PVP Difícil", value: player.hardWins || 0, color: "#ff6b6b" },
-                    ].map((s, i) => (
-                        <div key={i} style={{
-                            background: "rgba(255,255,255,0.04)", borderRadius: 12,
-                            padding: "12px 8px", textAlign: "center",
-                            border: "1px solid rgba(255,255,255,0.06)",
-                        }}>
-                            <div style={{ fontSize: 22, fontWeight: 900, color: s.color }}>{s.value}</div>
-                            <div style={{ fontSize: 9, letterSpacing: 1, opacity: 0.5, marginTop: 2 }}>{s.label.toUpperCase()}</div>
-                        </div>
-                    ))}
-                </div>
-
                 {/* Achievement Cards */}
-                <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
-                    {ACHIEVEMENTS.map(ach => {
-                        const current = getProgress(ach);
-                        const pct = Math.min((current / ach.target) * 100, 100);
-                        const isComplete = current >= ach.target;
-                        const isClaimed = claimed.includes(ach.id);
-                        const justClaimed = claimSuccess === ach.id;
+                <div className="ac-body om-scrollbar">
+                    <div style={{ display: "flex", flexDirection: "column", gap: 14, paddingRight: 6 }}>
+                        {ACHIEVEMENTS.map(ach => {
+                            const current = getProgress(ach);
+                            const pct = Math.min((current / ach.target) * 100, 100);
+                            const isComplete = current >= ach.target;
+                            const isClaimed = claimed.includes(ach.id);
+                            const justClaimed = claimSuccess === ach.id;
 
-                        return (
-                            <div key={ach.id} style={{
-                                borderRadius: 16, overflow: "hidden",
-                                background: isClaimed
-                                    ? "rgba(255,255,255,0.02)"
-                                    : isComplete
-                                        ? "rgba(0,255,204,0.04)"
-                                        : "rgba(255,255,255,0.04)",
-                                border: `1px solid ${isClaimed ? "rgba(255,255,255,0.06)" : isComplete ? "rgba(0,255,204,0.25)" : "rgba(255,255,255,0.08)"}`,
-                                ...(isComplete && !isClaimed ? { animation: "achv-glow 3s ease-in-out infinite" } : {}),
-                                opacity: isClaimed ? 0.5 : 1,
-                            }}>
-                                <div style={{ padding: "16px 16px 12px" }}>
-                                    <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-                                        <div style={{
-                                            fontSize: 28, minWidth: 42, textAlign: "center",
-                                            ...(isComplete && !isClaimed ? { animation: "achv-pulse 2s ease-in-out infinite" } : {}),
-                                        }}>
-                                            {isClaimed ? "✅" : ach.icon}
-                                        </div>
-                                        <div style={{ flex: 1 }}>
-                                            <div style={{
-                                                fontSize: 14, fontWeight: 800,
-                                                color: isClaimed ? "rgba(255,255,255,0.4)" : isComplete ? "#00ffcc" : "#fff",
-                                            }}>
-                                                {ach.title}
-                                            </div>
-                                            <div style={{ fontSize: 11, opacity: 0.5, marginTop: 2, lineHeight: 1.4 }}>
-                                                {ach.description}
-                                            </div>
-                                        </div>
-                                        <div style={{ textAlign: "right", minWidth: 50 }}>
-                                            <div style={{
-                                                fontSize: 16, fontWeight: 900,
-                                                color: isComplete ? "#00ffcc" : "#fff",
-                                            }}>
-                                                {Math.round(pct)}%
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    {/* Progress Bar */}
-                                    <div style={{
-                                        marginTop: 12, height: 6, borderRadius: 3,
-                                        background: "rgba(255,255,255,0.08)", overflow: "hidden",
-                                    }}>
-                                        <div style={{
-                                            height: "100%", borderRadius: 3,
-                                            width: `${pct}%`,
-                                            background: isClaimed
-                                                ? "rgba(255,255,255,0.15)"
-                                                : isComplete
-                                                    ? "linear-gradient(90deg, #00ffcc, #3cffA0)"
-                                                    : "linear-gradient(90deg, #80bdff, #4dabff)",
-                                            transition: "width 0.8s ease-out",
-                                            animation: "achv-bar 1s ease-out",
-                                        }} />
-                                    </div>
-                                    <div style={{ fontSize: 10, opacity: 0.4, marginTop: 4, textAlign: "right" }}>
-                                        {Math.min(current, ach.target)}/{ach.target}
-                                    </div>
-                                </div>
-
-                                {/* Reward Section */}
-                                <div style={{
-                                    padding: "10px 16px 14px",
-                                    borderTop: "1px solid rgba(255,255,255,0.05)",
-                                    display: "flex", alignItems: "center", justifyContent: "space-between",
-                                    gap: 10,
+                            return (
+                                <div key={ach.id} style={{
+                                    borderRadius: 16, overflow: "hidden",
+                                    background: isClaimed
+                                        ? "rgba(255,255,255,0.02)"
+                                        : isComplete
+                                            ? "rgba(0,255,204,0.04)"
+                                            : "rgba(255,255,255,0.04)",
+                                    border: `1px solid ${isClaimed ? "rgba(255,255,255,0.06)" : isComplete ? "rgba(0,255,204,0.25)" : "rgba(255,255,255,0.08)"}`,
+                                    ...(isComplete && !isClaimed ? { animation: "achv-glow 3s ease-in-out infinite" } : {}),
+                                    opacity: isClaimed ? 0.5 : 1,
                                 }}>
-                                    <div style={{ flex: 1 }}>
-                                        <div style={{ fontSize: 9, letterSpacing: 2, opacity: 0.4, marginBottom: 4 }}>RECOMPENSA</div>
-                                        <div style={{ fontSize: 11, color: "#ffd700", fontWeight: 700 }}>
-                                            💰 R$ {ach.rewards.moedas.toLocaleString("pt-BR")}
-                                            {ach.rewards.items.map((itm, i) => {
-                                                const info = ITEMS_DATA[itm.key];
-                                                return (
-                                                    <span key={i} style={{ color: "#00ffcc", marginLeft: 6 }}>
-                                                        + {String(itm.qty).padStart(2, "0")} {info?.nome || itm.key}
-                                                    </span>
-                                                );
-                                            })}
+                                    <div style={{ padding: "16px 16px 12px" }}>
+                                        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                                            <div style={{
+                                                fontSize: 28, minWidth: 42, textAlign: "center",
+                                                ...(isComplete && !isClaimed ? { animation: "achv-pulse 2s ease-in-out infinite" } : {}),
+                                            }}>
+                                                {isClaimed ? "✅" : ach.icon}
+                                            </div>
+                                            <div style={{ flex: 1 }}>
+                                                <div style={{
+                                                    fontSize: 14, fontWeight: 800,
+                                                    color: isClaimed ? "rgba(255,255,255,0.4)" : isComplete ? "#00ffcc" : "#fff",
+                                                }}>
+                                                    {ach.title}
+                                                </div>
+                                                <div style={{ fontSize: 11, opacity: 0.5, marginTop: 2, lineHeight: 1.4 }}>
+                                                    {ach.description}
+                                                </div>
+                                            </div>
+                                            <div style={{ textAlign: "right", minWidth: 50 }}>
+                                                <div style={{
+                                                    fontSize: 16, fontWeight: 900,
+                                                    color: isComplete ? "#00ffcc" : "#fff",
+                                                }}>
+                                                    {Math.round(pct)}%
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        {/* Progress Bar */}
+                                        <div style={{
+                                            marginTop: 12, height: 6, borderRadius: 3,
+                                            background: "rgba(255,255,255,0.08)", overflow: "hidden",
+                                        }}>
+                                            <div style={{
+                                                height: "100%", borderRadius: 3,
+                                                width: `${pct}%`,
+                                                background: isClaimed
+                                                    ? "rgba(255,255,255,0.15)"
+                                                    : isComplete
+                                                        ? "linear-gradient(90deg, #00ffcc, #3cffA0)"
+                                                        : "linear-gradient(90deg, #80bdff, #4dabff)",
+                                                transition: "width 0.8s ease-out",
+                                                animation: "achv-bar 1s ease-out",
+                                            }} />
+                                        </div>
+                                        <div style={{ fontSize: 10, opacity: 0.4, marginTop: 4, textAlign: "right" }}>
+                                            {Math.min(current, ach.target)}/{ach.target}
                                         </div>
                                     </div>
 
-                                    {isClaimed ? (
-                                        <div style={{
-                                            fontSize: 10, fontWeight: 800, color: "rgba(255,255,255,0.3)",
-                                            padding: "8px 14px", borderRadius: 10,
-                                            background: "rgba(255,255,255,0.04)",
-                                            ...(justClaimed ? { animation: "achv-claimed 0.4s ease-out" } : {}),
-                                        }}>
-                                            RESGATADO ✓
+                                    {/* Reward Section */}
+                                    <div style={{
+                                        padding: "10px 16px 14px",
+                                        borderTop: "1px solid rgba(255,255,255,0.05)",
+                                        display: "flex", alignItems: "center", justifyContent: "space-between",
+                                        gap: 10,
+                                    }}>
+                                        <div style={{ flex: 1 }}>
+                                            <div style={{ fontSize: 9, letterSpacing: 2, opacity: 0.4, marginBottom: 4 }}>RECOMPENSA</div>
+                                            <div style={{ fontSize: 11, color: "#ffd700", fontWeight: 700 }}>
+                                                💰 R$ {ach.rewards.moedas.toLocaleString("pt-BR")}
+                                                {ach.rewards.items.map((itm, i) => {
+                                                    const info = ITEMS_DATA[itm.key];
+                                                    return (
+                                                        <span key={i} style={{ color: "#00ffcc", marginLeft: 6 }}>
+                                                            + {String(itm.qty).padStart(2, "0")} {info?.nome || itm.key}
+                                                        </span>
+                                                    );
+                                                })}
+                                            </div>
                                         </div>
-                                    ) : isComplete ? (
-                                        <button
-                                            onClick={() => claimReward(ach)}
-                                            disabled={!!claiming}
-                                            style={{
-                                                padding: "8px 18px", borderRadius: 10,
-                                                border: "1px solid rgba(0,255,204,0.4)",
-                                                background: "linear-gradient(135deg, rgba(0,255,204,0.15), rgba(0,255,204,0.05))",
-                                                color: "#00ffcc", fontSize: 11, fontWeight: 800,
-                                                cursor: claiming ? "wait" : "pointer",
-                                                letterSpacing: 1,
-                                            }}
-                                        >
-                                            {claiming === ach.id ? "..." : "RESGATAR"}
-                                        </button>
-                                    ) : (
-                                        <div style={{
-                                            fontSize: 10, fontWeight: 700, color: "rgba(255,255,255,0.2)",
-                                            padding: "8px 14px", borderRadius: 10,
-                                            background: "rgba(255,255,255,0.03)",
-                                            border: "1px solid rgba(255,255,255,0.06)",
-                                        }}>
-                                            BLOQUEADO 🔒
-                                        </div>
-                                    )}
-                                </div>
-                            </div>
-                        );
-                    })}
-                </div>
 
-                {/* Footer spacing */}
-                <div style={{ height: 40 }} />
+                                        {isClaimed ? (
+                                            <div style={{
+                                                fontSize: 10, fontWeight: 800, color: "rgba(255,255,255,0.3)",
+                                                padding: "8px 14px", borderRadius: 10,
+                                                background: "rgba(255,255,255,0.04)",
+                                                ...(justClaimed ? { animation: "achv-claimed 0.4s ease-out" } : {}),
+                                            }}>
+                                                RESGATADO ✓
+                                            </div>
+                                        ) : isComplete ? (
+                                            <button
+                                                onClick={() => claimReward(ach)}
+                                                disabled={!!claiming}
+                                                style={{
+                                                    padding: "8px 18px", borderRadius: 10,
+                                                    border: "1px solid rgba(0,255,204,0.4)",
+                                                    background: "linear-gradient(135deg, rgba(0,255,204,0.15), rgba(0,255,204,0.05))",
+                                                    color: "#00ffcc", fontSize: 11, fontWeight: 800,
+                                                    cursor: claiming ? "wait" : "pointer",
+                                                    letterSpacing: 1,
+                                                }}
+                                            >
+                                                {claiming === ach.id ? "..." : "RESGATAR"}
+                                            </button>
+                                        ) : (
+                                            <div style={{
+                                                fontSize: 10, fontWeight: 700, color: "rgba(255,255,255,0.2)",
+                                                padding: "8px 14px", borderRadius: 10,
+                                                background: "rgba(255,255,255,0.03)",
+                                                border: "1px solid rgba(255,255,255,0.06)",
+                                            }}>
+                                                BLOQUEADO 🔒
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+                            );
+                        })}
+                    </div>
+                    {/* Footer spacing */}
+                    <div style={{ height: 20 }} />
+                </div>
             </div>
         </div>
     );

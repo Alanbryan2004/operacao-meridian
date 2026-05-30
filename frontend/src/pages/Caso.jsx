@@ -19,7 +19,7 @@ import Analisar from "./Analisar";
 import SuspectGallery from "../components/SuspectGallery";
 import DialogBox from "../components/DialogBox";
 import ModalMsg from "../components/ModalMsg";
-import { suspectsSeed } from "../game/store";
+import { suspectsSeed, getUnlockedLeaders, FACTIONS } from "../game/store";
 import { casesSeed } from "../game/seed";
 
 const TRANSPORT_MODES = [
@@ -615,7 +615,27 @@ export default function Caso() {
                         supabase.from("competitive_players").update({ status: "won", current_stage: activeScenario?.route?.length || 10, finished_at: new Date().toISOString() }).eq("lobby_id", lobbyId).eq("player_id", state.player.supabaseId).then();
                     }
 
+                    const unlockedBefore = getUnlockedLeaders(state.capturedSuspects);
                     const captState = registerCapture({ ...state, player: nextPlayer, runs: { ...state.runs, [caseId]: nextRun } }, run.warrantId);
+                    const unlockedAfter = getUnlockedLeaders(captState.capturedSuspects);
+
+                    const newlyUnlocked = unlockedAfter.filter(id => !unlockedBefore.includes(id));
+                    if (newlyUnlocked.length > 0) {
+                        const newLeaderId = newlyUnlocked[0];
+                        const faction = Object.values(FACTIONS).find(f => f.leaderId === newLeaderId);
+                        if (faction) {
+                            console.log(`[ATLAS] Facção desmantelada! Líder desbloqueado: ${newLeaderId}`);
+                            localStorage.setItem("pendingFactionUnlock", JSON.stringify({
+                                factionId: faction.id,
+                                factionName: faction.name,
+                                factionEmoji: faction.emoji,
+                                leaderId: faction.leaderId,
+                                leaderName: faction.leaderName,
+                                message: faction.milestoneMessage
+                            }));
+                        }
+                    }
+
                     const savedCaptState = saveGame(captState);
                     replaceState(savedCaptState);
                     // Força salvamento remoto imediato

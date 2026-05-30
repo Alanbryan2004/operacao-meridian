@@ -134,7 +134,8 @@ export function startRunIfNeeded(state, caseObj, forceReset = false, forcedScena
 
     if (caseObj.procedural) {
         // === CASO PROCEDURAL ===
-        proceduralScenario = generateProceduralScenario(caseObj, lobbyId);
+        const unlockedLeaders = getUnlockedLeaders(state.capturedSuspects);
+        proceduralScenario = generateProceduralScenario(caseObj, lobbyId, unlockedLeaders);
         if (proceduralScenario) {
             scenario = proceduralScenario;
             interrogatoriosOverride = proceduralScenario.interrogatorios;
@@ -1919,6 +1920,1125 @@ export const suspectsSeed = [
                 { id: "026_CARACTERISTICA_02", texto: "A pessoa parecia extremamente discreta." }
             ]
         }
+    },
+
+    {
+        id: "027",
+        codinome: "Zero Trace",
+        nomeReal: "Helena Moura",
+        sexo: "Feminino",
+        corCabelo: "Preto",
+        corOlhos: "Verde",
+        esporte: "Parkour",
+        comidaFavorita: "Italiana",
+        idadeAparente: 30,
+        origem: "Brasil",
+        especialidade: ["Limpeza de cena", "Apagamento de evidências"],
+        periculosidade: "Elite",
+        raridade: "Elite",
+        assinatura: ["Nenhuma evidência óbvia"],
+        caracteristica: ["Fria", "Discreta"],
+        idiomas: [
+            { idioma: "Português", nivel: "Nativo" }
+        ],
+        habitos: ["Observa saídas antes de entrar"],
+        pistasTipicas: [
+            "O local parecia limpo demais.",
+            "Nada estava fora do lugar.",
+            "Havia marcas leves em uma parede alta."
+        ],
+        falsosPositivos: ["Perita", "Funcionária da limpeza"],
+        relacaoMeridian: "Entra depois do crime para apagar qualquer rastro.",
+
+        dicas: {
+            sexo: [
+                { id: "027_SEXO_01", texto: "A testemunha disse que era uma mulher." },
+                { id: "027_SEXO_02", texto: "Quem passou por aqui tinha presença claramente feminina." }
+            ],
+            origem: [
+                { id: "027_ORIGEM_01", texto: "O jeito de falar lembrava alguém vindo do Brasil." },
+                { id: "027_ORIGEM_02", texto: "A testemunha comentou que a pessoa parecia ser do Brasil." }
+            ],
+            cabelo: [
+                { id: "027_CABELO_01", texto: "O cabelo chamava atenção pelo tom preto." },
+                { id: "027_CABELO_02", texto: "A testemunha reparou em cabelos pretos." }
+            ],
+            olhos: [
+                { id: "027_OLHOS_01", texto: "Os olhos eram verdes e atentos." },
+                { id: "027_OLHOS_02", texto: "A única coisa que a testemunha lembra com certeza é que os olhos eram verdes." }
+            ],
+            esporte: [
+                { id: "027_ESPORTE_01", texto: "A pessoa comentou com naturalidade que praticava parkour." },
+                { id: "027_ESPORTE_02", texto: "Parecia acostumada a se mover por lugares altos." }
+            ],
+            comida: [
+                { id: "027_COMIDA_01", texto: "A testemunha ouviu a pessoa elogiar comida italiana." },
+                { id: "027_COMIDA_02", texto: "Ela parecia ter preferência por culinária italiana." }
+            ],
+            caracteristica: [
+                { id: "027_CARACTERISTICA_01", texto: "O que mais chamou atenção foi o jeito frio." },
+                { id: "027_CARACTERISTICA_02", texto: "A pessoa parecia extremamente discreta." }
+            ]
+        }
+    },
+
+    {
+        id: "028",
+        codinome: "Pulse Neon",
+        nomeReal: "Noah Kim",
+        sexo: "Masculino",
+        corCabelo: "Preto",
+        corOlhos: "Preto",
+        esporte: "Skate",
+        comidaFavorita: "Asiática",
+        idadeAparente: 22,
+        origem: "Ásia",
+        especialidade: ["Caos digital", "Ataques em rede"],
+        periculosidade: "Alta",
+        raridade: "Incomum",
+        assinatura: ["Monitores piscam antes de falhar"],
+        caracteristica: ["Atlético", "Casual"],
+        idiomas: [
+            { idioma: "Coreano", nivel: "Nativo" },
+            { idioma: "Inglês", nivel: "Bom" }
+        ],
+        habitos: ["Fica mexendo em cabos e telas"],
+        pistasTipicas: [
+            "As telas piscaram antes de tudo cair.",
+            "Parecia jovem demais para estar ali.",
+            "Saiu rápido como se conhecesse o prédio."
+        ],
+        falsosPositivos: ["Técnico de TI"],
+        relacaoMeridian: "Especialista em distrações digitais.",
+
+        dicas: {
+            sexo: [
+                { id: "028_SEXO_01", texto: "A testemunha disse que era um homem." },
+                { id: "028_SEXO_02", texto: "Quem passou por aqui tinha presença claramente masculina." }
+            ],
+            origem: [
+                { id: "028_ORIGEM_01", texto: "O jeito de falar lembrava alguém vindo da Ásia." },
+                { id: "028_ORIGEM_02", texto: "A testemunha comentou que a pessoa parecia ser da Ásia." }
+            ],
+            cabelo: [
+                { id: "028_CABELO_01", texto: "O cabelo chamava atenção pelo tom preto." },
+                { id: "028_CABELO_02", texto: "A testemunha reparou em cabelos pretos." }
+            ],
+            olhos: [
+                { id: "028_OLHOS_01", texto: "Os olhos eram muito escuros." },
+                { id: "028_OLHOS_02", texto: "A única coisa que a testemunha lembra com certeza é que os olhos eram pretos." }
+            ],
+            esporte: [
+                { id: "028_ESPORTE_01", texto: "A pessoa comentou com naturalidade que praticava skate." },
+                { id: "028_ESPORTE_02", texto: "Parecia acostumado a movimentos rápidos." }
+            ],
+            comida: [
+                { id: "028_COMIDA_01", texto: "A testemunha ouviu a pessoa elogiar comida asiática." },
+                { id: "028_COMIDA_02", texto: "Ele parecia ter preferência por culinária asiática." }
+            ],
+            caracteristica: [
+                { id: "028_CARACTERISTICA_01", texto: "O que mais chamou atenção foi o jeito atlético." },
+                { id: "028_CARACTERISTICA_02", texto: "A pessoa parecia extremamente casual." }
+            ]
+        }
+    },
+
+    {
+        id: "029",
+        codinome: "Dust Crown",
+        nomeReal: "Amir Ben Salem",
+        sexo: "Masculino",
+        corCabelo: "Preto",
+        corOlhos: "Castanho",
+        esporte: "Xadrez",
+        comidaFavorita: "Árabe",
+        idadeAparente: 55,
+        origem: "África",
+        especialidade: ["Mercado negro arqueológico", "Relíquias"],
+        periculosidade: "Elite",
+        raridade: "Elite",
+        assinatura: ["Poeira avermelhada nas roupas"],
+        caracteristica: ["Elegante", "Calmo"],
+        idiomas: [
+            { idioma: "Árabe", nivel: "Fluente" },
+            { idioma: "Francês", nivel: "Bom" }
+        ],
+        habitos: ["Trata objetos antigos como sagrados"],
+        pistasTipicas: [
+            "Havia poeira avermelhada no chão.",
+            "Falou sobre relíquias antigas.",
+            "Segurava tudo usando luvas."
+        ],
+        falsosPositivos: ["Colecionador"],
+        relacaoMeridian: "Negocia peças históricas desaparecidas.",
+
+        dicas: {
+            sexo: [
+                { id: "029_SEXO_01", texto: "A testemunha disse que era um homem." },
+                { id: "029_SEXO_02", texto: "Quem passou por aqui tinha presença claramente masculina." }
+            ],
+            origem: [
+                { id: "029_ORIGEM_01", texto: "O jeito de falar lembrava alguém vindo da África." },
+                { id: "029_ORIGEM_02", texto: "A testemunha comentou que a pessoa parecia ser da África." }
+            ],
+            cabelo: [
+                { id: "029_CABELO_01", texto: "O cabelo chamava atenção pelo tom preto." },
+                { id: "029_CABELO_02", texto: "A testemunha reparou em cabelos pretos." }
+            ],
+            olhos: [
+                { id: "029_OLHOS_01", texto: "Os olhos eram castanhos e observadores." },
+                { id: "029_OLHOS_02", texto: "A única coisa que a testemunha lembra com certeza é que os olhos eram castanhos." }
+            ],
+            esporte: [
+                { id: "029_ESPORTE_01", texto: "A pessoa comentou com naturalidade que praticava xadrez." },
+                { id: "029_ESPORTE_02", texto: "Falava como alguém acostumado a pensar vários passos à frente." }
+            ],
+            comida: [
+                { id: "029_COMIDA_01", texto: "A testemunha ouviu a pessoa elogiar comida árabe." },
+                { id: "029_COMIDA_02", texto: "Ele parecia ter preferência por culinária árabe." }
+            ],
+            caracteristica: [
+                { id: "029_CARACTERISTICA_01", texto: "O que mais chamou atenção foi o jeito elegante." },
+                { id: "029_CARACTERISTICA_02", texto: "A pessoa parecia extremamente calma." }
+            ]
+        }
+    },
+
+    {
+        id: "030",
+        codinome: "Static Wolf",
+        nomeReal: "Oliver Grant",
+        sexo: "Masculino",
+        corCabelo: "Castanho",
+        corOlhos: "Azul",
+        esporte: "Corrida",
+        comidaFavorita: "Grelhados",
+        idadeAparente: 35,
+        origem: "Europa",
+        especialidade: ["Interceptação de rádio", "Escuta clandestina"],
+        periculosidade: "Média",
+        raridade: "Comum",
+        assinatura: ["Ruído estático próximo ao local"],
+        caracteristica: ["Discreto", "Casual"],
+        idiomas: [
+            { idioma: "Inglês", nivel: "Nativo" },
+            { idioma: "Português", nivel: "Bom" }
+        ],
+        habitos: ["Escuta conversas sem olhar diretamente"],
+        pistasTipicas: [
+            "O rádio começou a chiar do nada.",
+            "Ele parecia ouvir algo distante.",
+            "Falava baixo e observava tudo."
+        ],
+        falsosPositivos: ["Radialista"],
+        relacaoMeridian: "Especialista em interceptar comunicações.",
+
+        dicas: {
+            sexo: [
+                { id: "030_SEXO_01", texto: "A testemunha disse que era um homem." },
+                { id: "030_SEXO_02", texto: "Quem passou por aqui tinha presença claramente masculina." }
+            ],
+            origem: [
+                { id: "030_ORIGEM_01", texto: "O jeito de falar lembrava alguém vindo da Europa." },
+                { id: "030_ORIGEM_02", texto: "A testemunha comentou que a pessoa parecia ser da Europa." }
+            ],
+            cabelo: [
+                { id: "030_CABELO_01", texto: "O cabelo chamava atenção pelo tom castanho." },
+                { id: "030_CABELO_02", texto: "A testemunha reparou em cabelos castanhos." }
+            ],
+            olhos: [
+                { id: "030_OLHOS_01", texto: "Os olhos eram azuis e atentos." },
+                { id: "030_OLHOS_02", texto: "A única coisa que a testemunha lembra com certeza é que os olhos eram azuis." }
+            ],
+            esporte: [
+                { id: "030_ESPORTE_01", texto: "A pessoa comentou com naturalidade que praticava corrida." },
+                { id: "030_ESPORTE_02", texto: "Parecia acostumado com atividades físicas constantes." }
+            ],
+            comida: [
+                { id: "030_COMIDA_01", texto: "A testemunha ouviu a pessoa elogiar grelhados." },
+                { id: "030_COMIDA_02", texto: "Ele parecia ter preferência por carnes grelhadas." }
+            ],
+            caracteristica: [
+                { id: "030_CARACTERISTICA_01", texto: "O que mais chamou atenção foi o jeito discreto." },
+                { id: "030_CARACTERISTICA_02", texto: "A pessoa parecia extremamente casual." }
+            ]
+        }
+    },
+
+    {
+        id: "031",
+        codinome: "Ivory Ghost",
+        nomeReal: "Celine Durand",
+        sexo: "Feminino",
+        corCabelo: "Platinado",
+        corOlhos: "Verde",
+        esporte: "Esgrima",
+        comidaFavorita: "Francesa",
+        idadeAparente: 41,
+        origem: "Europa",
+        especialidade: ["Falsificação diplomática", "Identidades internacionais"],
+        periculosidade: "Alta",
+        raridade: "Raro",
+        assinatura: ["Documentos perfeitos demais"],
+        caracteristica: ["Elegante", "Discreta"],
+        idiomas: [
+            { idioma: "Francês", nivel: "Nativo" },
+            { idioma: "Inglês", nivel: "Fluente" }
+        ],
+        habitos: ["Evita responder perguntas pessoais"],
+        pistasTipicas: [
+            "Os documentos pareciam impecáveis.",
+            "Ela falava com calma demais.",
+            "Ninguém lembrava do nome dela depois."
+        ],
+        falsosPositivos: ["Diplomata"],
+        relacaoMeridian: "Cria identidades para operações globais.",
+
+        dicas: {
+            sexo: [
+                { id: "031_SEXO_01", texto: "A testemunha disse que era uma mulher." },
+                { id: "031_SEXO_02", texto: "Quem passou por aqui tinha presença claramente feminina." }
+            ],
+            origem: [
+                { id: "031_ORIGEM_01", texto: "O jeito de falar lembrava alguém vindo da Europa." },
+                { id: "031_ORIGEM_02", texto: "A testemunha comentou que a pessoa parecia ser da Europa." }
+            ],
+            cabelo: [
+                { id: "031_CABELO_01", texto: "O cabelo chamava atenção pelo tom platinado." },
+                { id: "031_CABELO_02", texto: "A testemunha reparou em cabelos platinados." }
+            ],
+            olhos: [
+                { id: "031_OLHOS_01", texto: "Os olhos eram verdes e observadores." },
+                { id: "031_OLHOS_02", texto: "A única coisa que a testemunha lembra com certeza é que os olhos eram verdes." }
+            ],
+            esporte: [
+                { id: "031_ESPORTE_01", texto: "A pessoa comentou com naturalidade que praticava esgrima." },
+                { id: "031_ESPORTE_02", texto: "Parecia ter movimentos precisos e refinados." }
+            ],
+            comida: [
+                { id: "031_COMIDA_01", texto: "A testemunha ouviu a pessoa elogiar comida francesa." },
+                { id: "031_COMIDA_02", texto: "Ela parecia ter preferência por culinária francesa." }
+            ],
+            caracteristica: [
+                { id: "031_CARACTERISTICA_01", texto: "O que mais chamou atenção foi o jeito elegante." },
+                { id: "031_CARACTERISTICA_02", texto: "A pessoa parecia extremamente discreta." }
+            ]
+        }
+    },
+
+    {
+        id: "032",
+        codinome: "Iron Viper",
+        nomeReal: "Diego Ferraz",
+        sexo: "Masculino",
+        corCabelo: "Preto",
+        corOlhos: "Castanho",
+        esporte: "Boxe",
+        comidaFavorita: "Mexicana",
+        idadeAparente: 38,
+        origem: "América Latina",
+        especialidade: ["Roubo de carga", "Interceptação rodoviária"],
+        periculosidade: "Alta",
+        raridade: "Incomum",
+        assinatura: ["Fragmentos metálicos cromados"],
+        caracteristica: ["Robusto", "Impulsivo"],
+        idiomas: [
+            { idioma: "Português", nivel: "Nativo" },
+            { idioma: "Espanhol", nivel: "Bom" }
+        ],
+        habitos: ["Estala os dedos antes de agir"],
+        pistasTipicas: [
+            "Havia marcas de metal no chão.",
+            "Parecia acostumado a confrontos.",
+            "Falava como alguém de estrada."
+        ],
+        falsosPositivos: ["Motorista"],
+        relacaoMeridian: "Especialista em roubo de carga.",
+
+        dicas: {
+            sexo: [
+                { id: "032_SEXO_01", texto: "A testemunha disse que era um homem." },
+                { id: "032_SEXO_02", texto: "Quem passou por aqui tinha presença claramente masculina." }
+            ],
+            origem: [
+                { id: "032_ORIGEM_01", texto: "O jeito de falar lembrava alguém vindo da América Latina." },
+                { id: "032_ORIGEM_02", texto: "A testemunha comentou que a pessoa parecia ser da América Latina." }
+            ],
+            cabelo: [
+                { id: "032_CABELO_01", texto: "O cabelo chamava atenção pelo tom preto." },
+                { id: "032_CABELO_02", texto: "A testemunha reparou em cabelos pretos." }
+            ],
+            olhos: [
+                { id: "032_OLHOS_01", texto: "Os olhos eram castanhos e agressivos." },
+                { id: "032_OLHOS_02", texto: "A única coisa que a testemunha lembra com certeza é que os olhos eram castanhos." }
+            ],
+            esporte: [
+                { id: "032_ESPORTE_01", texto: "A pessoa comentou com naturalidade que praticava boxe." },
+                { id: "032_ESPORTE_02", texto: "Parecia acostumado a confrontos físicos." }
+            ],
+            comida: [
+                { id: "032_COMIDA_01", texto: "A testemunha ouviu a pessoa elogiar comida mexicana." },
+                { id: "032_COMIDA_02", texto: "Ele parecia ter preferência por culinária mexicana." }
+            ],
+            caracteristica: [
+                { id: "032_CARACTERISTICA_01", texto: "O que mais chamou atenção foi o jeito robusto." },
+                { id: "032_CARACTERISTICA_02", texto: "A pessoa parecia impulsiva." }
+            ]
+        }
+    },
+
+    {
+        id: "033",
+        codinome: "Velvet Mirage",
+        nomeReal: "Aurora Bellini",
+        sexo: "Feminino",
+        corCabelo: "Ruivo",
+        corOlhos: "Azul",
+        esporte: "Hipismo",
+        comidaFavorita: "Mediterrânea",
+        idadeAparente: 40,
+        origem: "Europa",
+        especialidade: ["Cassinos", "Lavagem de dinheiro"],
+        periculosidade: "Alta",
+        raridade: "Raro",
+        assinatura: ["Ficha dourada esquecida"],
+        caracteristica: ["Elegante", "Sedutora"],
+        idiomas: [
+            { idioma: "Italiano", nivel: "Nativo" },
+            { idioma: "Inglês", nivel: "Fluente" },
+            { idioma: "Português", nivel: "Bom" }
+        ],
+        habitos: ["Observa pessoas como se calculasse apostas"],
+        pistasTipicas: [
+            "Havia uma ficha dourada no chão.",
+            "Ela parecia conhecer todos no salão.",
+            "Falava como alguém acostumada com luxo."
+        ],
+        falsosPositivos: ["Socialite", "Empresária"],
+        relacaoMeridian: "Transforma dinheiro ilegal em fortuna limpa.",
+
+        dicas: {
+            sexo: [
+                { id: "033_SEXO_01", texto: "A testemunha disse que era uma mulher." },
+                { id: "033_SEXO_02", texto: "Quem passou por aqui tinha presença claramente feminina." }
+            ],
+            origem: [
+                { id: "033_ORIGEM_01", texto: "O jeito de falar lembrava alguém vindo da Europa." },
+                { id: "033_ORIGEM_02", texto: "A testemunha comentou que a pessoa parecia ser da Europa." }
+            ],
+            cabelo: [
+                { id: "033_CABELO_01", texto: "O cabelo chamava atenção pelo tom ruivo." },
+                { id: "033_CABELO_02", texto: "A testemunha reparou em cabelos avermelhados." }
+            ],
+            olhos: [
+                { id: "033_OLHOS_01", texto: "Os olhos eram azuis e expressivos." },
+                { id: "033_OLHOS_02", texto: "A única coisa que a testemunha lembra com certeza é que os olhos eram azuis." }
+            ],
+            esporte: [
+                { id: "033_ESPORTE_01", texto: "A pessoa comentou com naturalidade que praticava hipismo." },
+                { id: "033_ESPORTE_02", texto: "Parecia acostumada a ambientes refinados." }
+            ],
+            comida: [
+                { id: "033_COMIDA_01", texto: "A testemunha ouviu a pessoa elogiar comida mediterrânea." },
+                { id: "033_COMIDA_02", texto: "Ela parecia ter preferência por culinária mediterrânea." }
+            ],
+            caracteristica: [
+                { id: "033_CARACTERISTICA_01", texto: "O que mais chamou atenção foi o jeito elegante." },
+                { id: "033_CARACTERISTICA_02", texto: "A pessoa parecia extremamente sedutora." }
+            ]
+        }
+    },
+
+    {
+        id: "034",
+        codinome: "Night Pulse",
+        nomeReal: "Alex Vega",
+        sexo: "Não Binário",
+        corCabelo: "Preto",
+        corOlhos: "Verde",
+        esporte: "Parkour",
+        comidaFavorita: "Vegana",
+        idadeAparente: 27,
+        origem: "América Latina",
+        especialidade: ["Fuga urbana", "Acesso vertical"],
+        periculosidade: "Média",
+        raridade: "Incomum",
+        assinatura: ["Marcas leves de sola em locais altos"],
+        caracteristica: ["Atlético", "Discreto"],
+        idiomas: [
+            { idioma: "Espanhol", nivel: "Nativo" },
+            { idioma: "Português", nivel: "Bom" }
+        ],
+        habitos: ["Sempre observa telhados e janelas"],
+        pistasTipicas: [
+            "Alguém foi visto nos telhados.",
+            "Havia marcas de sola perto da parede.",
+            "Parecia desaparecer entre os prédios."
+        ],
+        falsosPositivos: ["Atleta urbano"],
+        relacaoMeridian: "Especialista em infiltração vertical.",
+
+        dicas: {
+            sexo: [
+                { id: "034_SEXO_01", texto: "A testemunha disse que não conseguiu identificar se era homem ou mulher." },
+                { id: "034_SEXO_02", texto: "Quem passou por aqui tinha uma presença ambígua." }
+            ],
+            origem: [
+                { id: "034_ORIGEM_01", texto: "O jeito de falar lembrava alguém vindo da América Latina." },
+                { id: "034_ORIGEM_02", texto: "A testemunha comentou que a pessoa parecia ser da América Latina." }
+            ],
+            cabelo: [
+                { id: "034_CABELO_01", texto: "O cabelo chamava atenção pelo tom preto." },
+                { id: "034_CABELO_02", texto: "A testemunha reparou em cabelos pretos." }
+            ],
+            olhos: [
+                { id: "034_OLHOS_01", texto: "Os olhos eram verdes e atentos." },
+                { id: "034_OLHOS_02", texto: "A única coisa que a testemunha lembra com certeza é que os olhos eram verdes." }
+            ],
+            esporte: [
+                { id: "034_ESPORTE_01", texto: "A pessoa comentou com naturalidade que praticava parkour." },
+                { id: "034_ESPORTE_02", texto: "Parecia acostumada a escalar estruturas urbanas." }
+            ],
+            comida: [
+                { id: "034_COMIDA_01", texto: "A testemunha ouviu a pessoa elogiar comida vegana." },
+                { id: "034_COMIDA_02", texto: "Ela parecia ter preferência por alimentação vegana." }
+            ],
+            caracteristica: [
+                { id: "034_CARACTERISTICA_01", texto: "O que mais chamou atenção foi o jeito atlético." },
+                { id: "034_CARACTERISTICA_02", texto: "A pessoa parecia extremamente discreta." }
+            ]
+        }
+    },
+
+    {
+        id: "035",
+        codinome: "Black Harbor",
+        nomeReal: "Jonas Mercer",
+        sexo: "Masculino",
+        corCabelo: "Grisalho",
+        corOlhos: "Azul",
+        esporte: "Surfe",
+        comidaFavorita: "Frutos do Mar",
+        idadeAparente: 52,
+        origem: "América do Norte",
+        especialidade: ["Rotas marítimas clandestinas"],
+        periculosidade: "Alta",
+        raridade: "Raro",
+        assinatura: ["Cheiro de combustível náutico"],
+        caracteristica: ["Frio", "Elegante"],
+        idiomas: [
+            { idioma: "Inglês", nivel: "Nativo" },
+            { idioma: "Português", nivel: "Intermediário" }
+        ],
+        habitos: ["Observa correntes de vento"],
+        pistasTipicas: [
+            "Cheiro forte de combustível marítimo.",
+            "Falava sobre marés e vento.",
+            "Parecia alguém acostumado ao oceano."
+        ],
+        falsosPositivos: ["Capitão", "Instrutor de mergulho"],
+        relacaoMeridian: "Controla rotas oceânicas ilegais.",
+
+        dicas: {
+            sexo: [
+                { id: "035_SEXO_01", texto: "A testemunha disse que era um homem." },
+                { id: "035_SEXO_02", texto: "Quem passou por aqui tinha presença claramente masculina." }
+            ],
+            origem: [
+                { id: "035_ORIGEM_01", texto: "O jeito de falar lembrava alguém vindo da América do Norte." },
+                { id: "035_ORIGEM_02", texto: "A testemunha comentou que a pessoa parecia ser da América do Norte." }
+            ],
+            cabelo: [
+                { id: "035_CABELO_01", texto: "O cabelo chamava atenção pelo tom grisalho." },
+                { id: "035_CABELO_02", texto: "A testemunha reparou em cabelos grisalhos." }
+            ],
+            olhos: [
+                { id: "035_OLHOS_01", texto: "Os olhos eram azuis e frios." },
+                { id: "035_OLHOS_02", texto: "A única coisa que a testemunha lembra com certeza é que os olhos eram azuis." }
+            ],
+            esporte: [
+                { id: "035_ESPORTE_01", texto: "A pessoa comentou com naturalidade que praticava surfe." },
+                { id: "035_ESPORTE_02", texto: "Parecia acostumado ao mar." }
+            ],
+            comida: [
+                { id: "035_COMIDA_01", texto: "A testemunha ouviu a pessoa elogiar frutos do mar." },
+                { id: "035_COMIDA_02", texto: "Ele parecia ter preferência por pratos marítimos." }
+            ],
+            caracteristica: [
+                { id: "035_CARACTERISTICA_01", texto: "O que mais chamou atenção foi o jeito frio." },
+                { id: "035_CARACTERISTICA_02", texto: "A pessoa parecia extremamente elegante." }
+            ]
+        }
+    },
+
+    {
+        id: "L01",
+        codinome: "The Architect",
+        nomeReal: "Elias Voss",
+        sexo: "Masculino",
+        corCabelo: "Platinado",
+        corOlhos: "Verde",
+        esporte: "Xadrez",
+        comidaFavorita: "Francesa",
+        idadeAparente: 52,
+        origem: "Europa",
+        especialidade: ["Identidades globais", "Redes de falsificação", "Documentos diplomáticos"],
+        periculosidade: "Extrema",
+        raridade: "LENDARIO",
+        assinatura: [
+            "Passaportes perfeitos demais",
+            "Nenhum nome verdadeiro permanece por mais de um mês"
+        ],
+        caracteristica: ["Elegante", "Frio"],
+        idiomas: [
+            { idioma: "Alemão", nivel: "Nativo" },
+            { idioma: "Inglês", nivel: "Fluente" },
+            { idioma: "Francês", nivel: "Fluente" },
+            { idioma: "Português", nivel: "Formal e calculado" }
+        ],
+        habitos: ["Nunca assina o mesmo nome duas vezes", "Corrige detalhes mínimos em documentos"],
+        pistasTipicas: [
+            "Os passaportes pareciam reais demais.",
+            "Ele falava como se já tivesse vivido em vários países.",
+            "Nenhum documento tinha exatamente o mesmo nome."
+        ],
+        falsosPositivos: ["Diplomata", "Auditor internacional", "Consultor de imigração"],
+        relacaoMeridian: "Criador das identidades usadas pelos agentes mais importantes da Meridian.",
+
+        dicas: {
+            sexo: [
+                { id: "L01_SEXO_01", texto: "A testemunha disse que era um homem." },
+                { id: "L01_SEXO_02", texto: "Quem passou por aqui tinha presença claramente masculina." }
+            ],
+            origem: [
+                { id: "L01_ORIGEM_01", texto: "O jeito de falar lembrava alguém vindo da Europa." },
+                { id: "L01_ORIGEM_02", texto: "A testemunha comentou que a pessoa parecia ser da Europa." }
+            ],
+            cabelo: [
+                { id: "L01_CABELO_01", texto: "O cabelo chamava atenção pelo tom platinado." },
+                { id: "L01_CABELO_02", texto: "A testemunha reparou em cabelos platinados." }
+            ],
+            olhos: [
+                { id: "L01_OLHOS_01", texto: "Os olhos eram verdes e frios." },
+                { id: "L01_OLHOS_02", texto: "A única coisa que a testemunha lembra com certeza é que os olhos eram verdes." }
+            ],
+            esporte: [
+                { id: "L01_ESPORTE_01", texto: "A pessoa comentou com naturalidade que praticava xadrez." },
+                { id: "L01_ESPORTE_02", texto: "Falava como alguém acostumado a pensar vários movimentos à frente." }
+            ],
+            comida: [
+                { id: "L01_COMIDA_01", texto: "A testemunha ouviu a pessoa elogiar comida francesa." },
+                { id: "L01_COMIDA_02", texto: "Ele parecia ter preferência por culinária francesa." }
+            ],
+            caracteristica: [
+                { id: "L01_CARACTERISTICA_01", texto: "O que mais chamou atenção foi o jeito elegante." },
+                { id: "L01_CARACTERISTICA_02", texto: "A pessoa parecia extremamente fria." }
+            ]
+        }
+    },
+
+    {
+        id: "L02",
+        codinome: "Leviathan",
+        nomeReal: "Victor Graves",
+        sexo: "Masculino",
+        corCabelo: "Grisalho",
+        corOlhos: "Azul",
+        esporte: "Surfe",
+        comidaFavorita: "Frutos do Mar",
+        idadeAparente: 58,
+        origem: "América do Norte",
+        especialidade: ["Rotas oceânicas", "Portos clandestinos", "Frotas fantasmas"],
+        periculosidade: "Extrema",
+        raridade: "LENDARIO",
+        assinatura: [
+            "Mapas marítimos queimados",
+            "Cheiro de combustível náutico"
+        ],
+        caracteristica: ["Frio", "Elegante"],
+        idiomas: [
+            { idioma: "Inglês", nivel: "Nativo" },
+            { idioma: "Português", nivel: "Intermediário" },
+            { idioma: "Espanhol", nivel: "Bom" }
+        ],
+        habitos: ["Observa correntes de vento", "Fala de portos como se fossem peças de tabuleiro"],
+        pistasTipicas: [
+            "Havia cheiro de combustível marítimo no local.",
+            "Ele falava de maré como se fosse horário marcado.",
+            "Um mapa queimado foi encontrado perto da saída."
+        ],
+        falsosPositivos: ["Capitão", "Armador", "Instrutor de mergulho"],
+        relacaoMeridian: "Controla rotas oceânicas ilegais e frotas fantasmas da Meridian.",
+
+        dicas: {
+            sexo: [
+                { id: "L02_SEXO_01", texto: "A testemunha disse que era um homem." },
+                { id: "L02_SEXO_02", texto: "Quem passou por aqui tinha presença claramente masculina." }
+            ],
+            origem: [
+                { id: "L02_ORIGEM_01", texto: "O jeito de falar lembrava alguém vindo da América do Norte." },
+                { id: "L02_ORIGEM_02", texto: "A testemunha comentou que a pessoa parecia ser da América do Norte." }
+            ],
+            cabelo: [
+                { id: "L02_CABELO_01", texto: "O cabelo chamava atenção pelo tom grisalho." },
+                { id: "L02_CABELO_02", texto: "A testemunha reparou em cabelos grisalhos." }
+            ],
+            olhos: [
+                { id: "L02_OLHOS_01", texto: "Os olhos eram azuis e frios." },
+                { id: "L02_OLHOS_02", texto: "A única coisa que a testemunha lembra com certeza é que os olhos eram azuis." }
+            ],
+            esporte: [
+                { id: "L02_ESPORTE_01", texto: "A pessoa comentou com naturalidade que praticava surfe." },
+                { id: "L02_ESPORTE_02", texto: "Parecia alguém acostumado ao mar." }
+            ],
+            comida: [
+                { id: "L02_COMIDA_01", texto: "A testemunha ouviu a pessoa elogiar frutos do mar." },
+                { id: "L02_COMIDA_02", texto: "Ele parecia ter preferência por pratos marítimos." }
+            ],
+            caracteristica: [
+                { id: "L02_CARACTERISTICA_01", texto: "O que mais chamou atenção foi o jeito frio." },
+                { id: "L02_CARACTERISTICA_02", texto: "A pessoa parecia extremamente elegante." }
+            ]
+        }
+    },
+
+    {
+        id: "L03",
+        codinome: "The Curator",
+        nomeReal: "Sami Al-Karim",
+        sexo: "Masculino",
+        corCabelo: "Preto",
+        corOlhos: "Castanho",
+        esporte: "Polo",
+        comidaFavorita: "Árabe",
+        idadeAparente: 61,
+        origem: "Oriente Médio",
+        especialidade: ["Relíquias desaparecidas", "Mercado negro histórico", "Lavagem cultural"],
+        periculosidade: "Extrema",
+        raridade: "LENDARIO",
+        assinatura: [
+            "Poeira arqueológica",
+            "Objetos catalogados incorretamente"
+        ],
+        caracteristica: ["Elegante", "Calmo"],
+        idiomas: [
+            { idioma: "Árabe", nivel: "Nativo" },
+            { idioma: "Francês", nivel: "Fluente" },
+            { idioma: "Inglês", nivel: "Bom" },
+            { idioma: "Português", nivel: "Básico" }
+        ],
+        habitos: ["Trata relíquias como pessoas importantes", "Nunca toca objetos antigos sem luvas"],
+        pistasTipicas: [
+            "Havia poeira antiga no chão.",
+            "Ele falava de relíquias como se fossem vivas.",
+            "Um objeto estava catalogado com número errado."
+        ],
+        falsosPositivos: ["Colecionador", "Curador", "Professor de história"],
+        relacaoMeridian: "Financia operações da Meridian através do mercado negro de relíquias.",
+
+        dicas: {
+            sexo: [
+                { id: "L03_SEXO_01", texto: "A testemunha disse que era um homem." },
+                { id: "L03_SEXO_02", texto: "Quem passou por aqui tinha presença claramente masculina." }
+            ],
+            origem: [
+                { id: "L03_ORIGEM_01", texto: "O jeito de falar lembrava alguém vindo do Oriente Médio." },
+                { id: "L03_ORIGEM_02", texto: "A testemunha comentou que a pessoa parecia ser do Oriente Médio." }
+            ],
+            cabelo: [
+                { id: "L03_CABELO_01", texto: "O cabelo chamava atenção pelo tom preto." },
+                { id: "L03_CABELO_02", texto: "A testemunha reparou em cabelos pretos." }
+            ],
+            olhos: [
+                { id: "L03_OLHOS_01", texto: "Os olhos eram castanhos e observadores." },
+                { id: "L03_OLHOS_02", texto: "A única coisa que a testemunha lembra com certeza é que os olhos eram castanhos." }
+            ],
+            esporte: [
+                { id: "L03_ESPORTE_01", texto: "A pessoa comentou com naturalidade que praticava polo." },
+                { id: "L03_ESPORTE_02", texto: "Parecia acostumado com esportes tradicionais." }
+            ],
+            comida: [
+                { id: "L03_COMIDA_01", texto: "A testemunha ouviu a pessoa elogiar comida árabe." },
+                { id: "L03_COMIDA_02", texto: "Ele parecia ter preferência por culinária árabe." }
+            ],
+            caracteristica: [
+                { id: "L03_CARACTERISTICA_01", texto: "O que mais chamou atenção foi o jeito elegante." },
+                { id: "L03_CARACTERISTICA_02", texto: "A pessoa parecia extremamente calma." }
+            ]
+        }
+    },
+
+    {
+        id: "L04",
+        codinome: "Ghost Prime",
+        nomeReal: "Desconhecido",
+        sexo: "Não Binário",
+        corCabelo: "Preto",
+        corOlhos: "Verde",
+        esporte: "Parkour",
+        comidaFavorita: "Vegana",
+        idadeAparente: 33,
+        origem: "Desconhecida",
+        especialidade: ["Infraestrutura digital", "Redes clandestinas", "Manipulação de dados"],
+        periculosidade: "Extrema",
+        raridade: "LENDARIO",
+        assinatura: [
+            "Nenhuma imagem conhecida",
+            "Servidores desaparecem após uso"
+        ],
+        caracteristica: ["Atlético", "Discreto"],
+        idiomas: [
+            { idioma: "Inglês", nivel: "Fluente" },
+            { idioma: "Português", nivel: "Bom" },
+            { idioma: "Espanhol", nivel: "Bom" }
+        ],
+        habitos: ["Nunca olha diretamente para câmeras", "Sempre observa telhados, antenas e saídas"],
+        pistasTipicas: [
+            "As câmeras falharam antes da pessoa aparecer.",
+            "Alguém foi visto em uma estrutura alta.",
+            "O servidor inteiro desapareceu após o acesso."
+        ],
+        falsosPositivos: ["Atleta urbano", "Técnico de rede", "Consultor de segurança"],
+        relacaoMeridian: "Controla a infraestrutura digital invisível da Meridian.",
+
+        dicas: {
+            sexo: [
+                { id: "L04_SEXO_01", texto: "A testemunha disse que não conseguiu identificar se era homem ou mulher." },
+                { id: "L04_SEXO_02", texto: "Quem passou por aqui tinha uma presença ambígua, impossível de classificar com certeza." }
+            ],
+            origem: [
+                { id: "L04_ORIGEM_01", texto: "A origem da pessoa não pôde ser identificada." },
+                { id: "L04_ORIGEM_02", texto: "A testemunha disse que o jeito de falar não parecia pertencer claramente a nenhum lugar." }
+            ],
+            cabelo: [
+                { id: "L04_CABELO_01", texto: "O cabelo chamava atenção pelo tom preto." },
+                { id: "L04_CABELO_02", texto: "A testemunha reparou em cabelos pretos." }
+            ],
+            olhos: [
+                { id: "L04_OLHOS_01", texto: "Os olhos eram verdes e atentos." },
+                { id: "L04_OLHOS_02", texto: "A única coisa que a testemunha lembra com certeza é que os olhos eram verdes." }
+            ],
+            esporte: [
+                { id: "L04_ESPORTE_01", texto: "A pessoa comentou com naturalidade que praticava parkour." },
+                { id: "L04_ESPORTE_02", texto: "Parecia acostumada a escalar estruturas urbanas." }
+            ],
+            comida: [
+                { id: "L04_COMIDA_01", texto: "A testemunha ouviu a pessoa elogiar comida vegana." },
+                { id: "L04_COMIDA_02", texto: "Ela parecia ter preferência por alimentação vegana." }
+            ],
+            caracteristica: [
+                { id: "L04_CARACTERISTICA_01", texto: "O que mais chamou atenção foi o jeito atlético." },
+                { id: "L04_CARACTERISTICA_02", texto: "A pessoa parecia extremamente discreta." }
+            ]
+        }
+    },
+
+    {
+        id: "L05",
+        codinome: "Silk Specter",
+        nomeReal: "Aisha Rahman",
+        sexo: "Feminino",
+        corCabelo: "Preto",
+        corOlhos: "Preto",
+        esporte: "Yoga",
+        comidaFavorita: "Apimentada",
+        idadeAparente: 39,
+        origem: "Ásia",
+        especialidade: ["Infiltração invisível", "Microcontrabando", "Trocas em trânsito"],
+        periculosidade: "Extrema",
+        raridade: "LENDARIO",
+        assinatura: [
+            "Nenhuma câmera registra sua entrada",
+            "Fios têxteis microscópicos"
+        ],
+        caracteristica: ["Elegante", "Discreta"],
+        idiomas: [
+            { idioma: "Hindi", nivel: "Nativo" },
+            { idioma: "Inglês", nivel: "Fluente" },
+            { idioma: "Português", nivel: "Bom e educado" }
+        ],
+        habitos: ["Evita objetos metálicos", "Caminha sem produzir ruído"],
+        pistasTipicas: [
+            "As câmeras não registraram a entrada dela.",
+            "Havia fios quase invisíveis no chão.",
+            "Ela pediu uma embalagem sem metal."
+        ],
+        falsosPositivos: ["Importadora têxtil", "Representante de boutique", "Consultora de segurança"],
+        relacaoMeridian: "Responsável pelas infiltrações físicas mais limpas da Meridian.",
+
+        dicas: {
+            sexo: [
+                { id: "L05_SEXO_01", texto: "A testemunha disse que era uma mulher." },
+                { id: "L05_SEXO_02", texto: "Quem passou por aqui tinha presença claramente feminina." }
+            ],
+            origem: [
+                { id: "L05_ORIGEM_01", texto: "O jeito de falar lembrava alguém vindo da Ásia." },
+                { id: "L05_ORIGEM_02", texto: "A testemunha comentou que a pessoa parecia ser da Ásia." }
+            ],
+            cabelo: [
+                { id: "L05_CABELO_01", texto: "O cabelo chamava atenção pelo tom preto." },
+                { id: "L05_CABELO_02", texto: "A testemunha reparou em cabelos pretos." }
+            ],
+            olhos: [
+                { id: "L05_OLHOS_01", texto: "Os olhos eram muito escuros e atentos." },
+                { id: "L05_OLHOS_02", texto: "A única coisa que a testemunha lembra com certeza é que os olhos eram pretos." }
+            ],
+            esporte: [
+                { id: "L05_ESPORTE_01", texto: "A pessoa comentou com naturalidade que praticava yoga." },
+                { id: "L05_ESPORTE_02", texto: "Parecia ter movimentos controlados e leves." }
+            ],
+            comida: [
+                { id: "L05_COMIDA_01", texto: "A testemunha ouviu a pessoa elogiar comida apimentada." },
+                { id: "L05_COMIDA_02", texto: "Ela parecia ter preferência por pratos fortes e apimentados." }
+            ],
+            caracteristica: [
+                { id: "L05_CARACTERISTICA_01", texto: "O que mais chamou atenção foi o jeito elegante." },
+                { id: "L05_CARACTERISTICA_02", texto: "A pessoa parecia extremamente discreta." }
+            ]
+        }
+    },
+
+    {
+        id: "L06",
+        codinome: "The Monarch",
+        nomeReal: "Aleksandr Morozov",
+        sexo: "Masculino",
+        corCabelo: "Loiro",
+        corOlhos: "Azul",
+        esporte: "Xadrez",
+        comidaFavorita: "Francesa",
+        idadeAparente: 49,
+        origem: "Europa",
+        especialidade: ["Corrupção internacional", "Compra de governos", "Financiamento de operações"],
+        periculosidade: "Extrema",
+        raridade: "LENDARIO",
+        assinatura: [
+            "Peças de xadrez douradas",
+            "Frase: 'Toda escolha tem um preço'"
+        ],
+        caracteristica: ["Elegante", "Dominante"],
+        idiomas: [
+            { idioma: "Russo", nivel: "Nativo" },
+            { idioma: "Inglês", nivel: "Fluente" },
+            { idioma: "Português", nivel: "Formal com sotaque forte" },
+            { idioma: "Francês", nivel: "Bom" }
+        ],
+        habitos: ["Faz propostas como se fossem ameaças", "Move peças de xadrez enquanto negocia"],
+        pistasTipicas: [
+            "Ele disse que toda escolha tinha um preço.",
+            "Havia uma peça de xadrez dourada no local.",
+            "Falava como alguém acostumado a comprar silêncio."
+        ],
+        falsosPositivos: ["Diplomata", "Empresário", "Investidor estrangeiro"],
+        relacaoMeridian: "Controla o financiamento, os subornos e a influência política da Meridian.",
+
+        dicas: {
+            sexo: [
+                { id: "L06_SEXO_01", texto: "A testemunha disse que era um homem." },
+                { id: "L06_SEXO_02", texto: "Quem passou por aqui tinha presença claramente masculina." }
+            ],
+            origem: [
+                { id: "L06_ORIGEM_01", texto: "O jeito de falar lembrava alguém vindo da Europa." },
+                { id: "L06_ORIGEM_02", texto: "A testemunha comentou que a pessoa parecia ser da Europa." }
+            ],
+            cabelo: [
+                { id: "L06_CABELO_01", texto: "O cabelo chamava atenção pelo tom loiro." },
+                { id: "L06_CABELO_02", texto: "A testemunha reparou em cabelos claros." }
+            ],
+            olhos: [
+                { id: "L06_OLHOS_01", texto: "Os olhos eram azuis e frios." },
+                { id: "L06_OLHOS_02", texto: "A única coisa que a testemunha lembra com certeza é que os olhos eram azuis." }
+            ],
+            esporte: [
+                { id: "L06_ESPORTE_01", texto: "A pessoa comentou com naturalidade que praticava xadrez." },
+                { id: "L06_ESPORTE_02", texto: "Falava como alguém acostumado a estratégia." }
+            ],
+            comida: [
+                { id: "L06_COMIDA_01", texto: "A testemunha ouviu a pessoa elogiar comida francesa." },
+                { id: "L06_COMIDA_02", texto: "Ele parecia ter preferência por culinária francesa." }
+            ],
+            caracteristica: [
+                { id: "L06_CARACTERISTICA_01", texto: "O que mais chamou atenção foi o jeito elegante." },
+                { id: "L06_CARACTERISTICA_02", texto: "A pessoa parecia extremamente dominante." }
+            ]
+        }
+    },
+
+    {
+        id: "L07",
+        codinome: "Vesper",
+        nomeReal: "Desconhecido",
+        sexo: "Masculino",
+        corCabelo: "Platinado",
+        corOlhos: "Azul",
+        esporte: "Golfe",
+        comidaFavorita: "Grelhados",
+        idadeAparente: "60+",
+        origem: "Europa",
+        especialidade: ["Coordenação global", "Operações especiais", "Tecnologia experimental"],
+        periculosidade: "Máxima",
+        raridade: "LENDARIO",
+        assinatura: [
+            "Relatórios desaparecem após leitura",
+            "Nenhuma gravação de voz conhecida"
+        ],
+        caracteristica: ["Elegante", "Frio"],
+        idiomas: [
+            { idioma: "Inglês", nivel: "Fluente" },
+            { idioma: "Alemão", nivel: "Bom" },
+            { idioma: "Português", nivel: "Técnico" },
+            { idioma: "Francês", nivel: "Bom" }
+        ],
+        habitos: ["Nunca repete uma ordem", "Pergunta sobre temperatura, distância e margem de erro"],
+        pistasTipicas: [
+            "O relatório sumiu depois de ser lido.",
+            "Ele falava como se estivesse coordenando várias operações ao mesmo tempo.",
+            "Perguntou sobre margem de erro e temperatura do local."
+        ],
+        falsosPositivos: ["Consultor militar", "Pesquisador", "Auditor de segurança"],
+        relacaoMeridian: "Comanda operações especiais e projetos experimentais próximos ao núcleo de Vesper.",
+
+        dicas: {
+            sexo: [
+                { id: "L07_SEXO_01", texto: "A testemunha disse que era um homem." },
+                { id: "L07_SEXO_02", texto: "Quem passou por aqui tinha presença claramente masculina." }
+            ],
+            origem: [
+                { id: "L07_ORIGEM_01", texto: "O jeito de falar lembrava alguém vindo da Europa." },
+                { id: "L07_ORIGEM_02", texto: "A testemunha comentou que a pessoa parecia ser da Europa." }
+            ],
+            cabelo: [
+                { id: "L07_CABELO_01", texto: "O cabelo chamava atenção pelo tom platinado." },
+                { id: "L07_CABELO_02", texto: "A testemunha reparou em cabelos platinados." }
+            ],
+            olhos: [
+                { id: "L07_OLHOS_01", texto: "Os olhos eram azuis e frios." },
+                { id: "L07_OLHOS_02", texto: "A única coisa que a testemunha lembra com certeza é que os olhos eram azuis." }
+            ],
+            esporte: [
+                { id: "L07_ESPORTE_01", texto: "A pessoa comentou com naturalidade que praticava golfe." },
+                { id: "L07_ESPORTE_02", texto: "Parecia alguém de hábitos refinados e calculados." }
+            ],
+            comida: [
+                { id: "L07_COMIDA_01", texto: "A testemunha ouviu a pessoa elogiar grelhados." },
+                { id: "L07_COMIDA_02", texto: "Ele parecia ter preferência por carnes e pratos grelhados." }
+            ],
+            caracteristica: [
+                { id: "L07_CARACTERISTICA_01", texto: "O que mais chamou atenção foi o jeito elegante." },
+                { id: "L07_CARACTERISTICA_02", texto: "A pessoa parecia extremamente fria." }
+            ]
+        }
     }
-    ,
 ];
+
+// === SISTEMA DE FACÇÕES E LÍDERES ===
+export const FACTIONS = {
+    "F1": {
+        id: "F1",
+        name: "SHADOW FORGE",
+        emoji: "🕸️",
+        description: "Especialistas em identidade, documentos e infiltração social.",
+        leaderId: "L01",
+        leaderName: "The Architect",
+        members: ["001", "002", "018", "031", "012"],
+        milestoneMessage: "Você está desmontando uma rede de falsificadores."
+    },
+    "F2": {
+        id: "F2",
+        name: "BLACK TIDE",
+        emoji: "⚓",
+        description: "Especialistas em rotas marítimas e logística clandestina.",
+        leaderId: "L02",
+        leaderName: "Leviathan",
+        members: ["003", "013", "021", "035", "025"],
+        milestoneMessage: "Você está desmontando uma rede de rotas marítimas clandestinas."
+    },
+    "F3": {
+        id: "F3",
+        name: "GOLDEN VEIL",
+        emoji: "🏛️",
+        description: "Arte, antiguidades, leilões e lavagem cultural.",
+        leaderId: "L03",
+        leaderName: "The Curator",
+        members: ["007", "019", "008", "017", "029"],
+        milestoneMessage: "Você está desmontando uma rede de lavagem de relíquias e antiguidades."
+    },
+    "F4": {
+        id: "F4",
+        name: "NEON PHANTOM",
+        emoji: "💻",
+        description: "Tecnologia, invasão digital e sabotagem eletrônica.",
+        leaderId: "L04",
+        leaderName: "Ghost Prime",
+        members: ["009", "014", "028", "011", "030"],
+        milestoneMessage: "Você está neutralizando a infraestrutura e rede hacker da Meridian."
+    },
+    "F5": {
+        id: "F5",
+        name: "SILENT THREAD",
+        emoji: "🥷",
+        description: "Infiltração física, acesso clandestino e microcontrabando.",
+        leaderId: "L05",
+        leaderName: "Silk Specter",
+        members: ["006", "020", "004", "016", "023"],
+        milestoneMessage: "Você está neutralizando a rede de infiltração invisível e contrabando da Meridian."
+    },
+    "F6": {
+        id: "F6",
+        name: "CRIMSON CROWN",
+        emoji: "💰",
+        description: "Lavagem de dinheiro, elite financeira e influência.",
+        leaderId: "L06",
+        leaderName: "The Monarch",
+        members: ["005", "033", "022", "032", "024"],
+        milestoneMessage: "Você está asfixiando o fluxo financeiro e lavagem de dinheiro da Meridian."
+    },
+    "F7": {
+        id: "F7",
+        name: "OMEGA PROTOCOL",
+        emoji: "☢️",
+        description: "Elite operacional da organização.",
+        leaderId: "L07",
+        leaderName: "Vesper",
+        members: ["010", "015", "026", "027", "034"],
+        milestoneMessage: "Você está desmantelando o Protocolo Ômega, a elite operacional da Meridian."
+    }
+};
+
+// Processamento dinâmico para associar facções e líderes a cada suspeito
+suspectsSeed.forEach(suspect => {
+    const faction = Object.values(FACTIONS).find(f => f.members.includes(suspect.id));
+    if (faction) {
+        suspect.factionId = faction.id;
+        suspect.factionName = faction.name;
+        suspect.factionEmoji = faction.emoji;
+        suspect.factionDescription = faction.description;
+        suspect.leaderId = faction.leaderId;
+        suspect.leaderName = faction.leaderName;
+        suspect.isLeader = false;
+    } else if (suspect.id.startsWith("L")) {
+        const faction = Object.values(FACTIONS).find(f => f.leaderId === suspect.id);
+        if (faction) {
+            suspect.isLeader = true;
+            suspect.factionId = faction.id;
+            suspect.factionName = faction.name;
+            suspect.factionEmoji = faction.emoji;
+            suspect.factionDescription = faction.description;
+            suspect.leaderId = faction.leaderId;
+            suspect.leaderName = faction.leaderName;
+        }
+    }
+});
+
+// Helper para obter líderes desbloqueados
+export function getUnlockedLeaders(capturedSuspects) {
+    const caps = capturedSuspects || {};
+    const unlocked = [];
+    Object.values(FACTIONS).forEach(f => {
+        const allMembersCaptured = f.members.every(memberId => (caps[memberId] || 0) > 0);
+        if (allMembersCaptured) {
+            unlocked.push(f.leaderId);
+        }
+    });
+    return unlocked;
+}

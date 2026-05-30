@@ -328,7 +328,7 @@ function pick3Npcs(rng) {
 
 // ── Main Generator ───────────────────────────────────────────
 
-export function generateProceduralScenario(caseObj, seed = null) {
+export function generateProceduralScenario(caseObj, seed = null, unlockedLeaders = []) {
     const rng = seed ? createSeededRng(seed) : Math.random;
     
     const nivel = (caseObj.dificuldade || caseObj.nivel || "FACIL").toUpperCase();
@@ -339,7 +339,14 @@ export function generateProceduralScenario(caseObj, seed = null) {
     if (!startCity) return null;
 
     // 1. Pick suspect
-    const eligibleSuspects = suspectsSeed.filter(s => s.dicas && Object.keys(s.dicas).length > 0);
+    const eligibleSuspects = suspectsSeed.filter(s => {
+        if (!s.dicas || Object.keys(s.dicas).length === 0) return false;
+        // Se for líder, só permite se estiver desbloqueado
+        if (s.id.startsWith("L")) {
+            return unlockedLeaders.includes(s.id);
+        }
+        return true;
+    });
     if (eligibleSuspects.length === 0) return null;
     const suspect = pickRandom(eligibleSuspects, rng);
 

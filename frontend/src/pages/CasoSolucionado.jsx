@@ -2,7 +2,7 @@ import React, { useMemo, useState, useEffect, useRef } from "react";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { useGame } from "../game/GameProvider";
 import { getCargoByXp, getProximoCargo } from "../game/Cargos";
-import { suspectsSeed, saveGame } from "../game/store";
+import { suspectsSeed, saveGame, getUnlockedLeaders, FACTIONS } from "../game/store";
 import { supabase } from "../lib/supabase";
 import { saveGameState } from "../services/gameSaveService";
 import { submitSpeedRecord, formatDuration } from "../services/speedRecordService";
@@ -31,8 +31,11 @@ export default function CasoSolucionado() {
     const [speedRecordData, setSpeedRecordData] = useState(null); // { isNewRecord, duration, globalRank }
     const speedRecordSubmitted = useRef(false);
 
+    // --- Faction Unlock Modal State ---
+    const [unlockedFaction, setUnlockedFaction] = useState(null);
+
     // Se não temos o run nem o state, e não estamos mostrando o modal, aí sim retornamos null
-    if (!state || !caseObj || (!run && !streakUpdated && !newVoucher)) return null;
+    if (!state || !caseObj || (!run && !streakUpdated && !newVoucher && !unlockedFaction)) return null;
 
     const isCompetitive = useMemo(() => {
         return searchParams.get("mode") === "competitive" || !!caseObj?.isCompetitive;
@@ -182,6 +185,23 @@ export default function CasoSolucionado() {
     }
 
     function proceedAfterRanking() {
+        // Checa se há algum líder de facção recém-desbloqueado pendente
+        try {
+            const raw = localStorage.getItem("pendingFactionUnlock");
+            if (raw) {
+                const data = JSON.parse(raw);
+                localStorage.removeItem("pendingFactionUnlock");
+                setUnlockedFaction(data);
+                return;
+            }
+        } catch (e) {
+            console.error("[CasoSolucionado] Erro ao ler facção pendente:", e);
+        }
+
+        proceedAfterFactionUnlock();
+    }
+
+    function proceedAfterFactionUnlock() {
         // 🏆 Se ganhou e tem recorde novo OU primeiro registro, exibe modal
         if (isWon && (speedRecordData?.isNewRecord || speedRecordData?.isFirstRecord) && !showSpeedRecord) {
             setShowSpeedRecord(true);
@@ -426,6 +446,127 @@ export default function CasoSolucionado() {
                         }}
                     >
                         FECHAR RANKING
+                    </button>
+                </div>
+            </div>
+        );
+    }
+
+
+    // --- MODAL DE DESBLOQUEIO DE FACÇÃO (LÍDER EXPOSTO) ---
+    if (unlockedFaction) {
+        return (
+            <div style={{
+                position: "fixed", inset: 0, zIndex: 10005, background: "#060a0f",
+                color: "#fff", display: "flex", alignItems: "center", justifyContent: "center",
+                padding: 20, boxSizing: "border-box"
+            }}>
+                <style>{`
+                    @keyframes border-glow {
+                        0%, 100% { border-color: rgba(255,215,0,0.3); box-shadow: 0 0 15px rgba(255,215,0,0.1); }
+                        50% { border-color: rgba(255,215,0,1); box-shadow: 0 0 35px rgba(255,215,0,0.4); }
+                    }
+                    @keyframes header-glow {
+                        0%, 100% { text-shadow: 0 0 10px rgba(255,77,106,0.3); color: #ff4d6a; }
+                        50% { text-shadow: 0 0 25px rgba(255,77,106,0.8); color: #ff1a40; }
+                    }
+                    @keyframes panel-slide {
+                        from { opacity: 0; transform: translateY(40px); }
+                        to { opacity: 1; transform: translateY(0); }
+                    }
+                    .uf-circle-glow {
+                        animation: border-glow 2.5s infinite ease-in-out;
+                    }
+                    .uf-header-glow {
+                        animation: header-glow 2s infinite ease-in-out;
+                    }
+                `}</style>
+                <div style={{
+                    maxWidth: 420, width: "100%", textAlign: "center",
+                    animation: "panel-slide 0.7s cubic-bezier(0.19, 1, 0.22, 1) both"
+                }}>
+                    <div style={{ fontSize: 50, marginBottom: 12 }}>{unlockedFaction.factionEmoji}</div>
+                    <div style={{ fontSize: 10, letterSpacing: 4, color: "#80bdff", fontWeight: 800, marginBottom: 6 }}>📡 ALERTA DE INTELIGÊNCIA A.T.L.A.S.</div>
+                    
+                    <h2 className="uf-header-glow" style={{ fontSize: 24, fontWeight: 900, margin: 0, marginBottom: 15, textTransform: "uppercase" }}>
+                        Facção Desmantelada!
+                    </h2>
+                    
+                    <div style={{
+                        background: "rgba(255,255,255,0.02)",
+                        border: "1px solid rgba(255,255,255,0.06)",
+                        borderRadius: 16,
+                        padding: "16px 20px",
+                        marginBottom: 24,
+                        fontSize: 14,
+                        lineHeight: 1.6,
+                        color: "rgba(255,255,255,0.85)",
+                        fontStyle: "italic"
+                    }}>
+                        "{unlockedFaction.message}"
+                    </div>
+
+                    {/* Exposed Boss Card */}
+                    <div style={{
+                        background: "linear-gradient(135deg, rgba(7, 18, 26, 0.9) 0%, rgba(3, 8, 13, 0.95) 100%)",
+                        border: "1px solid rgba(255,215,0,0.2)",
+                        borderRadius: 20,
+                        padding: "24px 16px",
+                        marginBottom: 30,
+                        display: "flex",
+                        flexDirection: "column",
+                        alignItems: "center"
+                    }}>
+                        <div 
+                            className="uf-circle-glow"
+                            style={{
+                                width: 96, height: 96, borderRadius: "50%",
+                                overflow: "hidden", border: "2px solid rgba(255,215,0,0.3)",
+                                background: "#0a131a", marginBottom: 16
+                            }}
+                        >
+                            <img 
+                                src="/Suspeitos/NaoIdentificadoLider.png" 
+                                alt="Líder Não Identificado" 
+                                style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "top" }}
+                            />
+                        </div>
+
+                        <div style={{ fontSize: 9, color: "#ffd700", fontWeight: 900, letterSpacing: 2, textTransform: "uppercase", marginBottom: 4 }}>
+                            👑 LÍDER EXPOSTO
+                        </div>
+                        <div style={{ fontSize: 20, fontWeight: 900, color: "#ffd700", textShadow: "0 0 10px rgba(255,215,0,0.3)", textTransform: "uppercase", marginBottom: 8 }}>
+                            {unlockedFaction.leaderName}
+                        </div>
+                        
+                        <div style={{ fontSize: 11, color: "rgba(255,255,255,0.5)", maxWidth: 260, lineHeight: 1.4 }}>
+                            A rede de inteligência Meridian foi rompida. Este alvo agora pode surgir como alvo principal em suas missões procedurais.
+                        </div>
+                    </div>
+
+                    <button
+                        onClick={() => {
+                            setUnlockedFaction(null);
+                            proceedAfterFactionUnlock();
+                        }}
+                        style={{
+                            width: "100%", padding: 16, borderRadius: 14,
+                            background: "linear-gradient(135deg, rgba(255,215,0,0.15), rgba(0,0,0,0.3))",
+                            border: "1px solid rgba(255,215,0,0.35)",
+                            color: "#ffd700", fontSize: 13, fontWeight: 800,
+                            letterSpacing: 2, cursor: "pointer", transition: "all 0.3s",
+                            boxShadow: "0 5px 15px rgba(255,215,0,0.1)"
+                        }}
+                        onMouseEnter={(e) => {
+                            e.currentTarget.style.background = "linear-gradient(135deg, rgba(255,215,0,0.25), rgba(255,215,0,0.05))";
+                            e.currentTarget.style.boxShadow = "0 8px 25px rgba(255,215,0,0.25)";
+                        }}
+                        onMouseLeave={(e) => {
+                            e.currentTarget.style.background = "linear-gradient(135deg, rgba(255,215,0,0.15), rgba(0,0,0,0.3))";
+                            e.currentTarget.style.boxShadow = "0 5px 15px rgba(255,215,0,0.1)";
+                        }}
+                    >
+                        RECONHECER ALVO ➔
                     </button>
                 </div>
             </div>

@@ -78,15 +78,35 @@ export default function Perfil() {
 
     return (
         <div style={{
-            minHeight: "100dvh",
+            height: "100dvh",
             width: "100vw",
             background: "radial-gradient(circle at center, #071a26 0%, #000 70%)",
             color: "#fff",
-            padding: "14px",
+            padding: "14px 14px 0 14px",
             boxSizing: "border-box",
+            display: "flex",
+            flexDirection: "column",
+            overflow: "hidden",
         }}>
              <style>{`
-                .pf-wrap { max-width: 520px; margin: 0 auto; }
+                .pf-wrap { 
+                    max-width: 520px; 
+                    margin: 0 auto; 
+                    width: 100%;
+                    height: 100%;
+                    display: flex;
+                    flex-direction: column;
+                    overflow: hidden;
+                }
+                .pf-header {
+                    flex-shrink: 0;
+                    padding-bottom: 10px;
+                }
+                .pf-body {
+                    flex: 1;
+                    overflow-y: auto;
+                    padding-bottom: 20px;
+                }
                 .pf-panel { border-radius: 18px; border: 1px solid rgba(255,255,255,.14); background: rgba(255,255,255,0.06); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); box-shadow: 0 18px 45px rgba(0,0,0,.55); padding: 16px; margin-bottom: 14px; }
                 .pf-back { background: none; border: none; color: rgba(255,255,255,0.6); font-size: 13px; cursor: pointer; padding: 8px 0; margin-bottom: 8px; }
                 .pf-back:hover { color: #80bdff; }
@@ -104,220 +124,224 @@ export default function Perfil() {
                 .om-scrollbar::-webkit-scrollbar-thumb:hover {
                     background: rgba(128, 189, 255, 0.3);
                 }
-            `}</style>
+             `}</style>
 
             <div className="pf-wrap">
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
-                    <button className="pf-back" onClick={() => nav("/mural")}>← VOLTAR</button>
-                    <button 
-                        onClick={() => nav("/configuracao")}
-                        style={{
-                            background: "rgba(255,255,255,0.06)",
-                            border: "1px solid rgba(255,255,255,0.12)",
-                            color: "white",
-                            width: 38,
-                            height: 38,
-                            borderRadius: 12,
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "center",
-                            fontSize: 18,
-                            cursor: "pointer",
-                            transition: "all 0.2s"
-                        }}
-                        onMouseEnter={(e) => { e.currentTarget.style.background = "rgba(128,189,255,0.15)"; e.currentTarget.style.borderColor = "#80bdff"; }}
-                        onMouseLeave={(e) => { e.currentTarget.style.background = "rgba(255,255,255,0.06)"; e.currentTarget.style.borderColor = "rgba(255,255,255,0.12)"; }}
-                    >
-                        ⚙️
-                    </button>
-                </div>
-
-                {/* Sub-tabs */}
-                <div style={{ display: "flex", gap: 8, marginBottom: 14 }}>
-                    {["PERFIL", "GALERIA"].map(t => (
-                        <button
-                            key={t}
-                            onClick={() => setTab(t)}
+                <div className="pf-header">
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
+                        <button className="pf-back" onClick={() => nav("/mural")}>← VOLTAR</button>
+                        <button 
+                            onClick={() => nav("/configuracao")}
                             style={{
-                                flex: 1,
-                                padding: "10px 0",
+                                background: "rgba(255,255,255,0.06)",
+                                border: "1px solid rgba(255,255,255,0.12)",
+                                color: "white",
+                                width: 38,
+                                height: 38,
                                 borderRadius: 12,
-                                fontSize: 12,
-                                fontWeight: 800,
-                                letterSpacing: 0.5,
-                                border: "1px solid",
-                                borderColor: tab === t ? "#80bdff" : "rgba(255,255,255,0.12)",
-                                background: tab === t ? "rgba(128,189,255,0.15)" : "transparent",
-                                color: tab === t ? "#80bdff" : "rgba(255,255,255,0.5)",
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "center",
+                                fontSize: 18,
                                 cursor: "pointer",
+                                transition: "all 0.2s"
                             }}
+                            onMouseEnter={(e) => { e.currentTarget.style.background = "rgba(128,189,255,0.15)"; e.currentTarget.style.borderColor = "#80bdff"; }}
+                            onMouseLeave={(e) => { e.currentTarget.style.background = "rgba(255,255,255,0.06)"; e.currentTarget.style.borderColor = "rgba(255,255,255,0.12)"; }}
                         >
-                            {t === "PERFIL" ? "👤 PERFIL" : "🔍 GALERIA"}
+                            ⚙️
                         </button>
-                    ))}
+                    </div>
+
+                    {/* Sub-tabs */}
+                    <div style={{ display: "flex", gap: 8, marginBottom: 4 }}>
+                        {["PERFIL", "GALERIA"].map(t => (
+                            <button
+                                key={t}
+                                onClick={() => setTab(t)}
+                                style={{
+                                    flex: 1,
+                                    padding: "10px 0",
+                                    borderRadius: 12,
+                                    fontSize: 12,
+                                    fontWeight: 800,
+                                    letterSpacing: 0.5,
+                                    border: "1px solid",
+                                    borderColor: tab === t ? "#80bdff" : "rgba(255,255,255,0.12)",
+                                    background: tab === t ? "rgba(128,189,255,0.15)" : "transparent",
+                                    color: tab === t ? "#80bdff" : "rgba(255,255,255,0.5)",
+                                    cursor: "pointer",
+                                }}
+                            >
+                                {t === "PERFIL" ? "👤 PERFIL" : "🔍 GALERIA"}
+                            </button>
+                        ))}
+                    </div>
                 </div>
 
-                {tab === "PERFIL" && (
-                    <>
-                        {/* Card do Agente */}
-                        <div className="pf-panel">
-                            <div style={{ display: "flex", alignItems: "center", gap: 16, marginBottom: 16 }}>
-                            <div 
-                                onClick={() => nav("/avatar-creator")}
-                                style={{
-                                    width: 100, height: 100, borderRadius: "50%",
-                                    border: "2px solid rgba(128,189,255,0.2)",
-                                    background: "rgba(0,0,0,0.4)",
-                                    flexShrink: 0, overflow: "hidden", cursor: "pointer",
-                                    position: "relative",
-                                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                    transition: "all 0.2s"
-                                }}
-                                onMouseEnter={(e) => { e.currentTarget.style.borderColor = "#80bdff"; e.currentTarget.style.transform = "scale(1.05)"; }}
-                                onMouseLeave={(e) => { e.currentTarget.style.borderColor = "rgba(128,189,255,0.3)"; e.currentTarget.style.transform = "scale(1)"; }}
-                            >
-                                <AvatarDisplay config={player.avatar} googlePhoto={player.avatarUrl} size={100} />
-                                {!player.avatar && (
-                                    <div style={{ fontSize: 10, opacity: 0.5, textAlign: "center", padding: 10, position: 'absolute' }}>
-                                        DEFINIR<br/>AVATAR
-                                    </div>
-                                )}
-                            </div>
-                                <div>
-                                    <div style={{ fontSize: 20, fontWeight: 800 }}>{player.nome}</div>
-                                    <div style={{ marginTop: 4, display: "flex", gap: 6, flexWrap: "wrap" }}>
-                                        <Badge tone="blue">{player.classeEmoji || "🟢"} {player.nivelTitulo || "Novato"}</Badge>
-                                    </div>
-                                    {player.avatar?.frase && (
-                                        <div style={{ 
-                                            marginTop: 8, 
-                                            fontSize: 12, 
-                                            fontStyle: "italic", 
-                                            color: "rgba(255,255,255,0.5)",
-                                            borderLeft: "2px solid #80bdff",
-                                            paddingLeft: 8,
-                                            lineHeight: "1.4"
-                                        }}>
-                                            "{player.avatar.frase}"
+                <div className="pf-body om-scrollbar">
+                    {tab === "PERFIL" && (
+                        <>
+                            {/* Card do Agente */}
+                            <div className="pf-panel">
+                                <div style={{ display: "flex", alignItems: "center", gap: 16, marginBottom: 16 }}>
+                                <div 
+                                    onClick={() => nav("/avatar-creator")}
+                                    style={{
+                                        width: 100, height: 100, borderRadius: "50%",
+                                        border: "2px solid rgba(128,189,255,0.2)",
+                                        background: "rgba(0,0,0,0.4)",
+                                        flexShrink: 0, overflow: "hidden", cursor: "pointer",
+                                        position: "relative",
+                                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                        transition: "all 0.2s"
+                                    }}
+                                    onMouseEnter={(e) => { e.currentTarget.style.borderColor = "#80bdff"; e.currentTarget.style.transform = "scale(1.05)"; }}
+                                    onMouseLeave={(e) => { e.currentTarget.style.borderColor = "rgba(128,189,255,0.3)"; e.currentTarget.style.transform = "scale(1)"; }}
+                                >
+                                    <AvatarDisplay config={player.avatar} googlePhoto={player.avatarUrl} size={100} />
+                                    {!player.avatar && (
+                                        <div style={{ fontSize: 10, opacity: 0.5, textAlign: "center", padding: 10, position: 'absolute' }}>
+                                            DEFINIR<br/>AVATAR
                                         </div>
                                     )}
                                 </div>
-                            </div>
-
-                            {/* Stats Grid */}
-                            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
-                                <div style={{ background: "rgba(255,255,255,0.03)", borderRadius: 12, padding: "12px", border: "1px solid rgba(255,255,255,0.08)", textAlign: "center" }}>
-                                    <div style={{ fontSize: 20, fontWeight: 900, color: "#ffd700" }}>${player.dinheiro}</div>
-                                    <div style={{ fontSize: 9, opacity: 0.5, marginTop: 4, letterSpacing: 1 }}>SALDO</div>
-                                </div>
-                                <div style={{ background: "rgba(255,255,255,0.03)", borderRadius: 12, padding: "12px", border: "1px solid rgba(255,255,255,0.08)", textAlign: "center" }}>
-                                    <div style={{ fontSize: 20, fontWeight: 900, color: "#80bdff" }}>{player.xp}</div>
-                                    <div style={{ fontSize: 9, opacity: 0.5, marginTop: 4, letterSpacing: 1 }}>XP TOTAL</div>
-                                </div>
-                                <div style={{ background: "rgba(255,255,255,0.03)", borderRadius: 12, padding: "12px", border: "1px solid rgba(255,255,255,0.08)", textAlign: "center" }}>
-                                    <div style={{ fontSize: 20, fontWeight: 900, color: "#3cffA0" }}>{loading ? "..." : missoesVencidas}</div>
-                                    <div style={{ fontSize: 9, opacity: 0.5, marginTop: 4, letterSpacing: 1 }}>MISSÕES COMPLETAS</div>
-                                </div>
-                                <div style={{ background: "rgba(255,255,255,0.03)", borderRadius: 12, padding: "12px", border: "1px solid rgba(255,255,255,0.08)", textAlign: "center" }}>
-                                    <div style={{ fontSize: 20, fontWeight: 900, color: "#ff6b6b" }}>{loading ? "..." : totalCapturas}</div>
-                                    <div style={{ fontSize: 9, opacity: 0.5, marginTop: 4, letterSpacing: 1 }}>CAPTURAS TOTAIS</div>
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Missões */}
-                        <div className="pf-panel" style={{ display: "flex", flexDirection: "column" }}>
-                            <div style={{ fontSize: 12, fontWeight: 700, marginBottom: 12, color: "#80bdff", letterSpacing: 1 }}>MISSÕES RECENTES</div>
-                            
-                            {loading && <div style={{ fontSize: 12, opacity: 0.5, textAlign: "center", padding: 10 }}>Carregando histórico...</div>}
-                            
-                            {!loading && doneMissions.length === 0 && (
-                                <div style={{ fontSize: 12, opacity: 0.5, textAlign: "center", padding: 10 }}>Nenhuma missão concluída ainda.</div>
-                            )}
-
-                            {!loading && doneMissions.length > 0 && (
-                                <div style={{ maxHeight: "300px", overflowY: "auto", paddingRight: "6px" }} className="om-scrollbar">
-                                    {doneMissions.map(m => {
-                                        const statusValue = String(m.resultado || "").trim().toUpperCase();
-                                        const isWon = statusValue === "WON";
-                                        const statusLabel = isWon ? "✅ Completa" : "❌ Fracassada";
-                                        const statusColor = isWon ? "#3cffA0" : "#ff6b6b";
-                                        const dateStr = m.completed_at ? new Date(m.completed_at).toLocaleDateString("pt-BR") : "";
-
-                                        return (
-                                            <div key={m.id} style={{
-                                                padding: "10px 12px",
-                                                borderRadius: 12,
-                                                background: "rgba(255,255,255,0.03)",
-                                                border: "1px solid rgba(255,255,255,0.08)",
-                                                display: "flex",
-                                                justifyContent: "space-between",
-                                                alignItems: "center",
-                                                marginBottom: 8,
+                                    <div>
+                                        <div style={{ fontSize: 20, fontWeight: 800 }}>{player.nome}</div>
+                                        <div style={{ marginTop: 4, display: "flex", gap: 6, flexWrap: "wrap" }}>
+                                            <Badge tone="blue">{player.classeEmoji || "🟢"} {player.nivelTitulo || "Novato"}</Badge>
+                                        </div>
+                                        {player.avatar?.frase && (
+                                            <div style={{ 
+                                                marginTop: 8, 
+                                                fontSize: 12, 
+                                                fontStyle: "italic", 
+                                                color: "rgba(255,255,255,0.5)",
+                                                borderLeft: "2px solid #80bdff",
+                                                paddingLeft: 8,
+                                                lineHeight: "1.4"
                                             }}>
-                                                <div>
-                                                    <div style={{ fontSize: 13, color: isWon ? "white" : "rgba(255,255,255,0.8)" }}>{m.titulo}</div>
-                                                    <div style={{ fontSize: 9, opacity: 0.4, marginTop: 2 }}>{dateStr} · {m.dificuldade}</div>
-                                                </div>
-                                                <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                                                    <div style={{ fontSize: 10, fontWeight: 800, color: statusColor }}>{statusLabel}</div>
-                                                    {!isWon && (
-                                                        <button
-                                                            onClick={() => nav(`/missao-intro/${m.case_id}`)}
-                                                            style={{
-                                                                background: "rgba(255,255,255,0.06)",
-                                                                border: "1px solid rgba(255,255,255,0.12)",
-                                                                color: "#fff",
-                                                                fontSize: 9,
-                                                                padding: "5px 10px",
-                                                                borderRadius: 8,
-                                                                cursor: "pointer",
-                                                                fontWeight: 800,
-                                                                transition: "all 0.2s"
-                                                            }}
-                                                            onMouseEnter={(e) => { e.currentTarget.style.background = "rgba(128,189,255,0.15)"; e.currentTarget.style.borderColor = "#80bdff"; }}
-                                                            onMouseLeave={(e) => { e.currentTarget.style.background = "rgba(255,255,255,0.06)"; e.currentTarget.style.borderColor = "rgba(255,255,255,0.12)"; }}
-                                                        >
-                                                            REJOGAR
-                                                        </button>
-                                                    )}
-                                                </div>
+                                                "{player.avatar.frase}"
                                             </div>
-                                        );
-                                    })}
+                                        )}
+                                    </div>
                                 </div>
-                            )}
+
+                                {/* Stats Grid */}
+                                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+                                    <div style={{ background: "rgba(255,255,255,0.03)", borderRadius: 12, padding: "12px", border: "1px solid rgba(255,255,255,0.08)", textAlign: "center" }}>
+                                        <div style={{ fontSize: 20, fontWeight: 900, color: "#ffd700" }}>${player.dinheiro}</div>
+                                        <div style={{ fontSize: 9, opacity: 0.5, marginTop: 4, letterSpacing: 1 }}>SALDO</div>
+                                    </div>
+                                    <div style={{ background: "rgba(255,255,255,0.03)", borderRadius: 12, padding: "12px", border: "1px solid rgba(255,255,255,0.08)", textAlign: "center" }}>
+                                        <div style={{ fontSize: 20, fontWeight: 900, color: "#80bdff" }}>{player.xp}</div>
+                                        <div style={{ fontSize: 9, opacity: 0.5, marginTop: 4, letterSpacing: 1 }}>XP TOTAL</div>
+                                    </div>
+                                    <div style={{ background: "rgba(255,255,255,0.03)", borderRadius: 12, padding: "12px", border: "1px solid rgba(255,255,255,0.08)", textAlign: "center" }}>
+                                        <div style={{ fontSize: 20, fontWeight: 900, color: "#3cffA0" }}>{loading ? "..." : missoesVencidas}</div>
+                                        <div style={{ fontSize: 9, opacity: 0.5, marginTop: 4, letterSpacing: 1 }}>MISSÕES COMPLETAS</div>
+                                    </div>
+                                    <div style={{ background: "rgba(255,255,255,0.03)", borderRadius: 12, padding: "12px", border: "1px solid rgba(255,255,255,0.08)", textAlign: "center" }}>
+                                        <div style={{ fontSize: 20, fontWeight: 900, color: "#ff6b6b" }}>{loading ? "..." : totalCapturas}</div>
+                                        <div style={{ fontSize: 9, opacity: 0.5, marginTop: 4, letterSpacing: 1 }}>CAPTURAS TOTAIS</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Missões */}
+                            <div className="pf-panel" style={{ display: "flex", flexDirection: "column" }}>
+                                <div style={{ fontSize: 12, fontWeight: 700, marginBottom: 12, color: "#80bdff", letterSpacing: 1 }}>MISSÕES RECENTES</div>
+                                
+                                {loading && <div style={{ fontSize: 12, opacity: 0.5, textAlign: "center", padding: 10 }}>Carregando histórico...</div>}
+                                
+                                {!loading && doneMissions.length === 0 && (
+                                    <div style={{ fontSize: 12, opacity: 0.5, textAlign: "center", padding: 10 }}>Nenhuma missão concluída ainda.</div>
+                                )}
+
+                                {!loading && doneMissions.length > 0 && (
+                                    <div style={{ maxHeight: "300px", overflowY: "auto", paddingRight: "6px" }} className="om-scrollbar">
+                                        {doneMissions.map(m => {
+                                            const statusValue = String(m.resultado || "").trim().toUpperCase();
+                                            const isWon = statusValue === "WON";
+                                            const statusLabel = isWon ? "✅ Completa" : "❌ Fracassada";
+                                            const statusColor = isWon ? "#3cffA0" : "#ff6b6b";
+                                            const dateStr = m.completed_at ? new Date(m.completed_at).toLocaleDateString("pt-BR") : "";
+
+                                            return (
+                                                <div key={m.id} style={{
+                                                    padding: "10px 12px",
+                                                    borderRadius: 12,
+                                                    background: "rgba(255,255,255,0.03)",
+                                                    border: "1px solid rgba(255,255,255,0.08)",
+                                                    display: "flex",
+                                                    justifyContent: "space-between",
+                                                    alignItems: "center",
+                                                    marginBottom: 8,
+                                                }}>
+                                                    <div>
+                                                        <div style={{ fontSize: 13, color: isWon ? "white" : "rgba(255,255,255,0.8)" }}>{m.titulo}</div>
+                                                        <div style={{ fontSize: 9, opacity: 0.4, marginTop: 2 }}>{dateStr} · {m.dificuldade}</div>
+                                                    </div>
+                                                    <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                                                        <div style={{ fontSize: 10, fontWeight: 800, color: statusColor }}>{statusLabel}</div>
+                                                        {!isWon && (
+                                                            <button
+                                                                onClick={() => nav(`/missao-intro/${m.case_id}`)}
+                                                                style={{
+                                                                    background: "rgba(255,255,255,0.06)",
+                                                                    border: "1px solid rgba(255,255,255,0.12)",
+                                                                    color: "#fff",
+                                                                    fontSize: 9,
+                                                                    padding: "5px 10px",
+                                                                    borderRadius: 8,
+                                                                    cursor: "pointer",
+                                                                    fontWeight: 800,
+                                                                    transition: "all 0.2s"
+                                                                }}
+                                                                onMouseEnter={(e) => { e.currentTarget.style.background = "rgba(128,189,255,0.15)"; e.currentTarget.style.borderColor = "#80bdff"; }}
+                                                                onMouseLeave={(e) => { e.currentTarget.style.background = "rgba(255,255,255,0.06)"; e.currentTarget.style.borderColor = "rgba(255,255,255,0.12)"; }}
+                                                            >
+                                                                REJOGAR
+                                                            </button>
+                                                        )}
+                                                    </div>
+                                                </div>
+                                            );
+                                        })}
+                                    </div>
+                                )}
+                            </div>
+
+                            {/* Logout */}
+                            <button
+                                onClick={async () => {
+                                    await supabase.auth.signOut();
+                                    localStorage.clear();
+                                    sessionStorage.clear();
+                                    window.location.href = "/login";
+                                }}
+                                style={{
+                                    width: "100%", padding: "14px",
+                                    borderRadius: 14,
+                                    border: "1px solid rgba(255,70,70,0.25)",
+                                    background: "rgba(255,70,70,0.08)",
+                                    color: "#ff6b6b",
+                                    cursor: "pointer",
+                                    fontSize: 13, fontWeight: 700,
+                                    letterSpacing: 1,
+                                }}
+                            >
+                                🚪 SAIR DA CONTA
+                            </button>
+                        </>
+                    )}
+
+                    {tab === "GALERIA" && (
+                        <div className="pf-panel">
+                            <SuspectGallery capturedSuspects={state.capturedSuspects || {}} />
                         </div>
-
-                        {/* Logout */}
-                        <button
-                            onClick={async () => {
-                                await supabase.auth.signOut();
-                                localStorage.clear();
-                                sessionStorage.clear();
-                                window.location.href = "/login";
-                            }}
-                            style={{
-                                width: "100%", padding: "14px",
-                                borderRadius: 14,
-                                border: "1px solid rgba(255,70,70,0.25)",
-                                background: "rgba(255,70,70,0.08)",
-                                color: "#ff6b6b",
-                                cursor: "pointer",
-                                fontSize: 13, fontWeight: 700,
-                                letterSpacing: 1,
-                            }}
-                        >
-                            🚪 SAIR DA CONTA
-                        </button>
-                    </>
-                )}
-
-                {tab === "GALERIA" && (
-                    <div className="pf-panel">
-                        <SuspectGallery capturedSuspects={state.capturedSuspects || {}} />
-                    </div>
-                )}
+                    )}
+                </div>
             </div>
         </div>
     );

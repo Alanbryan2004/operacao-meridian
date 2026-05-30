@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from "react";
-import { suspectsSeed } from "../game/store";
+import { suspectsSeed, getUnlockedLeaders } from "../game/store";
 import { useGame } from "../game/GameProvider";
 
 
@@ -23,6 +23,16 @@ function Panel({ children, style = {} }) {
 export default function Analisar({ onBack, filters, setFilters, warrantId, setWarrantId, tutorialHint, eliminatedIds = [] }) {
     const { state } = useGame();
     const capturedSuspects = state?.capturedSuspects || {};
+    const unlockedLeaders = useMemo(() => getUnlockedLeaders(capturedSuspects), [capturedSuspects]);
+
+    const visibleSuspects = useMemo(() => {
+        return suspectsSeed.filter(s => {
+            if (s.id.startsWith("L")) {
+                return unlockedLeaders.includes(s.id);
+            }
+            return true;
+        });
+    }, [unlockedLeaders]);
 
     const toggleFilter = (key, val) => {
 
@@ -42,10 +52,10 @@ export default function Analisar({ onBack, filters, setFilters, warrantId, setWa
     const [currentPage, setCurrentPage] = useState(1);
     const itemsPerPage = 4;
 
-    // Lista única de opções para os filtros baseada no seed
+    // Lista única de opções para os filtros baseada nos suspeitos visíveis
     const options = useMemo(() => {
         const getUniques = (key) => {
-            const vals = suspectsSeed.map(s => {
+            const vals = visibleSuspects.map(s => {
                 const v = s[key];
                 if (Array.isArray(v)) return v; // Se for array (como aparencia), retorna o array
                 return [v];
@@ -62,10 +72,10 @@ export default function Analisar({ onBack, filters, setFilters, warrantId, setWa
             caracteristica: getUniques("caracteristica"),
             origem: getUniques("origem")
         };
-    }, []);
+    }, [visibleSuspects]);
 
     const filteredSuspects = useMemo(() => {
-        return suspectsSeed.filter(s => {
+        return visibleSuspects.filter(s => {
             return Object.entries(filters).every(([key, selectedValues]) => {
                 if (selectedValues.length === 0) return true;
                 const suspectVal = s[key];
@@ -80,7 +90,7 @@ export default function Analisar({ onBack, filters, setFilters, warrantId, setWa
                 return selectedValues.includes(suspectVal);
             });
         });
-    }, [filters]);
+    }, [visibleSuspects, filters]);
 
     // Reset page on filter change
     React.useEffect(() => {
@@ -203,10 +213,11 @@ export default function Analisar({ onBack, filters, setFilters, warrantId, setWa
                         onDoubleClick={() => setSelectedSuspect(s)}
                     >
                         <img 
-                            src={capturedSuspects[s.id] > 0 ? `/Suspeitos/${s.id}.png` : `/Suspeitos/NaoIdentificado.png`} 
+                            src={capturedSuspects[s.id] > 0 ? `/Suspeitos/${s.id}.png` : (s.id.startsWith("L") ? "/Suspeitos/NaoIdentificadoLider.png" : "/Suspeitos/NaoIdentificado.png")} 
                             className="om-suspect-img" 
                             alt={s.codinome} 
                             style={{ filter: eliminatedIds.includes(s.id) ? "grayscale(100%) brightness(0.5)" : "none" }}
+                            onError={(e) => { e.target.src = s.id.startsWith("L") ? "/Suspeitos/NaoIdentificadoLider.png" : "/Suspeitos/NaoIdentificado.png"; }}
                         />
                         
                         {eliminatedIds.includes(s.id) && (
@@ -293,9 +304,10 @@ export default function Analisar({ onBack, filters, setFilters, warrantId, setWa
                         {/* Foto de Fundo (Sempre visível) */}
                         <div style={{ height: "100%", width: "100%", position: "relative" }}>
                             <img
-                                src={capturedSuspects[selectedSuspect.id] > 0 ? `/Suspeitos/${selectedSuspect.id}.png` : `/Suspeitos/NaoIdentificado.png`}
+                                src={capturedSuspects[selectedSuspect.id] > 0 ? `/Suspeitos/${selectedSuspect.id}.png` : (selectedSuspect.id.startsWith("L") ? "/Suspeitos/NaoIdentificadoLider.png" : "/Suspeitos/NaoIdentificado.png")}
                                 style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "top" }}
                                 alt={selectedSuspect.codinome}
+                                onError={(e) => { e.target.src = selectedSuspect.id.startsWith("L") ? "/Suspeitos/NaoIdentificadoLider.png" : "/Suspeitos/NaoIdentificado.png"; }}
                             />
 
                             <button
@@ -329,6 +341,22 @@ export default function Analisar({ onBack, filters, setFilters, warrantId, setWa
                                         <b>Raridade:</b> {selectedSuspect.raridade || "Normal"}
                                     </div>
                                 </div>
+
+                                {selectedSuspect.factionName && (
+                                    <div className="om-detail-row" style={{ borderLeft: "3px solid #ffd700", paddingLeft: 10, background: "rgba(255,215,0,0.03)" }}>
+                                        <div className="om-detail-label" style={{ color: "#ffd700" }}>FACÇÃO E HIERARQUIA</div>
+                                        <div className="om-detail-value">
+                                            <b>Facção:</b> {selectedSuspect.factionEmoji} {selectedSuspect.factionName}<br />
+                                            {selectedSuspect.isLeader ? (
+                                                <span style={{ color: "#ffd700", fontWeight: 800 }}>👑 LÍDER DA FACÇÃO</span>
+                                            ) : (
+                                                <>
+                                                    <b>Líder Associado:</b> 👑 {selectedSuspect.leaderName || "Desconhecido"}
+                                                </>
+                                            )}
+                                        </div>
+                                    </div>
+                                )}
 
                                 <div className="om-detail-row">
                                     <div className="om-detail-label">PERFIL FÍSICO E HABILIDADES</div>
