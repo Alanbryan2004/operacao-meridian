@@ -84,6 +84,39 @@ export default function Mural() {
     const [dragStart, setDragStart] = useState(null);
     const [showInventory, setShowInventory] = useState(false);
     const [hasNewItem, setHasNewItem] = useState(false);
+    const [weeklyRankReward, setWeeklyRankReward] = useState({ show: false, id: null, rankPosition: 0, moedas: 0, items: null });
+
+    async function handleClaimWeeklyRankReward() {
+        if (!weeklyRankReward.id) return;
+        
+        try {
+            const { claimWeeklyRankingReward } = await import("../services/weeklyRankingRewardService");
+            const success = await claimWeeklyRankingReward(weeklyRankReward.id);
+            
+            if (success) {
+                // Credita moedas localmente se houver
+                if (weeklyRankReward.moedas > 0) {
+                    useGame().dispatch({ 
+                        type: "UPDATE_PLAYER", 
+                        payload: { dinheiro: state.player.dinheiro + weeklyRankReward.moedas } 
+                    });
+                }
+                
+                // Credita itens no inventário (Supabase)
+                if (weeklyRankReward.items) {
+                    const { inventoryService } = await import("../game/inventoryService");
+                    for (const [key, qty] of Object.entries(weeklyRankReward.items)) {
+                        await inventoryService.addItem(state.player.supabaseId, key, qty);
+                    }
+                    if (refreshInventory) refreshInventory();
+                }
+            }
+        } catch (err) {
+            console.error("[Mural] Erro ao resgatar recompensa semanal:", err);
+        } finally {
+            setWeeklyRankReward({ show: false, id: null, rankPosition: 0, moedas: 0, items: null });
+        }
+    }
 
     useEffect(() => {
         if (!state?.player?.supabaseId) return;
@@ -127,6 +160,17 @@ export default function Mural() {
                 }
             } else if (reward?.streak) {
                 setLoginStreakData(reward.streak);
+            }
+
+            // Checa Recompensa de Ranking Semanal
+            try {
+                const { checkWeeklyRankingReward } = await import("../services/weeklyRankingRewardService");
+                const weeklyReward = await checkWeeklyRankingReward(state.player.supabaseId);
+                if (weeklyReward?.show) {
+                    setWeeklyRankReward(weeklyReward);
+                }
+            } catch (e) {
+                console.error("[Mural] Erro ao checar recompensa de ranking semanal:", e);
             }
         })
         .finally(() => setLoadingMissions(false));
@@ -453,6 +497,121 @@ export default function Mural() {
                         >
                             RECEBER E CONTINUAR
                         </button>
+                    </div>
+                </div>
+            )}
+
+            {/* --- MODAL DE RECOMPENSA/CLASSIFICAÇÃO DE RANKING SEMANAL (APARECE NO LOGIN APÓS RECOMPENSA DIÁRIA) --- */}
+            {!loginReward.show && weeklyRankReward.show && (
+                <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.94)", backdropFilter: "blur(25px)", zIndex: 19000, display: "flex", alignItems: "center", justifyContent: "center", overflowY: "auto", padding: "20px 0", animation: "scale-in 0.5s ease-out" }}>
+                    <div style={{ textAlign: "center", maxWidth: 440, width: "90%", margin: "auto", padding: "30px 24px", background: "linear-gradient(135deg, #09131a 0%, #020508 100%)", borderRadius: 28, border: "1px solid rgba(255,255,255,0.08)", boxShadow: "0 30px 60px rgba(0,0,0,0.8)" }}>
+                        {(() => {
+                            const pos = weeklyRankReward.rankPosition;
+                            const isPodium = pos <= 3;
+                            
+                            const accentColor = 
+                                pos === 1 ? "#ffd700" : 
+                                pos === 2 ? "#c0c0c0" : 
+                                pos === 3 ? "#cd7f32" : 
+                                "#00ffcc";
+
+                            const glowShadow = `0 0 30px ${accentColor}30`;
+                            
+                            const emoji = 
+                                pos === 1 ? "🥇" : 
+                                pos === 2 ? "🥈" : 
+                                pos === 3 ? "🥉" : 
+                                "🎖️";
+
+                            const headerText = 
+                                pos === 1 ? "👑 CAMPEÃO DA SEMANA!" : 
+                                pos === 2 ? "⚡ VICE-CAMPEÃO DA SEMANA!" : 
+                                pos === 3 ? "🏆 PÓDIO DA SEMANA!" : 
+                                "📡 CLASSIFICAÇÃO SEMANAL";
+
+                            const descText = isPodium 
+                                ? "Parabéns, Agente! Sua velocidade operacional garantiu seu lugar no pódio global e recompensas militares de elite."
+                                : "Seu tempo foi registrado nos arquivos da A.T.L.A.S. Continue aprimorando suas rotas para alcançar o pódio na próxima semana.";
+
+                            return (
+                                <>
+                                    <div style={{ fontSize: 64, marginBottom: 16, filter: `drop-shadow(0 0 15px ${accentColor}40)` }}>{emoji}</div>
+                                    <div style={{ color: accentColor, letterSpacing: 4, fontSize: 11, marginBottom: 8, fontWeight: 900 }}>📡 CENTRAL A.T.L.A.S.</div>
+                                    <h2 style={{ color: "#fff", fontSize: 20, fontWeight: 900, marginBottom: 20, textTransform: "uppercase" }}>{headerText}</h2>
+
+                                    {/* Card de Posição */}
+                                    <div style={{ 
+                                        background: "rgba(255,255,255,0.02)", 
+                                        border: `1px solid rgba(255,255,255,0.06)`, 
+                                        borderRadius: 20, padding: "20px 16px", marginBottom: 24,
+                                        boxShadow: glowShadow
+                                    }}>
+                                        <div style={{ fontSize: 10, opacity: 0.5, letterSpacing: 2, marginBottom: 4, fontWeight: 800 }}>POSIÇÃO FINAL</div>
+                                        <div style={{ fontSize: 44, fontWeight: 900, color: accentColor, letterSpacing: 1 }}>
+                                            #{pos}
+                                        </div>
+                                        <div style={{ fontSize: 11, opacity: 0.4, marginTop: 4 }}>
+                                            Semana encerrada em {new Date(weeklyRankReward.resetDate).toLocaleDateString("pt-BR")}
+                                        </div>
+                                    </div>
+
+                                    {/* Card de Recompensas */}
+                                    {isPodium && (
+                                        <div style={{ 
+                                            background: "rgba(255,215,0,0.02)", 
+                                            border: `1px solid ${accentColor}33`, 
+                                            borderRadius: 20, padding: "20px 16px", marginBottom: 30 
+                                        }}>
+                                            <div style={{ fontSize: 9, color: accentColor, letterSpacing: 2, marginBottom: 12, fontWeight: 800 }}>RECOMPENSAS DESBLOQUEADAS</div>
+                                            
+                                            <div style={{ display: "flex", flexDirection: "column", gap: 10, alignItems: "center" }}>
+                                                {/* Moedas */}
+                                                <div style={{ fontSize: 18, fontWeight: 900, color: "#fff" }}>
+                                                    💰 R$ {weeklyRankReward.moedas.toLocaleString("pt-BR")}
+                                                </div>
+                                                
+                                                {/* Itens */}
+                                                {weeklyRankReward.items && (
+                                                    <div style={{ display: "flex", gap: 8, justifyContent: "center", flexWrap: "wrap", marginTop: 4 }}>
+                                                        {Object.entries(weeklyRankReward.items).map(([itemKey, qty]) => {
+                                                            const itemNames = {
+                                                                dossie_sigiloso: "Dossiê Sigiloso",
+                                                                fonte_anonima: "Fonte Anônima",
+                                                                satelite_atlas: "Satélite A.T.L.A.S."
+                                                            };
+                                                            return (
+                                                                <span key={itemKey} style={{ 
+                                                                    fontSize: 11, background: "rgba(255,255,255,0.06)", 
+                                                                    border: "1px solid rgba(255,255,255,0.1)", 
+                                                                    padding: "6px 12px", borderRadius: 10, color: "#00ffcc", fontWeight: 700 
+                                                                }}>
+                                                                    + {qty} {itemNames[itemKey] || itemKey}
+                                                                </span>
+                                                            );
+                                                        })}
+                                                    </div>
+                                                )}
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    <p style={{ color: "rgba(255,255,255,0.6)", fontSize: 13, lineHeight: 1.5, marginBottom: 32, padding: "0 10px" }}>{descText}</p>
+
+                                    <button 
+                                        onClick={handleClaimWeeklyRankReward} 
+                                        style={{ 
+                                            background: `linear-gradient(135deg, ${accentColor}, ${accentColor}cc)`, 
+                                            color: "#000", fontWeight: 900, padding: "16px 0", width: "100%", 
+                                            borderRadius: 16, border: "none", fontSize: 15, cursor: "pointer", 
+                                            boxShadow: `0 10px 25px ${accentColor}25`,
+                                            letterSpacing: 1
+                                        }}
+                                    >
+                                        {isPodium ? "RESGATAR RECOMPENSA ✓" : "PROSSEGUIR OPERAÇÃO"}
+                                    </button>
+                                </>
+                            );
+                        })()}
                     </div>
                 </div>
             )}

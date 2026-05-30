@@ -85,11 +85,25 @@ export default function Perfil() {
             padding: "14px",
             boxSizing: "border-box",
         }}>
-            <style>{`
+             <style>{`
                 .pf-wrap { max-width: 520px; margin: 0 auto; }
                 .pf-panel { border-radius: 18px; border: 1px solid rgba(255,255,255,.14); background: rgba(255,255,255,0.06); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); box-shadow: 0 18px 45px rgba(0,0,0,.55); padding: 16px; margin-bottom: 14px; }
                 .pf-back { background: none; border: none; color: rgba(255,255,255,0.6); font-size: 13px; cursor: pointer; padding: 8px 0; margin-bottom: 8px; }
                 .pf-back:hover { color: #80bdff; }
+                .om-scrollbar::-webkit-scrollbar {
+                    width: 6px;
+                }
+                .om-scrollbar::-webkit-scrollbar-track {
+                    background: rgba(255, 255, 255, 0.02);
+                    border-radius: 99px;
+                }
+                .om-scrollbar::-webkit-scrollbar-thumb {
+                    background: rgba(255, 255, 255, 0.12);
+                    border-radius: 99px;
+                }
+                .om-scrollbar::-webkit-scrollbar-thumb:hover {
+                    background: rgba(128, 189, 255, 0.3);
+                }
             `}</style>
 
             <div className="pf-wrap">
@@ -212,7 +226,7 @@ export default function Perfil() {
                         </div>
 
                         {/* Missões */}
-                        <div className="pf-panel">
+                        <div className="pf-panel" style={{ display: "flex", flexDirection: "column" }}>
                             <div style={{ fontSize: 12, fontWeight: 700, marginBottom: 12, color: "#80bdff", letterSpacing: 1 }}>MISSÕES RECENTES</div>
                             
                             {loading && <div style={{ fontSize: 12, opacity: 0.5, textAlign: "center", padding: 10 }}>Carregando histórico...</div>}
@@ -221,54 +235,58 @@ export default function Perfil() {
                                 <div style={{ fontSize: 12, opacity: 0.5, textAlign: "center", padding: 10 }}>Nenhuma missão concluída ainda.</div>
                             )}
 
-                            {doneMissions.map(m => {
-                                const statusValue = String(m.resultado || "").trim().toUpperCase();
-                                const isWon = statusValue === "WON";
-                                const statusLabel = isWon ? "✅ Completa" : "❌ Fracassada";
-                                const statusColor = isWon ? "#3cffA0" : "#ff6b6b";
-                                const dateStr = m.completed_at ? new Date(m.completed_at).toLocaleDateString("pt-BR") : "";
+                            {!loading && doneMissions.length > 0 && (
+                                <div style={{ maxHeight: "300px", overflowY: "auto", paddingRight: "6px" }} className="om-scrollbar">
+                                    {doneMissions.map(m => {
+                                        const statusValue = String(m.resultado || "").trim().toUpperCase();
+                                        const isWon = statusValue === "WON";
+                                        const statusLabel = isWon ? "✅ Completa" : "❌ Fracassada";
+                                        const statusColor = isWon ? "#3cffA0" : "#ff6b6b";
+                                        const dateStr = m.completed_at ? new Date(m.completed_at).toLocaleDateString("pt-BR") : "";
 
-                                return (
-                                    <div key={m.id} style={{
-                                        padding: "10px 12px",
-                                        borderRadius: 12,
-                                        background: "rgba(255,255,255,0.03)",
-                                        border: "1px solid rgba(255,255,255,0.08)",
-                                        display: "flex",
-                                        justifyContent: "space-between",
-                                        alignItems: "center",
-                                        marginBottom: 8,
-                                    }}>
-                                        <div>
-                                            <div style={{ fontSize: 13, color: isWon ? "white" : "rgba(255,255,255,0.8)" }}>{m.titulo}</div>
-                                            <div style={{ fontSize: 9, opacity: 0.4, marginTop: 2 }}>{dateStr} · {m.dificuldade}</div>
-                                        </div>
-                                        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                                            <div style={{ fontSize: 10, fontWeight: 800, color: statusColor }}>{statusLabel}</div>
-                                            {!isWon && (
-                                                <button
-                                                    onClick={() => nav(`/missao-intro/${m.case_id}`)}
-                                                    style={{
-                                                        background: "rgba(255,255,255,0.06)",
-                                                        border: "1px solid rgba(255,255,255,0.12)",
-                                                        color: "#fff",
-                                                        fontSize: 9,
-                                                        padding: "5px 10px",
-                                                        borderRadius: 8,
-                                                        cursor: "pointer",
-                                                        fontWeight: 800,
-                                                        transition: "all 0.2s"
-                                                    }}
-                                                    onMouseEnter={(e) => { e.currentTarget.style.background = "rgba(128,189,255,0.15)"; e.currentTarget.style.borderColor = "#80bdff"; }}
-                                                    onMouseLeave={(e) => { e.currentTarget.style.background = "rgba(255,255,255,0.06)"; e.currentTarget.style.borderColor = "rgba(255,255,255,0.12)"; }}
-                                                >
-                                                    REJOGAR
-                                                </button>
-                                            )}
-                                        </div>
-                                    </div>
-                                );
-                            })}
+                                        return (
+                                            <div key={m.id} style={{
+                                                padding: "10px 12px",
+                                                borderRadius: 12,
+                                                background: "rgba(255,255,255,0.03)",
+                                                border: "1px solid rgba(255,255,255,0.08)",
+                                                display: "flex",
+                                                justifyContent: "space-between",
+                                                alignItems: "center",
+                                                marginBottom: 8,
+                                            }}>
+                                                <div>
+                                                    <div style={{ fontSize: 13, color: isWon ? "white" : "rgba(255,255,255,0.8)" }}>{m.titulo}</div>
+                                                    <div style={{ fontSize: 9, opacity: 0.4, marginTop: 2 }}>{dateStr} · {m.dificuldade}</div>
+                                                </div>
+                                                <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                                                    <div style={{ fontSize: 10, fontWeight: 800, color: statusColor }}>{statusLabel}</div>
+                                                    {!isWon && (
+                                                        <button
+                                                            onClick={() => nav(`/missao-intro/${m.case_id}`)}
+                                                            style={{
+                                                                background: "rgba(255,255,255,0.06)",
+                                                                border: "1px solid rgba(255,255,255,0.12)",
+                                                                color: "#fff",
+                                                                fontSize: 9,
+                                                                padding: "5px 10px",
+                                                                borderRadius: 8,
+                                                                cursor: "pointer",
+                                                                fontWeight: 800,
+                                                                transition: "all 0.2s"
+                                                            }}
+                                                            onMouseEnter={(e) => { e.currentTarget.style.background = "rgba(128,189,255,0.15)"; e.currentTarget.style.borderColor = "#80bdff"; }}
+                                                            onMouseLeave={(e) => { e.currentTarget.style.background = "rgba(255,255,255,0.06)"; e.currentTarget.style.borderColor = "rgba(255,255,255,0.12)"; }}
+                                                        >
+                                                            REJOGAR
+                                                        </button>
+                                                    )}
+                                                </div>
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+                            )}
                         </div>
 
                         {/* Logout */}
