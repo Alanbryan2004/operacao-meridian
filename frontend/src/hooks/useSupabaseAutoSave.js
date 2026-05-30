@@ -8,7 +8,7 @@ import { saveGameState } from "../services/gameSaveService";
  * - sempre salva local (localStorage)
  * - se canSave = true, salva remoto (Supabase) com debounce + flush ao sair
  */
-export function useSupabaseAutoSave(gameState, canSave = false, slot = 0, debounceMs = 800) {
+export function useSupabaseAutoSave(gameState, canSave = false, slot = 0, hydrated = false, debounceMs = 800) {
     const tRef = useRef(null);
     const lastJsonRef = useRef("");
     const savingRef = useRef(false);
@@ -29,8 +29,8 @@ export function useSupabaseAutoSave(gameState, canSave = false, slot = 0, deboun
         if (json === lastJsonRef.current) return;
         lastJsonRef.current = json;
 
-        // 2) remoto com debounce (se logado)
-        if (!canSave) return;
+        // 2) remoto com debounce (se logado e já hidratado com o save da nuvem)
+        if (!canSave || !hydrated) return;
 
         if (tRef.current) clearTimeout(tRef.current);
 
@@ -51,12 +51,12 @@ export function useSupabaseAutoSave(gameState, canSave = false, slot = 0, deboun
             if (tRef.current) {
                 clearTimeout(tRef.current);
                 // 🔥 Flush imediato se houver algo pendente ao desmontar
-                if (canSave && !savingRef.current) {
+                if (canSave && hydrated && !savingRef.current) {
                     saveGameState(gameState, slot).catch(e => console.warn("Erro no flush ao desmontar:", e));
                 }
             }
         };
-    }, [gameState, canSave, slot, debounceMs]);
+    }, [gameState, canSave, slot, hydrated, debounceMs]);
 
 
     // flush quando usuário sai / troca aba / mobile minimiza
@@ -68,7 +68,7 @@ export function useSupabaseAutoSave(gameState, canSave = false, slot = 0, deboun
                 // local na marra
                 saveGame(gameState);
 
-                if (!canSave) return;
+                if (!canSave || !hydrated) return;
 
                 // 2) salva state remoto (que também sincroniza profile internamente)
                 await saveGameState(gameState, slot);
@@ -91,5 +91,5 @@ export function useSupabaseAutoSave(gameState, canSave = false, slot = 0, deboun
             window.removeEventListener("beforeunload", flush);
             document.removeEventListener("visibilitychange", onVis);
         };
-    }, [gameState, canSave, slot]);
+    }, [gameState, canSave, slot, hydrated]);
 }
