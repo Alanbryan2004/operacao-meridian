@@ -1224,14 +1224,21 @@ export default function Caso() {
                 </div>
                 
                 {/* MENU INFERIOR */}
-                <div className="om-tabs">
-                    <div className="om-tabs-inner">
-                        <button className={`om-tab ${viewMode === "ACTIONS" ? "om-tab-active" : ""}`} onClick={() => { setViewMode("ACTIONS"); setShowMaisMenu(false); }}>AÇÃO</button>
-                        <button className={`om-tab ${viewMode === "JOURNAL" ? "om-tab-active" : ""}`} onClick={() => { setViewMode("JOURNAL"); setShowMaisMenu(false); }}>JORNAL</button>
-                        <button className={`om-tab ${viewMode === "PROFILE" ? "om-tab-active" : ""}`} onClick={() => { setViewMode("PROFILE"); setShowMaisMenu(false); }}>CASOS</button>
-                        <button className={`om-tab ${showMaisMenu ? "om-tab-active" : ""}`} onClick={() => setShowMaisMenu(!showMaisMenu)}>☰ MAIS</button>
+                {viewMode !== "TRAVEL_ANIMATION" && viewMode !== "DIALOGUE" && viewMode !== "ARRIVAL" && !showSuspectVideo && (
+                    <div className="om-tabs">
+                        <div className="om-tabs-inner">
+                            <button className={`om-tab ${viewMode === "ACTIONS" ? "om-tab-active" : ""}`} onClick={() => { setViewMode("ACTIONS"); setShowMaisMenu(false); }}>AÇÃO</button>
+                            <button className={`om-tab ${viewMode === "JOURNAL" ? "om-tab-active" : ""}`} onClick={() => { setViewMode("JOURNAL"); setShowMaisMenu(false); }}>JORNAL</button>
+                            <button className={`om-tab ${viewMode === "PROFILE" ? "om-tab-active" : ""}`} onClick={() => { setViewMode("PROFILE"); setShowMaisMenu(false); }}>CASOS</button>
+                            <button className={`om-tab ${showMaisMenu ? "om-tab-active" : ""}`} onClick={() => setShowMaisMenu(!showMaisMenu)}>☰ MAIS</button>
+                        </div>
                     </div>
-                </div>
+                )}
+
+                {/* BLOQUEADOR DE INTERAÇÃO DURANTE A VIAGEM OU VÍDEO */}
+                {(viewMode === "TRAVEL_ANIMATION" || showSuspectVideo) && (
+                    <div style={{ position: "fixed", inset: 0, zIndex: 99999, background: "transparent", cursor: "wait" }} />
+                )}
 
                 {/* OVERLAY MAIS MENU */}
                 {showMaisMenu && (
