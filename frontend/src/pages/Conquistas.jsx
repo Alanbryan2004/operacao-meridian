@@ -107,6 +107,66 @@ const ACHIEVEMENTS = [
         rewards: { moedas: 20000, items: [{ key: "dossie_sigiloso", qty: 1 }] },
     },
     {
+        id: "capture_architect",
+        title: "Derrubando The Architect",
+        description: "Capture Elias Voss (The Architect), o líder da Shadow Forge.",
+        icon: "👑",
+        target: 1,
+        type: "capture_suspect",
+        suspectId: "L01",
+        rewards: { moedas: 30000, items: [{ key: "dossie_sigiloso", qty: 1 }] },
+    },
+    {
+        id: "capture_leviathan",
+        title: "Derrubando Leviathan",
+        description: "Capture Victor Graves (Leviathan), o líder da Black Tide.",
+        icon: "👑",
+        target: 1,
+        type: "capture_suspect",
+        suspectId: "L02",
+        rewards: { moedas: 30000, items: [{ key: "dossie_sigiloso", qty: 1 }] },
+    },
+    {
+        id: "capture_curator",
+        title: "Derrubando The Curator",
+        description: "Capture Sami Al-Karim (The Curator), o líder da Golden Veil.",
+        icon: "👑",
+        target: 1,
+        type: "capture_suspect",
+        suspectId: "L03",
+        rewards: { moedas: 30000, items: [{ key: "dossie_sigiloso", qty: 1 }] },
+    },
+    {
+        id: "capture_ghost_prime",
+        title: "Derrubando Ghost Prime",
+        description: "Capture Ghost Prime, o misterioso líder da Neon Phantom.",
+        icon: "👑",
+        target: 1,
+        type: "capture_suspect",
+        suspectId: "L04",
+        rewards: { moedas: 30000, items: [{ key: "dossie_sigiloso", qty: 1 }] },
+    },
+    {
+        id: "capture_silk_specter",
+        title: "Derrubando Silk Specter",
+        description: "Capture Aisha Rahman (Silk Specter), o líder da Silent Thread.",
+        icon: "👑",
+        target: 1,
+        type: "capture_suspect",
+        suspectId: "L05",
+        rewards: { moedas: 30000, items: [{ key: "dossie_sigiloso", qty: 1 }] },
+    },
+    {
+        id: "capture_monarch",
+        title: "Derrubando The Monarch",
+        description: "Capture Aleksandr Morozov (The Monarch), o líder da Crimson Crown.",
+        icon: "👑",
+        target: 1,
+        type: "capture_suspect",
+        suspectId: "L06",
+        rewards: { moedas: 30000, items: [{ key: "dossie_sigiloso", qty: 1 }] },
+    },
+    {
         id: "capture_vesper",
         title: "Derrubando Vesper",
         description: "Capture Vesper, o Maior Criminoso e Líder Supremo da Meridian.",
@@ -264,6 +324,26 @@ export default function Conquistas() {
         }
     }
 
+    const sortedAchievements = useMemo(() => {
+        return [...ACHIEVEMENTS].sort((a, b) => {
+            const currentA = getProgress(a);
+            const isCompleteA = currentA >= a.target;
+            const isClaimedA = claimed.includes(a.id);
+
+            const currentB = getProgress(b);
+            const isCompleteB = currentB >= b.target;
+            const isClaimedB = claimed.includes(b.id);
+
+            const statusA = (isCompleteA && !isClaimedA) ? 0 : (!isCompleteA ? 1 : 2);
+            const statusB = (isCompleteB && !isClaimedB) ? 0 : (!isCompleteB ? 1 : 2);
+
+            if (statusA !== statusB) {
+                return statusA - statusB;
+            }
+            return ACHIEVEMENTS.indexOf(a) - ACHIEVEMENTS.indexOf(b);
+        });
+    }, [claimed, capturedCount, missionStats, player?.hardWins, speedRank1stCount, state?.capturedSuspects]);
+
     async function claimReward(achievement) {
         if (claiming) return;
         setClaiming(achievement.id);
@@ -402,7 +482,7 @@ export default function Conquistas() {
                 {/* Achievement Cards */}
                 <div className="ac-body om-scrollbar">
                     <div style={{ display: "flex", flexDirection: "column", gap: 14, paddingRight: 6 }}>
-                        {ACHIEVEMENTS.map(ach => {
+                        {sortedAchievements.map(ach => {
                             const current = getProgress(ach);
                             const pct = Math.min((current / ach.target) * 100, 100);
                             const isComplete = current >= ach.target;
