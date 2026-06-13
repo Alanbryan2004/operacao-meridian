@@ -13,27 +13,40 @@ function getLocalTodayStr() {
     return `${y}-${m}-${d}`;
 }
 
-export const REWARDS = {
-    DAY_7: {
-        type: "ATLAS_40",
-        label: "Voucher Atlas Aéreo (40%)",
-        credits: 30,
-        discount: 0.40
-    },
-    DAY_14: {
-        type: "ATLAS_50",
-        label: "Voucher Atlas Aéreo (50%)",
-        credits: 50,
-        discount: 0.50
-    },
-    DAY_30: {
-        type: "ATLAS_EXECUTIVE",
-        label: "Passe Executivo Atlas",
-        credits: 100,
-        discount: 0.60, // Bônus maior
-        hasInstantTravel: true
-    }
-};
+import { inventoryService } from "./inventoryService";
+
+export const STREAK_REWARDS_30_DAYS = [
+    { day: 1, items: { satelite_atlas: 1 }, moedas: 0, label: "Satélite A.T.L.A.S" },
+    { day: 2, items: { fonte_anonima: 1 }, moedas: 0, label: "Fonte Anônima" },
+    { day: 3, items: { dossie_sigiloso: 1 }, moedas: 0, label: "Dossiê Sigiloso" },
+    { day: 4, items: { licenca_tatica: 1 }, moedas: 0, label: "Licença Tática" },
+    { day: 5, items: {}, moedas: 10000, label: "10.000 Moedas" },
+    { day: 6, items: { satelite_atlas: 1 }, moedas: 5000, label: "5.000 + Satélite" },
+    { day: 7, items: { fonte_anonima: 1 }, moedas: 5000, label: "5.000 + Fonte Anônima" },
+    { day: 8, items: { dossie_sigiloso: 1 }, moedas: 5000, label: "5.000 + Dossiê" },
+    { day: 9, items: { licenca_tatica: 1 }, moedas: 5000, label: "5.000 + Licença" },
+    { day: 10, items: {}, moedas: 15000, label: "15.000 Moedas" },
+    { day: 11, items: { satelite_atlas: 1, fonte_anonima: 1 }, moedas: 0, label: "Satélite + Fonte" },
+    { day: 12, items: { dossie_sigiloso: 1, licenca_tatica: 1 }, moedas: 0, label: "Dossiê + Licença" },
+    { day: 13, items: { satelite_atlas: 1 }, moedas: 10000, label: "10.000 + Satélite" },
+    { day: 14, items: { fonte_anonima: 1 }, moedas: 10000, label: "10.000 + Fonte" },
+    { day: 15, items: {}, moedas: 20000, label: "20.000 Moedas" },
+    { day: 16, items: { dossie_sigiloso: 2 }, moedas: 5000, label: "5.000 + 2x Dossiê" },
+    { day: 17, items: { licenca_tatica: 2 }, moedas: 5000, label: "5.000 + 2x Licença" },
+    { day: 18, items: { satelite_atlas: 2 }, moedas: 5000, label: "5.000 + 2x Satélite" },
+    { day: 19, items: { fonte_anonima: 2 }, moedas: 5000, label: "5.000 + 2x Fonte" },
+    { day: 20, items: {}, moedas: 25000, label: "25.000 Moedas" },
+    { day: 21, items: { satelite_atlas: 1, dossie_sigiloso: 1 }, moedas: 10000, label: "10.000 + Equipamentos" },
+    { day: 22, items: { fonte_anonima: 1, licenca_tatica: 1 }, moedas: 10000, label: "10.000 + Contatos" },
+    { day: 23, items: { satelite_atlas: 1, licenca_tatica: 1 }, moedas: 15000, label: "15.000 + Operacional" },
+    { day: 24, items: { fonte_anonima: 1, dossie_sigiloso: 1 }, moedas: 15000, label: "15.000 + Inteligência" },
+    { day: 25, items: {}, moedas: 30000, label: "30.000 Moedas" },
+    { day: 26, items: { satelite_atlas: 2, dossie_sigiloso: 1 }, moedas: 10000, label: "10.000 + Kit Tático" },
+    { day: 27, items: { fonte_anonima: 2, licenca_tatica: 1 }, moedas: 10000, label: "10.000 + Kit Fuga" },
+    { day: 28, items: { satelite_atlas: 2, licenca_tatica: 2 }, moedas: 15000, label: "15.000 + Arsenal" },
+    { day: 29, items: { dossie_sigiloso: 2, fonte_anonima: 2 }, moedas: 15000, label: "15.000 + Informante" },
+    { day: 30, items: { satelite_atlas: 1, fonte_anonima: 1, dossie_sigiloso: 1, licenca_tatica: 1 }, moedas: 50000, label: "Pacote A.T.L.A.S. Completo" }
+];
 
 /**
  * Busca o streak atual do banco
@@ -70,8 +83,24 @@ export async function updateStreakOnWin(userId) {
             highest_streak: 1,
             vouchers: []
         };
+        
+        const newlyAwarded = STREAK_REWARDS_30_DAYS.find(r => r.day === 1);
+
+        if (newlyAwarded) {
+            try {
+                const { inventoryService } = await import("./inventoryService");
+                if (newlyAwarded.items) {
+                    for (const [key, qty] of Object.entries(newlyAwarded.items)) {
+                        await inventoryService.addItem(userId, key, qty);
+                    }
+                }
+            } catch (e) {
+                console.error("[streakService] Erro ao creditar itens do dia 1:", e);
+            }
+        }
+
         await saveStreakData(initial);
-        return { ...initial, newlyAwarded: null };
+        return { ...initial, newlyAwarded, streakReached: 1 };
     }
 
     const lastDateParts = existing.last_completion_date.split("-");
@@ -162,23 +191,29 @@ export async function updateStreakOnWin(userId) {
         updated.highest_streak = updated.current_streak;
     }
 
-    // Checar recompensas
+    // Checar recompensas na Trilha de 30 Dias
     let streakReached = updated.current_streak; // Armazena o valor atingido para o feedback visual
     
-    // 🔥 Corrigido: Usar >= 30 para evitar usuários "presos" em sequências altas
-    if (updated.current_streak >= 30) {
-        newlyAwarded = REWARDS.DAY_30;
-    } else if (updated.current_streak >= 14) {
-        newlyAwarded = REWARDS.DAY_14;
-    } else if (updated.current_streak >= 7) {
-        newlyAwarded = REWARDS.DAY_7;
-    }
+    // Calcula o dia de recompensa. Se passar de 30, reinicia a trilha (31 = dia 1, etc)
+    const normalizedDay = ((streakReached - 1) % 30) + 1;
+    newlyAwarded = STREAK_REWARDS_30_DAYS.find(r => r.day === normalizedDay);
  
     if (newlyAwarded) {
-        updated.vouchers = [...(updated.vouchers || []), { ...newlyAwarded, id: Date.now() }];
-        // Ao atingir um marco de recompensa, resetamos a sequência no banco de dados
-        console.log(`[streakService] Recompensa concedida (${newlyAwarded.label}). Resetando streak no banco.`);
-        updated.current_streak = 0; 
+        // Se houver itens para conceder, adiciona ao banco
+        if (newlyAwarded.items && Object.keys(newlyAwarded.items).length > 0) {
+            try {
+                for (const [key, qty] of Object.entries(newlyAwarded.items)) {
+                    await inventoryService.addItem(userId, key, qty);
+                }
+                console.log(`[streakService] Itens concedidos para o dia ${normalizedDay}:`, newlyAwarded.items);
+            } catch (e) {
+                console.error("[streakService] Erro ao creditar itens do streak:", e);
+            }
+        }
+        if (normalizedDay === 30) {
+            console.log(`[streakService] Pacote de 30 dias alcançado! Resetando ciclo da trilha.`);
+            updated.current_streak = 0; 
+        }
     }
 
     await saveStreakData(updated);

@@ -34,15 +34,13 @@ export default function CasoSolucionado() {
     // --- Faction Unlock Modal State ---
     const [unlockedFaction, setUnlockedFaction] = useState(null);
 
-    // Se não temos o run nem o state, e não estamos mostrando o modal, aí sim retornamos null
-    if (!state || !caseObj || (!run && !streakUpdated && !newVoucher && !unlockedFaction)) return null;
 
     const isCompetitive = useMemo(() => {
         return searchParams.get("mode") === "competitive" || !!caseObj?.isCompetitive;
     }, [searchParams, caseObj]);
 
     const isWon = run?.status === "WON";
-    const player = state.player;
+    const player = state?.player || {};
     const [foundWinnerName, setFoundWinnerName] = useState(run?.winnerName || "");
 
     // 🔍 Busca o nome do vencedor com retry (o winner_id pode demorar a ser salvo no banco)
@@ -107,8 +105,8 @@ export default function CasoSolucionado() {
     const reportText = useMemo(() => {
         if (isCompetitive) {
             if (isWon) {
-                return `Parabéns pelo excelente desempenho e pela rapidez na conclusão do caso! sua eficiência foi absoluta, deixando os demais agentes para trás.\n\nA Agência A.T.L.A.S. reconhece sua superioridade tática nesta operação.\n\n🌍 Caso Encerrado.\n\n🏆 RECOMPENSA: +R$${caseObj.recompensa} | +${caseObj.xp} XP`;
-            } else if (isCompetitive && (caseObj.dificuldade === "DIFICIL" || caseObj.dificuldade === "LENDARIO")) {
+                return `Parabéns pelo excelente desempenho e pela rapidez na conclusão do caso! sua eficiência foi absoluta, deixando os demais agentes para trás.\n\nA Agência A.T.L.A.S. reconhece sua superioridade tática nesta operação.\n\n🌍 Caso Encerrado.\n\n🏆 RECOMPENSA: +R$${caseObj?.recompensa} | +${caseObj?.xp} XP`;
+            } else if (isCompetitive && (caseObj?.dificuldade === "DIFICIL" || caseObj?.dificuldade === "LENDARIO")) {
                 return `Infelizmente, você falhou. O Agente "${winnerName}" fez um excelente trabalho completando a missão antes de você.\n\nÉ necessário melhorar suas táticas e evoluir para não ser superado novamente nas próximas operações.\n\n🌍 Caso Encerrado.`;
             } else {
                 // Para Casos Fácil/Médio ou falha por mandado errado em modo solo
@@ -117,9 +115,9 @@ export default function CasoSolucionado() {
         }
 
         return isWon
-            ? `O suspeito foi capturado com êxito.\nA relíquia foi integralmente recuperada e devolvida à custódia internacional.\n\nO brilhante trabalho do(a) Agente ${player.nivelTitulo} "${player.nome}" foi decisivo para o sucesso desta missão.\nSua análise precisa, leitura estratégica das pistas e execução impecável elevaram o padrão operacional da Agência.\n\nA.T.L.A.S. reconhece oficialmente sua conduta exemplar.\nContinue assim, Agente. O mundo precisa de mentes afiadas como a sua.\n\nEsperamos trabalhar novamente com você em futuras operações de alto risco.\n🌍 Justiça restaurada. Ordem mantida.\n\n🏆 RECOMPENSA: +R$${caseObj.recompensa} | +${caseObj.xp} XP`
-            : `O suspeito escapou da captura.\nA relíquia permanece desaparecida.\n\nCulpado Real: ${realCriminal?.codinome || "Desconhecido"}\nMandado Emitido para: ${warrantSuspect?.codinome || "Nenhum"}\n\nA Agência reconhece que o(a) Agente ${player.nivelTitulo} "${player.nome}" demonstrou potencial estratégico acima da média.\nPorém, falhas na identificação final permitiram que o alvo deixasse o país antes da captura.\n\nA.T.L.A.S. espera mais de alguém que já demonstrou ser brilhante.\nFracassos não definem um agente. Eles moldam os próximos acertos.\n\nReavalie as pistas. Ajuste a estratégia. O próximo movimento será decisivo.\n🌍 O jogo continua.`;
-    }, [isWon, isCompetitive, winnerName, player.nome, player.nivelTitulo, caseObj.recompensa, caseObj.xp, realCriminal, warrantSuspect]);
+            ? `O suspeito foi capturado com êxito.\nA relíquia foi integralmente recuperada e devolvida à custódia internacional.\n\nO brilhante trabalho do(a) Agente ${player.nivelTitulo || ""} "${player.nome || ""}" foi decisivo para o sucesso desta missão.\nSua análise precisa, leitura estratégica das pistas e execução impecável elevaram o padrão operacional da Agência.\n\nA.T.L.A.S. reconhece oficialmente sua conduta exemplar.\nContinue assim, Agente. O mundo precisa de mentes afiadas como a sua.\n\nEsperamos trabalhar novamente com você em futuras operações de alto risco.\n🌍 Justiça restaurada. Ordem mantida.\n\n🏆 RECOMPENSA: +R$${caseObj?.recompensa} | +${caseObj?.xp} XP`
+            : `O suspeito escapou da captura.\nA relíquia permanece desaparecida.\n\nCulpado Real: ${realCriminal?.codinome || "Desconhecido"}\nMandado Emitido para: ${warrantSuspect?.codinome || "Nenhum"}\n\nA Agência reconhece que o(a) Agente ${player.nivelTitulo || ""} "${player.nome || ""}" demonstrou potencial estratégico acima da média.\nPorém, falhas na identificação final permitiram que o alvo deixasse o país antes da captura.\n\nA.T.L.A.S. espera mais de alguém que já demonstrou ser brilhante.\nFracassos não definem um agente. Eles moldam os próximos acertos.\n\nReavalie as pistas. Ajuste a estratégia. O próximo movimento será decisivo.\n🌍 O jogo continua.`;
+    }, [isWon, isCompetitive, winnerName, player.nome, player.nivelTitulo, caseObj?.recompensa, caseObj?.xp, realCriminal, warrantSuspect, caseObj?.dificuldade]);
 
     // 🏆 Speed Record: Submete o recorde ao montar (se ganhou)
     useEffect(() => {
@@ -143,6 +141,9 @@ export default function CasoSolucionado() {
             console.warn("[SpeedRecord] Erro ao submeter recorde:", err);
         });
     }, [isWon, run?.startedAtRealTime, state?.player?.supabaseId, caseId]);
+
+    // Se não temos o run nem o state, e não estamos mostrando o modal, aí sim retornamos null
+    if (!state || !caseObj || (!run && !streakUpdated && !newVoucher && !unlockedFaction)) return null;
 
     function handleEncerrar() {
         // 🔥 Garante salvamento remoto imediato antes de qualquer coisa
@@ -438,7 +439,7 @@ export default function CasoSolucionado() {
                         }}
                         style={{
                             marginTop: 24, width: "100%", padding: 16,
-                            borderRadius: 14, border: "none",
+                            borderRadius: 14,
                             background: "linear-gradient(135deg, #1a2a3a, #0d1b2a)",
                             color: "#00ffcc", fontSize: 14, fontWeight: 800,
                             letterSpacing: 2, cursor: "pointer",
@@ -622,7 +623,7 @@ export default function CasoSolucionado() {
                 {streakUpdated ? (
                     <div style={{ 
                         background: "linear-gradient(135deg, #112233 0%, #000 100%)", 
-                        padding: "40px 30px", 
+                        padding: "30px 20px", 
                         borderRadius: 24, 
                         border: "1px solid rgba(128,189,255,0.3)", 
                         maxWidth: 450, 
@@ -632,33 +633,46 @@ export default function CasoSolucionado() {
                         animation: "om-modal-fade-in 0.4s ease-out" 
                     }}>
                         <div style={{ color: "#80bdff", letterSpacing: 4, fontSize: 11, marginBottom: 10, fontWeight: 700 }}>📡 CENTRAL A.T.L.A.S.</div>
-                        <h2 style={{ fontSize: 20, fontWeight: 900, marginBottom: 40, color: "#fff" }}>SEQUÊNCIA DIÁRIA</h2>
+                        <h2 style={{ fontSize: 20, fontWeight: 900, marginBottom: 30, color: "#fff" }}>SEQUÊNCIA DIÁRIA</h2>
                         
-                        {/* Barra de Progresso */}
-                        <div style={{ display: "flex", justifyContent: "space-between", position: "relative", marginBottom: 50, padding: "0 10px" }}>
-                            <div style={{ position: "absolute", top: "50%", left: 10, right: 10, height: 2, background: "rgba(255,255,255,0.1)", transform: "translateY(-50%)", zIndex: 1 }} />
-                            <div style={{ position: "absolute", top: "50%", left: 10, width: `${Math.min(((streakUpdated?.streakReached || streakUpdated?.current_streak || 1) - 1) / 6 * 100, 100)}%`, height: 2, background: "#3cff9c", transform: "translateY(-50%)", zIndex: 2, transition: "width 1s ease" }} />
-                            
+                        {/* Grid de 30 Dias */}
+                        <div style={{ display: "grid", gridTemplateColumns: "repeat(6, 1fr)", gap: 8, marginBottom: 30, padding: "0 10px" }}>
                             {(() => {
                                 const displayVal = streakUpdated?.streakReached || streakUpdated?.current_streak || 0;
-                                return [1,2,3,4,5,6,7].map(d => {
-                                    const isCompleted = d < displayVal;
-                                    const isCurrent = d === displayVal;
-                                    const isReward = d === 7;
+                                const normalizedDay = ((displayVal - 1) % 30) + 1;
+                                
+                                return Array.from({ length: 30 }).map((_, i) => {
+                                    const d = i + 1;
+                                    const isCompleted = d < normalizedDay;
+                                    const isCurrent = d === normalizedDay;
+                                    const isMilestone = [7, 14, 21, 30].includes(d);
+                                    
+                                    let bg = "rgba(255,255,255,0.05)";
+                                    let color = "rgba(255,255,255,0.3)";
+                                    let border = isMilestone ? "1px solid rgba(255,215,0,0.3)" : "1px solid transparent";
+                                    let shadow = "none";
+                                    
+                                    if (isCompleted) {
+                                        bg = "#3cff9c"; color = "#000"; border = "1px solid #3cff9c";
+                                    } else if (isCurrent) {
+                                        bg = "#fff"; color = "#000"; border = "1px solid #fff";
+                                        shadow = "0 0 15px rgba(255,255,255,0.8)";
+                                    } else if (isMilestone) {
+                                        color = "#ffd700";
+                                    }
+
                                     return (
-                                        <div key={d} style={{ zIndex: 3, position: "relative", display: "flex", flexDirection: "column", alignItems: "center" }}>
-                                            <div style={{ 
-                                                width: 32, height: 32, borderRadius: "50%", 
-                                                background: isCompleted ? "#3cff9c" : isCurrent ? "#fff" : "#1a2a3a",
-                                                border: `2px solid ${isCompleted ? "#3cff9c" : isCurrent ? "#80bdff" : "rgba(255,255,255,0.14)"}`,
-                                                display: "flex", alignItems: "center", justifyContent: "center",
-                                                color: (isCompleted || isCurrent) ? "#000" : "#555",
-                                                fontSize: 12, fontWeight: 800,
-                                                boxShadow: isCurrent ? "0 0 15px rgba(128,189,255,0.5)" : "none"
-                                            }}>
-                                                {isCompleted ? "✓" : isReward ? "🛫" : d}
-                                            </div>
-                                            <div style={{ fontSize: 9, marginTop: 8, opacity: isCurrent ? 1 : 0.4, color: isCurrent ? "#80bdff" : "#fff", letterSpacing: 1 }}>{isReward ? "VOUCHER" : `DIA ${d}`}</div>
+                                        <div key={d} style={{
+                                            aspectRatio: "1", background: bg, borderRadius: 8,
+                                            display: "flex", alignItems: "center", justifyContent: "center",
+                                            fontSize: 12, fontWeight: 900, color: color,
+                                            border: border, boxShadow: shadow,
+                                            position: "relative"
+                                        }}>
+                                            {isCompleted ? "✓" : d}
+                                            {isMilestone && !isCompleted && !isCurrent && (
+                                                <div style={{ position: "absolute", top: -2, right: -2, width: 6, height: 6, background: "#ffd700", borderRadius: "50%", boxShadow: "0 0 5px #ffd700" }} />
+                                            )}
                                         </div>
                                     );
                                 });
@@ -667,11 +681,12 @@ export default function CasoSolucionado() {
 
                         {(() => {
                             const displayVal = streakUpdated?.streakReached || streakUpdated?.current_streak || 0;
+                            const normalizedDay = ((displayVal - 1) % 30) + 1;
                             return (
                                 <p style={{ fontSize: 14, color: "rgba(255,255,255,0.7)", lineHeight: 1.6, marginBottom: 30 }}>
-                                    {displayVal >= 7 
-                                        ? "Parabéns! Você alcançou a meta semanal e desbloqueou uma recompensa de transporte." 
-                                        : `Incrível! Você completou ${displayVal} dia${displayVal > 1 ? "s" : ""} consecutivo${displayVal > 1 ? "s" : ""} de missões.`}
+                                    {normalizedDay === 30 
+                                        ? "Incrível! Você completou um ciclo inteiro de 30 dias na Agência!" 
+                                        : `Excelente! Você completou ${displayVal} dia${displayVal > 1 ? "s" : ""} consecutivo${displayVal > 1 ? "s" : ""} de missões.`}
                                 </p>
                             );
                         })()}
@@ -691,19 +706,49 @@ export default function CasoSolucionado() {
                         textAlign: "center", 
                         maxWidth: 440, 
                         width: "100%",
+                        background: "linear-gradient(135deg, #09131a 0%, #020508 100%)",
+                        border: "1px solid rgba(0, 255, 204, 0.3)",
+                        padding: "30px 20px",
+                        borderRadius: 28,
+                        boxShadow: "0 30px 60px rgba(0,0,0,0.8)",
                         animation: "om-modal-scale-in 0.5s cubic-bezier(0.17, 0.67, 0.83, 0.67)" 
                     }}>
-                        <div style={{ color: "#ffd700", letterSpacing: 6, fontSize: 12, marginBottom: 20, fontWeight: 900, textShadow: "0 0 20px rgba(255,215,0,0.5)" }}>📡 RECOMPENSA DE ELITE</div>
+                        <div style={{ color: "#00ffcc", letterSpacing: 6, fontSize: 12, marginBottom: 20, fontWeight: 900, textShadow: "0 0 20px rgba(0,255,204,0.5)" }}>📡 RECOMPENSA DIÁRIA</div>
                         
-                        <div style={{ position: "relative", marginBottom: 30 }}>
-                            <img src="/Voucher.png" style={{ width: "100%", borderRadius: 20, boxShadow: "0 30px 60px rgba(0,0,0,0.8)", border: "1px solid rgba(255,215,0,0.3)" }} alt="Voucher" />
-                            <div style={{ position: "absolute", inset: 0, borderRadius: 20, boxShadow: "inset 0 0 40px rgba(255,215,0,0.2)" }} />
+                        <div style={{ display: "flex", justifyContent: "center", gap: 15, marginBottom: 25, flexWrap: "wrap" }}>
+                            {newVoucher.items && Object.entries(newVoucher.items).map(([itemKey, qty]) => {
+                                const imgMap = {
+                                    satelite_atlas: "/Itens/SateliteAtlas.png",
+                                    fonte_anonima: "/Itens/FonteAnonima.png",
+                                    dossie_sigiloso: "/Itens/DossieSigiloso.png",
+                                    licenca_tatica: "/Loja/licencaTatica.png"
+                                };
+                                const imgSrc = imgMap[itemKey] || "/Loja/licencaTatica.png";
+                                return (
+                                    <div key={itemKey} style={{ position: "relative", animation: "om-modal-fade-in 0.6s ease-out" }}>
+                                        <div style={{ width: 80, height: 80, borderRadius: 16, background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", display: "flex", alignItems: "center", justifyContent: "center", padding: 8 }}>
+                                            <img src={imgSrc} style={{ maxWidth: "100%", maxHeight: "100%", objectFit: "contain", filter: "drop-shadow(0 0 10px rgba(255,255,255,0.2))" }} alt={itemKey} />
+                                        </div>
+                                        {qty > 1 && (
+                                            <div style={{ position: "absolute", top: -8, right: -8, background: "#00ffcc", color: "#000", fontWeight: 900, fontSize: 12, width: 24, height: 24, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", border: "2px solid #09131a" }}>
+                                                x{qty}
+                                            </div>
+                                        )}
+                                    </div>
+                                );
+                            })}
                         </div>
+
+                        {newVoucher.moedas > 0 && (
+                            <div style={{ fontSize: 32, fontWeight: 900, color: "#ffd700", marginBottom: 10, textShadow: "0 0 15px rgba(255,215,0,0.4)" }}>
+                                + {newVoucher.moedas.toLocaleString('pt-BR')} MOEDAS
+                            </div>
+                        )}
 
                         <h3 style={{ color: "#fff", fontSize: 22, fontWeight: 800, marginBottom: 12 }}>{newVoucher.label}</h3>
                         <p style={{ color: "rgba(255,255,255,0.6)", fontSize: 15, lineHeight: 1.6, marginBottom: 32 }}>
                             Agente disciplinado detectado.<br/>
-                            Você recebeu <strong>{newVoucher.credits} créditos aéreos</strong> com <strong>{Math.round(newVoucher.discount * 100)}% de desconto</strong> para suas próximas operações.
+                            Seu bônus de sequência diária foi creditado.
                         </p>
 
                         <button 
@@ -711,7 +756,7 @@ export default function CasoSolucionado() {
                                 setNewVoucher(null);
                                 proceedToNext();
                             }} 
-                            style={{ background: "linear-gradient(135deg, #ffd700, #ffba00)", color: "#000", fontWeight: 900, padding: "16px 0", width: "100%", borderRadius: 16, border: "none", fontSize: 14, cursor: "pointer" }}
+                            style={{ background: "linear-gradient(135deg, #00ffcc, #00b38f)", color: "#000", fontWeight: 900, padding: "16px 0", width: "100%", borderRadius: 16, border: "none", fontSize: 14, cursor: "pointer", boxShadow: "0 10px 25px rgba(0,255,204,0.3)" }}
                         >
                             RECEBER RECOMPENSA
                         </button>

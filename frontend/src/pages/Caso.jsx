@@ -12,7 +12,7 @@ import {
 import { saveCompletedMission, saveGameState } from "../services/gameSaveService";
 import { useGame } from "../game/GameProvider";
 import { getCidadeImagem, getCidadeDescricao } from "../game/Cidades";
-import { updateStreakOnWin, REWARDS } from "../game/streakService";
+import { updateStreakOnWin } from "../game/streakService";
 import { CASOS_SCENARIOS, findScenario } from "../game/CasosScenarios";
 import { DESTINATION_OPTIONS, ORIGIN_COORDS } from '../game/DestRoutes';
 import Analisar from "./Analisar";
@@ -157,13 +157,6 @@ export default function Caso() {
         [state?.runs, caseId]
     );
 
-    if (!hydrated || !state) {
-        return (
-            <div style={{ minHeight: "100dvh", width: "100vw", background: "#000", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff" }}>
-                Conectando à rede A.T.L.A.S...
-            </div>
-        );
-    }
 
         const runStatusRef = useRef(run?.status);
         useEffect(() => { runStatusRef.current = run?.status; }, [run?.status]);
@@ -655,11 +648,15 @@ export default function Caso() {
                              if (state.player.supabaseId) {
                                  const streakResult = await updateStreakOnWin(state.player.supabaseId);
                                  if (streakResult) {
-                                     // Atualiza state local com novo streak e vouchers
+                                     let streakDinheiro = 0;
+                                     if (streakResult.newlyAwarded && streakResult.newlyAwarded.moedas) {
+                                         streakDinheiro = streakResult.newlyAwarded.moedas;
+                                     }
+
                                      const updatedPlayer = { 
                                          ...nextPlayer, 
-                                         dailyStreak: streakResult.current_streak, 
-                                         vouchers: streakResult.vouchers 
+                                         dailyStreak: streakResult.current_streak,
+                                         dinheiro: (nextPlayer.dinheiro || 0) + streakDinheiro
                                      };
                                      const finalState = saveGame({ ...captState, player: updatedPlayer });
                                      replaceState(finalState);
@@ -954,6 +951,14 @@ export default function Caso() {
                     `}</style>
                 </div>
             )
+        }
+
+        if (!hydrated || !state) {
+            return (
+                <div style={{ minHeight: "100dvh", width: "100vw", background: "#000", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff" }}>
+                    Conectando à rede A.T.L.A.S...
+                </div>
+            );
         }
 
         return (

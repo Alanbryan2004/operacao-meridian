@@ -294,8 +294,7 @@ export default function Mural() {
         }
     }, [state, nav, loadingMissions, loginReward.show, refreshInventory]);
 
-    if (!state) return null;
-    const { player, cases } = state;
+    const { player, cases } = state || { player: {}, cases: [] };
 
     // Sorteia missões garantindo diversidade de dificuldade (FÁCIL, MÉDIO, DIFÍCIL)
     const dailyMissions = useMemo(() => {
@@ -312,7 +311,7 @@ export default function Mural() {
             const diff = normalizeDiff(c.dificuldade);
             
             if (c.id === "C000") {
-                if (state.runs["C000"]?.status === "WON" || completedIds.includes("C000")) return false;
+                if (state?.runs?.["C000"]?.status === "WON" || completedIds.includes("C000")) return false;
             }
 
             // Missões de nível DIFICIL e LENDARIO são PVP/Competitivas e podem ser repetidas sempre.
@@ -320,13 +319,13 @@ export default function Mural() {
 
             if (!isReplayableByDiff) {
                 if (completedIds.includes(c.id)) return false;
-                if (state.runs[c.id]?.status === "WON") return false;
+                if (state?.runs?.[c.id]?.status === "WON") return false;
             }
             
             return true;
         });
 
-        const activeRun = Object.values(state.runs || {}).find(r => r.status === "IN_PROGRESS");
+        const activeRun = Object.values(state?.runs || {}).find(r => r.status === "IN_PROGRESS");
         const activeCaseId = activeRun?.caseId;
         const activeCase = activeCaseId ? cases.find(c => c.id === activeCaseId) : null;
 
@@ -369,7 +368,9 @@ export default function Mural() {
         }
 
         return selected.slice(0, 3);
-    }, [loadingMissions, cases, state.runs, completedIds]);
+    }, [loadingMissions, cases, state?.runs, completedIds]);
+
+    if (!state) return null;
 
     return (
         <div style={{ minHeight: "100dvh", width: "100vw", background: "radial-gradient(circle at center, #071a26 0%, #000 70%)", color: "#fff" }}>
