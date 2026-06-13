@@ -115,10 +115,13 @@ export default function Splash() {
                     autoPlay
                     playsInline
                     muted
-                    webkit-playsinline="true"
+                    webkitPlaysInline
+                    x5-playsinline="true"
+                    preload="auto"
                     onEnded={handleSkipOrEndVideo}
                     onError={handleSkipOrEndVideo}
                     onStalled={() => { setTimeout(() => { if (mode === "VIDEO") handleSkipOrEndVideo(); }, 5000); }}
+                    onLoadedData={(e) => { e.target.play().catch(() => {}); }}
                     style={{
                         width: "100%",
                         height: "100%",

@@ -123,14 +123,23 @@ export default function PromocaoScreen() {
                 {fase === "VIDEO" && (
                     <div style={{ borderRadius: 18, overflow: "hidden", position: "relative" }}>
                         <video
-                            ref={el => { videoRef.current = el; if (el) el.muted = !musicEnabled; }}
+                            ref={el => { videoRef.current = el; }}
                             src="/Videos/promocao.mp4"
                             autoPlay
                             playsInline
-                            webkit-playsinline="true"
+                            muted
+                            webkitPlaysInline
+                            x5-playsinline="true"
+                            preload="auto"
                             onEnded={() => setFase("COMUNICADO")}
                             onError={() => setFase("COMUNICADO")}
                             onStalled={() => { setTimeout(() => { if (fase === "VIDEO") setFase("COMUNICADO"); }, 5000); }}
+                            onLoadedData={(e) => {
+                                e.target.play().then(() => {
+                                    // Após iniciar o play, aplica a preferência de som
+                                    if (musicEnabled && videoRef.current) videoRef.current.muted = false;
+                                }).catch(() => {});
+                            }}
                             style={{ width: "100%", display: "block", objectFit: "cover" }}
                         />
                         <button

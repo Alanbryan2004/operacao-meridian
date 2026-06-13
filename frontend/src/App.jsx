@@ -14,6 +14,7 @@ import Loja from "./pages/Loja";
 import CompetitiveLobby from "./pages/CompetitiveLobby";
 import Conquistas from "./pages/Conquistas";
 import AudioManager from "./components/AudioManager";
+import VersionGuard from "./components/VersionGuard";
 import { GameProvider } from "./game/GameProvider";
 import { loadGame } from "./game/store";
 
@@ -40,6 +41,7 @@ export default function App() {
     <GameProvider initialState={seed} reducer={gameReducer}>
       <div style={{ width: "100%", height: "100%", overflow: "hidden" }}>
         <AudioManager />
+        <VersionGuard />
         <Routes>
           <Route path="/" element={<Splash />} />
           <Route path="/login" element={<Login />} />

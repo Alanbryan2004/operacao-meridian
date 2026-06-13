@@ -1064,8 +1064,16 @@ export default function Caso() {
                                             src={activeVideo}
                                             autoPlay
                                             playsInline
+                                            muted
+                                            webkitPlaysInline
+                                            x5-playsinline="true"
+                                            preload="auto"
                                             ref={el => { if (el) el.muted = !musicEnabled; }}
-                                            webkit-playsinline="true"
+                                            onLoadedData={(e) => {
+                                                e.target.play().then(() => {
+                                                    if (musicEnabled) e.target.muted = false;
+                                                }).catch(() => {});
+                                            }}
                                             loop={false}
                                             onEnded={() => {
                                                 if (runStatusRef.current === "WON" || runStatusRef.current === "LOST" || run?.status === "WON" || run?.status === "LOST") {
