@@ -238,6 +238,13 @@ export default function Mural() {
         // Aguarda fechar recompensas de login e de ranking semanal para não encavalar popups
         if (loginReward.show || weeklyRankReward.show) return;
 
+        // VERIFICA SE DEVE EXIBIR A PROMO (NOVIDADES) NA PRIMEIRA VEZ
+        const hasSeenPromo = localStorage.getItem("atlas_caso_30_dias_promo_v1");
+        if (!hasSeenPromo && !showPromo) {
+            setShowPromo(true);
+            return; // Promo tem prioridade
+        }
+
         try {
             const unlockedLeaders = getUnlockedLeaders(state.capturedSuspects);
             const seenLeaders = state.player.seenLeaderUnlocks || [];
@@ -565,7 +572,7 @@ export default function Mural() {
                             onClick={() => {
                                 setLoginReward({ ...loginReward, show: false });
                                 // Se ainda não viu a promo do voucher, mostra agora
-                                const hasSeen = localStorage.getItem("atlas_voucher_promo_v1");
+                                const hasSeen = localStorage.getItem("atlas_caso_30_dias_promo_v1");
                                 if (!hasSeen) setShowPromo(true);
                             }} 
                             style={{ background: "#3cff9c", color: "#000", fontWeight: 900, padding: "16px 0", width: "100%", borderRadius: 18, border: "none", fontSize: 16, cursor: "pointer", boxShadow: "0 10px 25px rgba(60,255,160,0.3)" }}
@@ -710,7 +717,7 @@ export default function Mural() {
                         const diff = e.clientX - dragStart;
                         if (Math.abs(diff) > 50) {
                             if (diff > 0) setNewsIndex(prev => Math.max(0, prev - 1)); 
-                            else setNewsIndex(prev => Math.min(3, prev + 1));
+                            else setNewsIndex(prev => Math.min(4, prev + 1));
                         }
                         setDragStart(null);
                     }}
@@ -720,7 +727,7 @@ export default function Mural() {
                         const diff = e.changedTouches[0].clientX - dragStart;
                         if (Math.abs(diff) > 50) {
                             if (diff > 0) setNewsIndex(prev => Math.max(0, prev - 1)); 
-                            else setNewsIndex(prev => Math.min(3, prev + 1));
+                            else setNewsIndex(prev => Math.min(4, prev + 1));
                         }
                         setDragStart(null);
                     }}
@@ -729,14 +736,30 @@ export default function Mural() {
                         <button 
                             onClick={() => {
                                 setShowPromo(false);
+                                localStorage.setItem("atlas_caso_30_dias_promo_v1", "true");
                                 localStorage.setItem("atlas_voucher_promo_v1", "true");
                             }}
                             style={{ position: "absolute", top: -40, right: 0, background: "none", border: "none", color: "#fff", fontSize: 28, cursor: "pointer", opacity: 0.8, zIndex: 10 }}
                         >✕</button>
 
-                        <div style={{ display: "flex", width: "400%", transition: "transform 0.4s cubic-bezier(0.4, 0, 0.2, 1)", transform: `translateX(-${(newsIndex * 100) / 4}%)` }}>
-                            {/* SLIDE 0: LICENÇA TÁTICA */}
-                            <div style={{ width: "25%", padding: "0 10px", boxSizing: "border-box" }}>
+                        <div style={{ display: "flex", width: "500%", transition: "transform 0.4s cubic-bezier(0.4, 0, 0.2, 1)", transform: `translateX(-${(newsIndex * 100) / 5}%)` }}>
+                            {/* SLIDE 0: CASO 30 DIAS */}
+                            <div style={{ width: "20%", padding: "0 10px", boxSizing: "border-box" }}>
+                                <div style={{ color: "#ffd700", letterSpacing: 8, fontSize: 13, marginBottom: 12, fontWeight: 900, textShadow: "0 0 20px rgba(255,215,0,0.5)" }}>📂 NOVA MISSÃO</div>
+                                <div style={{ position: "relative", marginBottom: 12 }}>
+                                    <img src="/Banner/BannerCaso30Dias.png" style={{ width: "100%", maxHeight: "45vh", objectFit: "contain", borderRadius: 20, boxShadow: "0 20px 40px rgba(0,0,0,0.6)", border: "1px solid rgba(255,215,0,0.3)" }} alt="Caso 30 Dias" />
+                                </div>
+                                <h3 style={{ color: "#fff", fontSize: 18, fontWeight: 900, marginBottom: 4 }}>O DESAFIO DOS 30 DIAS</h3>
+                                <p style={{ color: "rgba(255,255,255,0.7)", fontSize: 13, lineHeight: 1.4, marginBottom: 12, fontStyle: "italic" }}>
+                                    "Aceite o Caso. Cumpra sua Missão. Faça História."
+                                </p>
+                                <div style={{ background: "rgba(255,215,0,0.1)", borderRadius: 16, padding: "10px", border: "1px solid rgba(255,215,0,0.2)", fontSize: 11, color: "#ffd700", fontWeight: 700 }}>
+                                    Complete a missão diária por 30 dias consecutivos para ganhar recompensas exclusivas!
+                                </div>
+                            </div>
+
+                            {/* SLIDE 1: LICENÇA TÁTICA */}
+                            <div style={{ width: "20%", padding: "0 10px", boxSizing: "border-box" }}>
                                 <div style={{ color: "#3cff9c", letterSpacing: 8, fontSize: 13, marginBottom: 12, fontWeight: 900, textShadow: "0 0 20px rgba(60,255,160,0.5)" }}>🛡️ PRESENTE DE ELITE</div>
                                 <div style={{ position: "relative", marginBottom: 12 }}>
                                     <img src="/Banner/Banner_Licenca_Tatica.png" style={{ width: "100%", maxHeight: "45vh", objectFit: "contain", borderRadius: 20, boxShadow: "0 20px 40px rgba(0,0,0,0.6)", border: "1px solid rgba(60,255,160,0.3)" }} alt="Licença Tática" />
@@ -750,8 +773,8 @@ export default function Mural() {
                                 </div>
                             </div>
 
-                            {/* SLIDE 1: NOVOS ITENS */}
-                            <div style={{ width: "25%", padding: "0 10px", boxSizing: "border-box" }}>
+                            {/* SLIDE 2: NOVOS ITENS */}
+                            <div style={{ width: "20%", padding: "0 10px", boxSizing: "border-box" }}>
                                 <div style={{ color: "#80bdff", letterSpacing: 8, fontSize: 13, marginBottom: 12, fontWeight: 900, textShadow: "0 0 20px rgba(128,189,255,0.5)" }}>🛠️ INTELIGÊNCIA OPERACIONAL</div>
                                 <div style={{ position: "relative", marginBottom: 12 }}>
                                     <img src="/Banner/Banner_NovosItens.png" style={{ width: "100%", maxHeight: "45vh", objectFit: "contain", borderRadius: 20, boxShadow: "0 20px 40px rgba(0,0,0,0.6)", border: "1px solid rgba(128,189,255,0.3)" }} alt="Novos Itens de Inteligência" />
@@ -765,8 +788,8 @@ export default function Mural() {
                                 </div>
                             </div>
 
-                            {/* SLIDE 2: VOUCHER ATLAS */}
-                            <div style={{ width: "25%", padding: "0 10px", boxSizing: "border-box" }}>
+                            {/* SLIDE 3: VOUCHER ATLAS */}
+                            <div style={{ width: "20%", padding: "0 10px", boxSizing: "border-box" }}>
                                 <div style={{ color: "#ffd700", letterSpacing: 8, fontSize: 13, marginBottom: 12, fontWeight: 900, textShadow: "0 0 20px rgba(255,215,0,0.5)" }}>📡 COMUNICADO ESPECIAL</div>
                                 <div style={{ position: "relative", marginBottom: 12 }}>
                                     <img src="/Voucher.png" style={{ width: "100%", maxHeight: "40vh", objectFit: "contain", borderRadius: 20, boxShadow: "0 20px 40px rgba(0,0,0,0.6)", border: "1px solid rgba(255,215,0,0.3)" }} alt="Voucher Atlas Aéreo" />
@@ -809,8 +832,8 @@ export default function Mural() {
                                 </div>
                             </div>
 
-                            {/* SLIDE 3: LOGIN DIÁRIO */}
-                            <div style={{ width: "25%", padding: "0 10px", boxSizing: "border-box" }}>
+                            {/* SLIDE 4: LOGIN DIÁRIO */}
+                            <div style={{ width: "20%", padding: "0 10px", boxSizing: "border-box" }}>
                                 <div style={{ color: "#3cff9c", letterSpacing: 8, fontSize: 13, marginBottom: 8, fontWeight: 900, textShadow: "0 0 20px rgba(60,255,160,0.5)" }}>📈 RECOMPENSA DIÁRIA</div>
                                 <div style={{ position: "relative", marginBottom: 12 }}>
                                     <img src="/logindiario2.png" style={{ width: "100%", maxHeight: "40vh", objectFit: "contain", borderRadius: 20, boxShadow: "0 20px 40px rgba(0,0,0,0.6)", border: "1px solid rgba(60,255,160,0.3)" }} alt="Login Diário" />
