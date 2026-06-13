@@ -4,9 +4,10 @@ import { useNavigate } from "react-router-dom";
 import { useGame } from "../game/GameProvider";
 import ModalMsg from "../components/ModalMsg";
 import { loadCompletedMissions, saveGameState } from "../services/gameSaveService";
-import { getStreakData } from "../game/streakService";
+import { getStreakData, checkStreakPersistence } from "../game/streakService";
 import { checkLoginReward } from "../game/loginRewardService";
 import InventoryModal from "../components/InventoryModal";
+import LicencaUsadaModal from "../components/LicencaUsadaModal";
 import { saveGame, getUnlockedLeaders, FACTIONS } from "../game/store";
 
 function Badge({ children, tone = "gray", onClick, style: extraStyle }) {
@@ -87,6 +88,8 @@ export default function Mural() {
     const [hasNewItem, setHasNewItem] = useState(false);
     const [weeklyRankReward, setWeeklyRankReward] = useState({ show: false, id: null, rankPosition: 0, moedas: 0, items: null });
     const [unlockedFaction, setUnlockedFaction] = useState(null);
+    const [licencaNotification, setLicencaNotification] = useState(null);
+    const [allMissions, setAllMissions] = useState([]);
 
     async function handleClaimWeeklyRankReward() {
         if (!weeklyRankReward.id) return;
@@ -151,14 +154,25 @@ export default function Mural() {
     useEffect(() => {
         if (!state?.player?.supabaseId) return;
 
+        // 🔥 Roda checkStreakPersistence no login para consumir Licenças Táticas ANTES de qualquer outra lógica
         Promise.all([
             loadCompletedMissions(),
-            getStreakData(state.player.supabaseId)
+            checkStreakPersistence(state.player.supabaseId)
+                .then(updatedStreak => updatedStreak || getStreakData(state.player.supabaseId))
         ])
         .then(([missions, streak]) => {
             const ids = missions.filter(m => m.resultado === "WON").map(m => m.case_id);
             setCompletedIds(ids);
+            setAllMissions(missions);
             setStreakData(streak);
+
+            // 🛡️ Checa se há notificação pendente de Licença Tática
+            try {
+                const pending = localStorage.getItem("pendingLicencaNotification");
+                if (pending) {
+                    setLicencaNotification(JSON.parse(pending));
+                }
+            } catch (e) { /* ignora */ }
             
             // Checa Recompensa de Login
             return checkLoginReward(state.player.supabaseId);
@@ -674,6 +688,15 @@ export default function Mural() {
                         })()}
                     </div>
                 </div>
+            )}
+
+            {/* --- MODAL DE LICENÇA TÁTICA UTILIZADA (APARECE APÓS LOGIN REWARD E RANKING) --- */}
+            {!loginReward.show && !weeklyRankReward.show && licencaNotification && (
+                <LicencaUsadaModal
+                    notification={licencaNotification}
+                    completedMissions={allMissions}
+                    onClose={() => setLicencaNotification(null)}
+                />
             )}
 
             {/* --- MODAL PROMOCIONAL / CARROSSEL DE NOVIDADES --- */}

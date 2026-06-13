@@ -120,8 +120,41 @@ export async function updateStreakOnWin(userId) {
         // Sequência mantida
         updated.current_streak += 1;
     } else {
-        // Sequência quebrada
-        updated.current_streak = 1;
+        // diffDays > 1: Sequência potencialmente quebrada
+        // 🔥 VERIFICA LICENÇA TÁTICA antes de resetar!
+        const diasPerdidos = diffDays - 1;
+        let licencasUsadas = false;
+
+        try {
+            const { data: inv } = await supabase
+                .from("user_inventory")
+                .select("licenca_tatica")
+                .eq("user_id", userId)
+                .maybeSingle();
+            
+            const licencas = inv?.licenca_tatica || 0;
+
+            if (licencas >= diasPerdidos) {
+                console.log(`[streakService] updateStreakOnWin: ${diasPerdidos} Licença(s) Tática(s) consumida(s)! Salvando ofensiva.`);
+                
+                // Consome as licenças necessárias
+                await supabase
+                    .from("user_inventory")
+                    .update({ licenca_tatica: licencas - diasPerdidos })
+                    .eq("user_id", userId);
+                
+                // Streak continua normalmente (+1 pelo dia de hoje)
+                updated.current_streak += 1;
+                licencasUsadas = true;
+            }
+        } catch (err) {
+            console.error("[streakService] Erro ao verificar licenças em updateStreakOnWin:", err);
+        }
+
+        if (!licencasUsadas) {
+            // Sem licenças suficientes — sequência quebrada
+            updated.current_streak = 1;
+        }
     }
 
     updated.last_completion_date = todayStr;
@@ -195,6 +228,28 @@ export async function checkStreakPersistence(userId) {
             // Consome as licenças necessárias
             await supabase.from("user_inventory").update({ licenca_tatica: licencas - diasPerdidos }).eq("user_id", userId);
             
+            // Calcula quais dias foram protegidos
+            const diasProtegidos = [];
+            for (let i = 1; i <= diasPerdidos; i++) {
+                const protectedDate = new Date(lastDate);
+                protectedDate.setDate(protectedDate.getDate() + i);
+                const py = protectedDate.getFullYear();
+                const pm = String(protectedDate.getMonth() + 1).padStart(2, "0");
+                const pd = String(protectedDate.getDate()).padStart(2, "0");
+                diasProtegidos.push(`${py}-${pm}-${pd}`);
+            }
+
+            // 🔥 Salva notificação pendente para o modal visual
+            try {
+                localStorage.setItem("pendingLicencaNotification", JSON.stringify({
+                    diasProtegidos,
+                    licencasConsumidas: diasPerdidos,
+                    licencasRestantes: licencas - diasPerdidos,
+                    streakAtual: data.current_streak,
+                    dataUltimaJogada: data.last_completion_date
+                }));
+            } catch (e) { /* localStorage cheio, ignora */ }
+
             // "Finge" que a última missão concluída foi ontem, para que hoje seja o diffDays === 1
             const yesterdayDate = new Date(todayDate);
             yesterdayDate.setDate(yesterdayDate.getDate() - 1);
