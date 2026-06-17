@@ -1073,11 +1073,9 @@ export default function Caso() {
                                             webkitPlaysInline
                                             x5-playsinline="true"
                                             preload="auto"
-                                            ref={el => { if (el) el.muted = !musicEnabled; }}
+                                            ref={el => { if (el) el.muted = true; }}
                                             onLoadedData={(e) => {
-                                                e.target.play().then(() => {
-                                                    if (musicEnabled) e.target.muted = false;
-                                                }).catch(() => {});
+                                                e.target.play().catch(() => {});
                                             }}
                                             loop={false}
                                             onEnded={() => {

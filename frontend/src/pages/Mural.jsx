@@ -238,9 +238,12 @@ export default function Mural() {
         // Aguarda fechar recompensas de login e de ranking semanal para não encavalar popups
         if (loginReward.show || weeklyRankReward.show) return;
 
-        // VERIFICA SE DEVE EXIBIR A PROMO (NOVIDADES) NA PRIMEIRA VEZ
-        const hasSeenPromo = localStorage.getItem("atlas_caso_30_dias_promo_v1");
-        if (!hasSeenPromo && !showPromo) {
+        // VERIFICA SE DEVE EXIBIR A PROMO (NOVIDADES) UMA VEZ POR DIA
+        const todayStr = new Date().toISOString().split('T')[0];
+        const lastSeenPromoDate = localStorage.getItem("atlas_promo_last_seen_date");
+        
+        if (lastSeenPromoDate !== todayStr && !showPromo) {
+            localStorage.setItem("atlas_promo_last_seen_date", todayStr);
             setShowPromo(true);
             return; // Promo tem prioridade
         }
@@ -733,15 +736,6 @@ export default function Mural() {
                     }}
                 >
                     <div style={{ textAlign: "center", maxWidth: 520, width: "95%", position: "relative", margin: "auto" }}>
-                        <button 
-                            onClick={() => {
-                                setShowPromo(false);
-                                localStorage.setItem("atlas_caso_30_dias_promo_v1", "true");
-                                localStorage.setItem("atlas_voucher_promo_v1", "true");
-                            }}
-                            style={{ position: "absolute", top: -40, right: 0, background: "none", border: "none", color: "#fff", fontSize: 28, cursor: "pointer", opacity: 0.8, zIndex: 10 }}
-                        >✕</button>
-
                         <div style={{ display: "flex", width: "500%", transition: "transform 0.4s cubic-bezier(0.4, 0, 0.2, 1)", transform: `translateX(-${(newsIndex * 100) / 5}%)` }}>
                             {/* SLIDE 0: CASO 30 DIAS */}
                             <div style={{ width: "20%", padding: "0 10px", boxSizing: "border-box" }}>
@@ -895,12 +889,12 @@ export default function Mural() {
                             </div>
                         </div>
 
-                        {/* INDICADORES (BOLINHAS) */}
                         <div style={{ display: "flex", justifyContent: "center", gap: 10, margin: "10px 0 25px" }}>
-                            <div onClick={() => setNewsIndex(0)} style={{ width: 10, height: 10, borderRadius: "50%", background: newsIndex === 0 ? "#3cff9c" : "rgba(255,255,255,0.2)", cursor: "pointer", transition: "0.3s" }} />
-                            <div onClick={() => setNewsIndex(1)} style={{ width: 10, height: 10, borderRadius: "50%", background: newsIndex === 1 ? "#80bdff" : "rgba(255,255,255,0.2)", cursor: "pointer", transition: "0.3s" }} />
-                            <div onClick={() => setNewsIndex(2)} style={{ width: 10, height: 10, borderRadius: "50%", background: newsIndex === 2 ? "#ffd700" : "rgba(255,255,255,0.2)", cursor: "pointer", transition: "0.3s" }} />
-                            <div onClick={() => setNewsIndex(3)} style={{ width: 10, height: 10, borderRadius: "50%", background: newsIndex === 3 ? "#3cff9c" : "rgba(255,255,255,0.2)", cursor: "pointer", transition: "0.3s" }} />
+                            <div onClick={() => setNewsIndex(0)} style={{ width: 10, height: 10, borderRadius: "50%", background: newsIndex === 0 ? "#ffd700" : "rgba(255,255,255,0.2)", cursor: "pointer", transition: "0.3s" }} />
+                            <div onClick={() => setNewsIndex(1)} style={{ width: 10, height: 10, borderRadius: "50%", background: newsIndex === 1 ? "#3cff9c" : "rgba(255,255,255,0.2)", cursor: "pointer", transition: "0.3s" }} />
+                            <div onClick={() => setNewsIndex(2)} style={{ width: 10, height: 10, borderRadius: "50%", background: newsIndex === 2 ? "#80bdff" : "rgba(255,255,255,0.2)", cursor: "pointer", transition: "0.3s" }} />
+                            <div onClick={() => setNewsIndex(3)} style={{ width: 10, height: 10, borderRadius: "50%", background: newsIndex === 3 ? "#ffd700" : "rgba(255,255,255,0.2)", cursor: "pointer", transition: "0.3s" }} />
+                            <div onClick={() => setNewsIndex(4)} style={{ width: 10, height: 10, borderRadius: "50%", background: newsIndex === 4 ? "#3cff9c" : "rgba(255,255,255,0.2)", cursor: "pointer", transition: "0.3s" }} />
                         </div>
 
                         <button 

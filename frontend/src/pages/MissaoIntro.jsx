@@ -91,7 +91,8 @@ export default function MissaoIntro() {
         return (
             <div style={{ height: "100dvh", width: "100vw", background: "#000", display: "flex", alignItems: "center", justifyContent: "center" }}>
                 <video
-                    ref={el => { videoRef.current = el; if (el) el.muted = !musicEnabled; }}
+                    muted
+                    ref={el => { videoRef.current = el; if (el) el.muted = true; }}
                     src={caseConfig.introVideo}
                     autoPlay
                     playsInline
@@ -100,6 +101,7 @@ export default function MissaoIntro() {
                     onEnded={handleVideoEnd}
                     onError={handleVideoEnd}
                     onStalled={() => { setTimeout(handleVideoEnd, 5000); }}
+                    onLoadedData={(e) => { e.target.play().catch(() => {}); }}
                 />
                 <button
                     onClick={handleVideoEnd}

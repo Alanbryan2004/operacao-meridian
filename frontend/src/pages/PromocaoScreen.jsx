@@ -135,10 +135,7 @@ export default function PromocaoScreen() {
                             onError={() => setFase("COMUNICADO")}
                             onStalled={() => { setTimeout(() => { if (fase === "VIDEO") setFase("COMUNICADO"); }, 5000); }}
                             onLoadedData={(e) => {
-                                e.target.play().then(() => {
-                                    // Após iniciar o play, aplica a preferência de som
-                                    if (musicEnabled && videoRef.current) videoRef.current.muted = false;
-                                }).catch(() => {});
+                                e.target.play().catch(() => {});
                             }}
                             style={{ width: "100%", display: "block", objectFit: "cover" }}
                         />
