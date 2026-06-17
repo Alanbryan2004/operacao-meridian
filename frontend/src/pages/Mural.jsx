@@ -736,7 +736,8 @@ export default function Mural() {
                     }}
                 >
                     <div style={{ textAlign: "center", maxWidth: 520, width: "95%", position: "relative", margin: "auto" }}>
-                        <div style={{ display: "flex", width: "500%", transition: "transform 0.4s cubic-bezier(0.4, 0, 0.2, 1)", transform: `translateX(-${(newsIndex * 100) / 5}%)` }}>
+                        <div style={{ overflow: "hidden", width: "100%", paddingBottom: "10px" }}>
+                            <div style={{ display: "flex", width: "500%", transition: "transform 0.4s cubic-bezier(0.4, 0, 0.2, 1)", transform: `translateX(-${(newsIndex * 100) / 5}%)` }}>
                             {/* SLIDE 0: CASO 30 DIAS */}
                             <div style={{ width: "20%", padding: "0 10px", boxSizing: "border-box" }}>
                                 <div style={{ color: "#ffd700", letterSpacing: 8, fontSize: 13, marginBottom: 12, fontWeight: 900, textShadow: "0 0 20px rgba(255,215,0,0.5)" }}>📂 NOVA MISSÃO</div>
@@ -887,6 +888,7 @@ export default function Mural() {
                                     })()}
                                 </div>
                             </div>
+                        </div>
                         </div>
 
                         <div style={{ display: "flex", justifyContent: "center", gap: 10, margin: "10px 0 25px" }}>
