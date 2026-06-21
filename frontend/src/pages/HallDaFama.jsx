@@ -11,6 +11,7 @@ export default function HallDaFama() {
     const { state } = useGame();
     const [rankings, setRankings] = useState([]);
     const [speedRecords, setSpeedRecords] = useState([]);
+    const [streakRecords, setStreakRecords] = useState([]);
     const [loading, setLoading] = useState(true);
     const [selectedAgent, setSelectedAgent] = useState(null);
     const [activeTab, setActiveTab] = useState("CAPTURAS"); // CAPTURAS | TEMPO_RECORDE
@@ -40,7 +41,42 @@ export default function HallDaFama() {
             }
         }
 
-        Promise.all([fetchRankings(), fetchSpeedRankings()]).finally(() => setLoading(false));
+        async function fetchStreakRankings() {
+            try {
+                const { data: streaks, error: err1 } = await supabase
+                    .from("daily_streaks")
+                    .select("current_streak, user_id")
+                    .order("current_streak", { ascending: false })
+                    .limit(20);
+
+                if (err1) throw err1;
+                if (!streaks || streaks.length === 0) return;
+
+                const userIds = streaks.map(s => s.user_id);
+
+                const { data: profiles, error: err2 } = await supabase
+                    .from("profiles")
+                    .select("id, nickname, rank, total_capturas, level, avatar, frase, avatar_key, hard_wins, hard_losses, legendary_wins, legendary_losses")
+                    .in("id", userIds);
+
+                if (err2) throw err2;
+
+                const merged = streaks.map(s => {
+                    const p = profiles.find(pr => pr.id === s.user_id) || {};
+                    return {
+                        ...p,
+                        user_id: s.user_id,
+                        current_streak: s.current_streak
+                    };
+                });
+                
+                setStreakRecords(merged);
+            } catch (err) {
+                console.error("Erro ao buscar recordes de ofensiva:", err);
+            }
+        }
+
+        Promise.all([fetchRankings(), fetchSpeedRankings(), fetchStreakRankings()]).finally(() => setLoading(false));
     }, []);
 
     if (!state) return null;
@@ -65,6 +101,8 @@ export default function HallDaFama() {
             const playerIdx = items.findIndex(item => {
                 if (activeTab === "CAPTURAS") {
                     return item.nickname === player.nome;
+                } else if (activeTab === "OFENSIVA") {
+                    return item.nickname === player.nome || item.user_id === state.player?.supabaseId;
                 } else {
                     return item.user_id === state.player?.supabaseId;
                 }
@@ -191,6 +229,10 @@ export default function HallDaFama() {
                     background: linear-gradient(135deg, rgba(255,215,0,0.1), rgba(255,180,0,0.06));
                     color: #ffd700; box-shadow: inset 0 -2px 0 #ffd700;
                 }
+                .hf-tab-streak.hf-tab-active {
+                    background: linear-gradient(135deg, rgba(255,100,0,0.1), rgba(255,50,0,0.06));
+                    color: #ff8080; box-shadow: inset 0 -2px 0 #ff8080;
+                }
 
                 /* Dossiê Modal */
                 .hf-overlay {
@@ -250,6 +292,12 @@ export default function HallDaFama() {
                         onClick={() => setActiveTab("TEMPO_RECORDE")}
                     >
                         ⚡ TEMPO RECORDE
+                    </button>
+                    <button
+                        className={`hf-tab hf-tab-streak ${activeTab === "OFENSIVA" ? "hf-tab-active" : ""}`}
+                        onClick={() => setActiveTab("OFENSIVA")}
+                    >
+                        🔥 OFENSIVA
                     </button>
                 </div>
 
@@ -350,6 +398,53 @@ export default function HallDaFama() {
                                     <div className="hf-score">
                                         <div className="hf-speed-time">{formatDuration(r.duration_seconds)}</div>
                                         <div className="hf-score-label">Tempo</div>
+                                    </div>
+                                </div>
+                            );
+                        })}
+                    </div>
+                )}
+
+                {/* Tab: OFENSIVA */}
+                {activeTab === "OFENSIVA" && (
+                    <div className="hf-list">
+                        {loading ? (
+                            <div style={{ textAlign: 'center', padding: '40px', opacity: 0.5 }}>Descriptografando registros...</div>
+                        ) : streakRecords.length === 0 ? (
+                            <div style={{ textAlign: 'center', padding: '40px', opacity: 0.5 }}>Nenhum agente registrado ainda.</div>
+                        ) : streakRecords.map((r, idx) => {
+                            const rankNum = idx + 1;
+                            const isPlayer = r.user_id === state.player?.supabaseId || r.nickname === player.nome;
+
+                            return (
+                                <div
+                                    key={r.user_id || idx}
+                                    className={`hf-card ${isPlayer ? 'hf-card-player' : ''}`}
+                                    onClick={() => setSelectedAgent({
+                                        ...r,
+                                        total_capturas: r.total_capturas
+                                    })}
+                                    style={getClimbStyle(idx, streakRecords, isPlayer)}
+                                >
+                                    <div className={`hf-rank ${rankNum <= 3 ? `hf-rank-${rankNum}` : ''}`}>
+                                        {rankNum}
+                                    </div>
+                                    <div className="hf-avatar">
+                                        <AvatarDisplay
+                                            config={r.avatar}
+                                            googlePhoto={r.avatar_key}
+                                            size={50}
+                                            style={{ borderRadius: 12 }}
+                                            useGoogleFirst={true}
+                                        />
+                                    </div>
+                                    <div className="hf-info">
+                                        <div className="hf-name">{r.nickname} {isPlayer && "(VOCÊ)"}</div>
+                                        <div className="hf-role">{r.rank || "Agente"} (Nível {r.level || 1})</div>
+                                    </div>
+                                    <div className="hf-score">
+                                        <div className="hf-score-val" style={{ color: "#ff8080" }}>{r.current_streak || 0}</div>
+                                        <div className="hf-score-label">Dias</div>
                                     </div>
                                 </div>
                             );
