@@ -26,7 +26,28 @@ export default function HallDaFama() {
                     .limit(20);
 
                 if (error) throw error;
-                setRankings(data || []);
+                
+                let rankingsData = data || [];
+                if (rankingsData.length > 0) {
+                    try {
+                        const userIds = rankingsData.map(u => u.id);
+                        const { data: streaks } = await supabase
+                            .from("daily_streaks")
+                            .select("user_id, current_streak")
+                            .in("user_id", userIds);
+                            
+                        if (streaks) {
+                            rankingsData = rankingsData.map(u => {
+                                const streak = streaks.find(s => s.user_id === u.id);
+                                return { ...u, current_streak: streak ? streak.current_streak : 0 };
+                            });
+                        }
+                    } catch (e) {
+                        console.error("Erro ao mesclar ofensivas no ranking:", e);
+                    }
+                }
+                
+                setRankings(rankingsData);
             } catch (err) {
                 console.error("Erro ao buscar ranking:", err);
             }
@@ -335,7 +356,14 @@ export default function HallDaFama() {
                                     </div>
                                     <div className="hf-info">
                                         <div className="hf-name">{r.nickname} {isPlayer && "(VOCÊ)"}</div>
-                                        <div className="hf-role">{r.rank || "Agente"} (Nível {r.level || 1})</div>
+                                        <div className="hf-role" style={{ display: "flex", alignItems: "center", gap: 6, flexWrap: "wrap", marginTop: 4 }}>
+                                            <span>{r.rank || "Agente"} (Nível {r.level || 1})</span>
+                                            {r.current_streak > 0 && (
+                                                <span style={{ color: "#ff8080", fontSize: 9, fontWeight: 900, background: "rgba(255,128,128,0.1)", padding: "2px 6px", borderRadius: 6, display: "inline-flex", alignItems: "center", gap: 2 }}>
+                                                    🔥 {r.current_streak}
+                                                </span>
+                                            )}
+                                        </div>
                                     </div>
                                     <div className="hf-score">
                                         <div className="hf-score-val">{r.total_capturas || 0}</div>
