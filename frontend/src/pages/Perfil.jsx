@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useGame } from "../game/GameProvider";
 import { supabase } from "../lib/supabase";
 import { loadCompletedMissions, cleanupDuplicateMissions } from "../services/gameSaveService";
+import { getStreakData } from "../game/streakService";
 import SuspectGallery from "../components/SuspectGallery";
 import AvatarDisplay from "../components/AvatarDisplay";
 
@@ -27,6 +28,7 @@ export default function Perfil() {
     const { state } = useGame();
     const [tab, setTab] = useState("PERFIL");
     const [doneMissions, setDoneMissions] = useState([]);
+    const [streakData, setStreakData] = useState(null);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -66,7 +68,11 @@ export default function Perfil() {
                 setDoneMissions(deduplicated);
             })
             .finally(() => setLoading(false));
-    }, []);
+            
+        if (state?.player?.supabaseId) {
+            getStreakData(state.player.supabaseId).then(data => setStreakData(data));
+        }
+    }, [state?.player?.supabaseId]);
 
     if (!state) return null;
     const { player } = state;
@@ -229,6 +235,13 @@ export default function Perfil() {
 
                                 {/* Stats Grid */}
                                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+                                    <div style={{ gridColumn: "1 / -1", background: "rgba(255,215,0,0.05)", borderRadius: 12, padding: "8px 12px", border: "1px solid rgba(255,215,0,0.2)", textAlign: "center", display: "flex", alignItems: "center", justifyContent: "center", gap: 10 }}>
+                                        <div style={{ fontSize: 22, filter: "drop-shadow(0 0 10px rgba(255,215,0,0.5))" }}>🔥</div>
+                                        <div style={{ textAlign: "left" }}>
+                                            <div style={{ fontSize: 18, fontWeight: 900, color: "#ffd700", lineHeight: 1 }}>{streakData ? streakData.current_streak : "..."} DIAS</div>
+                                            <div style={{ fontSize: 8, opacity: 0.8, marginTop: 2, letterSpacing: 1, color: "#ffd700" }}>ATIVOS NA OFENSIVA</div>
+                                        </div>
+                                    </div>
                                     <div style={{ background: "rgba(255,255,255,0.03)", borderRadius: 12, padding: "12px", border: "1px solid rgba(255,255,255,0.08)", textAlign: "center" }}>
                                         <div style={{ fontSize: 20, fontWeight: 900, color: "#ffd700" }}>${player.dinheiro}</div>
                                         <div style={{ fontSize: 9, opacity: 0.5, marginTop: 4, letterSpacing: 1 }}>SALDO</div>
