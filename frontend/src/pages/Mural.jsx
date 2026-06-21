@@ -8,6 +8,7 @@ import { getStreakData, checkStreakPersistence } from "../game/streakService";
 import { checkLoginReward } from "../game/loginRewardService";
 import InventoryModal from "../components/InventoryModal";
 import LicencaUsadaModal from "../components/LicencaUsadaModal";
+import EventosModal from "../components/EventosModal";
 import { saveGame, getUnlockedLeaders, FACTIONS } from "../game/store";
 
 function Badge({ children, tone = "gray", onClick, style: extraStyle }) {
@@ -89,6 +90,7 @@ export default function Mural() {
     const [weeklyRankReward, setWeeklyRankReward] = useState({ show: false, id: null, rankPosition: 0, moedas: 0, items: null });
     const [unlockedFaction, setUnlockedFaction] = useState(null);
     const [licencaNotification, setLicencaNotification] = useState(null);
+    const [showEventosModal, setShowEventosModal] = useState(false);
     const [allMissions, setAllMissions] = useState([]);
 
     async function handleClaimWeeklyRankReward() {
@@ -500,7 +502,7 @@ export default function Mural() {
                         </div>
                         <div style={{ marginTop: 10, display: "flex", gap: 8, flexWrap: "wrap", alignItems: "center" }}>
                             <Badge tone="blue">{player.classeEmoji || "🟢"} {player.nivelTitulo || "Novato"}</Badge>
-                            <Badge tone="green">XP {player.xp}</Badge>
+                            <Badge tone="green" style={{ cursor: "pointer" }} onClick={() => setShowEventosModal(true)}>📅 Eventos</Badge>
                             <Badge tone="purple" style={{ cursor: "pointer" }} onClick={() => nav("/conquistas")}>🏆 Conquistas</Badge>
                             <button className="om-newsBtn" onClick={() => { setShowPromo(true); setNewsIndex(0); }}>✨ NOVIDADES</button>
                         </div>
@@ -707,6 +709,14 @@ export default function Mural() {
                     notification={licencaNotification}
                     completedMissions={allMissions}
                     onClose={() => setLicencaNotification(null)}
+                />
+            )}
+
+            {showEventosModal && (
+                <EventosModal 
+                    onClose={() => setShowEventosModal(false)}
+                    streakData={streakData}
+                    loginStreakData={loginStreakData}
                 />
             )}
 

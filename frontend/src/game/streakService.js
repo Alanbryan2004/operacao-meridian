@@ -154,30 +154,32 @@ export async function updateStreakOnWin(userId) {
         const diasPerdidos = diffDays - 1;
         let licencasUsadas = false;
 
-        try {
-            const { data: inv } = await supabase
-                .from("user_inventory")
-                .select("licenca_tatica")
-                .eq("user_id", userId)
-                .maybeSingle();
-            
-            const licencas = inv?.licenca_tatica || 0;
-
-            if (licencas >= diasPerdidos) {
-                console.log(`[streakService] updateStreakOnWin: ${diasPerdidos} Licença(s) Tática(s) consumida(s)! Salvando ofensiva.`);
-                
-                // Consome as licenças necessárias
-                await supabase
+        if (existing.current_streak > 0) {
+            try {
+                const { data: inv } = await supabase
                     .from("user_inventory")
-                    .update({ licenca_tatica: licencas - diasPerdidos })
-                    .eq("user_id", userId);
+                    .select("licenca_tatica")
+                    .eq("user_id", userId)
+                    .maybeSingle();
                 
-                // Streak continua normalmente (+1 pelo dia de hoje)
-                updated.current_streak += 1;
-                licencasUsadas = true;
+                const licencas = inv?.licenca_tatica || 0;
+
+                if (licencas >= diasPerdidos) {
+                    console.log(`[streakService] updateStreakOnWin: ${diasPerdidos} Licença(s) Tática(s) consumida(s)! Salvando ofensiva.`);
+                    
+                    // Consome as licenças necessárias
+                    await supabase
+                        .from("user_inventory")
+                        .update({ licenca_tatica: licencas - diasPerdidos })
+                        .eq("user_id", userId);
+                    
+                    // Streak continua normalmente (+1 pelo dia de hoje)
+                    updated.current_streak += 1;
+                    licencasUsadas = true;
+                }
+            } catch (err) {
+                console.error("[streakService] Erro ao verificar licenças em updateStreakOnWin:", err);
             }
-        } catch (err) {
-            console.error("[streakService] Erro ao verificar licenças em updateStreakOnWin:", err);
         }
 
         if (!licencasUsadas) {
@@ -252,6 +254,17 @@ export async function checkStreakPersistence(userId) {
     const diffDays = Math.round(diffMs / (1000 * 60 * 60 * 24));
 
     if (diffDays > 1) {
+        // Se a ofensiva já está zerada, não gasta licença à toa! Atualiza a data para parar o looping.
+        if (data.current_streak === 0) {
+            const yesterdayDate = new Date(todayDate);
+            yesterdayDate.setDate(yesterdayDate.getDate() - 1);
+            const yesterdayStr = yesterdayDate.toISOString().split('T')[0];
+
+            const resetData = { ...data, current_streak: 0, last_completion_date: yesterdayStr };
+            await saveStreakData(resetData);
+            return resetData;
+        }
+
         // Verifica se o usuário tem Licença Tática no inventário
         const { data: inv } = await supabase.from("user_inventory").select("licenca_tatica").eq("user_id", userId).maybeSingle();
         const licencas = inv?.licenca_tatica || 0;
@@ -294,13 +307,17 @@ export async function checkStreakPersistence(userId) {
             const d = String(yesterdayDate.getDate()).padStart(2, "0");
             const yesterdayStr = `${y}-${m}-${d}`;
 
-            const savedData = { ...data, last_completion_date: yesterdayStr, licenca_usada: true };
+            const savedData = { ...data, last_completion_date: yesterdayStr };
             await saveStreakData(savedData);
             return savedData;
         }
 
         // Perdeu o streak por inatividade e não tinha licenças suficientes
-        const resetData = { ...data, current_streak: 0 };
+        const yesterdayDate = new Date(todayDate);
+        yesterdayDate.setDate(yesterdayDate.getDate() - 1);
+        const yesterdayStr = yesterdayDate.toISOString().split('T')[0];
+
+        const resetData = { ...data, current_streak: 0, last_completion_date: yesterdayStr };
         await saveStreakData(resetData);
         return resetData;
     }

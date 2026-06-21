@@ -86,6 +86,9 @@ export const inventoryService = {
     if (!userId || !itemKey) return false;
     
     try {
+      // Garante que o inventário existe antes de tentar atualizar
+      await this.getInventory(userId);
+
       const { data, error: fetchError } = await supabase
         .from("user_inventory")
         .select(itemKey)
