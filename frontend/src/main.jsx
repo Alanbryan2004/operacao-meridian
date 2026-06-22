@@ -33,8 +33,9 @@ window.handleAndroidLogin = async (idToken) => {
             window.Android.onLoginComplete(data.user?.email || "");
         }
 
-        // Redireciona para /login para que o onAuthStateChange processe a sessão
-        if (window.location.pathname !== "/login") {
+        // Apenas recarrega a página se não estiver na tela de login, 
+        // caso contrário o onAuthStateChange fará o trabalho sem recarregar e quebrar o estado.
+        if (window.location.pathname !== "/login" && window.location.pathname !== "/") {
             window.location.href = "/login";
         }
     } catch (err) {

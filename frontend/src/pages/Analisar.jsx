@@ -156,6 +156,10 @@ export default function Analisar({ onBack, filters, setFilters, warrantId, setWa
                         LIMPAR
                     </button>
                 </div>
+                
+                <div style={{ color: "rgba(255,255,255,0.5)", fontSize: "10px", marginBottom: "10px" }}>
+                    DEBUG-CAPTURES: {Object.keys(capturedSuspects).filter(k => capturedSuspects[k] > 0).join(",")}
+                </div>
 
                 <div style={{ display: "grid", gap: 15 }}>
                     {Object.keys(filters).filter(key => options[key]).map(key => (
@@ -213,11 +217,11 @@ export default function Analisar({ onBack, filters, setFilters, warrantId, setWa
                         onDoubleClick={() => setSelectedSuspect(s)}
                     >
                         <img 
-                            src={capturedSuspects[s.id] > 0 ? `/Suspeitos/${s.id}.png` : (s.id.startsWith("L") ? "/Suspeitos/NaoIdentificadoLider.png" : "/Suspeitos/NaoIdentificado.png")} 
+                            src={capturedSuspects[s.id] > 0 ? `/Suspeitos/${s.id}.png?v=2` : (s.id.startsWith("L") ? "/Suspeitos/NaoIdentificadoLider.png?v=2" : "/Suspeitos/NaoIdentificado.png?v=2")} 
                             className="om-suspect-img" 
                             alt={s.codinome} 
                             style={{ filter: eliminatedIds.includes(s.id) ? "grayscale(100%) brightness(0.5)" : "none" }}
-                            onError={(e) => { e.target.src = s.id.startsWith("L") ? "/Suspeitos/NaoIdentificadoLider.png" : "/Suspeitos/NaoIdentificado.png"; }}
+                            onError={(e) => { e.target.src = s.id.startsWith("L") ? "/Suspeitos/NaoIdentificadoLider.png?v=2" : "/Suspeitos/NaoIdentificado.png?v=2"; }}
                         />
                         
                         {eliminatedIds.includes(s.id) && (
@@ -304,10 +308,10 @@ export default function Analisar({ onBack, filters, setFilters, warrantId, setWa
                         {/* Foto de Fundo (Sempre visível) */}
                         <div style={{ height: "100%", width: "100%", position: "relative" }}>
                             <img
-                                src={capturedSuspects[selectedSuspect.id] > 0 ? `/Suspeitos/${selectedSuspect.id}.png` : (selectedSuspect.id.startsWith("L") ? "/Suspeitos/NaoIdentificadoLider.png" : "/Suspeitos/NaoIdentificado.png")}
+                                src={capturedSuspects[selectedSuspect.id] > 0 ? `/Suspeitos/${selectedSuspect.id}.png?v=2` : (selectedSuspect.id.startsWith("L") ? "/Suspeitos/NaoIdentificadoLider.png?v=2" : "/Suspeitos/NaoIdentificado.png?v=2")}
                                 style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "top" }}
                                 alt={selectedSuspect.codinome}
-                                onError={(e) => { e.target.src = selectedSuspect.id.startsWith("L") ? "/Suspeitos/NaoIdentificadoLider.png" : "/Suspeitos/NaoIdentificado.png"; }}
+                                onError={(e) => { e.target.src = selectedSuspect.id.startsWith("L") ? "/Suspeitos/NaoIdentificadoLider.png?v=2" : "/Suspeitos/NaoIdentificado.png?v=2"; }}
                             />
 
                             <button

@@ -154,7 +154,7 @@ export async function updateStreakOnWin(userId) {
         const diasPerdidos = diffDays - 1;
         let licencasUsadas = false;
 
-        if (existing.current_streak > 0) {
+        if (existing.current_streak > 1) {
             try {
                 const { data: inv } = await supabase
                     .from("user_inventory")
@@ -232,7 +232,12 @@ async function saveStreakData(data) {
         .from("daily_streaks")
         .upsert(data);
     
-    if (error) console.error("[streakService] Erro ao salvar streak:", error.message);
+    if (error) {
+        console.error("[streakService] Erro ao salvar streak:", error.message);
+    } else if (data.user_id) {
+        // Tenta sincronizar a ofensiva pública com a tabela profiles (para os rankings)
+        await supabase.from("profiles").update({ current_streak: data.current_streak }).eq("id", data.user_id).catch(() => {});
+    }
 }
 
 /**
@@ -254,8 +259,8 @@ export async function checkStreakPersistence(userId) {
     const diffDays = Math.round(diffMs / (1000 * 60 * 60 * 24));
 
     if (diffDays > 1) {
-        // Se a ofensiva já está zerada, não gasta licença à toa! Atualiza a data para parar o looping.
-        if (data.current_streak === 0) {
+        // Se a ofensiva já está zerada (ou apenas 1), não gasta licença à toa! Atualiza a data para parar o looping.
+        if (data.current_streak <= 1) {
             const yesterdayDate = new Date(todayDate);
             yesterdayDate.setDate(yesterdayDate.getDate() - 1);
             const yesterdayStr = yesterdayDate.toISOString().split('T')[0];

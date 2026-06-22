@@ -372,8 +372,8 @@ export default function SuspectGallery({ capturedSuspects = {} }) {
                             const isCaptured = count > 0;
                             const isLeader = s.id.startsWith("L");
                             
-                            const defaultImage = isLeader ? "/Suspeitos/NaoIdentificadoLider.png" : "/Suspeitos/NaoIdentificado.png";
-                            const normalImage = `/Suspeitos/${s.id}.png`;
+                            const defaultImage = isLeader ? "/Suspeitos/NaoIdentificadoLider.png?v=2" : "/Suspeitos/NaoIdentificado.png?v=2";
+                            const normalImage = `/Suspeitos/${s.id}.png?v=2`;
                             const imageSrc = isCaptured ? normalImage : defaultImage;
 
                             return (
@@ -435,8 +435,8 @@ export default function SuspectGallery({ capturedSuspects = {} }) {
                         const capturedMembersCount = members.filter(m => (capturedSuspects[m.id] || 0) > 0).length;
 
                         // Imagem do Líder: LiderGrupo.png quando não capturado
-                        const defaultLeaderImg = isLeaderCaptured ? "/Suspeitos/NaoIdentificadoLider.png" : "/Suspeitos/LiderGrupo.png";
-                        const leaderImgSrc = isLeaderCaptured ? `/Suspeitos/${f.leaderId}.png` : "/Suspeitos/LiderGrupo.png";
+                        const defaultLeaderImg = isLeaderCaptured ? "/Suspeitos/NaoIdentificadoLider.png?v=2" : "/Suspeitos/LiderGrupo.png?v=2";
+                        const leaderImgSrc = isLeaderCaptured ? `/Suspeitos/${f.leaderId}.png?v=2` : "/Suspeitos/LiderGrupo.png?v=2";
 
                         return (
                             <div className="faction-card" style={{ background: colors.bg, borderColor: colors.border }}>
@@ -509,7 +509,7 @@ export default function SuspectGallery({ capturedSuspects = {} }) {
                                                         }}
                                                     >
                                                         <img 
-                                                            src={isMCaptured ? `/Suspeitos/${m.id}.png` : "/Suspeitos/NaoIdentificado.png"} 
+                                                            src={isMCaptured ? `/Suspeitos/${m.id}.png?v=2` : "/Suspeitos/NaoIdentificado.png?v=2"} 
                                                             alt={m.codinome}
                                                         />
                                                     </div>

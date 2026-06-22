@@ -9,9 +9,9 @@ export default function EventosModal({ onClose, streakData, loginStreakData }) {
     const isLoginResgatado = lastLoginDate === todayStr;
 
     const displayStreak = Math.max(1, currentLoginStreak);
-    const cycleStart = Math.floor((displayStreak - 1) / 5) * 5 + 1;
-    const cycleDays = [0, 1, 2, 3, 4].map(offset => cycleStart + offset);
-    const progressIndex = Math.max(0, currentLoginStreak - cycleStart);
+    const endDay = Math.max(5, displayStreak);
+    const cycleDays = [endDay - 4, endDay - 3, endDay - 2, endDay - 1, endDay];
+    const progressIndex = cycleDays.indexOf(displayStreak) !== -1 ? cycleDays.indexOf(displayStreak) : 4;
 
     return (
         <div 

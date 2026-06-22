@@ -99,8 +99,8 @@ export default function CasoSolucionado() {
     const warrantSuspect = useMemo(() => suspectsSeed.find(s => String(s.id) === String(run?.warrantId)), [run?.warrantId]);
 
     const conclusionImg = isWon
-        ? `/Suspeitos/Presos/${run?.warrantId}.png`
-        : `/Suspeitos/Presos/missaoFracassada.png`;
+        ? `/Suspeitos/Presos/${run?.warrantId}.png?v=2`
+        : `/Suspeitos/Presos/missaoFracassada.png?v=2`;
 
     const reportText = useMemo(() => {
         if (isCompetitive) {
@@ -533,7 +533,7 @@ export default function CasoSolucionado() {
                             }}
                         >
                             <img 
-                                src="/Suspeitos/NaoIdentificadoLider.png" 
+                                src="/Suspeitos/NaoIdentificadoLider.png?v=2" 
                                 alt="Líder Não Identificado" 
                                 style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "top" }}
                             />

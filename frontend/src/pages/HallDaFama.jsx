@@ -21,33 +21,13 @@ export default function HallDaFama() {
             try {
                 const { data, error } = await supabase
                     .from("profiles")
-                    .select("id, nickname, rank, total_capturas, level, avatar, frase, avatar_key, hard_wins, hard_losses, legendary_wins, legendary_losses")
+                    .select("id, nickname, rank, total_capturas, level, avatar, frase, avatar_key, hard_wins, hard_losses, legendary_wins, legendary_losses, current_streak")
                     .order("total_capturas", { ascending: false })
                     .limit(20);
 
                 if (error) throw error;
                 
-                let rankingsData = data || [];
-                if (rankingsData.length > 0) {
-                    try {
-                        const userIds = rankingsData.map(u => u.id);
-                        const { data: streaks } = await supabase
-                            .from("daily_streaks")
-                            .select("user_id, current_streak")
-                            .in("user_id", userIds);
-                            
-                        if (streaks) {
-                            rankingsData = rankingsData.map(u => {
-                                const streak = streaks.find(s => s.user_id === u.id);
-                                return { ...u, current_streak: streak ? streak.current_streak : 0 };
-                            });
-                        }
-                    } catch (e) {
-                        console.error("Erro ao mesclar ofensivas no ranking:", e);
-                    }
-                }
-                
-                setRankings(rankingsData);
+                setRankings(data || []);
             } catch (err) {
                 console.error("Erro ao buscar ranking:", err);
             }
@@ -64,32 +44,18 @@ export default function HallDaFama() {
 
         async function fetchStreakRankings() {
             try {
-                const { data: streaks, error: err1 } = await supabase
-                    .from("daily_streaks")
-                    .select("current_streak, user_id")
+                const { data: profiles, error } = await supabase
+                    .from("profiles")
+                    .select("id, nickname, rank, total_capturas, level, avatar, frase, avatar_key, hard_wins, hard_losses, legendary_wins, legendary_losses, current_streak")
                     .order("current_streak", { ascending: false })
                     .limit(20);
 
-                if (err1) throw err1;
-                if (!streaks || streaks.length === 0) return;
+                if (error) throw error;
 
-                const userIds = streaks.map(s => s.user_id);
-
-                const { data: profiles, error: err2 } = await supabase
-                    .from("profiles")
-                    .select("id, nickname, rank, total_capturas, level, avatar, frase, avatar_key, hard_wins, hard_losses, legendary_wins, legendary_losses")
-                    .in("id", userIds);
-
-                if (err2) throw err2;
-
-                const merged = streaks.map(s => {
-                    const p = profiles.find(pr => pr.id === s.user_id) || {};
-                    return {
-                        ...p,
-                        user_id: s.user_id,
-                        current_streak: s.current_streak
-                    };
-                });
+                const merged = (profiles || []).map(p => ({
+                    ...p,
+                    user_id: p.id
+                }));
                 
                 setStreakRecords(merged);
             } catch (err) {

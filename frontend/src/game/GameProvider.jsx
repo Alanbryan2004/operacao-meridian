@@ -98,9 +98,19 @@ export function GameProvider({ initialState, reducer, children }) {
             const remote = await loadGameState(0);
 
             if (remote) {
-                // 🔥 Sincroniza o state remoto com o seed.js para garantir missões atualizadas
-                const synced = syncCasesWithSeed(remote);
-                dispatch({ type: REPLACE_STATE, payload: synced });
+                const localDate = state.updatedAt ? new Date(state.updatedAt).getTime() : 0;
+                const remoteDate = remote.updatedAt ? new Date(remote.updatedAt).getTime() : 0;
+
+                // Só sobrescreve o local se o remoto for igual ou mais novo
+                if (remoteDate >= localDate || localDate === 0) {
+                    console.log("[ATLAS] Remote save is newer or equal. Syncing to local.");
+                    // 🔥 Sincroniza o state remoto com o seed.js para garantir missões atualizadas
+                    const synced = syncCasesWithSeed(remote);
+                    dispatch({ type: REPLACE_STATE, payload: synced });
+                } else {
+                    console.log("[ATLAS] Local save is newer than remote! Forcing upload to fix cloud state.");
+                    await saveGameState(state, 0);
+                }
             } else {
                 // primeira vez logado: cria remoto com o state atual (que já veio do local)
                 await saveGameState(state, 0);
