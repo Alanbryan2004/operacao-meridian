@@ -55,7 +55,7 @@ export const CIDADES = [
         cidade: "Campinas",
         pais: "Brasil",
         continente: "América do Sul",
-        imagem: "/Paises/default.png",
+        imagem: "/Paises/Campinas.png",
         descricao: "Cidade do interior de São Paulo, Campinas é um importante polo tecnológico e universitário. Moderna e estratégica, abriga centros de pesquisa e uma das maiores regiões metropolitanas do Brasil.",
         dicas: [
             { id: "003-01", texto: "A bandeira do país tem verde, amarelo, azul e branco." },
