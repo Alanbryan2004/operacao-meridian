@@ -201,7 +201,6 @@ export async function updateStreakOnWin(userId) {
     newlyAwarded = STREAK_REWARDS_30_DAYS.find(r => r.day === normalizedDay);
  
     if (newlyAwarded) {
-        // Se houver itens para conceder, adiciona ao banco
         if (newlyAwarded.items && Object.keys(newlyAwarded.items).length > 0) {
             try {
                 for (const [key, qty] of Object.entries(newlyAwarded.items)) {
@@ -212,10 +211,7 @@ export async function updateStreakOnWin(userId) {
                 console.error("[streakService] Erro ao creditar itens do streak:", e);
             }
         }
-        if (normalizedDay === 30) {
-            console.log(`[streakService] Pacote de 30 dias alcançado! Resetando ciclo da trilha.`);
-            updated.current_streak = 0; 
-        }
+        // Nota: A Ofensiva (current_streak) NÃO é resetada aqui. Ela continua crescendo indefinidamente para o Ranking.
     }
 
     await saveStreakData(updated);
@@ -323,15 +319,6 @@ export async function checkStreakPersistence(userId) {
         const yesterdayStr = yesterdayDate.toISOString().split('T')[0];
 
         const resetData = { ...data, current_streak: 0, last_completion_date: yesterdayStr };
-        await saveStreakData(resetData);
-        return resetData;
-    }
-
-    // 🔥 Se o usuário já chegou em 30 ou mais e já é um novo dia, 
-    // reseta para que ele possa começar a nova trilha de 7/14/30 dias.
-    if (data.current_streak >= 30 && diffDays === 1) {
-        console.log("[streakService] Ciclo de 30 dias completo. Reiniciando contador.");
-        const resetData = { ...data, current_streak: 0 };
         await saveStreakData(resetData);
         return resetData;
     }
