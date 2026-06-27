@@ -1114,7 +1114,7 @@ export const CIDADES = [
         cidade: "Xangai",
         pais: "China",
         continente: "Ásia",
-        imagem: "/Paises/default.png",
+        imagem: "/Paises/Xangai.png",
         descricao: "Xangai é a maior cidade da China e um centro financeiro global. Seu skyline futurista em Pudong, com a Torre Pérola do Oriente, contrasta com o charme histórico do Bund à beira do rio Huangpu.",
         dicas: [
             { id: "053-01", texto: "A bandeira do país é vermelha com cinco estrelas amarelas." },
@@ -1134,7 +1134,7 @@ export const CIDADES = [
         cidade: "Helsinque",
         pais: "Finlândia",
         continente: "Europa",
-        imagem: "/Paises/default.png",
+        imagem: "/Paises/Helsinque.png",
         descricao: "Helsinque, a capital da Finlândia, é uma cidade costeira vibrante conhecida por seu design moderno, arquitetura neoclássica e forte ligação com o mar Báltico. É um centro de inovação e cultura nórdica.",
         dicas: [
             { id: "057-01", texto: "A bandeira tinha uma cruz azul sobre fundo branco." },
@@ -1154,7 +1154,7 @@ export const CIDADES = [
         cidade: "Copenhague",
         pais: "Dinamarca",
         continente: "Europa",
-        imagem: "/Paises/default.png",
+        imagem: "/Paises/Copenhague.png",
         descricao: "Copenhague, a capital da Dinamarca, é famosa por seus canais coloridos, cultura da bicicleta e o icônico parque Tivoli. Une charme histórico com design contemporâneo e alta qualidade de vida.",
         dicas: [
             { id: "058-01", texto: "A bandeira era vermelha com uma cruz branca descentralizada." },
@@ -1174,7 +1174,7 @@ export const CIDADES = [
         cidade: "Estocolmo",
         pais: "Suécia",
         continente: "Europa",
-        imagem: "/Paises/default.png",
+        imagem: "/Paises/Estocolmo.png",
         descricao: "Estocolmo, capital da Suécia, é construída sobre 14 ilhas e conectada por mais de 50 pontes. Conhecida como a 'Veneza do Norte', combina história medieval com inovação tecnológica e design sofisticado.",
         dicas: [
             { id: "059-01", texto: "A bandeira tinha uma cruz amarela sobre fundo azul." },
@@ -1194,7 +1194,7 @@ export const CIDADES = [
         cidade: "Reykjavik",
         pais: "Islândia",
         continente: "Europa",
-        imagem: "/Paises/default.png",
+        imagem: "/Paises/Reykjavik.png",
         descricao: "Reykjavik é a capital da Islândia, a capital mais setentrional do mundo. Famosa por sua energia geotérmica, vida cultural vibrante e proximidade com paisagens naturais dramáticas como vulcões e geleiras.",
         dicas: [
             { id: "060-01", texto: "A bandeira era azul com uma cruz vermelha bordejada de branco." },
@@ -1214,7 +1214,7 @@ export const CIDADES = [
         cidade: "Kuala Lumpur",
         pais: "Malásia",
         continente: "Ásia",
-        imagem: "/Paises/default.png",
+        imagem: "/Paises/KualaLumpur.png",
         descricao: "Kuala Lumpur, capital da Malásia, é definida por seu skyline moderno dominado pelas Torres Petronas. Mistura arquitetura colonial britânica, influências malaias, chinesas e indianas em uma metrópole vibrante.",
         dicas: [
             { id: "061-01", texto: "A bandeira tinha listras vermelhas e brancas com um quadrado azul contendo crescente e estrela." },
@@ -1234,7 +1234,7 @@ export const CIDADES = [
         cidade: "Jacarta",
         pais: "Indonésia",
         continente: "Ásia",
-        imagem: "/Paises/default.png",
+        imagem: "/Paises/Jacarta.png",
         descricao: "Jacarta é a capital gigantesca e dinâmica da Indonésia, localizada na ilha de Java. Centro econômico e político, é um caldeirão cultural com milhões de habitantes e ritmo urbano frenético.",
         dicas: [
             { id: "062-01", texto: "A bandeira tinha duas faixas horizontais: vermelha e branca." },
@@ -1254,7 +1254,7 @@ export const CIDADES = [
         cidade: "Manila",
         pais: "Filipinas",
         continente: "Ásia",
-        imagem: "/Paises/default.png",
+        imagem: "/Paises/Manila.png",
         descricao: "Manila é a capital das Filipinas, uma cidade que mistura densidade urbana moderna com herança colonial espanhola. Localizada na ilha de Luzon, é o coração histórico e comercial do arquipélago.",
         dicas: [
             { id: "063-01", texto: "A bandeira tinha duas faixas horizontais, azul e vermelha, com um triângulo branco contendo sol e estrelas." },

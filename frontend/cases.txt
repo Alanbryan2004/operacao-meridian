@@ -1,0 +1,104 @@
+<USER_REQUEST>
+Agora vamos criar mais casos do Modo Fácil ao Médio. Porque os jogadores ja estao acabando as missoes ja existentes. Seguem as novas missoes para adicionar no @[src/game/seed.js] :
+{
+    id: "C141",
+    titulo: "O Cartão Esquecido",
+    dificuldade: "FACIL",
+    xp: 268,
+    valorAdiantamento: 1000,
+    recompensa: 1550,
+    tempoTotalHoras: 480,
+    resumo: "Um cartão de acesso desapareceu após uma reunião em Lisboa. Horas depois, uma área restrita foi utilizada sem autorização e nenhum sinal de invasão foi encontrado. Tudo indica que alguém aproveitou a credencial antes que seu desaparecimento fosse percebido. Descubra quem executou a operação.",
+    localInicial: { pais: "Portugal", cidade: "Lisboa" },
+    procedural: true,
+    replayable: true
+},
+{
+    id: "C142",
+    titulo: "Carga Invertida",
+    dificuldade: "FACIL",
+    xp: 276,
+    valorAdiantamento: 1050,
+    recompensa: 1620,
+    tempoTotalHoras: 480,
+    resumo: "Duas caixas foram trocadas durante um carregamento em Madrid. A substituição passou despercebida até o destinatário abrir a encomenda errada. A troca foi planejada para esconder um objeto de grande valor. Descubra quem alterou a carga.",
+    localInicial: { pais: "Espanha", cidade: "Madrid" },
+    procedural: true,
+    replayable: true
+},
+{
+    id: "C143",
+    titulo: "A Pasta Vermelha",
+    dificuldade: "FACIL",
+    xp: 283,
+    valorAdiantamento: 1100,
+    recompensa: 1680,
+    tempoTotalHoras: 480,
+    resumo: "Uma pasta identificada por uma etiqueta vermelha desapareceu de um escritório em Paris. Os demais documentos permaneceram intactos, indicando que o alvo era bastante específico. Sua missão é identificar quem retirou o material.",
+    localInicial: { pais: "França", cidade: "Paris" },
+    procedural: true,
+    replayable: true
+},
+{
+    id: "C144",
+    titulo: "Registro Distorcido",
+    dificuldade: "FACIL",
+    xp: 291,
+    valorAdiantamento: 1150,
+    recompensa: 1740,
+    tempoTotalHoras: 480,
+    resumo: "Um registro administrativo em Berlim fo
+<truncated 45215 bytes>
+able: true
+},
+{
+    id: "C237",
+    titulo: "O Pergaminho Perdido",
+    dificuldade: "MEDIO",
+    xp: 436,
+    valorAdiantamento: 1800,
+    recompensa: 2880,
+    tempoTotalHoras: 398,
+    resumo: "Um pergaminho medieval desapareceu de uma biblioteca histórica em Atenas. O documento descreve rotas comerciais antigas utilizadas por diversas civilizações e possui enorme valor para colecionadores clandestinos. Descubra quem levou o pergaminho.",
+    localInicial: { pais: "Grécia", cidade: "Atenas" },
+    procedural: true,
+    replayable: true
+},
+{
+    id: "C238",
+    titulo: "A Coroa Esmeralda",
+    dificuldade: "MEDIO",
+    xp: 452,
+    valorAdiantamento: 1850,
+    recompensa: 2920,
+    tempoTotalHoras: 400,
+    resumo: "Uma coroa adornada com esmeraldas foi roubada de um museu em Budapeste durante uma cerimônia internacional. O artefato permaneceu desaparecido por horas antes que a equipe percebesse a substituição por uma réplica perfeita. Descubra quem realizou a troca.",
+    localInicial: { pais: "Hungria", cidade: "Budapeste" },
+    procedural: true,
+    replayable: true
+},
+{
+    id: "C239",
+    titulo: "O Mapa do Navegador",
+    dificuldade: "MEDIO",
+    xp: 468,
+    valorAdiantamento: 1900,
+    recompensa: 2960,
+    tempoTotalHoras: 404,
+    resumo: "Um mapa utilizado por grandes navegadores do século XV desapareceu de um museu marítimo em Dublin. Especialistas acreditam que ele indique a localização de artefatos históricos ainda não encontrados. Descubra quem roubou o mapa.",
+    localInicial: { pais: "Irlanda", cidade: "Dublin" },
+    procedural: true,
+    replayable: true
+},
+{
+    id: "C240",
+    titulo: "O Tesouro do Deserto",
+    dificuldade: "MEDIO",
+    xp: 489,
+    valorAdiantamento: 2000,
+    recompensa: 3000,
+    tempoTotalHoras: 408,
+    resumo: "Uma coleção composta por moedas de ouro, joias e artefatos históricos desapareceu
+<truncated 17176 bytes>
+
+NOTE: The output was truncated because it was too long. Use a more targeted query or a smaller range to get the information you need.
