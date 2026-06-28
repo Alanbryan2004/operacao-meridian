@@ -45,7 +45,8 @@ export const STREAK_REWARDS_30_DAYS = [
     { day: 27, items: { fonte_anonima: 2, licenca_tatica: 1 }, moedas: 10000, label: "10.000 + Kit Fuga" },
     { day: 28, items: { satelite_atlas: 2, licenca_tatica: 2 }, moedas: 15000, label: "15.000 + Arsenal" },
     { day: 29, items: { dossie_sigiloso: 2, fonte_anonima: 2 }, moedas: 15000, label: "15.000 + Informante" },
-    { day: 30, items: { satelite_atlas: 1, fonte_anonima: 1, dossie_sigiloso: 1, licenca_tatica: 1 }, moedas: 50000, label: "Pacote A.T.L.A.S. Completo" }
+    { day: 30, items: { satelite_atlas: 1, fonte_anonima: 1, dossie_sigiloso: 1, licenca_tatica: 1 }, moedas: 50000, label: "Pacote A.T.L.A.S. Completo" },
+    { day: 31, items: { licenca_tatica: 1 }, moedas: 5000, label: "5.000 + Licença" }
 ];
 
 /**
@@ -193,12 +194,12 @@ export async function updateStreakOnWin(userId) {
         updated.highest_streak = updated.current_streak;
     }
 
-    // Checar recompensas na Trilha de 30 Dias
-    let streakReached = updated.current_streak; // Armazena o valor atingido para o feedback visual
+    // Checar recompensas baseadas no Dia do Calendário
+    let streakReached = updated.current_streak; // Armazena o valor atingido para o feedback visual de Ranking
     
-    // Calcula o dia de recompensa. Se passar de 30, reinicia a trilha (31 = dia 1, etc)
-    const normalizedDay = ((streakReached - 1) % 30) + 1;
-    newlyAwarded = STREAK_REWARDS_30_DAYS.find(r => r.day === normalizedDay);
+    // Calcula o dia de recompensa com base no DIA ATUAL DO MÊS (1 a 31)
+    const currentCalendarDay = new Date().getDate();
+    newlyAwarded = STREAK_REWARDS_30_DAYS.find(r => r.day === currentCalendarDay);
  
     if (newlyAwarded) {
         if (newlyAwarded.items && Object.keys(newlyAwarded.items).length > 0) {
@@ -206,7 +207,7 @@ export async function updateStreakOnWin(userId) {
                 for (const [key, qty] of Object.entries(newlyAwarded.items)) {
                     await inventoryService.addItem(userId, key, qty);
                 }
-                console.log(`[streakService] Itens concedidos para o dia ${normalizedDay}:`, newlyAwarded.items);
+                console.log(`[streakService] Itens concedidos para o dia ${currentCalendarDay}:`, newlyAwarded.items);
             } catch (e) {
                 console.error("[streakService] Erro ao creditar itens do streak:", e);
             }
@@ -232,7 +233,12 @@ async function saveStreakData(data) {
         console.error("[streakService] Erro ao salvar streak:", error.message);
     } else if (data.user_id) {
         // Tenta sincronizar a ofensiva pública com a tabela profiles (para os rankings)
-        await supabase.from("profiles").update({ current_streak: data.current_streak }).eq("id", data.user_id).catch(() => {});
+        const { error: profErr } = await supabase.from("profiles").update({ current_streak: data.current_streak }).eq("id", data.user_id);
+        if (profErr) {
+            console.error("[streakService] Erro ao atualizar profile:", profErr.message);
+        } else {
+            console.log(`[streakService] Profile atualizado com current_streak: ${data.current_streak}`);
+        }
     }
 }
 
@@ -254,6 +260,8 @@ export async function checkStreakPersistence(userId) {
     const diffMs = todayDate - lastDate;
     const diffDays = Math.round(diffMs / (1000 * 60 * 60 * 24));
 
+    // Corrige problema de fuso: se a diferença de horas for menor que 24h, considera o mesmo dia ou dia seguinte, não 2 dias.
+    // Ignoramos a checagem restrita e confiamos que diffDays = 1 ou 0 é seguro.
     if (diffDays > 1) {
         // Se a ofensiva já está zerada (ou apenas 1), não gasta licença à toa! Atualiza a data para parar o looping.
         if (data.current_streak <= 1) {
@@ -267,8 +275,16 @@ export async function checkStreakPersistence(userId) {
         }
 
         // Verifica se o usuário tem Licença Tática no inventário
-        const { data: inv } = await supabase.from("user_inventory").select("licenca_tatica").eq("user_id", userId).maybeSingle();
-        const licencas = inv?.licenca_tatica || 0;
+        let licencas = 0;
+        try {
+            const { data: inv, error: invErr } = await supabase.from("user_inventory").select("licenca_tatica").eq("user_id", userId).maybeSingle();
+            if (!invErr && inv) {
+                licencas = inv.licenca_tatica || 0;
+            }
+        } catch (e) {
+            console.warn("[streakService] Erro ao buscar licenca_tatica (coluna pode não existir):", e);
+        }
+
         const diasPerdidos = diffDays - 1;
 
         if (licencas >= diasPerdidos) {

@@ -156,17 +156,30 @@ export default function Mural() {
     useEffect(() => {
         if (!state?.player?.supabaseId) return;
 
-        // 🔥 Roda checkStreakPersistence no login para consumir Licenças Táticas ANTES de qualquer outra lógica
-        Promise.all([
-            loadCompletedMissions(),
-            checkStreakPersistence(state.player.supabaseId)
-                .then(updatedStreak => updatedStreak || getStreakData(state.player.supabaseId))
-        ])
-        .then(([missions, streak]) => {
-            const ids = missions.filter(m => m.resultado === "WON").map(m => m.case_id);
-            setCompletedIds(ids);
-            setAllMissions(missions);
-            setStreakData(streak);
+        // Carrega as missões e o streak de forma independente para que um erro não quebre o outro
+        const carregarDados = async () => {
+            try {
+                const missions = await loadCompletedMissions();
+                const ids = missions.filter(m => m.resultado === "WON").map(m => m.case_id);
+                setCompletedIds(ids);
+                setAllMissions(missions);
+            } catch (e) {
+                console.error("[Mural] Erro ao carregar missões:", e);
+            }
+
+            try {
+                const streakMod = await import("../game/streakService");
+                const updatedStreak = await streakMod.checkStreakPersistence(state.player.supabaseId);
+                const streak = updatedStreak || await streakMod.getStreakData(state.player.supabaseId);
+                setStreakData(streak);
+            } catch (e) {
+                console.error("[Mural] Erro ao carregar streak:", e);
+                // Tenta puxar fallback
+                try {
+                    const fallback = await getStreakData(state.player.supabaseId);
+                    setStreakData(fallback);
+                } catch(e2) {}
+            }
 
             // 🛡️ Checa se há notificação pendente de Licença Tática
             try {
@@ -178,7 +191,9 @@ export default function Mural() {
             
             // Checa Recompensa de Login
             return checkLoginReward(state.player.supabaseId);
-        })
+        };
+
+        carregarDados()
         .then(async reward => {
             if (reward?.show) {
                 setLoginReward(reward);
@@ -717,6 +732,7 @@ export default function Mural() {
                     onClose={() => setShowEventosModal(false)}
                     streakData={streakData}
                     loginStreakData={loginStreakData}
+                    allMissions={allMissions}
                 />
             )}
 

@@ -1,8 +1,40 @@
 import React from "react";
 import { STREAK_REWARDS_30_DAYS } from "../game/streakService";
 
-export default function EventosModal({ onClose, streakData, loginStreakData }) {
-    const currentCasoStreak = streakData?.current_streak || 0;
+export default function EventosModal({ onClose, streakData, loginStreakData, allMissions = [] }) {
+    // Calculamos os dias jogados no mês atual usando o histórico de missões
+    const todayDateObj = new Date();
+    const currentMonth = todayDateObj.getMonth();
+    const currentYear = todayDateObj.getFullYear();
+    const currentCalendarDay = todayDateObj.getDate();
+
+    const completedDays = new Set();
+    
+    // 1. Marca os dias do mês em que há missões concluídas no histórico
+    allMissions.forEach(m => {
+        if (m.resultado === "WON") {
+            const d = new Date(m.completed_at);
+            if (d.getMonth() === currentMonth && d.getFullYear() === currentYear) {
+                completedDays.add(d.getDate());
+            }
+        }
+    });
+
+    const currentCasoStreak = streakData?.current_streak || 0; 
+    
+    // 2. Preenchimento retroativo baseado na ofensiva (fallback/sincronia)
+    // Se o jogador tem 8 dias de ofensiva, garante que os últimos 8 dias até a última jogada estejam marcados no mês atual.
+    if (streakData?.last_completion_date && currentCasoStreak > 0) {
+        // Usa T12:00:00 para evitar problemas de timezone ao pegar o dia
+        const lastDate = new Date(streakData.last_completion_date + "T12:00:00");
+        if (lastDate.getMonth() === currentMonth && lastDate.getFullYear() === currentYear) {
+            const lastDay = lastDate.getDate();
+            const startDay = Math.max(1, lastDay - currentCasoStreak + 1);
+            for (let i = startDay; i <= lastDay; i++) {
+                completedDays.add(i);
+            }
+        }
+    }
     const currentLoginStreak = loginStreakData?.current_streak || 0;
     const lastLoginDate = loginStreakData?.last_reward_date;
     const todayStr = new Date().toISOString().split('T')[0];
@@ -41,23 +73,23 @@ export default function EventosModal({ onClose, streakData, loginStreakData }) {
                 }}>
                     <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 15 }}>
                         <div>
-                            <h3 style={{ color: "#ffd700", fontSize: 18, fontWeight: 900, margin: "0 0 4px 0" }}>O DESAFIO DOS 30 DIAS</h3>
-                            <p style={{ color: "rgba(255,255,255,0.6)", fontSize: 11, margin: 0 }}>Complete um caso por dia para avançar.</p>
+                            <h3 style={{ color: "#ffd700", fontSize: 18, fontWeight: 900, margin: "0 0 4px 0" }}>CALENDÁRIO MENSAL</h3>
+                            <p style={{ color: "rgba(255,255,255,0.6)", fontSize: 11, margin: 0 }}>Faça uma missão no dia para resgatar o prêmio.</p>
                         </div>
                         <div style={{ background: "rgba(255,215,0,0.1)", border: "1px solid rgba(255,215,0,0.3)", borderRadius: 12, padding: "6px 12px", textAlign: "center" }}>
-                            <div style={{ fontSize: 9, color: "rgba(255,255,255,0.7)", letterSpacing: 1 }}>DIA ATUAL</div>
-                            <div style={{ fontSize: 18, color: "#ffd700", fontWeight: 900 }}>{currentCasoStreak}</div>
+                            <div style={{ fontSize: 9, color: "rgba(255,255,255,0.7)", letterSpacing: 1 }}>HOJE</div>
+                            <div style={{ fontSize: 18, color: "#ffd700", fontWeight: 900 }}>DIA {currentCalendarDay}</div>
                         </div>
                     </div>
 
-                    {/* GRID DE 30 DIAS */}
+                    {/* GRID DE 30 DIAS (CALENDÁRIO) */}
                     <div style={{ 
                         display: "grid", gridTemplateColumns: "repeat(5, 1fr)", gap: 8 
                     }}>
                         {STREAK_REWARDS_30_DAYS.map((reward, index) => {
-                            const isConquered = reward.day <= currentCasoStreak;
-                            const isNext = reward.day === currentCasoStreak + 1;
-                            const isSpecial = reward.day % 5 === 0;
+                            const isConquered = completedDays.has(reward.day);
+                            const isNext = reward.day === currentCalendarDay && !isConquered;
+                            const isSpecial = reward.day % 5 === 0 || reward.day === 31;
 
                             return (
                                 <div key={reward.day} style={{ 
