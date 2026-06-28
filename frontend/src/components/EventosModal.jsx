@@ -91,6 +91,20 @@ export default function EventosModal({ onClose, streakData, loginStreakData, all
                             const isNext = reward.day === currentCalendarDay && !isConquered;
                             const isSpecial = reward.day % 5 === 0 || reward.day === 31;
 
+                            const firstItemKey = Object.keys(reward.items || {})[0];
+                            let imgSrc = null;
+                            if (firstItemKey) {
+                                const imgMap = {
+                                    satelite_atlas: "/Itens/SateliteAtlas.png",
+                                    fonte_anonima: "/Itens/FonteAnonima.png",
+                                    dossie_sigiloso: "/Itens/DossieSigiloso.png",
+                                    licenca_tatica: "/Loja/licencaTatica.png"
+                                };
+                                imgSrc = imgMap[firstItemKey] || "/Loja/licencaTatica.png";
+                            } else if (reward.moedas > 0) {
+                                imgSrc = "/Itens/moeda.png";
+                            }
+
                             return (
                                 <div key={reward.day} style={{ 
                                     background: isConquered ? "rgba(255,215,0,0.15)" : isNext ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.3)",
@@ -103,13 +117,39 @@ export default function EventosModal({ onClose, streakData, loginStreakData, all
                                         D{reward.day}
                                     </div>
                                     
-                                    <div style={{ marginTop: 10, fontSize: 18 }}>
-                                        {isConquered ? (
-                                            <span style={{ color: "#ffd700", textShadow: "0 0 10px rgba(255,215,0,0.8)" }}>✓</span>
-                                        ) : isSpecial ? (
-                                            <span style={{ opacity: isNext ? 1 : 0.3 }}>🎁</span>
+                                    <div style={{ marginTop: 10, position: "relative", width: 28, height: 28, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                                        {imgSrc ? (
+                                            <>
+                                                <img 
+                                                    src={imgSrc} 
+                                                    alt="reward" 
+                                                    style={{ 
+                                                        maxWidth: "100%", maxHeight: "100%", objectFit: "contain",
+                                                        opacity: isConquered ? 1 : isNext ? 0.8 : 0.2,
+                                                        filter: isConquered ? "drop-shadow(0 0 5px rgba(255,215,0,0.5))" : "none"
+                                                    }} 
+                                                />
+                                                {isConquered && (
+                                                    <div style={{ position: "absolute", bottom: -4, right: -4, background: "#3cff9c", borderRadius: "50%", width: 14, height: 14, display: "flex", alignItems: "center", justifyContent: "center", color: "#000", fontSize: 10, fontWeight: 900, border: "2px solid #000" }}>
+                                                        ✓
+                                                    </div>
+                                                )}
+                                                {!isConquered && !isNext && (
+                                                    <div style={{ position: "absolute", bottom: -6, right: -6, fontSize: 10, opacity: 0.5 }}>
+                                                        🔒
+                                                    </div>
+                                                )}
+                                            </>
                                         ) : (
-                                            <span style={{ fontSize: 12, opacity: 0.2 }}>🔒</span>
+                                            <div style={{ fontSize: 18 }}>
+                                                {isConquered ? (
+                                                    <span style={{ color: "#ffd700", textShadow: "0 0 10px rgba(255,215,0,0.8)" }}>✓</span>
+                                                ) : isSpecial ? (
+                                                    <span style={{ opacity: isNext ? 1 : 0.3 }}>🎁</span>
+                                                ) : (
+                                                    <span style={{ fontSize: 12, opacity: 0.2 }}>🔒</span>
+                                                )}
+                                            </div>
                                         )}
                                     </div>
                                     
