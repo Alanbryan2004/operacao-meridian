@@ -3,9 +3,10 @@ import { suspectsSeed, getUnlockedLeaders } from "../game/store";
 import { useGame } from "../game/GameProvider";
 
 
-function Panel({ children, style = {} }) {
+function Panel({ children, style = {}, className = "" }) {
     return (
         <div
+            className={className}
             style={{
                 borderRadius: 18,
                 border: "1px solid rgba(255,255,255,.14)",
@@ -141,9 +142,30 @@ export default function Analisar({ onBack, filters, setFilters, warrantId, setWa
                 .om-badge-mini { padding: 2px 6px; border-radius: 4px; background: rgba(255,255,255,0.1); font-size: 9px; }
                 .tut-chip-highlight { animation: om-tut-pulse 1.5s infinite alternate; border-color: #ffd700 !important; color: #ffd700 !important; background: rgba(255,215,0,0.25) !important; }
                 @keyframes om-tut-pulse { 0% { box-shadow: 0 0 5px rgba(255,215,0,0.4); transform: scale(1); } 100% { box-shadow: 0 0 20px rgba(255,215,0,1); transform: scale(1.05); } }
+
+                .om-scrollable-panel {
+                    scrollbar-width: thin !important;
+                    scrollbar-color: rgba(128, 189, 255, 0.5) rgba(255, 255, 255, 0.05) !important;
+                }
+                .om-scrollable-panel::-webkit-scrollbar {
+                    width: 6px !important;
+                    height: 6px !important;
+                    display: block !important;
+                }
+                .om-scrollable-panel::-webkit-scrollbar-track {
+                    background: rgba(255, 255, 255, 0.02) !important;
+                    border-radius: 99px !important;
+                }
+                .om-scrollable-panel::-webkit-scrollbar-thumb {
+                    background: rgba(128, 189, 255, 0.5) !important;
+                    border-radius: 99px !important;
+                }
+                .om-scrollable-panel::-webkit-scrollbar-thumb:hover {
+                    background: rgba(128, 189, 255, 0.8) !important;
+                }
             `}</style>
 
-            <Panel style={{ marginBottom: "15px", maxHeight: "220px", overflowY: "auto" }}>
+            <Panel className="om-scrollable-panel" style={{ marginBottom: "15px", maxHeight: "220px", overflowY: "scroll" }}>
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "12px", sticky: "top" }}>
                     <div style={{ fontSize: 11, fontWeight: 800, color: "#80bdff" }}>FILTRAR PERFIL</div>
                     <div style={{ fontSize: "10px", opacity: 0.7, fontWeight: 700, letterSpacing: 0.5 }}>
@@ -156,10 +178,7 @@ export default function Analisar({ onBack, filters, setFilters, warrantId, setWa
                         LIMPAR
                     </button>
                 </div>
-                
-                <div style={{ color: "rgba(255,255,255,0.5)", fontSize: "10px", marginBottom: "10px" }}>
-                    DEBUG-CAPTURES: {Object.keys(capturedSuspects).filter(k => capturedSuspects[k] > 0).join(",")}
-                </div>
+
 
                 <div style={{ display: "grid", gap: 15 }}>
                     {Object.keys(filters).filter(key => options[key]).map(key => (
@@ -216,14 +235,14 @@ export default function Analisar({ onBack, filters, setFilters, warrantId, setWa
                         onClick={() => setSelectedId(s.id)}
                         onDoubleClick={() => setSelectedSuspect(s)}
                     >
-                        <img 
-                            src={capturedSuspects[s.id] > 0 ? `/Suspeitos/${s.id}.png?v=2` : (s.id.startsWith("L") ? "/Suspeitos/NaoIdentificadoLider.png?v=2" : "/Suspeitos/NaoIdentificado.png?v=2")} 
-                            className="om-suspect-img" 
-                            alt={s.codinome} 
+                        <img
+                            src={capturedSuspects[s.id] > 0 ? `/Suspeitos/${s.id}.png?v=2` : (s.id.startsWith("L") ? "/Suspeitos/NaoIdentificadoLider.png?v=2" : "/Suspeitos/NaoIdentificado.png?v=2")}
+                            className="om-suspect-img"
+                            alt={s.codinome}
                             style={{ filter: eliminatedIds.includes(s.id) ? "grayscale(100%) brightness(0.5)" : "none" }}
                             onError={(e) => { e.target.src = s.id.startsWith("L") ? "/Suspeitos/NaoIdentificadoLider.png?v=2" : "/Suspeitos/NaoIdentificado.png?v=2"; }}
                         />
-                        
+
                         {eliminatedIds.includes(s.id) && (
                             <div style={{
                                 position: "absolute", inset: 0, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", zIndex: 5, background: "rgba(0,0,0,0.3)"

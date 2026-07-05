@@ -44,18 +44,30 @@ export default function HallDaFama() {
 
         async function fetchStreakRankings() {
             try {
-                const { data: profiles, error } = await supabase
-                    .from("profiles")
-                    .select("id, nickname, rank, total_capturas, level, avatar, frase, avatar_key, hard_wins, hard_losses, legendary_wins, legendary_losses, current_streak")
+                // Buscamos diretamente da tabela fonte (daily_streaks) para evitar qualquer dessincronização de cache
+                const { data: streaks, error } = await supabase
+                    .from("daily_streaks")
+                    .select(`
+                        current_streak,
+                        user_id,
+                        profiles (
+                            nickname, rank, total_capturas, level, avatar, frase, avatar_key, hard_wins, hard_losses, legendary_wins, legendary_losses
+                        )
+                    `)
                     .order("current_streak", { ascending: false })
                     .limit(20);
 
                 if (error) throw error;
 
-                const merged = (profiles || []).map(p => ({
-                    ...p,
-                    user_id: p.id
-                }));
+                // Achatar o resultado para o formato esperado pelo componente
+                const merged = (streaks || [])
+                    .filter(s => s.profiles) // Garante que tem profile atrelado
+                    .map(s => ({
+                        ...s.profiles,
+                        current_streak: s.current_streak,
+                        user_id: s.user_id,
+                        id: s.user_id
+                    }));
                 
                 setStreakRecords(merged);
             } catch (err) {
