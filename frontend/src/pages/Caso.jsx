@@ -581,10 +581,15 @@ export default function Caso() {
                 }, 800);
 
                 if (isSuccess) {
+                    const isNewCapture = !state.capturedSuspects || !(state.capturedSuspects[run.warrantId] > 0);
+                    const isLeader = String(run.warrantId).startsWith("L");
+
                     const nextRun = {
                         ...nextRunCount,
                         status: "WON",
                         suspeitoCapturado: true,
+                        isNewCapture,
+                        isLeader,
                         jornal: [...run.jornal, { t: new Date().toISOString(), msg: `🎯 MISSÃO CUMPRIDA! O suspeito foi preso em ${locObj.cidade}.` }],
                     };
                     

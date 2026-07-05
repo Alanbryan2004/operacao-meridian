@@ -34,6 +34,63 @@ export default function CasoSolucionado() {
     // --- Faction Unlock Modal State ---
     const [unlockedFaction, setUnlockedFaction] = useState(null);
 
+    // --- Reveal Animation State ---
+    const [activeAnimation, setActiveAnimation] = useState(null);
+    const [animSuspectData, setAnimSuspectData] = useState(null);
+
+    useEffect(() => {
+        if (run?.isNewCapture && run?.status === "WON") {
+            const suspect = suspectsSeed.find(s => String(s.id) === String(run?.targetSuspectId));
+            if (suspect) {
+                setAnimSuspectData(suspect);
+                setActiveAnimation(run.isLeader ? "leader" : "suspect");
+            }
+        }
+    }, [run]);
+
+    const triggerTestAnimation = (type) => {
+        let dummySuspect;
+        if (type === "leader") {
+            const leaders = suspectsSeed.filter(s => s.id.startsWith("L"));
+            if (leaders.length > 0) {
+                dummySuspect = leaders[Math.floor(Math.random() * leaders.length)];
+            } else {
+                dummySuspect = {
+                    id: "L01",
+                    codinome: "The Architect",
+                    nomeReal: "Elias Voss",
+                    origem: "Alemanha",
+                    idadeAparente: 42,
+                    raridade: "Lendário",
+                    factionName: "Shadow Forge",
+                    factionEmoji: "🕸️",
+                    caracteristica: ["Gênio", "Frio"],
+                    especialidade: ["Criptografia", "Estratégia"],
+                    relacaoMeridian: "Líder supremo e mentor intelectual da rede cibernética Shadow Forge."
+                };
+            }
+        } else {
+            const commons = suspectsSeed.filter(s => !s.id.startsWith("L"));
+            if (commons.length > 0) {
+                dummySuspect = commons[Math.floor(Math.random() * commons.length)];
+            } else {
+                dummySuspect = {
+                    id: "001",
+                    codinome: "Vanta Quill",
+                    nomeReal: "Desconhecido",
+                    origem: "Europa",
+                    idadeAparente: "35–45",
+                    raridade: "Raro",
+                    caracteristica: ["Elegante", "Discreto"],
+                    especialidade: ["Falsificação", "Identidades fabricadas"],
+                    relacaoMeridian: "Executor usado quando é preciso apagar todos os vestígios físicos."
+                };
+            }
+        }
+        setAnimSuspectData(dummySuspect);
+        setActiveAnimation(type);
+    };
+
 
     const isCompetitive = useMemo(() => {
         return searchParams.get("mode") === "competitive" || !!caseObj?.isCompetitive;
@@ -115,7 +172,7 @@ export default function CasoSolucionado() {
         }
 
         return isWon
-            ? `O suspeito foi capturado com êxito.\nA relíquia foi integralmente recuperada e devolvida à custódia internacional.\n\nO brilhante trabalho do(a) Agente ${player.nivelTitulo || ""} "${player.nome || ""}" foi decisivo para o sucesso desta missão.\nSua análise precisa, leitura estratégica das pistas e execução impecável elevaram o padrão operacional da Agência.\n\nA.T.L.A.S. reconhece oficialmente sua conduta exemplar.\nContinue assim, Agente. O mundo precisa de mentes afiadas como a sua.\n\nEsperamos trabalhar novamente com você em futuras operações de alto risco.\n🌍 Justiça restaurada. Ordem mantida.\n\n🏆 RECOMPENSA: +R$${caseObj?.recompensa} | +${caseObj?.xp} XP`
+            ? `O brilhante trabalho do(a) Agente ${player.nivelTitulo || ""} "${player.nome || ""}" foi decisivo para o sucesso desta missão.\n🌍 Justiça restaurada. Ordem mantida.\n🏆 RECOMPENSA: +R$${caseObj?.recompensa} | +${caseObj?.xp} XP`
             : `O suspeito escapou da captura.\nA relíquia permanece desaparecida.\n\nCulpado Real: ${realCriminal?.codinome || "Desconhecido"}\nMandado Emitido para: ${warrantSuspect?.codinome || "Nenhum"}\n\nA Agência reconhece que o(a) Agente ${player.nivelTitulo || ""} "${player.nome || ""}" demonstrou potencial estratégico acima da média.\nPorém, falhas na identificação final permitiram que o alvo deixasse o país antes da captura.\n\nA.T.L.A.S. espera mais de alguém que já demonstrou ser brilhante.\nFracassos não definem um agente. Eles moldam os próximos acertos.\n\nReavalie as pistas. Ajuste a estratégia. O próximo movimento será decisivo.\n🌍 O jogo continua.`;
     }, [isWon, isCompetitive, winnerName, player.nome, player.nivelTitulo, caseObj?.recompensa, caseObj?.xp, realCriminal, warrantSuspect, caseObj?.dificuldade]);
 
@@ -141,6 +198,281 @@ export default function CasoSolucionado() {
             console.warn("[SpeedRecord] Erro ao submeter recorde:", err);
         });
     }, [isWon, run?.startedAtRealTime, state?.player?.supabaseId, caseId]);
+
+    // Se não temos o state ou o caseObj, aí sim retornamos null.
+    // Permitimos renderizar sem run para que a central de testes de animações possa ser usada ao acessar o link diretamente.
+    if (!state || !caseObj) return null;
+
+    if (activeAnimation && animSuspectData) {
+        if (activeAnimation === "leader") {
+            return (
+                <div style={{
+                    position: "fixed", inset: 0, zIndex: 11000, background: "#080303",
+                    color: "#fff", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
+                    padding: 20, boxSizing: "border-box", fontFamily: "'Inter', sans-serif"
+                }}>
+                    <style>{`
+                        @keyframes om-alert-pulse {
+                            0%, 100% { background: rgba(255, 77, 106, 0.05); }
+                            50% { background: rgba(255, 77, 106, 0.18); }
+                        }
+                        @keyframes om-stamp-zoom {
+                            0% { transform: scale(3) rotate(-15deg); opacity: 0; }
+                            80% { transform: scale(0.9) rotate(-10deg); opacity: 0.8; }
+                            100% { transform: scale(1) rotate(-12deg); opacity: 1; }
+                        }
+                        .om-siren-bg {
+                            position: absolute;
+                            inset: 0;
+                            animation: om-alert-pulse 2.5s infinite ease-in-out;
+                            pointer-events: none;
+                            z-index: 1;
+                        }
+                        .om-leader-glow {
+                            position: relative;
+                            width: 200px;
+                            height: 200px;
+                            border-radius: 18px;
+                            overflow: hidden;
+                            border: 3px solid #ffd700;
+                            box-shadow: 0 0 35px rgba(255, 215, 0, 0.5);
+                            background: #000;
+                            margin-bottom: 20px;
+                            z-index: 5;
+                        }
+                        .om-leader-img {
+                            width: 100%;
+                            height: 100%;
+                            object-fit: cover;
+                            object-position: top;
+                            opacity: 0.95;
+                        }
+                        .om-danger-stamp {
+                            position: absolute;
+                            bottom: 12px;
+                            right: 12px;
+                            border: 3px solid #ff1a40;
+                            color: #ff1a40;
+                            background: transparent;
+                            text-shadow: 0 0 4px rgba(8, 3, 3, 0.9);
+                            font-size: 12px;
+                            font-weight: 900;
+                            padding: 4px 8px;
+                            border-radius: 6px;
+                            text-transform: uppercase;
+                            letter-spacing: 1.5px;
+                            z-index: 15;
+                            box-shadow: 0 0 8px rgba(255, 26, 64, 0.4);
+                            pointer-events: none;
+                            animation: om-stamp-zoom 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) both;
+                            transform-origin: center;
+                        }
+                        .om-alert-text {
+                            animation: header-glow 1.5s infinite ease-in-out;
+                            font-weight: 900;
+                        }
+                    `}</style>
+                    
+                    <div className="om-siren-bg" />
+                    
+                    <div style={{ textAlign: "center", marginBottom: 20, zIndex: 5 }}>
+                        <div style={{ fontSize: 10, letterSpacing: 4, color: "#ff4d6a", fontWeight: 800, marginBottom: 6 }}>🚨 ALERTA MÁXIMO DA AGÊNCIA 🚨</div>
+                        <h2 className="om-alert-text" style={{ fontSize: 24, margin: 0, textTransform: "uppercase" }}>
+                            Líder de Facção Capturado
+                        </h2>
+                        <div style={{ fontSize: 12, opacity: 0.7, marginTop: 4, color: "#ffd700", fontWeight: 700 }}>
+                            FACÇÃO DESMANTELADA INTEGRALMENTE
+                        </div>
+                    </div>
+
+                    <div className="om-leader-glow">
+                        <img 
+                            src={`/Suspeitos/${animSuspectData.id}.png?v=2`} 
+                            className="om-leader-img" 
+                            alt={animSuspectData.codinome}
+                            onError={(e) => { e.target.src = "/Suspeitos/NaoIdentificadoLider.png?v=2"; }}
+                        />
+                        <div className="om-danger-stamp">CAPTURADO</div>
+                    </div>
+
+                    <div style={{
+                        maxWidth: 380, width: "100%",
+                        background: "linear-gradient(135deg, rgba(20, 10, 10, 0.9) 0%, rgba(0,0,0,0.95) 100%)",
+                        border: "1px solid rgba(255, 77, 106, 0.3)",
+                        borderRadius: 16,
+                        padding: 16,
+                        marginBottom: 30,
+                        boxShadow: "0 15px 40px rgba(255,0,0,0.25)",
+                        zIndex: 5
+                    }}>
+                        <div style={{ display: "flex", justifyContent: "center", alignItems: "center", gap: 8, fontSize: 12, color: "#ffd700", fontWeight: 900, marginBottom: 4, letterSpacing: 1 }}>
+                            <span>👑</span>
+                            <span>{animSuspectData.factionEmoji} {animSuspectData.factionName ? animSuspectData.factionName.toUpperCase() : "FACÇÃO INIMIGA"}</span>
+                        </div>
+                        
+                        <div style={{ fontSize: 22, fontWeight: 900, color: "#ffd700", textAlign: "center", marginBottom: 12, textShadow: "0 0 10px rgba(255,215,0,0.4)" }}>
+                            {animSuspectData.codinome}
+                        </div>
+                        
+                        <div style={{ display: "grid", gridTemplateColumns: "1fr 1.5fr", gap: "8px 12px", fontSize: 12 }}>
+                            <div style={{ opacity: 0.5, fontWeight: 800 }}>NOME REAL:</div>
+                            <div>{animSuspectData.nomeReal || "Desconhecido"}</div>
+                            
+                            <div style={{ opacity: 0.5, fontWeight: 800 }}>ORIGEM:</div>
+                            <div>{animSuspectData.origem || "Desconhecida"}</div>
+                            
+                            <div style={{ opacity: 0.5, fontWeight: 800 }}>STATUS DA REDE:</div>
+                            <div style={{ color: "#ff1a40", fontWeight: 800 }}>DERRUBADA</div>
+                            
+                            <div style={{ opacity: 0.5, fontWeight: 800, gridColumn: "1 / span 2", marginTop: 4 }}>DETALHES DA OPERAÇÃO:</div>
+                            <div style={{ gridColumn: "1 / span 2", fontStyle: "italic", color: "rgba(255,255,255,0.85)", lineHeight: 1.4, fontSize: 11 }}>
+                                "{animSuspectData.relacaoMeridian || "O líder supremo da facção foi detido, cessando todas as operações ativas deste grupo."}"
+                            </div>
+                        </div>
+                    </div>
+
+                    <button
+                        onClick={() => {
+                            setActiveAnimation(null);
+                            setAnimSuspectData(null);
+                        }}
+                        style={{
+                            maxWidth: 380, width: "100%", padding: 16, borderRadius: 14,
+                            background: "linear-gradient(135deg, rgba(255, 77, 106, 0.25), rgba(0, 0, 0, 0.4))",
+                            border: "1px solid rgba(255, 77, 106, 0.5)",
+                            color: "#ff4d6a", fontSize: 13, fontWeight: 900,
+                            letterSpacing: 2, cursor: "pointer", transition: "all 0.2s",
+                            zIndex: 5
+                        }}
+                    >
+                        ARQUIVAR DOSSIÊ DE LÍDER ➔
+                    </button>
+                </div>
+            );
+        } else {
+            return (
+                <div style={{
+                    position: "fixed", inset: 0, zIndex: 11000, background: "#060c13",
+                    color: "#fff", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
+                    padding: 20, boxSizing: "border-box", fontFamily: "'Inter', sans-serif"
+                }}>
+                    <style>{`
+                        @keyframes om-scanline {
+                            0% { top: 0%; }
+                            50% { top: 100%; }
+                            100% { top: 0%; }
+                        }
+                        @keyframes om-glow-blue {
+                            0%, 100% { box-shadow: 0 0 10px rgba(128, 189, 255, 0.3); }
+                            50% { box-shadow: 0 0 25px rgba(128, 189, 255, 0.6); }
+                        }
+                        .om-scan-container {
+                            position: relative;
+                            width: 200px;
+                            height: 200px;
+                            border-radius: 18px;
+                            overflow: hidden;
+                            border: 2px solid rgba(128, 189, 255, 0.4);
+                            animation: om-glow-blue 3s infinite ease-in-out;
+                            background: #000;
+                            margin-bottom: 20px;
+                        }
+                        .om-scan-line {
+                            position: absolute;
+                            left: 0;
+                            right: 0;
+                            height: 4px;
+                            background: linear-gradient(to bottom, transparent, #80bdff, transparent);
+                            box-shadow: 0 0 10px #80bdff;
+                            animation: om-scanline 4s infinite linear;
+                            z-index: 10;
+                        }
+                        .om-scan-img {
+                            width: 100%;
+                            height: 100%;
+                            object-fit: cover;
+                            object-position: top;
+                            opacity: 0.9;
+                        }
+                        .om-scan-text-glow {
+                            color: #80bdff;
+                            text-shadow: 0 0 15px rgba(128,189,255,0.6);
+                            font-weight: 900;
+                        }
+                    `}</style>
+                    
+                    <div style={{ textAlign: "center", marginBottom: 20 }}>
+                        <div style={{ fontSize: 10, letterSpacing: 4, color: "#80bdff", fontWeight: 800, marginBottom: 6 }}>📡 BANCO DE DADOS A.T.L.A.S.</div>
+                        <h2 className="om-scan-text-glow" style={{ fontSize: 24, margin: 0, textTransform: "uppercase" }}>
+                            Novo Suspeito Identificado
+                        </h2>
+                        <div style={{ fontSize: 12, opacity: 0.6, marginTop: 4 }}>Dossiê adicionado com sucesso ao mural</div>
+                    </div>
+
+                    <div className="om-scan-container">
+                        <div className="om-scan-line" />
+                        <img 
+                            src={`/Suspeitos/${animSuspectData.id}.png?v=2`} 
+                            className="om-scan-img" 
+                            alt={animSuspectData.codinome}
+                            onError={(e) => { e.target.src = "/Suspeitos/NaoIdentificado.png?v=2"; }}
+                        />
+                    </div>
+
+                    <div style={{
+                        maxWidth: 380, width: "100%",
+                        background: "rgba(255,255,255,0.03)",
+                        border: "1px solid rgba(255,255,255,0.08)",
+                        borderRadius: 16,
+                        padding: 16,
+                        marginBottom: 30,
+                        boxShadow: "0 10px 30px rgba(0,0,0,0.5)"
+                    }}>
+                        <div style={{ fontSize: 20, fontWeight: 900, color: "#80bdff", textAlign: "center", marginBottom: 12, borderBottom: "1px solid rgba(128,189,255,0.2)", paddingBottom: 6 }}>
+                            {animSuspectData.codinome}
+                        </div>
+                        
+                        <div style={{ display: "grid", gridTemplateColumns: "1fr 1.5fr", gap: "8px 12px", fontSize: 12 }}>
+                            <div style={{ opacity: 0.5, fontWeight: 800 }}>NOME REAL:</div>
+                            <div>{animSuspectData.nomeReal || "Desconhecido"}</div>
+                            
+                            <div style={{ opacity: 0.5, fontWeight: 800 }}>ORIGEM:</div>
+                            <div>{animSuspectData.origem || "Desconhecida"}</div>
+                            
+                            <div style={{ opacity: 0.5, fontWeight: 800 }}>IDADE APARENTE:</div>
+                            <div>{animSuspectData.idadeAparente || "Desconhecida"}</div>
+                            
+                            <div style={{ opacity: 0.5, fontWeight: 800 }}>RARIDADE:</div>
+                            <div style={{ color: animSuspectData.raridade === "Raro" ? "#80bdff" : animSuspectData.raridade === "Lendário" ? "#ffd700" : "#fff", fontWeight: 800 }}>
+                                {animSuspectData.raridade || "Comum"}
+                            </div>
+                            
+                            <div style={{ opacity: 0.5, fontWeight: 800, gridColumn: "1 / span 2", marginTop: 4 }}>RELAÇÃO COM A MERIDIAN:</div>
+                            <div style={{ gridColumn: "1 / span 2", fontStyle: "italic", color: "rgba(255,255,255,0.8)", lineHeight: 1.4, fontSize: 11 }}>
+                                "{animSuspectData.relacaoMeridian || "Nenhuma informação disponível nos arquivos."}"
+                            </div>
+                        </div>
+                    </div>
+
+                    <button
+                        onClick={() => {
+                            setActiveAnimation(null);
+                            setAnimSuspectData(null);
+                        }}
+                        style={{
+                            maxWidth: 380, width: "100%", padding: 16, borderRadius: 14,
+                            background: "linear-gradient(135deg, rgba(128, 189, 255, 0.2), rgba(0, 0, 0, 0.4))",
+                            border: "1px solid rgba(128, 189, 255, 0.4)",
+                            color: "#80bdff", fontSize: 13, fontWeight: 900,
+                            letterSpacing: 2, cursor: "pointer", transition: "all 0.2s"
+                        }}
+                    >
+                        CONFIRMAR REGISTRO ➔
+                    </button>
+                </div>
+            );
+        }
+    }
 
     // Se não temos o run nem o state, e não estamos mostrando o modal, aí sim retornamos null
     if (!state || !caseObj || (!run && !streakUpdated && !newVoucher && !unlockedFaction)) return null;
@@ -773,7 +1105,7 @@ export default function CasoSolucionado() {
             background: "#0a0c10",
             color: "#fff",
             fontFamily: "'Inter', sans-serif",
-            padding: "16px",
+            padding: "12px",
             display: "flex",
             flexDirection: "column",
             alignItems: "center",
@@ -784,46 +1116,94 @@ export default function CasoSolucionado() {
             <div style={{
                 display: "flex",
                 flexDirection: "column",
-                gap: "16px",
+                gap: "10px",
                 maxWidth: "420px",
                 width: "100%"
             }}>
                 {/* Card 1: Foto do Suspeito Preso / Missão Fracassada */}
                 <div style={{
+                    maxHeight: "60vh",
                     borderRadius: 18,
                     overflow: "hidden",
                     border: isWon ? "2px solid #ffd700" : "2px solid #ff4d4d",
                     background: "rgba(255,255,255,0.03)",
                     boxShadow: isWon
                         ? "0 0 30px rgba(255,215,0,0.15)"
-                        : "0 0 30px rgba(255,77,77,0.15)"
+                        : "0 0 30px rgba(255,77,77,0.15)",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center"
                 }}>
                     <img
                         src={conclusionImg}
                         alt="Resultado da Missão"
-                        style={{ width: "100%", display: "block", objectFit: "cover" }}
+                        style={{ maxWidth: "100%", maxHeight: "60vh", objectFit: "contain", display: "block" }}
                     />
                 </div>
 
                 {/* Card 2: Comunicado A.T.L.A.S. via DialogBox */}
                 <div style={{
-                    fontSize: 13,
+                    fontSize: 11,
                     fontWeight: 800,
                     color: isWon ? "#ffd700" : "#ff4d4d",
                     letterSpacing: "2px",
                     textAlign: "center",
-                    marginBottom: -8
+                    marginBottom: 2
                 }}>
                     {isWon ? "🏆 MISSÃO CONCLUÍDA COM SUCESSO" : "🚨 MISSÃO FRACASSADA"}
                 </div>
 
+                <div style={{
+                    fontSize: 10,
+                    fontWeight: 800,
+                    color: "#80bdff",
+                    letterSpacing: "1.5px",
+                    textAlign: "center",
+                    marginBottom: -8,
+                    textTransform: "uppercase",
+                    textShadow: "0 1px 3px rgba(0,0,0,0.8)"
+                }}>
+                    📜 COMUNICADO — AGÊNCIA A.T.L.A.S
+                </div>
+
                 <DialogBox
-                    title="📜 Comunicado Oficial — Agência A.T.L.A.S."
+                    title=" "
                     text={reportText}
                     onComplete={handleEncerrar}
                     buttonLabel="ENCERRAR"
-                    maxChars={180}
+                    maxChars={350}
                 />
+
+                {/* TEST PANEL FOR REVEAL ANIMATIONS */}
+                <div style={{
+                    marginTop: 24,
+                    padding: 14,
+                    background: "rgba(255, 255, 255, 0.02)",
+                    border: "1px dashed rgba(255, 255, 255, 0.12)",
+                    borderRadius: 16,
+                    textAlign: "center",
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: 10
+                }}>
+                    <div style={{ fontSize: 10, opacity: 0.5, letterSpacing: 1, fontWeight: 700 }}>🧪 CENTRAL DE TESTE DE ANIMAÇÕES</div>
+                    <div style={{ display: "flex", gap: 10, justifyContent: "center" }}>
+                        <button 
+                            className="om-btn" 
+                            style={{ flex: 1, fontSize: 11, padding: "8px 12px", background: "rgba(128, 189, 255, 0.1)", borderColor: "rgba(128, 189, 255, 0.3)", color: "#80bdff" }} 
+                            onClick={() => triggerTestAnimation("suspect")}
+                        >
+                            Testar Suspeito Comum
+                        </button>
+                        <button 
+                            className="om-btn" 
+                            style={{ flex: 1, fontSize: 11, padding: "8px 12px", background: "rgba(255, 215, 0, 0.1)", borderColor: "rgba(255, 215, 0, 0.3)", color: "#ffd700" }} 
+                            onClick={() => triggerTestAnimation("leader")}
+                        >
+                            Testar Líder Facção
+                        </button>
+                    </div>
+                </div>
             </div>
         </div>
     );
