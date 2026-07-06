@@ -1173,37 +1173,6 @@ export default function CasoSolucionado() {
                     buttonLabel="ENCERRAR"
                     maxChars={350}
                 />
-
-                {/* TEST PANEL FOR REVEAL ANIMATIONS */}
-                <div style={{
-                    marginTop: 24,
-                    padding: 14,
-                    background: "rgba(255, 255, 255, 0.02)",
-                    border: "1px dashed rgba(255, 255, 255, 0.12)",
-                    borderRadius: 16,
-                    textAlign: "center",
-                    display: "flex",
-                    flexDirection: "column",
-                    gap: 10
-                }}>
-                    <div style={{ fontSize: 10, opacity: 0.5, letterSpacing: 1, fontWeight: 700 }}>🧪 CENTRAL DE TESTE DE ANIMAÇÕES</div>
-                    <div style={{ display: "flex", gap: 10, justifyContent: "center" }}>
-                        <button 
-                            className="om-btn" 
-                            style={{ flex: 1, fontSize: 11, padding: "8px 12px", background: "rgba(128, 189, 255, 0.1)", borderColor: "rgba(128, 189, 255, 0.3)", color: "#80bdff" }} 
-                            onClick={() => triggerTestAnimation("suspect")}
-                        >
-                            Testar Suspeito Comum
-                        </button>
-                        <button 
-                            className="om-btn" 
-                            style={{ flex: 1, fontSize: 11, padding: "8px 12px", background: "rgba(255, 215, 0, 0.1)", borderColor: "rgba(255, 215, 0, 0.3)", color: "#ffd700" }} 
-                            onClick={() => triggerTestAnimation("leader")}
-                        >
-                            Testar Líder Facção
-                        </button>
-                    </div>
-                </div>
             </div>
         </div>
     );
