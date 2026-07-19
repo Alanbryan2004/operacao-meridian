@@ -8,11 +8,12 @@ import { supabase } from "../lib/supabase";
  * Retorna { isNewRecord: boolean, previousBest: number|null, globalRank: number|null }
  */
 export async function submitSpeedRecord(caseId, durationSeconds, playerData = {}) {
-    const { data: { user }, error: userErr } = await supabase.auth.getUser();
-    if (userErr || !user) {
+    const { data: { session }, error: sessionErr } = await supabase.auth.getSession();
+    if (sessionErr || !session?.user) {
         console.warn("[SpeedRecord] Usuário não autenticado.");
         return { isNewRecord: false };
     }
+    const user = session.user;
 
     // 1. Busca recorde anterior do jogador para este caso
     const { data: existing } = await supabase
@@ -101,8 +102,7 @@ export async function fetchGlobalTopRecords(limit = 20) {
         .limit(limit * 3); // Pega mais pra filtrar duplicatas por jogador
 
     if (error) {
-        console.error("[SpeedRecord] Erro ao buscar recordes globais:", error.message);
-        return [];
+        throw new Error(error.message);
     }
 
     // Agrupa: pega o melhor (menor tempo) de cada jogador

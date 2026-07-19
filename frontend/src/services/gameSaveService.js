@@ -2,8 +2,9 @@ import { supabase } from "../lib/supabase";
 
 /** Garante que existe um profile para o usuário logado */
 export async function ensureProfile(nickname = "") {
-    const { data: { user }, error: userErr } = await supabase.auth.getUser();
-    if (userErr) throw userErr;
+    const { data: { session }, error: sessionErr } = await supabase.auth.getSession();
+    if (sessionErr) throw sessionErr;
+    const user = session?.user;
     if (!user) throw new Error("Not authenticated");
 
     const { data: existing, error: selErr } = await supabase
@@ -28,8 +29,9 @@ export async function ensureProfile(nickname = "") {
 
 /** Salva o state do jogo (slot 0 por padrão) */
 export async function saveGameState(state, slot = 0) {
-    const { data: { user }, error: userErr } = await supabase.auth.getUser();
-    if (userErr) throw userErr;
+    const { data: { session }, error: sessionErr } = await supabase.auth.getSession();
+    if (sessionErr) throw sessionErr;
+    const user = session?.user;
     if (!user) throw new Error("Not authenticated");
 
     const payload = {
@@ -84,8 +86,9 @@ export async function saveGameState(state, slot = 0) {
 
 /** Carrega os dados de streak do jogador */
 export async function loadUserStreak() {
-    const { data: { user }, error: userErr } = await supabase.auth.getUser();
-    if (userErr || !user) return null;
+    const { data: { session }, error: sessionErr } = await supabase.auth.getSession();
+    if (sessionErr || !session?.user) return null;
+    const user = session.user;
 
     const { data, error } = await supabase
         .from("daily_streaks")
@@ -99,8 +102,9 @@ export async function loadUserStreak() {
 
 /** Carrega o state do jogo (slot 0 por padrão) */
 export async function loadGameState(slot = 0) {
-    const { data: { user }, error: userErr } = await supabase.auth.getUser();
-    if (userErr) throw userErr;
+    const { data: { session }, error: sessionErr } = await supabase.auth.getSession();
+    if (sessionErr) throw sessionErr;
+    const user = session?.user;
     if (!user) return null;
 
     const { data, error } = await supabase
@@ -119,8 +123,9 @@ export async function loadGameState(slot = 0) {
  *  atualiza apenas se o novo resultado for melhor (WON > LOST).
  */
 export async function saveCompletedMission(missionData) {
-    const { data: { user }, error: userErr } = await supabase.auth.getUser();
-    if (userErr) throw userErr;
+    const { data: { session }, error: sessionErr } = await supabase.auth.getSession();
+    if (sessionErr) throw sessionErr;
+    const user = session?.user;
     if (!user) throw new Error("Not authenticated");
 
     const newResult = missionData.resultado || "WON";
@@ -159,8 +164,9 @@ export async function saveCompletedMission(missionData) {
 
 /** Carrega todas as missões concluídas do jogador */
 export async function loadCompletedMissions() {
-    const { data: { user }, error: userErr } = await supabase.auth.getUser();
-    if (userErr) throw userErr;
+    const { data: { session }, error: sessionErr } = await supabase.auth.getSession();
+    if (sessionErr) throw sessionErr;
+    const user = session?.user;
     if (!user) return [];
 
     const { data, error } = await supabase
@@ -179,8 +185,10 @@ export async function loadCompletedMissions() {
 
 /** Remove registros duplicados do banco, mantendo o melhor resultado por case_id */
 export async function cleanupDuplicateMissions() {
-    const { data: { user }, error: userErr } = await supabase.auth.getUser();
-    if (userErr || !user) return;
+    const { data: { session }, error: sessionErr } = await supabase.auth.getSession();
+    if (sessionErr) return;
+    const user = session?.user;
+    if (!user) return;
 
     const { data, error } = await supabase
         .from("completed_missions")

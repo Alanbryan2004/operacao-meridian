@@ -9,15 +9,49 @@ import { casesSeed } from "../game/seed";
 export default function HallDaFama() {
     const nav = useNavigate();
     const { state } = useGame();
-    const [rankings, setRankings] = useState([]);
-    const [speedRecords, setSpeedRecords] = useState([]);
-    const [streakRecords, setStreakRecords] = useState([]);
-    const [loading, setLoading] = useState(true);
+    const [rankings, setRankings] = useState(() => {
+        try {
+            const cached = localStorage.getItem("meridian_rankings_capturas");
+            return cached ? JSON.parse(cached) : [];
+        } catch {
+            return [];
+        }
+    });
+    const [speedRecords, setSpeedRecords] = useState(() => {
+        try {
+            const cached = localStorage.getItem("meridian_rankings_speed");
+            return cached ? JSON.parse(cached) : [];
+        } catch {
+            return [];
+        }
+    });
+    const [streakRecords, setStreakRecords] = useState(() => {
+        try {
+            const cached = localStorage.getItem("meridian_rankings_streak");
+            return cached ? JSON.parse(cached) : [];
+        } catch {
+            return [];
+        }
+    });
+    const [loadingRankings, setLoadingRankings] = useState(() => rankings.length === 0);
+    const [loadingSpeed, setLoadingSpeed] = useState(() => speedRecords.length === 0);
+    const [loadingStreak, setLoadingStreak] = useState(() => streakRecords.length === 0);
     const [selectedAgent, setSelectedAgent] = useState(null);
     const [activeTab, setActiveTab] = useState("CAPTURAS"); // CAPTURAS | TEMPO_RECORDE
-
+    const [fetchError, setFetchError] = useState(null);
+ 
     useEffect(() => {
+        let active = true;
+
         async function fetchRankings() {
+            let completed = false;
+            const timer = setTimeout(() => {
+                if (!completed && active) {
+                    console.warn("[HallDaFama] fetchRankings timed out");
+                    setLoadingRankings(false);
+                }
+            }, 8000);
+
             try {
                 const { data, error } = await supabase
                     .from("profiles")
@@ -25,33 +59,74 @@ export default function HallDaFama() {
                     .order("total_capturas", { ascending: false })
                     .limit(20);
 
+                completed = true;
+                clearTimeout(timer);
+
                 if (error) throw error;
                 
-                setRankings(data || []);
+                const updated = data || [];
+                if (active) {
+                    setRankings(updated);
+                    try {
+                        localStorage.setItem("meridian_rankings_capturas", JSON.stringify(updated));
+                    } catch (e) {}
+                }
             } catch (err) {
                 console.error("Erro ao buscar ranking:", err);
+                if (active) setFetchError(err.message || String(err));
+            } finally {
+                if (active) setLoadingRankings(false);
             }
         }
 
         async function fetchSpeedRankings() {
+            let completed = false;
+            const timer = setTimeout(() => {
+                if (!completed && active) {
+                    console.warn("[HallDaFama] fetchSpeedRankings timed out");
+                    setLoadingSpeed(false);
+                }
+            }, 8000);
+
             try {
-                const records = await fetchGlobalTopRecords(20);
-                setSpeedRecords(records);
+                const result = await fetchGlobalTopRecords(20);
+                completed = true;
+                clearTimeout(timer);
+
+                const updated = result || [];
+                if (active) {
+                    setSpeedRecords(updated);
+                    try {
+                        localStorage.setItem("meridian_rankings_speed", JSON.stringify(updated));
+                    } catch (e) {}
+                }
             } catch (err) {
                 console.error("Erro ao buscar recordes de velocidade:", err);
+                if (active) setFetchError(err.message || String(err));
+            } finally {
+                if (active) setLoadingSpeed(false);
             }
         }
 
         async function fetchStreakRankings() {
+            let completed = false;
+            const timer = setTimeout(() => {
+                if (!completed && active) {
+                    console.warn("[HallDaFama] fetchStreakRankings timed out");
+                    setLoadingStreak(false);
+                }
+            }, 8000);
+
             try {
-                // Buscamos diretamente da tabela de profiles filtrando e ordenando por current_streak,
-                // já que as ofensivas são sincronizadas no profile e isso evita erros de cache do RLS/foreign key
                 const { data: profiles, error } = await supabase
                     .from("profiles")
                     .select("id, nickname, rank, total_capturas, level, avatar, frase, avatar_key, hard_wins, hard_losses, legendary_wins, legendary_losses, current_streak")
                     .gt("current_streak", 0)
                     .order("current_streak", { ascending: false })
                     .limit(20);
+
+                completed = true;
+                clearTimeout(timer);
 
                 if (error) throw error;
 
@@ -62,13 +137,27 @@ export default function HallDaFama() {
                     id: p.id
                 }));
                 
-                setStreakRecords(merged);
+                if (active) {
+                    setStreakRecords(merged);
+                    try {
+                        localStorage.setItem("meridian_rankings_streak", JSON.stringify(merged));
+                    } catch (e) {}
+                }
             } catch (err) {
                 console.error("Erro ao buscar recordes de ofensiva:", err);
+                if (active) setFetchError(err.message || String(err));
+            } finally {
+                if (active) setLoadingStreak(false);
             }
         }
 
-        Promise.all([fetchRankings(), fetchSpeedRankings(), fetchStreakRankings()]).finally(() => setLoading(false));
+        fetchRankings();
+        fetchSpeedRankings();
+        fetchStreakRankings();
+
+        return () => {
+            active = false;
+        };
     }, []);
 
     if (!state) return null;
@@ -79,13 +168,18 @@ export default function HallDaFama() {
 
     useEffect(() => {
         setAnimateClimb(false);
-        if (!loading) {
+        const tabLoading = 
+            activeTab === "CAPTURAS" ? loadingRankings :
+            activeTab === "TEMPO_RECORDE" ? loadingSpeed :
+            loadingStreak;
+
+        if (!tabLoading) {
             const timer = setTimeout(() => {
                 setAnimateClimb(true);
             }, 150);
             return () => clearTimeout(timer);
         }
-    }, [activeTab, loading]);
+    }, [activeTab, loadingRankings, loadingSpeed, loadingStreak]);
 
     // Calcula o deslocamento e a transição da subida do jogador
     function getClimbStyle(idx, items, isPlayer) {
@@ -294,11 +388,17 @@ export default function HallDaFama() {
                 </div>
 
                 <div className="hf-scrollable-content">
+                    {fetchError && (
+                        <div style={{ margin: '14px', padding: '14px', background: 'rgba(255, 75, 75, 0.15)', border: '1px solid #ff4b4b', borderRadius: '8px', color: '#ff8080', fontSize: '13px', textAlign: 'center', lineHeight: '1.4' }}>
+                            <strong>Erro de Conexão:</strong><br/>
+                            {fetchError}
+                        </div>
+                    )}
 
                 {/* Tab: CAPTURAS */}
                 {activeTab === "CAPTURAS" && (
                     <div className="hf-list">
-                        {loading ? (
+                        {loadingRankings ? (
                             <div style={{ textAlign: 'center', padding: '40px', opacity: 0.5 }}>Descriptografando registros...</div>
                         ) : rankings.length === 0 ? (
                             <div style={{ textAlign: 'center', padding: '40px', opacity: 0.5 }}>Nenhum agente registrado ainda.</div>
@@ -349,7 +449,7 @@ export default function HallDaFama() {
                 {/* Tab: TEMPO RECORDE */}
                 {activeTab === "TEMPO_RECORDE" && (
                     <div className="hf-list">
-                        {loading ? (
+                        {loadingSpeed ? (
                             <div style={{ textAlign: 'center', padding: '40px', opacity: 0.5 }}>Descriptografando registros...</div>
                         ) : speedRecords.length === 0 ? (
                             <div style={{ textAlign: 'center', padding: '40px', opacity: 0.4 }}>
@@ -407,7 +507,7 @@ export default function HallDaFama() {
                 {/* Tab: OFENSIVA */}
                 {activeTab === "OFENSIVA" && (
                     <div className="hf-list">
-                        {loading ? (
+                        {loadingStreak ? (
                             <div style={{ textAlign: 'center', padding: '40px', opacity: 0.5 }}>Descriptografando registros...</div>
                         ) : streakRecords.length === 0 ? (
                             <div style={{ textAlign: 'center', padding: '40px', opacity: 0.5 }}>Nenhum agente registrado ainda.</div>
@@ -540,6 +640,9 @@ export default function HallDaFama() {
                     </div>
                 </div>
             )}
+            <div style={{ padding: '8px', fontSize: '9px', opacity: 0.3, background: 'rgba(0,0,0,0.6)', textAlign: 'center', position: 'absolute', bottom: '0', left: '0', right: '0', zIndex: 99999 }}>
+                DEBUG INFO | Session: {state.player?.supabaseId ? "Authenticated" : "Guest"} | ID: {state.player?.supabaseId || "none"} | Rankings: {rankings.length} | Speed: {speedRecords.length} | Streak: {streakRecords.length}
+            </div>
         </div>
     );
 }

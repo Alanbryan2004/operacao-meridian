@@ -1,5 +1,5 @@
 // src/pages/Login.jsx
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { loadGame, saveGame, resetGame } from "../game/store";
 import { supabase } from "../lib/supabase";
@@ -12,6 +12,7 @@ export default function Login() {
     const [nome, setNome] = useState("");
     const [loading, setLoading] = useState(false);
     const [showNamePrompt, setShowNamePrompt] = useState(false);
+    const handlingAuthRef = useRef(false);
 
     useEffect(() => {
         const s = loadGame();
@@ -31,6 +32,8 @@ export default function Login() {
         const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
             if (event === "SIGNED_IN" && session?.user) {
                 await handleAuthUser(session.user);
+            } else if (event === "SIGNED_OUT") {
+                handlingAuthRef.current = false;
             }
         });
 
@@ -39,6 +42,8 @@ export default function Login() {
     }, []);
 
     async function handleAuthUser(user) {
+        if (handlingAuthRef.current) return;
+        handlingAuthRef.current = true;
         const meta = user.user_metadata || {};
         const googleName = meta.full_name || meta.name || "";
         const googleAvatar = meta.avatar_url || meta.picture || "";
@@ -190,6 +195,7 @@ export default function Login() {
 
     async function sair() {
         setLoading(true);
+        handlingAuthRef.current = false;
         await supabase.auth.signOut();
         resetGame(); // Limpa local tbm
         setShowNamePrompt(false);

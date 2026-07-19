@@ -60,7 +60,8 @@ export function GameProvider({ initialState, reducer, children }) {
     const [inventory, setInventory] = useState({ fonte_anonima: 0, dossie_sigiloso: 0, satelite_atlas: 0 });
 
     const refreshInventory = async () => {
-        const { data: { user } } = await supabase.auth.getUser();
+        const { data: { session } } = await supabase.auth.getSession();
+        const user = session?.user;
         if (user) {
             const { inventoryService } = await import("./inventoryService");
             const data = await inventoryService.getInventory(user.id);
@@ -80,7 +81,8 @@ export function GameProvider({ initialState, reducer, children }) {
         if (!sessionReady) return;
 
         (async () => {
-            const { data: { user } } = await supabase.auth.getUser();
+            const { data: { session } } = await supabase.auth.getSession();
+            const user = session?.user;
 
             // não logado => já estamos ok com local
             if (!user) {

@@ -50,10 +50,6 @@ export function useSupabaseAutoSave(gameState, canSave = false, slot = 0, hydrat
         return () => {
             if (tRef.current) {
                 clearTimeout(tRef.current);
-                // 🔥 Flush imediato se houver algo pendente ao desmontar
-                if (canSave && hydrated && !savingRef.current) {
-                    saveGameState(gameState, slot).catch(e => console.warn("Erro no flush ao desmontar:", e));
-                }
             }
         };
     }, [gameState, canSave, slot, hydrated, debounceMs]);

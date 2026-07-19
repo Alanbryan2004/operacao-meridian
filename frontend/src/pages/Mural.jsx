@@ -77,7 +77,14 @@ export default function Mural() {
     const { state, refreshInventory, inventory, replaceState, dispatch } = useGame();
     const nav = useNavigate();
     const [modal, setModal] = useState({ show: false, message: "" });
-    const [completedIds, setCompletedIds] = useState([]);
+    const [completedIds, setCompletedIds] = useState(() => {
+        try {
+            const cached = localStorage.getItem("meridian_completed_case_ids");
+            return cached ? JSON.parse(cached) : [];
+        } catch (e) {
+            return [];
+        }
+    });
     const [loadingMissions, setLoadingMissions] = useState(true);
     const [showPromo, setShowPromo] = useState(false);
     const [streakData, setStreakData] = useState(null);
@@ -158,27 +165,71 @@ export default function Mural() {
 
         // Carrega as missões e o streak de forma independente para que um erro não quebre o outro
         const carregarDados = async () => {
-            try {
-                const missions = await loadCompletedMissions();
+            const userId = state.player.supabaseId;
+            const timeoutDuration = 8000;
+
+            const withTimeout = (promise, name) => {
+                const timeoutPromise = new Promise(resolve => setTimeout(() => resolve({ timeout: true }), timeoutDuration));
+                return Promise.race([promise, timeoutPromise]).then(res => {
+                    if (res && res.timeout) {
+                        console.warn(`[Mural] Query ${name} timed out`);
+                        return null;
+                    }
+                    return res;
+                });
+            };
+
+            // Rodamos todas as buscas do banco em paralelo com timeouts de 2s
+            const [missions, streak, reward, weeklyReward] = await Promise.all([
+                withTimeout(loadCompletedMissions(), "loadCompletedMissions").catch(e => {
+                    console.error("[Mural] Erro ao carregar missões:", e);
+                    return [];
+                }),
+                (async () => {
+                    try {
+                        const streakMod = await import("../game/streakService");
+                        const updatedStreak = await withTimeout(streakMod.checkStreakPersistence(userId), "checkStreakPersistence");
+                        if (updatedStreak) return updatedStreak;
+                        return await withTimeout(streakMod.getStreakData(userId), "getStreakData");
+                    } catch (e) {
+                        console.error("[Mural] Erro ao carregar streak:", e);
+                        try {
+                            return await getStreakData(userId);
+                        } catch (e2) {
+                            return null;
+                        }
+                    }
+                })(),
+                withTimeout(checkLoginReward(userId), "checkLoginReward").catch(e => {
+                    console.error("[Mural] Erro ao carregar login reward:", e);
+                    return null;
+                }),
+                (async () => {
+                    try {
+                        const { checkWeeklyRankingReward } = await import("../services/weeklyRankingRewardService");
+                        return await withTimeout(checkWeeklyRankingReward(userId), "checkWeeklyRankingReward");
+                    } catch (e) {
+                        console.error("[Mural] Erro ao checar recompensa de ranking semanal:", e);
+                        return null;
+                    }
+                })()
+            ]);
+
+            if (missions) {
                 const ids = missions.filter(m => m.resultado === "WON").map(m => m.case_id);
                 setCompletedIds(ids);
                 setAllMissions(missions);
-            } catch (e) {
-                console.error("[Mural] Erro ao carregar missões:", e);
+                try {
+                    localStorage.setItem("meridian_completed_case_ids", JSON.stringify(ids));
+                } catch (e) {}
+            }
+            
+            if (streak) {
+                setStreakData(streak);
             }
 
-            try {
-                const streakMod = await import("../game/streakService");
-                const updatedStreak = await streakMod.checkStreakPersistence(state.player.supabaseId);
-                const streak = updatedStreak || await streakMod.getStreakData(state.player.supabaseId);
-                setStreakData(streak);
-            } catch (e) {
-                console.error("[Mural] Erro ao carregar streak:", e);
-                // Tenta puxar fallback
-                try {
-                    const fallback = await getStreakData(state.player.supabaseId);
-                    setStreakData(fallback);
-                } catch(e2) {}
+            if (weeklyReward?.show) {
+                setWeeklyRankReward(weeklyReward);
             }
 
             // 🛡️ Checa se há notificação pendente de Licença Tática
@@ -188,9 +239,8 @@ export default function Mural() {
                     setLicencaNotification(JSON.parse(pending));
                 }
             } catch (e) { /* ignora */ }
-            
-            // Checa Recompensa de Login
-            return checkLoginReward(state.player.supabaseId);
+
+            return reward;
         };
 
         carregarDados()
@@ -215,23 +265,13 @@ export default function Mural() {
                         for (const [key, qty] of Object.entries(reward.items)) {
                             await inventoryService.addItem(state.player.supabaseId, key, qty);
                         }
+                        if (refreshInventory) refreshInventory();
                     } catch (e) {
                         console.error("[Mural] Erro ao creditar itens de login:", e);
                     }
                 }
             } else if (reward?.streak) {
                 setLoginStreakData(reward.streak);
-            }
-
-            // Checa Recompensa de Ranking Semanal
-            try {
-                const { checkWeeklyRankingReward } = await import("../services/weeklyRankingRewardService");
-                const weeklyReward = await checkWeeklyRankingReward(state.player.supabaseId);
-                if (weeklyReward?.show) {
-                    setWeeklyRankReward(weeklyReward);
-                }
-            } catch (e) {
-                console.error("[Mural] Erro ao checar recompensa de ranking semanal:", e);
             }
         })
         .finally(() => setLoadingMissions(false));
@@ -325,8 +365,6 @@ export default function Mural() {
 
     // Sorteia missões garantindo diversidade de dificuldade (FÁCIL, MÉDIO, DIFÍCIL)
     const dailyMissions = useMemo(() => {
-        if (loadingMissions) return [];
-
         const normalizeDiff = (d) => {
             if (!d) return "";
             const s = d.toUpperCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
@@ -395,7 +433,7 @@ export default function Mural() {
         }
 
         return selected.slice(0, 3);
-    }, [loadingMissions, cases, state?.runs, completedIds]);
+    }, [cases, state?.runs, completedIds]);
 
     if (!state) return null;
 
@@ -529,32 +567,31 @@ export default function Mural() {
                 </div>
 
                 <div className="om-grid">
-                    {loadingMissions ? (
+                    {dailyMissions.map(c => {
+                        const run = state.runs[c.id];
+                        const isOtherActive = Object.values(state.runs).some(r => r.caseId !== c.id && r.status === "IN_PROGRESS");
+                        const isActive = run?.status === "IN_PROGRESS";
+                        return (
+                            <div key={c.id} style={{ opacity: isOtherActive ? 0.5 : 1, pointerEvents: isOtherActive ? "none" : "auto" }}>
+                                <CaseCard
+                                    c={c}
+                                    status={run?.status}
+                                    onOpen={() => {
+                                        if (isActive) nav(`/caso/${c.id}`);
+                                        else if (c.isCompetitive) nav(`/competitive-lobby/${c.id}`);
+                                        else nav(`/missao-intro/${c.id}`);
+                                    }}
+                                />
+                                {isOtherActive && (
+                                    <div style={{ fontSize: 10, color: "#ff9090", textAlign: "center", marginTop: 4, fontWeight: 700 }}>
+                                        FINALIZE A MISSÃO ATIVA PRIMEIRO
+                                    </div>
+                                )}
+                            </div>
+                        );
+                    })}
+                    {loadingMissions && dailyMissions.length === 0 && (
                         <div style={{ textAlign: "center", opacity: 0.5, padding: 20 }}>Sincronizando casos...</div>
-                    ) : (
-                        dailyMissions.map(c => {
-                            const run = state.runs[c.id];
-                            const isOtherActive = Object.values(state.runs).some(r => r.caseId !== c.id && r.status === "IN_PROGRESS");
-                            const isActive = run?.status === "IN_PROGRESS";
-                            return (
-                                <div key={c.id} style={{ opacity: isOtherActive ? 0.5 : 1, pointerEvents: isOtherActive ? "none" : "auto" }}>
-                                    <CaseCard
-                                        c={c}
-                                        status={run?.status}
-                                        onOpen={() => {
-                                            if (isActive) nav(`/caso/${c.id}`);
-                                            else if (c.isCompetitive) nav(`/competitive-lobby/${c.id}`);
-                                            else nav(`/missao-intro/${c.id}`);
-                                        }}
-                                    />
-                                    {isOtherActive && (
-                                        <div style={{ fontSize: 10, color: "#ff9090", textAlign: "center", marginTop: 4, fontWeight: 700 }}>
-                                            FINALIZE A MISSÃO ATIVA PRIMEIRO
-                                        </div>
-                                    )}
-                                </div>
-                            );
-                        })
                     )}
                 </div>
             </div>

@@ -57,6 +57,7 @@ const { mockChannel, mockSupabase, getCapturedCallback } = vi.hoisted(() => {
     update: vi.fn().mockReturnThis(),
     eq: vi.fn().mockReturnThis(),
     single: vi.fn().mockResolvedValue({ data: { status: 'active' }, error: null }),
+    maybeSingle: vi.fn().mockResolvedValue({ data: null, error: null }),
     then: vi.fn().mockImplementation((resolver) => {
       if (resolver) resolver({ data: [{ status: 'active' }], error: null });
       return Promise.resolve({ data: [{ status: 'active' }], error: null });
@@ -120,7 +121,7 @@ describe('Caso Competitive Sync', () => {
         }
       }
     };
-    useGame.mockReturnValue({ state: mockState, replaceState: mockReplaceState });
+    useGame.mockReturnValue({ state: mockState, replaceState: mockReplaceState, hydrated: true });
   });
 
   it('deve renderizar o componente e iniciar a missão', async () => {
