@@ -640,9 +640,7 @@ export default function HallDaFama() {
                     </div>
                 </div>
             )}
-            <div style={{ padding: '8px', fontSize: '9px', opacity: 0.3, background: 'rgba(0,0,0,0.6)', textAlign: 'center', position: 'absolute', bottom: '0', left: '0', right: '0', zIndex: 99999 }}>
-                DEBUG INFO | Session: {state.player?.supabaseId ? "Authenticated" : "Guest"} | ID: {state.player?.supabaseId || "none"} | Rankings: {rankings.length} | Speed: {speedRecords.length} | Streak: {streakRecords.length}
-            </div>
+
         </div>
     );
 }

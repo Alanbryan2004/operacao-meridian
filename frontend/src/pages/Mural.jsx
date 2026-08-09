@@ -10,6 +10,7 @@ import InventoryModal from "../components/InventoryModal";
 import LicencaUsadaModal from "../components/LicencaUsadaModal";
 import EventosModal from "../components/EventosModal";
 import { saveGame, getUnlockedLeaders, FACTIONS } from "../game/store";
+import { ACHIEVEMENTS } from "./Conquistas";
 
 function Badge({ children, tone = "gray", onClick, style: extraStyle }) {
     const map = {
@@ -99,6 +100,54 @@ export default function Mural() {
     const [licencaNotification, setLicencaNotification] = useState(null);
     const [showEventosModal, setShowEventosModal] = useState(false);
     const [allMissions, setAllMissions] = useState([]);
+
+    // Calcula se há conquistas completadas mas não resgatadas
+    const hasUnclaimedAchievements = useMemo(() => {
+        if (!state?.player) return false;
+        const claimed = state.player.claimedAchievements || [];
+        const capturedSuspects = state.capturedSuspects || {};
+        const capturedCount = Object.keys(capturedSuspects).filter(id => !id.startsWith("L")).length;
+        const wonMissions = allMissions.filter(m => m.resultado === "WON");
+        const missionStats = {
+            totalWon: wonMissions.length,
+            easyWon: wonMissions.filter(m => m.dificuldade === "FACIL").length,
+            mediumWon: wonMissions.filter(m => m.dificuldade === "MEDIO").length,
+            hardWon: wonMissions.filter(m => m.dificuldade === "DIFICIL").length,
+        };
+
+        return ACHIEVEMENTS.some(a => {
+            if (claimed.includes(a.id)) return false;
+            let progress = 0;
+            switch (a.type) {
+                case "suspects": progress = capturedCount; break;
+                case "faction_captured": {
+                    const faction = FACTIONS[a.factionId];
+                    if (!faction) break;
+                    progress = faction.members.filter(mid => (capturedSuspects[mid] || 0) > 0).length;
+                    break;
+                }
+                case "capture_suspect": progress = (capturedSuspects[a.suspectId] || 0) > 0 ? 1 : 0; break;
+                case "total_won": progress = missionStats.totalWon; break;
+                case "difficulty_won":
+                    if (a.difficulty === "FACIL") progress = missionStats.easyWon;
+                    else if (a.difficulty === "MEDIO") progress = missionStats.mediumWon;
+                    else if (a.difficulty === "DIFICIL") progress = missionStats.hardWon;
+                    break;
+                case "hard_wins": progress = state.player.hardWins || 0; break;
+                default: break;
+            }
+            return progress >= a.target;
+        });
+    }, [state?.player?.claimedAchievements, state?.capturedSuspects, state?.player?.hardWins, allMissions]);
+
+    // Calcula se há suspeitos capturados que o jogador ainda não viu na galeria
+    const hasNewSuspects = useMemo(() => {
+        const captured = state?.capturedSuspects || {};
+        try {
+            const seen = JSON.parse(localStorage.getItem("meridian_seen_suspects") || "[]");
+            return Object.entries(captured).some(([id, count]) => count > 0 && !seen.includes(id));
+        } catch { return false; }
+    }, [state?.capturedSuspects]);
 
     async function handleClaimWeeklyRankReward() {
         if (!weeklyRankReward.id) return;
@@ -554,9 +603,41 @@ export default function Mural() {
                             </div>
                         </div>
                         <div style={{ marginTop: 10, display: "flex", gap: 8, flexWrap: "wrap", alignItems: "center" }}>
-                            <Badge tone="blue">{player.classeEmoji || "🟢"} {player.nivelTitulo || "Novato"}</Badge>
+                            <div style={{ position: "relative", display: "inline-flex" }}>
+                                <Badge tone="amber" style={{ cursor: "pointer" }} onClick={() => nav("/perfil?tab=GALERIA")}>🔍 Galeria</Badge>
+                                {hasNewSuspects && (
+                                    <div style={{
+                                        position: "absolute",
+                                        top: -3,
+                                        right: -3,
+                                        width: 10,
+                                        height: 10,
+                                        background: "#ff4040",
+                                        borderRadius: "50%",
+                                        border: "1.5px solid #0a0c10",
+                                        boxShadow: "0 0 6px rgba(255,64,64,0.6)",
+                                        animation: "pulse-dot 2s infinite"
+                                    }} />
+                                )}
+                            </div>
                             <Badge tone="green" style={{ cursor: "pointer" }} onClick={() => setShowEventosModal(true)}>📅 Eventos</Badge>
-                            <Badge tone="purple" style={{ cursor: "pointer" }} onClick={() => nav("/conquistas")}>🏆 Conquistas</Badge>
+                            <div style={{ position: "relative", display: "inline-flex" }}>
+                                <Badge tone="purple" style={{ cursor: "pointer" }} onClick={() => nav("/conquistas")}>🏆 Conquistas</Badge>
+                                {hasUnclaimedAchievements && (
+                                    <div style={{
+                                        position: "absolute",
+                                        top: -3,
+                                        right: -3,
+                                        width: 10,
+                                        height: 10,
+                                        background: "#ff4040",
+                                        borderRadius: "50%",
+                                        border: "1.5px solid #0a0c10",
+                                        boxShadow: "0 0 6px rgba(255,64,64,0.6)",
+                                        animation: "pulse-dot 2s infinite"
+                                    }} />
+                                )}
+                            </div>
                             <button className="om-newsBtn" onClick={() => { setShowPromo(true); setNewsIndex(0); }}>✨ NOVIDADES</button>
                         </div>
                         <div className="om-actions">

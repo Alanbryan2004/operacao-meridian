@@ -8,7 +8,7 @@ import { ITEMS_DATA } from "../game/itemsData";
 import { saveGameState } from "../services/gameSaveService";
 
 // ── Definição das Conquistas ────────────────────────────────
-const ACHIEVEMENTS = [
+export const ACHIEVEMENTS = [
     {
         id: "suspects_20",
         title: "Investigador Avançado",

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { useGame } from "../game/GameProvider";
 import { supabase } from "../lib/supabase";
 import { loadCompletedMissions, cleanupDuplicateMissions } from "../services/gameSaveService";
@@ -26,7 +26,11 @@ function Badge({ children, tone = "gray" }) {
 export default function Perfil() {
     const nav = useNavigate();
     const { state } = useGame();
-    const [tab, setTab] = useState("PERFIL");
+    const [searchParams] = useSearchParams();
+    const galeryOnly = searchParams.get("tab") === "GALERIA";
+    const [tab, setTab] = useState(() => {
+        return galeryOnly ? "GALERIA" : "PERFIL";
+    });
     const [doneMissions, setDoneMissions] = useState([]);
     const [streakData, setStreakData] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -136,53 +140,57 @@ export default function Perfil() {
                 <div className="pf-header">
                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
                         <button className="pf-back" onClick={() => nav("/mural")}>← VOLTAR</button>
-                        <button 
-                            onClick={() => nav("/configuracao")}
-                            style={{
-                                background: "rgba(255,255,255,0.06)",
-                                border: "1px solid rgba(255,255,255,0.12)",
-                                color: "white",
-                                width: 38,
-                                height: 38,
-                                borderRadius: 12,
-                                display: "flex",
-                                alignItems: "center",
-                                justifyContent: "center",
-                                fontSize: 18,
-                                cursor: "pointer",
-                                transition: "all 0.2s"
-                            }}
-                            onMouseEnter={(e) => { e.currentTarget.style.background = "rgba(128,189,255,0.15)"; e.currentTarget.style.borderColor = "#80bdff"; }}
-                            onMouseLeave={(e) => { e.currentTarget.style.background = "rgba(255,255,255,0.06)"; e.currentTarget.style.borderColor = "rgba(255,255,255,0.12)"; }}
-                        >
-                            ⚙️
-                        </button>
+                        {!galeryOnly && (
+                            <button 
+                                onClick={() => nav("/configuracao")}
+                                style={{
+                                    background: "rgba(255,255,255,0.06)",
+                                    border: "1px solid rgba(255,255,255,0.12)",
+                                    color: "white",
+                                    width: 38,
+                                    height: 38,
+                                    borderRadius: 12,
+                                    display: "flex",
+                                    alignItems: "center",
+                                    justifyContent: "center",
+                                    fontSize: 18,
+                                    cursor: "pointer",
+                                    transition: "all 0.2s"
+                                }}
+                                onMouseEnter={(e) => { e.currentTarget.style.background = "rgba(128,189,255,0.15)"; e.currentTarget.style.borderColor = "#80bdff"; }}
+                                onMouseLeave={(e) => { e.currentTarget.style.background = "rgba(255,255,255,0.06)"; e.currentTarget.style.borderColor = "rgba(255,255,255,0.12)"; }}
+                            >
+                                ⚙️
+                            </button>
+                        )}
                     </div>
 
                     {/* Sub-tabs */}
-                    <div style={{ display: "flex", gap: 8, marginBottom: 4 }}>
-                        {["PERFIL", "GALERIA"].map(t => (
-                            <button
-                                key={t}
-                                onClick={() => setTab(t)}
-                                style={{
-                                    flex: 1,
-                                    padding: "10px 0",
-                                    borderRadius: 12,
-                                    fontSize: 12,
-                                    fontWeight: 800,
-                                    letterSpacing: 0.5,
-                                    border: "1px solid",
-                                    borderColor: tab === t ? "#80bdff" : "rgba(255,255,255,0.12)",
-                                    background: tab === t ? "rgba(128,189,255,0.15)" : "transparent",
-                                    color: tab === t ? "#80bdff" : "rgba(255,255,255,0.5)",
-                                    cursor: "pointer",
-                                }}
-                            >
-                                {t === "PERFIL" ? "👤 PERFIL" : "🔍 GALERIA"}
-                            </button>
-                        ))}
-                    </div>
+                    {!galeryOnly && (
+                        <div style={{ display: "flex", gap: 8, marginBottom: 4 }}>
+                            {["PERFIL", "GALERIA"].map(t => (
+                                <button
+                                    key={t}
+                                    onClick={() => setTab(t)}
+                                    style={{
+                                        flex: 1,
+                                        padding: "10px 0",
+                                        borderRadius: 12,
+                                        fontSize: 12,
+                                        fontWeight: 800,
+                                        letterSpacing: 0.5,
+                                        border: "1px solid",
+                                        borderColor: tab === t ? "#80bdff" : "rgba(255,255,255,0.12)",
+                                        background: tab === t ? "rgba(128,189,255,0.15)" : "transparent",
+                                        color: tab === t ? "#80bdff" : "rgba(255,255,255,0.5)",
+                                        cursor: "pointer",
+                                    }}
+                                >
+                                    {t === "PERFIL" ? "👤 PERFIL" : "🔍 GALERIA"}
+                                </button>
+                            ))}
+                        </div>
+                    )}
                 </div>
 
                 <div className="pf-body om-scrollbar">

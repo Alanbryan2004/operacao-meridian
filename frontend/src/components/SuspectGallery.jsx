@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useCallback } from "react";
 import { suspectsSeed, getUnlockedLeaders, FACTIONS } from "../game/store";
 
 const ITEMS_PER_PAGE = 9;
@@ -48,9 +48,36 @@ const getFactionColors = (factionId) => {
 export default function SuspectGallery({ capturedSuspects = {} }) {
     const [page, setPage] = useState(1);
     const [factionPage, setFactionPage] = useState(1);
-    const [activeTab, setActiveTab] = useState("ALL"); // "ALL" ou "FACTIONS"
+    const [activeTab, setActiveTab] = useState("FACTIONS"); // "ALL" ou "FACTIONS"
     const [mockedFactions, setMockedFactions] = useState({});
     const [selectedSuspect, setSelectedSuspect] = useState(null);
+
+    // Rastreia suspeitos já visualizados na galeria
+    const [seenSuspects, setSeenSuspects] = useState(() => {
+        try {
+            const saved = localStorage.getItem("meridian_seen_suspects");
+            return saved ? JSON.parse(saved) : [];
+        } catch { return []; }
+    });
+
+    const markSuspectSeen = useCallback((suspectId) => {
+        setSeenSuspects(prev => {
+            if (prev.includes(suspectId)) return prev;
+            const next = [...prev, suspectId];
+            localStorage.setItem("meridian_seen_suspects", JSON.stringify(next));
+            return next;
+        });
+    }, []);
+
+    const handleSelectSuspect = useCallback((suspect) => {
+        const count = capturedSuspects[suspect.id] || 0;
+        if (count > 0) markSuspectSeen(suspect.id);
+        setSelectedSuspect(suspect);
+    }, [capturedSuspects, markSuspectSeen]);
+
+    const isNewSuspect = useCallback((suspectId) => {
+        return (capturedSuspects[suspectId] || 0) > 0 && !seenSuspects.includes(suspectId);
+    }, [capturedSuspects, seenSuspects]);
 
     const toggleMockFaction = (factionId) => {
         setMockedFactions(prev => ({
@@ -79,6 +106,23 @@ export default function SuspectGallery({ capturedSuspects = {} }) {
     return (
         <div>
             <style>{`
+                .sg-novo-tag {
+                    position: absolute;
+                    top: -6px;
+                    right: -6px;
+                    background: linear-gradient(135deg, #ff4040, #ff6b35);
+                    color: #fff;
+                    font-size: 8px;
+                    font-weight: 900;
+                    padding: 2px 5px;
+                    border-radius: 6px;
+                    letter-spacing: 0.5px;
+                    z-index: 5;
+                    box-shadow: 0 0 8px rgba(255,64,64,0.5);
+                    animation: pulse-dot 2s infinite;
+                    pointer-events: none;
+                    text-transform: uppercase;
+                }
                 .sg-subtabs {
                     display: flex;
                     justify-content: center;
@@ -386,16 +430,16 @@ export default function SuspectGallery({ capturedSuspects = {} }) {
             {/* Sub-Tabs de navegação interna */}
             <div className="sg-subtabs">
                 <button 
-                    className={`sg-subtab-btn ${activeTab === "ALL" ? "active" : ""}`}
-                    onClick={() => setActiveTab("ALL")}
-                >
-                    Todos os Alvos
-                </button>
-                <button 
                     className={`sg-subtab-btn ${activeTab === "FACTIONS" ? "active" : ""}`}
                     onClick={() => setActiveTab("FACTIONS")}
                 >
                     Divisão por Facções
+                </button>
+                <button 
+                    className={`sg-subtab-btn ${activeTab === "ALL" ? "active" : ""}`}
+                    onClick={() => setActiveTab("ALL")}
+                >
+                    Todos os Alvos
                 </button>
             </div>
 
@@ -413,7 +457,8 @@ export default function SuspectGallery({ capturedSuspects = {} }) {
                             const imageSrc = isCaptured ? normalImage : defaultImage;
 
                             return (
-                                <div key={s.id} className="sg-item" onClick={() => setSelectedSuspect(s)}>
+                                <div key={s.id} className="sg-item" style={{ position: "relative" }} onClick={() => handleSelectSuspect(s)}>
+                                    {isNewSuspect(s.id) && <div className="sg-novo-tag">NOVO</div>}
                                     <div 
                                         className={`sg-circle ${isCaptured ? "unlocked" : ""}`}
                                         style={{
@@ -537,7 +582,7 @@ export default function SuspectGallery({ capturedSuspects = {} }) {
                                             borderColor: isLeaderCaptured ? (isFactionDismantled ? "#ffd700" : colors.text) : colors.border,
                                             background: isLeaderCaptured ? (isFactionDismantled ? "rgba(255, 215, 0, 0.03)" : colors.bg) : "rgba(255, 255, 255, 0.01)"
                                         }}
-                                        onClick={() => setSelectedSuspect(leader)}
+                                        onClick={() => handleSelectSuspect(leader)}
                                     >
                                         {/* Detido stamp overlay positioned relative to faction-leader-side (outside circle to avoid overflow clipping) */}
                                         {isLeaderCaptured && (
@@ -562,6 +607,9 @@ export default function SuspectGallery({ capturedSuspects = {} }) {
                                             }}>
                                                 DETIDO
                                             </div>
+                                        )}
+                                        {isLeaderCaptured && isNewSuspect(f.leaderId) && (
+                                            <div className="sg-novo-tag" style={{ top: -4, right: -4 }}>NOVO</div>
                                         )}
                                         <div 
                                             className="faction-leader-avatar"
@@ -603,7 +651,10 @@ export default function SuspectGallery({ capturedSuspects = {} }) {
                                             const memColor = isFactionDismantled ? "#ffd700" : colors.text;
                                             const memBorder = isFactionDismantled ? "rgba(255, 215, 0, 0.2)" : colors.border;
                                             return (
-                                                <div key={m.id} className="faction-member-item" onClick={() => setSelectedSuspect(m)}>
+                                                <div key={m.id} className="faction-member-item" style={{ position: "relative" }} onClick={() => handleSelectSuspect(m)}>
+                                                    {isMCaptured && isNewSuspect(m.id) && (
+                                                        <div className="sg-novo-tag" style={{ top: -4, right: -4 }}>NOVO</div>
+                                                    )}
                                                     <div 
                                                         className={`faction-member-circle ${isMCaptured ? "captured" : ""}`}
                                                         style={{
